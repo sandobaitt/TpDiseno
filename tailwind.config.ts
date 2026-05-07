@@ -13,7 +13,19 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+      },
       colors: {
+        'squat-green': '#95FD00',
+        'squat-dark': '#131313',
+        'squat-dark-alt': '#1C1B1B',
+        'squat-card': '#2A2A2A',
+        'squat-card-dark': '#0E0E0E',
+        'squat-muted': '#BFCBAE',
+        'squat-ink': '#0E2000',
+        'squat-testimonial': '#353534',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
