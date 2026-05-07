@@ -9,8 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Secretaria from "./pages/secretaria";
-import GymDashboard from "./components/ui/componentes-nuevos/gymdashboard";
+import Secretaria from "./pages/Secretaria";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +23,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="/secretaria" element={<GymDashboard />} />
+          <Route path="/secretaria" element={<Secretaria />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

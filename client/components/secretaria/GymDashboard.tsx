@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { Sidebar } from "./sidebar";
-import { Header } from "./header";
-import { StatsCards } from "./statscard";
-import { MembersTable } from "./memberstable";
+import { Sidebar } from "./Sidebar";
+import { Header } from "./Header";
+import { StatsCards } from "./StatsCard";
+import { MembersTable } from "./MembersTable";
 
 export function GymDashboard() {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);

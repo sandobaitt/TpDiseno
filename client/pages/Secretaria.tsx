@@ -1,4 +1,4 @@
-import GymDashboard from "../components/ui/componentes-nuevos/gymdashboard";
+import GymDashboard from "../components/secretaria/GymDashboard";
 
 export default function Secretaria() {
   return (
