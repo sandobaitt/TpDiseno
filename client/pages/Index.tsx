@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Index() {
   return (
     <div className="flex flex-col min-h-screen bg-squat-dark font-inter">
@@ -18,9 +20,12 @@ export default function Index() {
               Sedes
             </a>
           </nav>
-          <button className="font-jakarta font-bold text-base text-squat-ink px-6 py-2 rounded-[6px] bg-squat-green shadow-[0_10px_20px_0_rgba(149,253,0,0.20)] hover:brightness-105 transition-all">
+          <Link
+            to="/login"
+            className="font-jakarta font-bold text-base text-squat-ink px-6 py-2 rounded-[6px] bg-squat-green shadow-[0_10px_20px_0_rgba(149,253,0,0.20)] hover:brightness-105 transition-all"
+          >
             Login
-          </button>
+          </Link>
         </div>
       </header>
 
