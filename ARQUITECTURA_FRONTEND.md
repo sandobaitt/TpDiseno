@@ -99,3 +99,95 @@ Como se especifica en las bases del proyecto, SQUATGYM requiere un diseño Premi
 *   Usa siempre clases de TailwindCSS.
 *   No uses estilos en línea (`style={{ color: 'red' }}`).
 *   Si necesitas nuevos colores corporativos, agrégalos a `tailwind.config.ts` o al archivo `global.css` como variables CSS, en lugar de usar colores hexadecimales sueltos por todo el código.
+
+---
+
+## 📊 Tabla Reutilizable (`DataTable`)
+
+Para listados con **cantidad de columnas variable** (por módulo) usamos `DataTable`, un componente genérico basado en **CSS Grid**.
+
+### ¿Dónde está?
+
+- **Componente**: `client/components/common/DataTable.tsx`
+- **Uso de referencia**: `client/components/secretaria/MembersTable.tsx`
+
+### Concepto
+
+`DataTable` renderiza:
+
+- Un **header** con los títulos de columnas.
+- Un listado de **filas**, donde cada fila se arma recorriendo el mismo array de columnas.
+
+La cantidad/ancho de columnas se controla con una clase Tailwind en `gridTemplateClass`, por ejemplo:
+
+- `grid-cols-[minmax(160px,_1fr)_90px_90px_120px_120px_60px]`
+
+### API de columnas
+
+Cada columna se define así:
+
+```ts
+interface DataTableColumn<T> {
+  key: string;
+  header: string;
+  headerClassName?: string;
+  cellClassName?: string;
+  render?: (row: T) => React.ReactNode;
+}
+```
+
+- **`key`**: identificador de la columna. Si no se define `render`, se usa como acceso directo `(row as any)[key]`.
+- **`header`**: texto del encabezado.
+- **`render(row)`**: permite celdas complejas (chips de estado, avatar, acciones, etc.).
+
+### Props principales
+
+```ts
+<DataTable<T>
+  columns={columns}
+  data={data}
+  gridTemplateClass="..."
+  getRowKey={(row) => row.id}
+/>
+```
+
+- **`columns`**: definición de columnas (orden = orden visual).
+- **`data`**: array de filas.
+- **`gridTemplateClass`**: define el template de columnas (cantidad/ancho).
+- **`getRowKey`**: clave única por fila (recomendado).
+- **`minWidthClass` (opcional)**: ancho mínimo para habilitar scroll horizontal en pantallas chicas.
+
+### Responsive: sin scroll en desktop, scroll en mobile (si hace falta)
+
+Por defecto `DataTable` usa:
+
+- `min-w-[770px] md:min-w-0`
+
+Eso significa:
+
+- **< md**: mantiene un ancho mínimo y permite **scroll horizontal** si no entra.
+- **≥ md**: no fuerza `min-width`, entonces la tabla intenta **entrar en una sola pantalla**.
+
+Si un módulo requiere otro comportamiento, pasá tu propio `minWidthClass`.
+
+### Recomendación para la primera columna (Nombre)
+
+Si una celda tiene contenido largo (nombre + email), agregá:
+
+- `min-w-0` al contenedor
+- `truncate` a los textos
+
+Ejemplo típico en la columna `Nombre`:
+
+```tsx
+render: (row) => (
+  <div className="flex items-center gap-2.5 min-w-0">
+    <div className="w-9 h-9 rounded-full flex-shrink-0" />
+    <div className="flex flex-col min-w-0">
+      <h3 className="truncate">Nombre Apellido</h3>
+      <p className="truncate">email@dominio.com</p>
+    </div>
+  </div>
+)
+```
+

@@ -1,20 +1,23 @@
+"use client";
 import * as React from "react";
 
 interface HeaderProps {
+    nav: string;
+    title: string;
     className?: string;
     onMenuClick?: () => void;
 }
 
-export function Header({ className = "", onMenuClick }: HeaderProps) {
+export function Header({ nav, title, className = "", onMenuClick }: HeaderProps) {
     return (
         <header className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-4 border-b bg-neutral-900 border-stone-900 ${className}`}>
             <nav className="flex gap-2 items-center max-md:hidden">
-                <span className="text-sm text-gray-500">Gestión de Socios</span>
+                <span className="text-sm text-gray-500">{nav}</span>
             </nav>
 
             <div className="hidden gap-2 items-center max-md:flex">
                 <h1 className="text-lg font-extrabold tracking-normal text-lime-400">
-                    SQUATGYM
+                    {title}
                 </h1>
             </div>
 
