@@ -5,9 +5,65 @@ import { Header } from "./Header";
 import { StatsCards } from "./StatsCard";
 import { MembersTable } from "./MembersTable";
 import HeaderPage from "../common/HeaderPage";
+import type { SidebarNavItem } from "../common/SidebarNav";
 
 export function GymDashboard() {
 	const [sidebarOpen, setSidebarOpen] = React.useState(false);
+	const userRole: "secretaria" = "secretaria";
+
+	const sidebarItems: SidebarNavItem[] = userRole === "secretaria" ? [
+		{
+			id: "members",
+			label: "Gestión de socios",
+			iconClassName: "ti ti-users",
+			to: "/secretaria",
+		},
+		{
+			id: "checkins",
+			label: "Control de asistencia",
+			iconClassName: "ti ti-user-check",
+			disabled: true,
+		},
+		{
+			id: "billing",
+			label: "Cobros y facturación",
+			iconClassName: "ti ti-credit-card",
+			disabled: true,
+		},
+		{
+			id: "kiosk",
+			label: "Kiosco",
+			iconClassName: "ti ti-shopping-cart",
+			disabled: true,
+		},
+		{
+			id: "comms",
+			label: "Comunicaciones",
+			iconClassName: "ti ti-message",
+			disabled: true,
+		},
+		{
+			id: "schedule",
+			label: "Cronogramas",
+			iconClassName: "ti ti-calendar",
+			disabled: true,
+		},
+		{
+			id: "news",
+			label: "Novedades",
+			iconClassName: "ti ti-speakerphone",
+			disabled: true,
+		},
+	] : [];
+
+	const footerItems: SidebarNavItem[] = [
+		{
+			id: "logout",
+			label: "Cerrar sesión",
+			iconClassName: "ti ti-logout",
+			onClick: () => console.log("logout"),
+		},
+	];
 
 	return (
 		<>
@@ -16,7 +72,12 @@ export function GymDashboard() {
 				href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
 			/>
 			<div className="flex bg-neutral-900 min-h-screen relative overflow-hidden">
-				<Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+				<Sidebar
+					isOpen={sidebarOpen}
+					onClose={() => setSidebarOpen(false)}
+					items={sidebarItems}
+					footerItems={footerItems}
+				/>
 				
 				{/* Overlay for mobile */}
 				{sidebarOpen && (

@@ -238,4 +238,78 @@ import { clientsMock, plansMock, paymentsMock } from "@/data";
 - Usar los mocks para **armar tablas** con `DataTable` y validar UI (ancho de columnas, truncado, scroll responsive).
 - Mantener las relaciones por `id` para que sea fácil armar “joins” simples en el frontend (ej: `client.membership.planId -> plan.name`).
 
+---
+
+## 🧭 Sidebar adaptable por rol (`SidebarNav`)
+
+Para paneles internos con navegación lateral, usamos `SidebarNav` como componente genérico, recibiendo los botones/links por `props`. Esto permite mostrar **distintos links según el tipo de usuario**.
+
+- **Componente**: `client/components/common/SidebarNav.tsx`
+- **Wrapper de secretaría**: `client/components/secretaria/Sidebar.tsx`
+
+### Estructura del item (`SidebarNavItem`)
+
+Cada botón/link del sidebar se define con:
+
+```ts
+export interface SidebarNavItem {
+  id: string;
+  label: string;
+  iconClassName?: string; // ej: "ti ti-users"
+  to?: string;            // react-router (recomendado para rutas internas)
+  href?: string;          // link externo
+  onClick?: () => void;   // acción custom (logout, abrir modal, etc.)
+  disabled?: boolean;
+}
+```
+
+- Usá **`to`** para navegación interna (marca “activo” automáticamente con `NavLink`).
+- Usá **`href`** solo para links externos.
+- Usá **`onClick`** para acciones (ej: logout). Si querés que además navegue, poné `to`/`href` y `onClick`.
+- Con **`disabled: true`** se muestra deshabilitado (útil para features futuras).
+
+### Props principales de `SidebarNav`
+
+```tsx
+<SidebarNav
+  isOpen={sidebarOpen}
+  onClose={() => setSidebarOpen(false)}
+  brandTitle="SQUATGYM"
+  brandSubtitle="PANEL DE SECRETARÍA"
+  items={items}
+  footerItems={footerItems}
+/>
+```
+
+- **`items`**: links principales (zona central).
+- **`footerItems`**: acciones de footer (ej: “Cerrar sesión”).
+- **`isOpen` / `onClose`**: control del estado en mobile (overlay + drawer).
+- **Responsive**: en desktop queda fijo; en mobile se puede abrir/cerrar.
+
+### Rol en la página de `Secretaria`
+
+En el dashboard de `Secretaria` se define explícitamente:
+
+- **`userRole = "secretaria"`**
+
+Y en base a eso se eligen los `items` del sidebar. Más adelante, cuando exista auth real, ese rol debería venir del usuario logueado (context/store) y no hardcodeado.
+
+### Ejemplo de uso (Secretaría)
+
+```ts
+const userRole: "secretaria" = "secretaria";
+
+const items: SidebarNavItem[] =
+  userRole === "secretaria"
+    ? [
+        { id: "members", label: "Gestión de socios", iconClassName: "ti ti-users", to: "/secretaria" },
+        { id: "billing", label: "Cobros y facturación", iconClassName: "ti ti-credit-card", disabled: true },
+      ]
+    : [];
+
+const footerItems: SidebarNavItem[] = [
+  { id: "logout", label: "Cerrar sesión", iconClassName: "ti ti-logout", onClick: () => console.log("logout") },
+];
+```
+
 
