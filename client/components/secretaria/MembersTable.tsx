@@ -3,6 +3,8 @@
 
 import * as React from "react";
 import { DataTable } from "../common/DataTable";
+import { clientsMock } from "@/data/clients";
+import { plansMock } from "@/data/plans";
 
 interface Member {
   id: string;
@@ -27,68 +29,89 @@ interface MembersTableProps {
 export function MembersTable({
   className = "",
 }: MembersTableProps) {
-  const members: Member[] = [
-    {
-      id: "1",
-      name: "Martín Rodríguez",
-      email: "martin.r@email.com",
-      dni: "34.567.890",
-      plan: "Pase Libre",
-      status: {
-        type: "enabled",
-        text: "Habilitado",
-      },
-      lastAccess: "Hoy, 08:30 AM",
-      initials: "MR",
-      initialsColor: "text-lime-400",
-      initialsBackground: "bg-zinc-800",
-    },
-    {
-      id: "2",
-      name: "Laura Gómez",
-      email: "laura.g@email.com",
-      dni: "38.123.456",
-      plan: "Musculación",
-      status: {
-        type: "debtor",
-        text: "Deudor",
-      },
-      lastAccess: "Hace 3 días",
-      initials: "LG",
-      initialsColor: "text-violet-400",
-      initialsBackground: "bg-gray-800",
-    },
-    {
-      id: "3",
-      name: "Carlos Silva",
-      email: "carlos.s@email.com",
-      dni: "32.987.654",
-      plan: "Crossfit",
-      status: {
-        type: "enabled",
-        text: "Habilitado",
-      },
-      lastAccess: "Ayer, 19:15 PM",
-      initials: "CS",
-      initialsColor: "text-blue-400",
-      initialsBackground: "bg-slate-800",
-    },
-    {
-      id: "4",
-      name: "Ana Pérez",
-      email: "ana.p@email.com",
-      dni: "40.111.222",
-      plan: "-",
-      status: {
-        type: "inactive",
-        text: "Inactivo",
-      },
-      lastAccess: "Hace 2 meses",
-      initials: "AP",
-      initialsColor: "text-gray-400",
-      initialsBackground: "bg-zinc-800",
-    },
+  const initialsStyles = [
+    { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
+    { initialsColor: "text-violet-400", initialsBackground: "bg-gray-800" },
+    { initialsColor: "text-blue-400", initialsBackground: "bg-slate-800" },
+    { initialsColor: "text-gray-400", initialsBackground: "bg-zinc-800" },
   ];
+
+  const getInitials = (fullName: string) => {
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    const first = parts[0]?.[0] ?? "";
+    const second = parts[1]?.[0] ?? parts[0]?.[1] ?? "";
+    return `${first}${second}`.toUpperCase();
+  };
+
+  const formatLastAccess = (iso?: string) => {
+    if (!iso) return "-";
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return "-";
+
+    const now = new Date();
+    const isSameDay =
+      date.getFullYear() === now.getFullYear() &&
+      date.getMonth() === now.getMonth() &&
+      date.getDate() === now.getDate();
+
+    const time = new Intl.DateTimeFormat("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+
+    if (isSameDay) return `Hoy, ${time}`;
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday =
+      date.getFullYear() === yesterday.getFullYear() &&
+      date.getMonth() === yesterday.getMonth() &&
+      date.getDate() === yesterday.getDate();
+
+    if (isYesterday) return `Ayer, ${time}`;
+
+    const day = new Intl.DateTimeFormat("es-AR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+
+    return `${day}, ${time}`;
+  };
+
+  const getStatusText = (status: Member["status"]["type"]) => {
+    switch (status) {
+      case "enabled":
+        return "Habilitado";
+      case "debtor":
+        return "Deudor";
+      case "inactive":
+        return "Inactivo";
+      default:
+        return "Inactivo";
+    }
+  };
+
+  const members: Member[] = clientsMock.map((client, index) => {
+    const style = initialsStyles[index % initialsStyles.length];
+    const planName =
+      plansMock.find((p) => p.id === client.membership?.planId)?.name ?? "-";
+
+    return {
+      id: client.id,
+      name: client.fullName,
+      email: client.email,
+      dni: client.dni,
+      plan: planName,
+      status: {
+        type: client.status,
+        text: getStatusText(client.status),
+      },
+      lastAccess: formatLastAccess(client.lastAccessAt),
+      initials: getInitials(client.fullName),
+      ...style,
+    };
+  });
 
   const getStatusStyles = (
     status: Member["status"]["type"]

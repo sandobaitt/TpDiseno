@@ -191,3 +191,51 @@ render: (row) => (
 )
 ```
 
+---
+
+## 🧪 Mocks de datos para pruebas (`client/data/`)
+
+Para poder prototipar pantallas rápidamente sin backend, el proyecto incluye **mocks** en `client/data/`.
+
+### ¿Qué hay adentro?
+
+- **Sucursales**: `client/data/branches.ts`
+  - `Branch` / `branchesMock`
+  - Campos: `code`, `name`, `status`, `address`, `openingHours`
+- **Planes / Membresías**: `client/data/plans.ts`
+  - `Plan` / `plansMock`
+  - Campos: `monthlyPriceArs`, `graceDays`
+- **Clientes**: `client/data/clients.ts`
+  - `Client` / `clientsMock`
+  - Relaciones: `branchId` (sucursal) y `membership.planId` (plan)
+- **Empleados**: `client/data/employees.ts`
+  - `Employee` / `employeesMock`
+  - Relación: `branchId` (dónde trabaja)
+- **Pagos**: `client/data/payments.ts`
+  - `Payment` / `paymentsMock`
+  - Relaciones: `clientId`, `branchId`, `processedByEmployeeId` (empleado que lo registró)
+- **Asistencias** (extra útil): `client/data/checkins.ts`
+  - `CheckIn` / `checkinsMock`
+  - Relaciones: `clientId`, `branchId` y opcional `createdByEmployeeId` (si fue manual)
+
+### Cómo importarlos
+
+Podés importar por archivo:
+
+```ts
+import { clientsMock } from "@/data/clients";
+import { plansMock } from "@/data/plans";
+```
+
+O desde el índice:
+
+```ts
+import { clientsMock, plansMock, paymentsMock } from "@/data";
+```
+
+### Uso recomendado
+
+- Usar los mocks para **armar tablas** con `DataTable` y validar UI (ancho de columnas, truncado, scroll responsive).
+- Mantener las relaciones por `id` para que sea fácil armar “joins” simples en el frontend (ej: `client.membership.planId -> plan.name`).
+
+
