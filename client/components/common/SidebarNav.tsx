@@ -1,5 +1,6 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
+import { getMockSession } from "@/data/users";
 
 export interface SidebarNavItem {
   id: string;
@@ -21,6 +22,24 @@ interface SidebarNavProps {
   footerItems?: SidebarNavItem[];
   /** Cierra el sidebar al clickear un item (útil en mobile) */
   closeOnItemClick?: boolean;
+}
+
+function getRoleLabel(role: string) {
+  switch (role) {
+    case "admin":
+      return "administrador";
+    case "alumno":
+      return "alumno";
+    case "profesor":
+      return "profesor";
+    case "secretario":
+      return "secretario";
+    // compat: lo que hoy está hardcodeado en algunos dashboards
+    case "secretaria":
+      return "secretario";
+    default:
+      return role;
+  }
 }
 
 function ItemContent({
@@ -65,6 +84,13 @@ export function SidebarNav({
   const itemHover = "hover:bg-stone-900";
   const itemActive = "bg-stone-900";
 
+  const effectiveSubtitle = React.useMemo(() => {
+    if (brandSubtitle) return brandSubtitle;
+    const session = getMockSession();
+    if (!session?.role) return "PANEL";
+    return `PANEL DE ${getRoleLabel(session.role).toUpperCase()}`;
+  }, [brandSubtitle]);
+
   const handleItemClick = (item: SidebarNavItem) => {
     if (item.disabled) return;
     item.onClick?.();
@@ -78,9 +104,9 @@ export function SidebarNav({
           <h1 className="text-2xl font-extrabold tracking-normal leading-none text-lime-400">
             {brandTitle}
           </h1>
-          {brandSubtitle && (
+          {effectiveSubtitle && (
             <p className="mt-1 text-xs font-medium tracking-wide text-gray-500 uppercase">
-              {brandSubtitle}
+              {effectiveSubtitle}
             </p>
           )}
         </div>

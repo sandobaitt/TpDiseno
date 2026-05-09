@@ -23,7 +23,6 @@ export function Sidebar({
             isOpen={isOpen}
             onClose={onClose}
             brandTitle="SQUATGYM"
-            brandSubtitle="PANEL DE SECRETARÍA"
             items={items}
             footerItems={footerItems}
         />

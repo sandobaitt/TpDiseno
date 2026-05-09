@@ -6,9 +6,12 @@ import { StatsCards } from "./StatsCard";
 import { MembersTable } from "./MembersTable";
 import HeaderPage from "../common/HeaderPage";
 import type { SidebarNavItem } from "../common/SidebarNav";
+import { useNavigate } from "react-router-dom";
+import { clearMockSession } from "@/data/users";
 
 export function GymDashboard() {
 	const [sidebarOpen, setSidebarOpen] = React.useState(false);
+	const navigate = useNavigate();
 	const userRole: "secretaria" = "secretaria";
 
 	const sidebarItems: SidebarNavItem[] = userRole === "secretaria" ? [
@@ -61,7 +64,10 @@ export function GymDashboard() {
 			id: "logout",
 			label: "Cerrar sesión",
 			iconClassName: "ti ti-logout",
-			onClick: () => console.log("logout"),
+			onClick: () => {
+				clearMockSession();
+				navigate("/login", { replace: true });
+			},
 		},
 	];
 

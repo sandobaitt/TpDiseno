@@ -1,8 +1,33 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { findMockUserByEmailOrDni, getPostLoginPath, saveMockSession } from "@/data/users";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [identity, setIdentity] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const user = findMockUserByEmailOrDni(identity);
+    if (!user) {
+      toast.error("No encontramos un usuario con ese correo o DNI.");
+      return;
+    }
+    if (user.status !== "active") {
+      toast.error("Tu cuenta está inactiva. Contactá a la administración.");
+      return;
+    }
+    if (user.password !== password) {
+      toast.error("Contraseña incorrecta.");
+      return;
+    }
+    saveMockSession(user);
+    toast.success(`Hola, ${user.fullName}`);
+    navigate(getPostLoginPath(user.role), { replace: true });
+  };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-squat-dark overflow-hidden">
@@ -44,7 +69,7 @@ export default function Login() {
         </div>
 
         {/* Form */}
-        <form className="w-full flex flex-col gap-6 pb-4">
+        <form className="w-full flex flex-col gap-6 pb-4" onSubmit={handleSubmit} noValidate>
           {/* Email / DNI field */}
           <div className="flex flex-col gap-2">
             <label className="font-inter font-medium text-sm text-[#E5E2E1] leading-5">
@@ -58,6 +83,10 @@ export default function Login() {
               </span>
               <input
                 type="text"
+                name="identity"
+                autoComplete="username"
+                value={identity}
+                onChange={(e) => setIdentity(e.target.value)}
                 placeholder="ejemplo@correo.com"
                 className="w-full pl-12 pr-4 py-4 rounded-[6px] bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
               />
@@ -82,6 +111,10 @@ export default function Login() {
               </span>
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full pl-12 pr-12 py-4 rounded-[6px] bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
               />
