@@ -1,20 +1,19 @@
-import { Link } from "react-router-dom";
-import { clearMockSession } from "@/data/users";
+import { DashboardLayout } from "../components/common/DashboardLayout";
+import HeaderPage from "../components/common/HeaderPage";
 
 export default function ProfesorPanel() {
   return (
-    <div className="min-h-screen bg-squat-dark flex flex-col items-center justify-center gap-4 p-6 text-white">
-      <h1 className="font-jakarta text-2xl font-bold text-squat-green">Área de profesor</h1>
-      <p className="font-inter text-sm text-squat-muted text-center max-w-md">
-        Vista mock. Aquí irá la gestión de clases y alumnos.
-      </p>
-      <Link
-        to="/login"
-        onClick={() => clearMockSession()}
-        className="rounded-[6px] bg-squat-green px-6 py-3 font-jakarta font-bold text-squat-ink hover:brightness-105 transition-all"
-      >
-        Cerrar sesión
-      </Link>
-    </div>
+    <DashboardLayout headerNav="Mis Clases">
+      <HeaderPage
+        title="ÁREA DE PROFESOR"
+        subtitle="Gestión de clases y alumnos."
+      />
+      <div className="flex flex-col items-center justify-center px-7 py-16 text-center">
+        <i className="ti ti-barbell text-6xl text-gray-600 mb-4" />
+        <p className="text-sm text-gray-500 max-w-md">
+          Vista mock. Aquí irá la gestión de clases y alumnos.
+        </p>
+      </div>
+    </DashboardLayout>
   );
 }

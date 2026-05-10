@@ -1,20 +1,16 @@
-import { Link } from "react-router-dom";
-import { clearMockSession } from "@/data/users";
+import { DashboardLayout } from "../components/common/DashboardLayout";
+import HeaderPage from "../components/common/HeaderPage";
 
 export default function AlumnoPanel() {
   return (
-    <div className="min-h-screen bg-squat-dark flex flex-col items-center justify-center gap-4 p-6 text-white">
-      <h1 className="font-jakarta text-2xl font-bold text-squat-green">Área de alumno</h1>
-      <p className="font-inter text-sm text-squat-muted text-center max-w-md">
-        Vista mock. Aquí irá el portal del socio.
-      </p>
-      <Link
-        to="/login"
-        onClick={() => clearMockSession()}
-        className="rounded-[6px] bg-squat-green px-6 py-3 font-jakarta font-bold text-squat-ink hover:brightness-105 transition-all"
-      >
-        Cerrar sesión
-      </Link>
-    </div>
+    <DashboardLayout headerNav="Mi Perfil">
+      <HeaderPage title="ÁREA DE ALUMNO" subtitle="Tu portal de socio." />
+      <div className="flex flex-col items-center justify-center px-7 py-16 text-center">
+        <i className="ti ti-user-circle text-6xl text-gray-600 mb-4" />
+        <p className="text-sm text-gray-500 max-w-md">
+          Vista mock. Aquí irá el portal del socio.
+        </p>
+      </div>
+    </DashboardLayout>
   );
 }
