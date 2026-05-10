@@ -64,6 +64,12 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         to: "/admin",
       },
       {
+        id: "members",
+        label: "Gestión de socios",
+        iconClassName: "ti ti-users",
+        to: "/secretaria",
+      },
+      {
         id: "employees",
         label: "Empleados",
         iconClassName: "ti ti-users",

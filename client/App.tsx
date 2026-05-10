@@ -13,6 +13,7 @@ import Secretaria from "./pages/Secretaria";
 import AdminPanel from "./pages/AdminPanel";
 import AlumnoPanel from "./pages/AlumnoPanel";
 import ProfesorPanel from "./pages/ProfesorPanel";
+import MemberDetailPage from "./pages/MemberDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/alumno" element={<AlumnoPanel />} />
           <Route path="/profesor" element={<ProfesorPanel />} />
           <Route path="/secretaria" element={<Secretaria />} />
+          <Route path="/miembros/:id" element={<MemberDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

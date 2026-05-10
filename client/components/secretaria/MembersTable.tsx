@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { Link } from "react-router-dom";
 import { DataTable } from "../common/DataTable";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
@@ -26,9 +27,7 @@ interface MembersTableProps {
   className?: string;
 }
 
-export function MembersTable({
-  className = "",
-}: MembersTableProps) {
+export function MembersTable({ className = "" }: MembersTableProps) {
   const initialsStyles = [
     { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
     { initialsColor: "text-violet-400", initialsBackground: "bg-gray-800" },
@@ -113,9 +112,7 @@ export function MembersTable({
     };
   });
 
-  const getStatusStyles = (
-    status: Member["status"]["type"]
-  ) => {
+  const getStatusStyles = (status: Member["status"]["type"]) => {
     switch (status) {
       case "enabled":
         return {
@@ -133,8 +130,7 @@ export function MembersTable({
 
       case "inactive":
         return {
-          container:
-            "bg-stone-900 border border-gray-700",
+          container: "bg-stone-900 border border-gray-700",
           dot: "bg-gray-500",
           text: "text-gray-400",
         };
@@ -158,21 +154,19 @@ export function MembersTable({
           <div
             className={`flex justify-center items-center w-9 h-9 rounded-full shrink-0 ${member.initialsBackground}`}
           >
-            <span
-              className={`text-xs font-bold ${member.initialsColor}`}
-            >
+            <span className={`text-xs font-bold ${member.initialsColor}`}>
               {member.initials}
             </span>
           </div>
 
           <div className="flex flex-col min-w-0">
-            <h3 className="text-sm font-semibold text-white truncate">
+            <Link
+              to={`/miembros/${member.id}`}
+              className="text-sm font-semibold text-white truncate hover:text-lime-400 transition-colors"
+            >
               {member.name}
-            </h3>
-
-            <p className="text-xs text-gray-500 truncate">
-              {member.email}
-            </p>
+            </Link>
+            <p className="text-xs text-gray-500 truncate">{member.email}</p>
           </div>
         </div>
       ),
@@ -193,21 +187,15 @@ export function MembersTable({
       header: "ESTADO",
 
       render: (member: Member) => {
-        const statusStyles = getStatusStyles(
-          member.status.type
-        );
+        const statusStyles = getStatusStyles(member.status.type);
 
         return (
           <div
             className={`inline-flex gap-1.5 items-center px-2.5 py-1 rounded-3xl whitespace-nowrap ${statusStyles.container}`}
           >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${statusStyles.dot}`}
-            />
+            <div className={`w-1.5 h-1.5 rounded-full ${statusStyles.dot}`} />
 
-            <span
-              className={`text-xs font-semibold ${statusStyles.text}`}
-            >
+            <span className={`text-xs font-semibold ${statusStyles.text}`}>
               {member.status.text}
             </span>
           </div>
@@ -233,20 +221,18 @@ export function MembersTable({
   ];
 
   return (
-    <section
-      className={`px-7 pb-7 max-sm:px-4 ${className}`}
-    >
+    <section className={`px-7 pb-7 max-sm:px-4 ${className}`}>
       <div className="p-5 rounded-2xl bg-neutral-900">
-			<DataTable<Member>
-				columns={columns}
-				data={members}
-				getRowKey={(member) => member.id}
-				minWidthClass="min-w-[900px] lg:min-w-0"
-				gridTemplateClass="
+        <DataTable<Member>
+          columns={columns}
+          data={members}
+          getRowKey={(member) => member.id}
+          minWidthClass="min-w-[900px] lg:min-w-0"
+          gridTemplateClass="
 					grid-cols-[minmax(260px,_1fr)_120px_120px_140px_160px_60px]
 					lg:grid-cols-[minmax(0,_3fr)_1fr_1fr_1.2fr_1.4fr_60px]
 				"
-			/>
+        />
       </div>
     </section>
   );
