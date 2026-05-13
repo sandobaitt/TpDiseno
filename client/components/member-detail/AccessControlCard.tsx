@@ -32,7 +32,7 @@ export function AccessControlCard({
         >
           <div
             className={`bg-white rounded-full h-[18px] w-[18px] transition-transform ${
-              blocked ? "translate-x-0" : "translate-x-4"
+              blocked ? "translate-x-[-18px]" : "translate-x-0"
             }`}
           />
         </button>
