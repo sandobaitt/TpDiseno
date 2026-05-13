@@ -5,4 +5,4 @@ export * from "./employees";
 export * from "./users";
 export * from "./payments";
 export * from "./checkins";
-
+export * from "./teachers";

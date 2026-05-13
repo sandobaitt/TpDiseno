@@ -14,6 +14,7 @@ import AdminPanel from "./pages/AdminPanel";
 import AlumnoPanel from "./pages/AlumnoPanel";
 import ProfesorPanel from "./pages/ProfesorPanel";
 import MemberDetailPage from "./pages/MemberDetailPage";
+import AttendancePage from "./pages/AttendancePage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/alumno" element={<AlumnoPanel />} />
           <Route path="/profesor" element={<ProfesorPanel />} />
           <Route path="/secretaria" element={<Secretaria />} />
+          <Route path="/secretaria/asistencia" element={<AttendancePage />} />
           <Route path="/miembros/:id" element={<MemberDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

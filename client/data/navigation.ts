@@ -20,7 +20,7 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         id: "checkins",
         label: "Control de asistencia",
         iconClassName: "ti ti-user-check",
-        disabled: true,
+        to: "/secretaria/asistencia",
       },
       {
         id: "billing",
