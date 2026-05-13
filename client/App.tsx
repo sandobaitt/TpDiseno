@@ -15,6 +15,9 @@ import AlumnoPanel from "./pages/AlumnoPanel";
 import ProfesorPanel from "./pages/ProfesorPanel";
 import MemberDetailPage from "./pages/MemberDetailPage";
 import AttendancePage from "./pages/AttendancePage";
+import PaymentsPage from "./pages/PaymentsPage";
+import PaymentCheckoutPage from "./pages/PaymentCheckoutPage";
+import NovedadesPage from "./pages/NovedadesPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +36,12 @@ const App = () => (
           <Route path="/profesor" element={<ProfesorPanel />} />
           <Route path="/secretaria" element={<Secretaria />} />
           <Route path="/secretaria/asistencia" element={<AttendancePage />} />
+          <Route path="/secretaria/cobros" element={<PaymentsPage />} />
+          <Route
+            path="/secretaria/cobros/cobrar"
+            element={<PaymentCheckoutPage />}
+          />
+          <Route path="/secretaria/novedades" element={<NovedadesPage />} />
           <Route path="/miembros/:id" element={<MemberDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

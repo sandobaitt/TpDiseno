@@ -26,7 +26,7 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         id: "billing",
         label: "Cobros y facturación",
         iconClassName: "ti ti-credit-card",
-        disabled: true,
+        to: "/secretaria/cobros",
       },
       {
         id: "kiosk",
@@ -50,7 +50,7 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         id: "news",
         label: "Novedades",
         iconClassName: "ti ti-speakerphone",
-        disabled: true,
+        to: "/secretaria/novedades",
       },
     ],
   },

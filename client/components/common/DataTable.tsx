@@ -16,6 +16,7 @@ interface DataTableProps<T> {
   minWidthClass?: string;
   rowClassName?: string;
   getRowKey?: (row: T, index: number) => React.Key;
+  onRowClick?: (row: T) => void;
 }
 
 export function DataTable<T>({
@@ -25,6 +26,7 @@ export function DataTable<T>({
   minWidthClass = "min-w-0",
   rowClassName = "",
   getRowKey,
+  onRowClick,
 }: DataTableProps<T>) {
   const template = `grid ${gridTemplateClass}`;
 
@@ -38,8 +40,9 @@ export function DataTable<T>({
           {columns.map((column) => (
             <div
               key={column.key}
-              className={`min-w-0 text-xs font-semibold tracking-widest text-gray-500 uppercase ${column.headerClassName ?? ""
-                }`}
+              className={`min-w-0 text-xs font-semibold tracking-widest text-gray-500 uppercase ${
+                column.headerClassName ?? ""
+              }`}
             >
               {column.header}
             </div>
@@ -54,13 +57,15 @@ export function DataTable<T>({
             return (
               <div
                 key={key}
-                className={`${template} gap-4 items-center py-3.5 border-b border-stone-900 ${rowClassName}`}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={`${template} gap-4 items-center py-3.5 border-b border-stone-900 ${rowClassName} ${onRowClick ? "cursor-pointer" : ""}`}
               >
                 {columns.map((column) => (
                   <div
                     key={column.key}
-                    className={`min-w-0 text-sm text-gray-400 ${column.cellClassName ?? ""
-                      }`}
+                    className={`min-w-0 text-sm text-gray-400 ${
+                      column.cellClassName ?? ""
+                    }`}
                   >
                     {column.render
                       ? column.render(row)
