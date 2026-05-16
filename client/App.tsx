@@ -23,6 +23,7 @@ import AlumnoAjustesPage from "./pages/AlumnoAjustesPage";
 import AlumnoPagosPage from "./pages/AlumnoPagosPage";
 import ProfesorAsistenciaPage from "./pages/ProfesorAsistenciaPage";
 import ProfesorReemplazosPage from "./pages/ProfesorReemplazosPage";
+import AdminAsistenciaPage from "./pages/AdminAsistenciaPage";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,9 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin/personal" element={<ProfesorReemplazosPage />} />
+          <Route path="/admin/asistencia" element={<AdminAsistenciaPage />} />
+          <Route path="/admin/novedades" element={<NovedadesPage />} />
           <Route path="/alumno" element={<AlumnoPanel />} />
           <Route path="/profesor" element={<ProfesorPanel />} />
           <Route path="/secretaria" element={<Secretaria />} />
