@@ -122,7 +122,10 @@ export function findMockUserByEmailOrDni(emailOrDni: string) {
 
 export const MOCK_SESSION_STORAGE_KEY = "squatgym_mock_session";
 
-export type MockSessionPayload = Pick<AppUser, "id" | "fullName" | "email" | "role">;
+export type MockSessionPayload = Pick<
+  AppUser,
+  "id" | "fullName" | "email" | "role"
+>;
 
 export function saveMockSession(user: AppUser) {
   const payload: MockSessionPayload = {
@@ -155,9 +158,8 @@ export function getPostLoginPath(role: AppUserRole): string {
     case "alumno":
       return "/alumno";
     case "profesor":
-      return "/profesor";
+      return "/profesor/asistencia";
     case "secretario":
       return "/secretaria";
   }
 }
-
