@@ -1,0 +1,50 @@
+import type { GymClass } from "@/data/schedule";
+
+interface ClassCardProps {
+  classItem: GymClass;
+}
+
+export function ClassCard({ classItem }: ClassCardProps) {
+  const c = classItem;
+  return (
+    <div className="bg-neutral-900 rounded-xl p-4 flex flex-col gap-2 border border-zinc-800/50 hover:border-zinc-700/50 transition-colors">
+      <div className="flex items-center justify-between">
+        <span className="text-white text-sm font-bold">{c.time}</span>
+        <span className="text-lime-400 text-[10px] font-bold tracking-wider">
+          {c.durationMin} MIN
+        </span>
+      </div>
+
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col">
+          {c.isPro && (
+            <span className="text-[10px] font-bold tracking-wider text-lime-400 bg-lime-400/10 px-2 py-0.5 rounded-md w-fit mb-1">
+              PRO
+            </span>
+          )}
+          <h4 className="text-white text-base font-extrabold leading-tight">
+            {c.title}
+          </h4>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 text-gray-500 text-xs">
+        <i className="ti ti-user-circle text-sm" />
+        {c.coach}
+      </div>
+
+      <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50">
+        {c.isFull ? (
+          <span className="text-red-400 text-[10px] font-bold tracking-wider flex items-center gap-1">
+            <i className="ti ti-alert-circle text-xs" />
+            Lleno
+          </span>
+        ) : (
+          <span className="text-gray-500 text-[10px] font-medium">
+            {c.booked}/{c.capacity} Lugares
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -18,6 +18,9 @@ import AttendancePage from "./pages/AttendancePage";
 import PaymentsPage from "./pages/PaymentsPage";
 import PaymentCheckoutPage from "./pages/PaymentCheckoutPage";
 import NovedadesPage from "./pages/NovedadesPage";
+import AlumnoCronogramaPage from "./pages/AlumnoCronogramaPage";
+import AlumnoAjustesPage from "./pages/AlumnoAjustesPage";
+import AlumnoPagosPage from "./pages/AlumnoPagosPage";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +45,9 @@ const App = () => (
             element={<PaymentCheckoutPage />}
           />
           <Route path="/secretaria/novedades" element={<NovedadesPage />} />
+          <Route path="/alumno/cronograma" element={<AlumnoCronogramaPage />} />
+          <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />
+          <Route path="/alumno/pagos" element={<AlumnoPagosPage />} />
           <Route path="/miembros/:id" element={<MemberDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
