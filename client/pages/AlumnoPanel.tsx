@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { DataTable } from "@/components/common/DataTable";
+import { Pagination } from "@/components/common/Pagination";
 import { attendanceMock, type AttendanceRecord } from "@/data/attendance";
 
 function formatDate(iso: string) {
@@ -18,7 +19,14 @@ function formatDate(iso: string) {
   return `${dateStr}, ${timeStr}`;
 }
 
+const ITEMS_PER_PAGE = 4;
+
 export default function AlumnoPanel() {
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const totalPages = Math.ceil(attendanceMock.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = attendanceMock.slice(start, start + ITEMS_PER_PAGE);
+
   const columns = [
     {
       key: "date",
@@ -92,17 +100,18 @@ export default function AlumnoPanel() {
 
             <DataTable
               columns={columns}
-              data={attendanceMock}
+              data={paginatedData}
               getRowKey={(row) => row.id}
               minWidthClass="min-w-[600px]"
               gridTemplateClass="grid-cols-[1fr_1fr_1fr_1fr]"
               rowClassName="hover:bg-neutral-800/30 transition-colors"
             />
 
-            <button className="flex items-center justify-center gap-1 text-lime-400 text-xs font-bold tracking-widest hover:brightness-110 transition-all cursor-pointer">
-              VER MÁS HISTORIAL
-              <i className="ti ti-chevron-down text-sm" />
-            </button>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
           {/* ── RIGHT: Cards ── */}

@@ -4,6 +4,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../common/DataTable";
+import { Pagination } from "../common/Pagination";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 
@@ -27,7 +28,10 @@ interface MembersTableProps {
   className?: string;
 }
 
+const ITEMS_PER_PAGE = 3;
+
 export function MembersTable({ className = "" }: MembersTableProps) {
+  const [currentPage, setCurrentPage] = React.useState(1);
   const initialsStyles = [
     { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
     { initialsColor: "text-violet-400", initialsBackground: "bg-gray-800" },
@@ -91,7 +95,7 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     }
   };
 
-  const members: Member[] = clientsMock.map((client, index) => {
+  const allMembers: Member[] = clientsMock.map((client, index) => {
     const style = initialsStyles[index % initialsStyles.length];
     const planName =
       plansMock.find((p) => p.id === client.membership?.planId)?.name ?? "-";
@@ -208,24 +212,18 @@ export function MembersTable({ className = "" }: MembersTableProps) {
       header: "ÚLTIMO ACCESO",
       cellClassName: "truncate",
     },
-
-    {
-      key: "actions",
-      header: "ACCIONES",
-      cellClassName: "flex justify-center",
-
-      render: () => (
-        <button className="ti ti-dots-vertical text-lg text-gray-500 hover:text-gray-300 cursor-pointer" />
-      ),
-    },
   ];
+
+  const totalPages = Math.ceil(allMembers.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedMembers = allMembers.slice(start, start + ITEMS_PER_PAGE);
 
   return (
     <section className={`px-7 pb-7 max-sm:px-4 ${className}`}>
       <div className="p-5 rounded-2xl bg-neutral-900">
         <DataTable<Member>
           columns={columns}
-          data={members}
+          data={paginatedMembers}
           getRowKey={(member) => member.id}
           minWidthClass="min-w-[900px] lg:min-w-0"
           gridTemplateClass="
@@ -234,6 +232,12 @@ export function MembersTable({ className = "" }: MembersTableProps) {
 				"
         />
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
+import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
 import { getMockSession } from "@/data/users";
@@ -187,10 +188,13 @@ function ReceiptPopup({ payment, planName, onClose }: ReceiptPopupProps) {
   );
 }
 
+const ITEMS_PER_PAGE = 3;
+
 export default function AlumnoPagosPage() {
   const [selectedMonthKey, setSelectedMonthKey] = React.useState<string | null>(
     null,
   );
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   const client = React.useMemo(() => getClientFromSession(), []);
   const plan = React.useMemo(
@@ -206,11 +210,13 @@ export default function AlumnoPagosPage() {
   }, [client, plan]);
 
   const selectedMonth = months.find((m) => m.key === selectedMonthKey);
+  const totalPages = Math.ceil(months.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedMonths = months.slice(start, start + ITEMS_PER_PAGE);
 
   return (
     <DashboardLayout headerNav=" ">
       <div className="px-7 pb-7 max-sm:px-4">
-
         <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
           HISTORIAL DE PAGOS
         </h1>
@@ -220,7 +226,7 @@ export default function AlumnoPagosPage() {
         </p>
 
         <div className="mt-8 flex flex-col gap-3 max-w-2xl">
-          {months.map((m) => {
+          {paginatedMonths.map((m) => {
             const isPaid = m.status === "paid";
             const isUnpaid = m.status === "unpaid";
 
@@ -277,6 +283,12 @@ export default function AlumnoPagosPage() {
             );
           })}
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {/* Dialog: Paid → receipt */}

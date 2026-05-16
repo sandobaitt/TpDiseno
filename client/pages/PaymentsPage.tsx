@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { DataTable } from "@/components/common/DataTable";
+import { Pagination } from "@/components/common/Pagination";
 import HeaderPage from "@/components/common/HeaderPage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
@@ -61,11 +62,19 @@ const allRows: RowData[] = clientsMock.map((c, i) => {
 const debtors = allRows.filter((r) => r.status === "debtor");
 const paid = allRows.filter((r) => r.status === "paid");
 
+const ITEMS_PER_PAGE = 3;
+
 export default function PaymentsPage() {
   const [activeTab, setActiveTab] = React.useState<TabId>("debtors");
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(
     null,
   );
+
+  const activeData = activeTab === "debtors" ? debtors : paid;
+  const totalPages = Math.ceil(activeData.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = activeData.slice(start, start + ITEMS_PER_PAGE);
 
   const columns = [
     {
@@ -139,7 +148,10 @@ export default function PaymentsPage() {
       <section className="px-7 pb-7 max-sm:px-4">
         <div className="flex gap-2 mb-6">
           <button
-            onClick={() => setActiveTab("debtors")}
+            onClick={() => {
+              setActiveTab("debtors");
+              setCurrentPage(1);
+            }}
             className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
               activeTab === "debtors"
                 ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
@@ -150,7 +162,10 @@ export default function PaymentsPage() {
             Deudores
           </button>
           <button
-            onClick={() => setActiveTab("paid")}
+            onClick={() => {
+              setActiveTab("paid");
+              setCurrentPage(1);
+            }}
             className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
               activeTab === "paid"
                 ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
@@ -165,13 +180,19 @@ export default function PaymentsPage() {
         <div className="p-5 rounded-2xl bg-neutral-900">
           <DataTable
             columns={columns}
-            data={activeTab === "debtors" ? debtors : paid}
+            data={paginatedData}
             getRowKey={(row) => row.id}
             minWidthClass="min-w-[700px] lg:min-w-0"
             gridTemplateClass="grid-cols-[minmax(220px,_1fr)_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr]"
             onRowClick={(row) => setSelectedClientId(row.id)}
           />
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
       <Dialog

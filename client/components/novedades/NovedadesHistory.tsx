@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Pagination } from "@/components/common/Pagination";
 import type { Novedad, NovedadType, NovedadStatus } from "@/data/novedades";
 
 type FilterKey = "all" | "staff" | "classes";
@@ -85,8 +86,11 @@ function formatTimestamp(iso: string) {
   );
 }
 
+const ITEMS_PER_PAGE = 4;
+
 export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
   const [activeFilter, setActiveFilter] = React.useState<FilterKey>("all");
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   const filtered = novedades.filter((n) => {
     if (activeFilter === "all") return true;
@@ -94,6 +98,10 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
     if (activeFilter === "classes") return n.entityType === "clase";
     return true;
   });
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
 
   return (
     <section className="flex-1 min-w-0">
@@ -106,7 +114,10 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
           {filterOptions.map((opt) => (
             <button
               key={opt.key}
-              onClick={() => setActiveFilter(opt.key)}
+              onClick={() => {
+                setActiveFilter(opt.key);
+                setCurrentPage(1);
+              }}
               className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${
                 activeFilter === opt.key
                   ? "bg-neutral-800 text-lime-400 border border-lime-400/40 shadow-[0_0_12px_rgba(163,230,53,0.12)]"
@@ -119,7 +130,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
         </div>
 
         <div className="flex flex-col gap-4">
-          {filtered.map((nov) => {
+          {paginated.map((nov) => {
             const cfg = typeConfig[nov.type];
             const badge = typeBadgeBg[nov.type];
             const st = statusConfig[nov.status];
@@ -167,10 +178,11 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
           })}
         </div>
 
-        <button className="flex items-center justify-center gap-2 py-3 text-lime-400/70 hover:text-lime-400 text-sm font-semibold tracking-wider transition-colors cursor-pointer">
-          CARGAR MÁS REGISTROS
-          <i className="ti ti-chevron-down text-base" />
-        </button>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </section>
   );

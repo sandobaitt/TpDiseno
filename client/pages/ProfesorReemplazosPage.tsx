@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
+import { Pagination } from "@/components/common/Pagination";
 import { replacementsMock, type ReplacementRequest } from "@/data/replacements";
 
 type TabId = "solicitudes" | "novedades";
@@ -9,9 +10,16 @@ const categoryBadge: Record<string, string> = {
   HALTEROFILIA: "bg-zinc-700/60 text-white",
 };
 
+const ITEMS_PER_PAGE = 2;
+
 export default function ProfesorReemplazosPage() {
   const [activeTab, setActiveTab] = React.useState<TabId>("solicitudes");
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [requests, setRequests] = React.useState(replacementsMock);
+
+  const totalPages = Math.ceil(requests.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedRequests = requests.slice(start, start + ITEMS_PER_PAGE);
 
   const handleConfirm = (id: string) => {
     setRequests((prev) => prev.filter((r) => r.id !== id));
@@ -22,9 +30,8 @@ export default function ProfesorReemplazosPage() {
   };
 
   return (
-    <DashboardLayout headerNav="Reemplazos y novedades">
+    <DashboardLayout headerNav=" ">
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-        
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <h1 className="text-white text-3xl md:text-4xl font-extrabold">
@@ -61,21 +68,29 @@ export default function ProfesorReemplazosPage() {
         {/* Content */}
         {activeTab === "solicitudes" ? (
           <div className="flex flex-col gap-4">
-            {requests.map((req) => (
-              <RequestCard
-                key={req.id}
-                request={req}
-                onConfirm={handleConfirm}
-                onReject={handleReject}
-              />
-            ))}
-            {requests.length === 0 && (
+            {requests.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-gray-600 gap-3">
                 <i className="ti ti-circle-check text-4xl text-lime-400" />
                 <p className="text-sm font-medium">
                   No hay solicitudes pendientes
                 </p>
               </div>
+            ) : (
+              <>
+                {paginatedRequests.map((req) => (
+                  <RequestCard
+                    key={req.id}
+                    request={req}
+                    onConfirm={handleConfirm}
+                    onReject={handleReject}
+                  />
+                ))}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
             )}
           </div>
         ) : (

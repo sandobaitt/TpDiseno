@@ -71,7 +71,7 @@ export default function ProfesorAsistenciaPage() {
   }
 
   return (
-    <DashboardLayout headerNav="">
+    <DashboardLayout headerNav=" ">
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
