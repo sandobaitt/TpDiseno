@@ -24,18 +24,13 @@ export default function ProfesorReemplazosPage() {
   return (
     <DashboardLayout headerNav="Reemplazos y novedades">
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-        {/* Header */}
-        <div>
-          <span className="text-lime-400 text-xs font-bold tracking-widest">
-            REEMPLAZOS Y NOVEDADES
-          </span>
-          <div className="flex items-center gap-1.5 text-xs mt-1">
-            <i className="ti ti-arrow-left text-gray-500 text-base" />
-            <span className="text-gray-500">Home</span>
-            <span className="text-gray-600">/</span>
-            <span className="text-lime-400 font-bold tracking-wider">
-              Reemplazos y Novedades
-            </span>
+        
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <h1 className="text-white text-3xl md:text-4xl font-extrabold">
+              REEMPLAZOS Y NOVEDADES
+            </h1>
+            <i className="ti ti-circle-check text-lime-400 text-2xl" />
           </div>
         </div>
 

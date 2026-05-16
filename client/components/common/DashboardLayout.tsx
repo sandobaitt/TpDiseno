@@ -30,7 +30,7 @@ export function DashboardLayout({
         iconClassName: "ti ti-logout",
         onClick: () => {
           clearMockSession();
-          navigate("/login", { replace: true });
+          navigate("/", { replace: true });
         },
       },
     ],

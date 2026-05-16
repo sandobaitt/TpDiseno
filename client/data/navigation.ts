@@ -130,7 +130,7 @@ const roleNavigation: Record<string, RoleNavConfig> = {
       {
         id: "replacements",
         label: "Reemplazos y novedades",
-        iconClassName: "ti ti-swap",
+        iconClassName: "ti ti-arrows-exchange",
         to: "/profesor/reemplazos",
       },
       {

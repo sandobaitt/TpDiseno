@@ -1,8 +1,14 @@
 import * as React from "react";
+import { toast } from "sonner";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
+import { Pagination } from "@/components/common/Pagination";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { classStudentsMock, type ClassStudent } from "@/data/classStudents";
+import { bitacorasMock, type Bitacora } from "@/data/bitacoras";
 
 type AttendanceStatus = "present" | "absent" | null;
+
+const ITEMS_PER_PAGE = 6;
 
 function getInitials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -10,12 +16,24 @@ function getInitials(name: string) {
 }
 
 export default function ProfesorAsistenciaPage() {
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [attendance, setAttendance] = React.useState<
     Record<string, AttendanceStatus>
   >({});
-  const [logText, setLogText] = React.useState("");
-  const [selectedStudent, setSelectedStudent] = React.useState("");
-  const [observations, setObservations] = React.useState("");
+  const [bitacoras, setBitacoras] = React.useState<Bitacora[]>(bitacorasMock);
+  const [selectedBitacora, setSelectedBitacora] =
+    React.useState<Bitacora | null>(null);
+  const [showForm, setShowForm] = React.useState(false);
+  const [formTitle, setFormTitle] = React.useState("");
+  const [formContent, setFormContent] = React.useState("");
+  const [formStudent, setFormStudent] = React.useState("");
+
+  const totalPages = Math.ceil(classStudentsMock.length / ITEMS_PER_PAGE);
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedStudents = classStudentsMock.slice(
+    start,
+    start + ITEMS_PER_PAGE,
+  );
 
   const setStatus = (id: string, status: AttendanceStatus) => {
     setAttendance((prev) => ({ ...prev, [id]: status }));
@@ -27,22 +45,34 @@ export default function ProfesorAsistenciaPage() {
     setAttendance(all);
   };
 
-  const allMarked = classStudentsMock.every((s) => attendance[s.id] != null);
+  const handleSave = () => {
+    if (!formTitle.trim() || !formContent.trim()) return;
+    const newBitacora: Bitacora = {
+      id: `bit_${Date.now()}`,
+      title: formTitle.trim(),
+      content: formContent.trim(),
+      studentName: formStudent || undefined,
+      createdAt: new Date().toISOString(),
+    };
+    setBitacoras((prev) => [newBitacora, ...prev]);
+    setShowForm(false);
+    setFormTitle("");
+    setFormContent("");
+    setFormStudent("");
+    toast.success("Bitácora agregada");
+  };
+
+  function formatDate(iso: string) {
+    const d = new Date(iso);
+    return (
+      d.toLocaleDateString("es-AR", { day: "numeric", month: "short" }) +
+      `, ${d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })}`
+    );
+  }
 
   return (
-    <DashboardLayout headerNav="Asistencia y alumnos">
+    <DashboardLayout headerNav="">
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs">
-          <i className="ti ti-arrow-left text-gray-500 text-base" />
-          <span className="text-gray-500">Home</span>
-          <span className="text-gray-600">/</span>
-          <span className="text-lime-400 font-bold tracking-wider">
-            Asistencia de Alumnos
-          </span>
-        </div>
-
-        {/* Class Header */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <h1 className="text-white text-3xl md:text-4xl font-extrabold">
@@ -64,7 +94,6 @@ export default function ProfesorAsistenciaPage() {
 
         <div className="h-px bg-zinc-800/60" />
 
-        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6 items-start">
           {/* ── LEFT: Student List ── */}
           <div className="flex flex-col gap-4">
@@ -72,18 +101,16 @@ export default function ProfesorAsistenciaPage() {
               <h2 className="text-white text-sm font-extrabold tracking-wider">
                 LISTA DE ALUMNOS
               </h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => markAll("present")}
-                  className="px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-[10px] font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
-                >
-                  Marcar Todos
-                </button>
-              </div>
+              <button
+                onClick={() => markAll("present")}
+                className="px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-[10px] font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                Marcar Todos
+              </button>
             </div>
 
             <div className="flex flex-col gap-3">
-              {classStudentsMock.map((student) => {
+              {paginatedStudents.map((student) => {
                 const status = attendance[student.id] ?? null;
                 return (
                   <StudentCard
@@ -96,86 +123,158 @@ export default function ProfesorAsistenciaPage() {
               })}
             </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between pt-2">
-              <button className="text-gray-500 text-xs font-semibold hover:text-gray-300 transition-colors cursor-pointer">
-                ← Anterior
-              </button>
-              <div className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-lime-400/10 text-lime-400 text-xs font-bold flex items-center justify-center">
-                  1
-                </span>
-                <span className="w-7 h-7 rounded-lg text-gray-600 text-xs font-medium flex items-center justify-center hover:text-gray-400 transition-colors cursor-pointer">
-                  2
-                </span>
-                <span className="w-7 h-7 rounded-lg text-gray-600 text-xs font-medium flex items-center justify-center hover:text-gray-400 transition-colors cursor-pointer">
-                  3
-                </span>
-              </div>
-              <button className="text-gray-500 text-xs font-semibold hover:text-gray-300 transition-colors cursor-pointer">
-                Siguiente →
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
 
-          {/* ── RIGHT: Bitácora ── */}
-          <div className="bg-black/60 rounded-2xl p-6 flex flex-col gap-5">
+          {/* ── RIGHT: Bitácora List ── */}
+          <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <i className="ti ti-notes text-lg text-lime-400" />
+                <div>
+                  <h2 className="text-white text-sm font-extrabold">
+                    Bitácora
+                  </h2>
+                  <p className="text-gray-600 text-[10px]">Notas de la Clase</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowForm(true)}
+                className="w-7 h-7 rounded-lg bg-lime-400/10 flex items-center justify-center hover:bg-lime-400/20 transition-colors cursor-pointer"
+              >
+                <i className="ti ti-plus text-sm text-lime-400" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
+              {bitacoras.map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => setSelectedBitacora(b)}
+                  className="w-full text-left bg-neutral-900/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-neutral-900 transition-colors cursor-pointer group border border-transparent hover:border-zinc-800/30"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-white text-xs font-bold leading-tight line-clamp-1">
+                      {b.title}
+                    </span>
+                    <i className="ti ti-chevron-right text-gray-600 text-[10px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">
+                    {b.content}
+                  </p>
+                  <span className="text-gray-600 text-[9px]">
+                    {formatDate(b.createdAt)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dialog: View Bitácora */}
+      <Dialog
+        open={!!selectedBitacora}
+        onOpenChange={(o) => !o && setSelectedBitacora(null)}
+      >
+        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+          {selectedBitacora && (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center">
+                  <i className="ti ti-notes text-lg text-lime-400" />
+                </div>
+                <div>
+                  <h2 className="text-white text-base font-extrabold">
+                    {selectedBitacora.title}
+                  </h2>
+                  <p className="text-gray-600 text-[10px]">
+                    {formatDate(selectedBitacora.createdAt)}
+                  </p>
+                </div>
+              </div>
+              {selectedBitacora.studentName && (
+                <div className="flex items-center gap-2 text-gray-400 text-xs">
+                  <i className="ti ti-user-circle text-sm" />
+                  {selectedBitacora.studentName}
+                </div>
+              )}
+              <p className="text-gray-300 text-sm leading-relaxed">
+                {selectedBitacora.content}
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog: New Bitácora */}
+      <Dialog open={showForm} onOpenChange={(o) => !o && setShowForm(false)}>
+        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+          <div className="flex flex-col gap-5">
             <div className="flex items-center gap-2">
               <i className="ti ti-notes text-lg text-lime-400" />
-              <div>
-                <h2 className="text-white text-sm font-extrabold">Bitácora</h2>
-                <p className="text-gray-600 text-[10px]">Notas de la Clase</p>
-              </div>
+              <h2 className="text-white text-sm font-extrabold">
+                Nueva Bitácora
+              </h2>
             </div>
-
-            <textarea
-              value={logText}
-              onChange={(e) => setLogText(e.target.value)}
-              placeholder="Ej: WOD enfocado en movilidad de hombros..."
-              rows={5}
-              className="w-full bg-neutral-900 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
-            />
 
             <div className="flex flex-col gap-2">
               <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                SELECCIONAR ALUMNO
+                TÍTULO
               </label>
-              <div className="relative">
-                <select
-                  value={selectedStudent}
-                  onChange={(e) => setSelectedStudent(e.target.value)}
-                  className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                >
-                  <option value="">Seleccionar alumno...</option>
-                  {classStudentsMock.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-                <i className="ti ti-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none text-sm" />
-              </div>
+              <input
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                placeholder="Título de la bitácora..."
+                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
+              />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                OBSERVACIONES DE ALUMNO
+                ALUMNO (OPCIONAL)
+              </label>
+              <select
+                value={formStudent}
+                onChange={(e) => setFormStudent(e.target.value)}
+                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
+              >
+                <option value="">Seleccionar alumno...</option>
+                {classStudentsMock.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+                CONTENIDO
               </label>
               <textarea
-                value={observations}
-                onChange={(e) => setObservations(e.target.value)}
-                placeholder="Anotaciones individuales..."
-                rows={3}
+                value={formContent}
+                onChange={(e) => setFormContent(e.target.value)}
+                placeholder="Describí la novedad o anotación..."
+                rows={5}
                 className="w-full bg-neutral-900 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
 
-            <button className="w-full py-3 rounded-xl border border-lime-400/30 text-lime-400 text-xs font-bold hover:bg-lime-400/5 hover:shadow-[0_0_16px_rgba(163,230,53,0.1)] transition-all cursor-pointer">
-              Guardar Notas
+            <button
+              onClick={handleSave}
+              disabled={!formTitle.trim() || !formContent.trim()}
+              className="w-full py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              GUARDAR BITÁCORA
             </button>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
@@ -222,7 +321,6 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
           </p>
         </div>
       </div>
-
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => onSetStatus("absent")}
