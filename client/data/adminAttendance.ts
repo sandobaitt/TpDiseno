@@ -151,6 +151,14 @@ export const blocksMock: TimeBlock[] = [
     type: "Musculación",
   },
   {
+    id: "b13b",
+    day: 0,
+    start: "14:00",
+    end: "16:00",
+    trainer: "L. Ríos",
+    type: "Funcional",
+  },
+  {
     id: "b14",
     day: 1,
     start: "16:00",

@@ -26,6 +26,7 @@ import AlumnoPagosPage from "./pages/AlumnoPagosPage";
 import ProfesorAsistenciaPage from "./pages/ProfesorAsistenciaPage";
 import ProfesorReemplazosPage from "./pages/ProfesorReemplazosPage";
 import AdminAsistenciaPage from "./pages/AdminAsistenciaPage";
+import AdminPersonalPage from "./pages/AdminPersonalPage";
 
 const queryClient = new QueryClient();
 
@@ -52,7 +53,7 @@ const App = () => (
             path="/admin/personal"
             element={
               <RequireAuth>
-                <ProfesorReemplazosPage />
+                <AdminPersonalPage />
               </RequireAuth>
             }
           />

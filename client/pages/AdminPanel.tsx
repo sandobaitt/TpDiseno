@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { metricsMock, newsMock } from "@/data/dashboard";
+import fotoAdmin from "@/assets/foto-admin.jpeg";
 
 export default function AdminPanel() {
   return (
@@ -7,15 +8,11 @@ export default function AdminPanel() {
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         {/* Hero Card */}
         <div className="bg-[#171717] rounded-2xl flex flex-col md:flex-row overflow-hidden">
-          <div className="w-full md:w-[30%] min-h-[200px] bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center relative">
-            <div
-              className="absolute inset-0 opacity-20"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 50%, rgba(163,230,53,0.15) 0%, transparent 60%)",
-              }}
-            />
-            <i className="ti ti-building-skyscraper text-6xl text-lime-400/30" />
+          <div
+            className="w-full md:w-[30%] min-h-[200px] flex items-center justify-center relative bg-cover bg-center"
+            style={{ backgroundImage: `url(${fotoAdmin})` }}
+          >
+            <div className="absolute inset-0 bg-black/40" />
           </div>
           <div className="flex-1 p-6 md:p-8 flex flex-col gap-4">
             <h1 className="text-white text-3xl md:text-4xl font-extrabold">

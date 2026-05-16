@@ -91,7 +91,7 @@ export function NovedadesSidebar() {
 
         <button className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-lime-400 text-black font-extrabold text-sm tracking-wider hover:brightness-110 active:brightness-95 transition-all shadow-[0_0_20px_rgba(163,230,53,0.25)] cursor-pointer">
           <i className="ti ti-bell-ringing text-base" />
-          REGISTRAR Y NOTIFICAR ADMIN
+          REGISTRAR Y NOTIFICAR
         </button>
       </div>
     </aside>
