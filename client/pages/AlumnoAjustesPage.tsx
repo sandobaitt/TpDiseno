@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 
 interface ToggleProps {
   checked: boolean;
@@ -30,8 +29,7 @@ export default function AlumnoAjustesPage() {
   const [email, setEmail] = React.useState(false);
 
   return (
-    <DashboardLayout headerNav=" ">
-      <div className="px-7 pb-7 max-sm:px-4">
+    <div className="px-7 pb-7 max-sm:px-4">
 
         <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
           AJUSTES Y ALERTAS
@@ -256,6 +254,5 @@ export default function AlumnoAjustesPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 }

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
@@ -215,7 +214,7 @@ export default function AlumnoPagosPage() {
   const paginatedMonths = months.slice(start, start + ITEMS_PER_PAGE);
 
   return (
-    <DashboardLayout headerNav=" ">
+    <>
       <div className="px-7 pb-7 max-sm:px-4">
         <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
           HISTORIAL DE PAGOS
@@ -225,7 +224,7 @@ export default function AlumnoPagosPage() {
           pendientes.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3 max-w-2xl">
+        <div className="mt-8 flex flex-col gap-3">
           {paginatedMonths.map((m) => {
             const isPaid = m.status === "paid";
             const isUnpaid = m.status === "unpaid";
@@ -318,6 +317,6 @@ export default function AlumnoPagosPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }

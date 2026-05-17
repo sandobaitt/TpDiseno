@@ -1,6 +1,5 @@
 import * as React from "react";
 import { toast } from "sonner";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { classStudentsMock, type ClassStudent } from "@/data/classStudents";
@@ -17,6 +16,7 @@ function getInitials(name: string) {
 
 export default function ProfesorAsistenciaPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [search, setSearch] = React.useState("");
   const [attendance, setAttendance] = React.useState<
     Record<string, AttendanceStatus>
   >({});
@@ -28,12 +28,16 @@ export default function ProfesorAsistenciaPage() {
   const [formContent, setFormContent] = React.useState("");
   const [formStudent, setFormStudent] = React.useState("");
 
-  const totalPages = Math.ceil(classStudentsMock.length / ITEMS_PER_PAGE);
+  const filteredStudents = React.useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return q ? classStudentsMock.filter((s) => s.name.toLowerCase().includes(q)) : classStudentsMock;
+  }, [search]);
+
+  React.useEffect(() => { setCurrentPage(1); }, [search]);
+
+  const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedStudents = classStudentsMock.slice(
-    start,
-    start + ITEMS_PER_PAGE,
-  );
+  const paginatedStudents = filteredStudents.slice(start, start + ITEMS_PER_PAGE);
 
   const setStatus = (id: string, status: AttendanceStatus) => {
     setAttendance((prev) => ({ ...prev, [id]: status }));
@@ -71,7 +75,7 @@ export default function ProfesorAsistenciaPage() {
   }
 
   return (
-    <DashboardLayout headerNav=" ">
+    <>
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
@@ -95,11 +99,14 @@ export default function ProfesorAsistenciaPage() {
         <div className="h-px bg-zinc-800/60" />
 
         <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6 items-start">
-          {/* ── LEFT: Student List ── */}
+          {/* LEFT: Student List */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-white text-sm font-extrabold tracking-wider">
                 LISTA DE ALUMNOS
+                <span className="ml-2 text-[10px] font-bold text-gray-600">
+                  {filteredStudents.length}/{classStudentsMock.length}
+                </span>
               </h2>
               <button
                 onClick={() => markAll("present")}
@@ -108,6 +115,31 @@ export default function ProfesorAsistenciaPage() {
                 Marcar Todos
               </button>
             </div>
+
+            <div className="relative">
+              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar alumno..."
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-black/60 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+                >
+                  <i className="ti ti-x text-xs" />
+                </button>
+              )}
+            </div>
+
+            {filteredStudents.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 gap-2">
+                <i className="ti ti-search-off text-3xl text-gray-700" />
+                <p className="text-sm text-gray-600 font-medium">Sin resultados para "{search}"</p>
+              </div>
+            )}
 
             <div className="flex flex-col gap-3">
               {paginatedStudents.map((student) => {
@@ -130,7 +162,7 @@ export default function ProfesorAsistenciaPage() {
             />
           </div>
 
-          {/* ── RIGHT: Bitácora List ── */}
+          {/* RIGHT: Bitácora List */}
           <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-4 shadow-card glass-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -176,7 +208,7 @@ export default function ProfesorAsistenciaPage() {
         </div>
       </div>
 
-      {/* Dialog: View Bitácora */}
+      {/* Dialog: Ver Bitácora */}
       <Dialog
         open={!!selectedBitacora}
         onOpenChange={(o) => !o && setSelectedBitacora(null)}
@@ -211,7 +243,7 @@ export default function ProfesorAsistenciaPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: New Bitácora */}
+      {/* Dialog: Nueva Bitácora */}
       <Dialog open={showForm} onOpenChange={(o) => !o && setShowForm(false)}>
         <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
           <div className="flex flex-col gap-5">
@@ -275,7 +307,7 @@ export default function ProfesorAsistenciaPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }
 
@@ -317,7 +349,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
             {student.name}
           </p>
           <p className="text-gray-500 text-[10px] truncate">
-            {student.plan} • {student.weekSession}
+            {student.plan} · {student.weekSession}
           </p>
         </div>
       </div>

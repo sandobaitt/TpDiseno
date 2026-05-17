@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { DayColumn } from "@/components/cronograma/DayColumn";
 import { weekMock } from "@/data/schedule";
 
@@ -14,8 +13,7 @@ export default function AlumnoCronogramaPage() {
   };
 
   return (
-    <DashboardLayout headerNav=" ">
-      <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
+    <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
@@ -45,6 +43,5 @@ export default function AlumnoCronogramaPage() {
           ))}
         </div>
       </div>
-    </DashboardLayout>
   );
 }

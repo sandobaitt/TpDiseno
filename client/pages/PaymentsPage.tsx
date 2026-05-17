@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import HeaderPage from "@/components/common/HeaderPage";
@@ -153,7 +152,7 @@ export default function PaymentsPage() {
   ];
 
   return (
-    <DashboardLayout headerNav="Cobros y Facturación">
+    <>
       <HeaderPage
         title="COBROS Y FACTURACIÓN"
         subtitle="Control de pagos y cuotas mensuales."
@@ -279,6 +278,6 @@ export default function PaymentsPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }

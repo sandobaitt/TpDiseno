@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -232,7 +231,7 @@ export default function AdminPersonalPage() {
   }
 
   return (
-    <DashboardLayout headerNav="Gestión de Personal">
+    <>
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex flex-col gap-1">
           <h1 className="text-white text-3xl md:text-4xl font-extrabold">
@@ -837,7 +836,7 @@ export default function AdminPersonalPage() {
           )}
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }
 

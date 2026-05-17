@@ -1,9 +1,8 @@
-import { DashboardLayout } from "../components/common/DashboardLayout";
 import HeaderPage from "../components/common/HeaderPage";
 
 export default function ProfesorPanel() {
   return (
-    <DashboardLayout headerNav="Mis Clases">
+    <>
       <HeaderPage
         title="ÁREA DE PROFESOR"
         subtitle="Gestión de clases y alumnos."
@@ -14,6 +13,6 @@ export default function ProfesorPanel() {
           Vista mock. Aquí irá la gestión de clases y alumnos.
         </p>
       </div>
-    </DashboardLayout>
+    </>
   );
 }

@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 import { paymentsMock } from "@/data/payments";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { MemberDetail } from "@/components/member-detail/MemberDetail";
 import HeaderPage from "@/components/common/HeaderPage";
 
@@ -13,12 +12,10 @@ export default function MemberDetailPage() {
 
   if (!client) {
     return (
-      <DashboardLayout headerNav="Gestión de Socios">
-        <div className="flex flex-col items-center justify-center px-7 py-16 text-center">
-          <i className="ti ti-user-off text-6xl text-gray-600 mb-4" />
-          <p className="text-sm text-gray-500">Socio no encontrado.</p>
-        </div>
-      </DashboardLayout>
+      <div className="flex flex-col items-center justify-center px-7 py-16 text-center">
+        <i className="ti ti-user-off text-6xl text-gray-600 mb-4" />
+        <p className="text-sm text-gray-500">Socio no encontrado.</p>
+      </div>
     );
   }
 
@@ -64,7 +61,7 @@ export default function MemberDetailPage() {
     .reduce((sum, p) => sum + p.amountArs, 0);
 
   return (
-    <DashboardLayout headerNav="Gestión de Socios">
+    <>
       <HeaderPage
         title={client.fullName.toUpperCase()}
         subtitle={`${planName || "Sin plan"} · ${client.dni}`}
@@ -98,6 +95,6 @@ export default function MemberDetailPage() {
           />
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 }

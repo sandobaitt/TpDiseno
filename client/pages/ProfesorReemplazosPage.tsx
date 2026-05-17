@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Pagination } from "@/components/common/Pagination";
 import { replacementsMock, type ReplacementRequest } from "@/data/replacements";
 
@@ -30,8 +29,7 @@ export default function ProfesorReemplazosPage() {
   };
 
   return (
-    <DashboardLayout headerNav=" ">
-      <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
+    <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <h1 className="text-white text-3xl md:text-4xl font-extrabold">
@@ -100,7 +98,6 @@ export default function ProfesorReemplazosPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
   );
 }
 

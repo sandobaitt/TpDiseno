@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RequireAuth } from "@/components/common/RequireAuth";
+import { DashboardLayout } from "@/components/common/DashboardLayout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
@@ -40,143 +41,26 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth>
-                <AdminPanel />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin/personal"
-            element={
-              <RequireAuth>
-                <AdminPersonalPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin/asistencia"
-            element={
-              <RequireAuth>
-                <AdminAsistenciaPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin/novedades"
-            element={
-              <RequireAuth>
-                <NovedadesPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/alumno"
-            element={
-              <RequireAuth>
-                <AlumnoPanel />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profesor"
-            element={
-              <RequireAuth>
-                <ProfesorAsistenciaPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/secretaria"
-            element={
-              <RequireAuth>
-                <Secretaria />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/secretaria/asistencia"
-            element={
-              <RequireAuth>
-                <AttendancePage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/secretaria/cobros"
-            element={
-              <RequireAuth>
-                <PaymentsPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/secretaria/cobros/cobrar"
-            element={
-              <RequireAuth>
-                <PaymentCheckoutPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/secretaria/novedades"
-            element={
-              <RequireAuth>
-                <NovedadesPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/alumno/cronograma"
-            element={
-              <RequireAuth>
-                <AlumnoCronogramaPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/alumno/ajustes"
-            element={
-              <RequireAuth>
-                <AlumnoAjustesPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/alumno/pagos"
-            element={
-              <RequireAuth>
-                <AlumnoPagosPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profesor/asistencia"
-            element={
-              <RequireAuth>
-                <ProfesorAsistenciaPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/profesor/reemplazos"
-            element={
-              <RequireAuth>
-                <ProfesorReemplazosPage />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/miembros/:id"
-            element={
-              <RequireAuth>
-                <MemberDetailPage />
-              </RequireAuth>
-            }
-          />
+          {/* Protected routes share a single DashboardLayout instance */}
+          <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/personal" element={<AdminPersonalPage />} />
+            <Route path="/admin/asistencia" element={<AdminAsistenciaPage />} />
+            <Route path="/admin/novedades" element={<NovedadesPage />} />
+            <Route path="/alumno" element={<AlumnoPanel />} />
+            <Route path="/alumno/cronograma" element={<AlumnoCronogramaPage />} />
+            <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />
+            <Route path="/alumno/pagos" element={<AlumnoPagosPage />} />
+            <Route path="/profesor" element={<ProfesorAsistenciaPage />} />
+            <Route path="/profesor/asistencia" element={<ProfesorAsistenciaPage />} />
+            <Route path="/profesor/reemplazos" element={<ProfesorReemplazosPage />} />
+            <Route path="/secretaria" element={<Secretaria />} />
+            <Route path="/secretaria/asistencia" element={<AttendancePage />} />
+            <Route path="/secretaria/cobros" element={<PaymentsPage />} />
+            <Route path="/secretaria/cobros/cobrar" element={<PaymentCheckoutPage />} />
+            <Route path="/secretaria/novedades" element={<NovedadesPage />} />
+            <Route path="/miembros/:id" element={<MemberDetailPage />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

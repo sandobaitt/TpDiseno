@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   timeSlots,
@@ -42,7 +41,7 @@ export default function AdminAsistenciaPage() {
     : "";
 
   return (
-    <DashboardLayout headerNav="Asistencia">
+    <>
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
 
         {/* Header */}
@@ -345,7 +344,7 @@ export default function AdminAsistenciaPage() {
           )}
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   );
 }
 

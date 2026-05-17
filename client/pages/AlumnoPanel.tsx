@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { attendanceMock, type AttendanceRecord } from "@/data/attendance";
@@ -70,8 +69,7 @@ export default function AlumnoPanel() {
   ];
 
   return (
-    <DashboardLayout headerNav="Mi Perfil y Asistencia">
-      <div className="px-7 pb-7 max-sm:px-4">
+    <div className="px-7 pb-7 max-sm:px-4">
         <div className="flex items-center gap-2 mb-6">
           <i className="ti ti-arrow-left text-gray-500 text-lg" />
           <span className="text-lime-400 text-xs font-bold tracking-widest">
@@ -175,6 +173,5 @@ export default function AlumnoPanel() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 }

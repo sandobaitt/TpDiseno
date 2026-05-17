@@ -1,11 +1,9 @@
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { metricsMock, newsMock } from "@/data/dashboard";
 import fotoAdmin from "@/assets/foto-admin.jpeg";
 
 export default function AdminPanel() {
   return (
-    <DashboardLayout headerNav="Dashboard">
-      <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
+    <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         {/* Hero Card */}
         <div className="bg-[#171717] rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-card glass-border">
           <div
@@ -137,6 +135,5 @@ export default function AdminPanel() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 }

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { Pagination } from "@/components/common/Pagination";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
@@ -225,8 +224,7 @@ export default function AttendancePage() {
   const paginatedTeachers = filteredTeachers.slice(teacherStart, teacherStart + ITEMS_PER_PAGE);
 
   return (
-    <DashboardLayout headerNav="Control de Asistencia">
-      <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
+    <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
 
         {/* Header */}
         <div className="flex items-start justify-between flex-wrap gap-3 pt-1">
@@ -587,6 +585,5 @@ export default function AttendancePage() {
           )}
         </div>
       </section>
-    </DashboardLayout>
   );
 }
