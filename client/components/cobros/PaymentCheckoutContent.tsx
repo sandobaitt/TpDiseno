@@ -39,7 +39,7 @@ export function PaymentCheckoutContent({
       {/* ── Left Column ── */}
       <div className="col-span-12 lg:col-span-7 flex flex-col gap-6">
         {/* Account Status Card */}
-        <div className="bg-stone-900 rounded-xl p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden">
+        <div className="bg-stone-900 rounded-2xl p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden shadow-card glass-border">
           <div
             className="pointer-events-none absolute -right-20 -top-20 w-64 h-64 rounded-xl"
             style={{
@@ -188,7 +188,7 @@ export function PaymentCheckoutContent({
       </div>
 
       {/* ── Right Column – Checkout ── */}
-      <div className="col-span-12 lg:col-span-5 bg-stone-900 rounded-xl flex flex-col gap-6 p-6 md:p-8">
+      <div className="col-span-12 lg:col-span-5 bg-stone-900 rounded-2xl flex flex-col gap-6 p-6 md:p-8 shadow-card glass-border">
         <h3 className="text-white font-jakarta text-xl font-bold">
           Método de Pago
         </h3>
@@ -211,10 +211,10 @@ export function PaymentCheckoutContent({
             <button
               key={method.id}
               onClick={() => setSelectedPayment(method.id)}
-              className={`flex flex-col items-center justify-center gap-2 py-6 px-4 rounded-xl transition-colors cursor-pointer ${
+              className={`flex flex-col items-center justify-center gap-2 py-6 px-4 rounded-2xl transition-all duration-150 cursor-pointer active:scale-[0.97] ${
                 selectedPayment === method.id
-                  ? "border border-lime-400 bg-zinc-800"
-                  : "border border-transparent bg-neutral-900 hover:bg-zinc-800"
+                  ? "border border-lime-400 bg-zinc-800 shadow-[0_0_12px_rgba(149,253,0,0.1)]"
+                  : "border border-white/[0.06] bg-neutral-900 hover:bg-zinc-800/60"
               }`}
             >
               <i
@@ -268,7 +268,7 @@ export function PaymentCheckoutContent({
           </div>
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 py-5 rounded-xl bg-lime-400 hover:brightness-105 active:brightness-95 transition-all cursor-pointer">
+        <button className="w-full flex items-center justify-center gap-2 py-5 rounded-2xl bg-lime-400 hover:brightness-105 active:brightness-95 active:scale-[0.99] transition-all duration-150 cursor-pointer shadow-btn-lime">
           <i className="ti ti-circle-check text-lg text-squat-ink" />
           <span className="text-squat-ink font-jakarta text-lg font-extrabold tracking-wide">
             CONFIRMAR Y COBRAR

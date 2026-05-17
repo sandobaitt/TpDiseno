@@ -116,19 +116,19 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
   const r = request;
 
   return (
-    <div className="bg-black/60 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 hover:bg-black/70 transition-colors border border-transparent hover:border-zinc-800/30 group">
+    <div className="bg-black/60 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
       {/* Left */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider ${
+            className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${
               categoryBadge[r.category] ?? "bg-zinc-700/60 text-white"
             }`}
           >
             {r.category}
           </span>
           {r.isUrgent && (
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider bg-red-950/60 text-red-400">
+            <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wider bg-red-950/60 text-red-400">
               URGENTE
             </span>
           )}
@@ -167,7 +167,7 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
           </button>
           <button
             onClick={() => onConfirm(r.id)}
-            className="px-4 py-2 rounded-xl bg-lime-400 text-black text-[10px] font-bold hover:brightness-110 transition-all shadow-[0_0_12px_rgba(163,230,53,0.2)] cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-lime-400 text-black text-[10px] font-bold hover:brightness-110 active:scale-[0.97] transition-all duration-150 shadow-btn-lime cursor-pointer"
           >
             Confirmar
           </button>

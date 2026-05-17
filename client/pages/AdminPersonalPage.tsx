@@ -53,6 +53,19 @@ export default function AdminPersonalPage() {
   const [staffList, setStaffList] = React.useState<Employee[]>(employeesMock);
   const [studentList, setStudentList] = React.useState<Client[]>(clientsMock);
 
+  // Search & filters (multi-select)
+  const [search, setSearch] = React.useState("");
+  const [filterRoles, setFilterRoles] = React.useState<Set<EmployeeRole>>(new Set());
+  const [filterPlans, setFilterPlans] = React.useState<Set<string>>(new Set());
+  const [filterStatuses, setFilterStatuses] = React.useState<Set<ClientStatus>>(new Set());
+
+  const toggleRole = (role: EmployeeRole) =>
+    setFilterRoles((prev) => { const s = new Set(prev); s.has(role) ? s.delete(role) : s.add(role); return s; });
+  const togglePlan = (id: string) =>
+    setFilterPlans((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
+  const toggleStatus = (st: ClientStatus) =>
+    setFilterStatuses((prev) => { const s = new Set(prev); s.has(st) ? s.delete(st) : s.add(st); return s; });
+
   const [selectedEmployee, setSelectedEmployee] =
     React.useState<Employee | null>(null);
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(
@@ -75,18 +88,36 @@ export default function AdminPersonalPage() {
     React.useState<ClientStatus>("enabled");
   const [editClientBranchId, setEditClientBranchId] = React.useState("");
 
-  const staffTotalPages = Math.ceil(staffList.length / ITEMS_PER_PAGE);
-  const studentTotalPages = Math.ceil(studentList.length / ITEMS_PER_PAGE);
+  // Filtered data
+  const filteredStaff = React.useMemo(() => {
+    const q = search.toLowerCase();
+    return staffList.filter((emp) => {
+      const matchesSearch = !q || emp.fullName.toLowerCase().includes(q) || emp.email.toLowerCase().includes(q);
+      const matchesRole = filterRoles.size === 0 || filterRoles.has(emp.role);
+      return matchesSearch && matchesRole;
+    });
+  }, [staffList, search, filterRoles]);
+
+  const filteredStudents = React.useMemo(() => {
+    const q = search.toLowerCase();
+    return studentList.filter((cli) => {
+      const matchesSearch = !q || cli.fullName.toLowerCase().includes(q) || cli.email.toLowerCase().includes(q);
+      const matchesPlan = filterPlans.size === 0 || (cli.membership != null && filterPlans.has(cli.membership.planId));
+      const matchesStatus = filterStatuses.size === 0 || filterStatuses.has(cli.status);
+      return matchesSearch && matchesPlan && matchesStatus;
+    });
+  }, [studentList, search, filterPlans, filterStatuses]);
+
+  // Reset page when filters change
+  React.useEffect(() => { setStaffPage(1); }, [search, filterRoles]);
+  React.useEffect(() => { setStudentPage(1); }, [search, filterPlans, filterStatuses]);
+
+  const staffTotalPages = Math.ceil(filteredStaff.length / ITEMS_PER_PAGE);
+  const studentTotalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
   const staffStart = (staffPage - 1) * ITEMS_PER_PAGE;
   const studentStart = (studentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedStaff = staffList.slice(
-    staffStart,
-    staffStart + ITEMS_PER_PAGE,
-  );
-  const paginatedStudents = studentList.slice(
-    studentStart,
-    studentStart + ITEMS_PER_PAGE,
-  );
+  const paginatedStaff = filteredStaff.slice(staffStart, staffStart + ITEMS_PER_PAGE);
+  const paginatedStudents = filteredStudents.slice(studentStart, studentStart + ITEMS_PER_PAGE);
 
   function openEmployee(emp: Employee) {
     setSelectedEmployee(emp);
@@ -217,11 +248,13 @@ export default function AdminPersonalPage() {
             onClick={() => {
               setActiveTab("staff");
               setStaffPage(1);
+              setSearch("");
+              setFilterRoles(new Set());
             }}
-            className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
+            className={`px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "staff"
-                ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
-                : "text-stone-500 hover:text-stone-300"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
             }`}
           >
             <i className="ti ti-briefcase text-base mr-2" />
@@ -231,11 +264,14 @@ export default function AdminPersonalPage() {
             onClick={() => {
               setActiveTab("students");
               setStudentPage(1);
+              setSearch("");
+              setFilterPlans(new Set());
+              setFilterStatuses(new Set());
             }}
-            className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
+            className={`px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "students"
-                ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
-                : "text-stone-500 hover:text-stone-300"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
             }`}
           >
             <i className="ti ti-users text-base mr-2" />
@@ -243,15 +279,124 @@ export default function AdminPersonalPage() {
           </button>
         </div>
 
+        {/* Search + filters */}
+        <div className="flex flex-col gap-3">
+          {/* Search bar */}
+          <div className="relative">
+            <i className="ti ti-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={activeTab === "staff" ? "Buscar por nombre o correo..." : "Buscar por nombre o correo..."}
+              className="w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-800/60 glass-border text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+              >
+                <i className="ti ti-x text-sm" />
+              </button>
+            )}
+          </div>
+
+          {/* Filters */}
+          {activeTab === "staff" ? (
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-gray-600 text-[10px] font-semibold tracking-widest">CARGO</span>
+              {(["manager", "reception", "trainer", "accounting", "admin"] as EmployeeRole[]).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => toggleRole(role)}
+                  className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
+                    filterRoles.has(role)
+                      ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
+                      : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
+                  }`}
+                >
+                  {roleLabels[role]}
+                </button>
+              ))}
+              {filterRoles.size > 0 && (
+                <button
+                  onClick={() => setFilterRoles(new Set())}
+                  className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-4 items-start">
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-gray-600 text-[10px] font-semibold tracking-widest">ESTADO</span>
+                {(["enabled", "debtor", "inactive"] as ClientStatus[]).map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => toggleStatus(st)}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
+                      filterStatuses.has(st)
+                        ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
+                        : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
+                    }`}
+                  >
+                    {statusLabels[st]}
+                  </button>
+                ))}
+                {filterStatuses.size > 0 && (
+                  <button onClick={() => setFilterStatuses(new Set())} className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1">
+                    Limpiar
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-gray-600 text-[10px] font-semibold tracking-widest">PLAN</span>
+                {plansMock.map((plan) => (
+                  <button
+                    key={plan.id}
+                    onClick={() => togglePlan(plan.id)}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
+                      filterPlans.has(plan.id)
+                        ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
+                        : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
+                    }`}
+                  >
+                    {plan.name}
+                  </button>
+                ))}
+                {filterPlans.size > 0 && (
+                  <button onClick={() => setFilterPlans(new Set())} className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1">
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Results count */}
+          <p className="text-gray-600 text-[11px]">
+            {activeTab === "staff"
+              ? `${filteredStaff.length} resultado${filteredStaff.length !== 1 ? "s" : ""}`
+              : `${filteredStudents.length} resultado${filteredStudents.length !== 1 ? "s" : ""}`}
+          </p>
+        </div>
+
         {activeTab === "staff" ? (
           <div className="flex flex-col gap-4">
+            {paginatedStaff.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 text-gray-600">
+                <i className="ti ti-search-off text-3xl" />
+                <p className="text-sm font-medium">Sin resultados para tu búsqueda</p>
+              </div>
+            ) : null}
             {paginatedStaff.map((emp) => {
               const branch = branchesMock.find((b) => b.id === emp.branchId);
               return (
                 <button
                   key={emp.id}
                   onClick={() => openEmployee(emp)}
-                  className="w-full text-left bg-black/60 rounded-2xl p-5 flex items-center gap-4 hover:bg-black/70 transition-colors cursor-pointer group border border-transparent hover:border-zinc-800/40"
+                  className="w-full text-left bg-black/60 rounded-2xl p-5 flex items-center gap-4 hover:bg-black/70 transition-all duration-150 cursor-pointer group shadow-card glass-border hover:border-white/[0.10]"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center shrink-0">
                     <span className="text-white text-xs font-bold">
@@ -267,7 +412,7 @@ export default function AdminPersonalPage() {
                     </p>
                   </div>
                   <span
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider ${
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${
                       emp.role === "trainer"
                         ? "bg-lime-950/60 text-lime-400"
                         : emp.role === "manager"
@@ -296,6 +441,12 @@ export default function AdminPersonalPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
+            {paginatedStudents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 text-gray-600">
+                <i className="ti ti-search-off text-3xl" />
+                <p className="text-sm font-medium">Sin resultados para tu búsqueda</p>
+              </div>
+            ) : null}
             {paginatedStudents.map((cli) => {
               const branch = branchesMock.find((b) => b.id === cli.branchId);
               const plan = cli.membership
@@ -305,7 +456,7 @@ export default function AdminPersonalPage() {
                 <button
                   key={cli.id}
                   onClick={() => openClient(cli)}
-                  className="w-full text-left bg-black/60 rounded-2xl p-5 flex items-center gap-4 hover:bg-black/70 transition-colors cursor-pointer group border border-transparent hover:border-zinc-800/40"
+                  className="w-full text-left bg-black/60 rounded-2xl p-5 flex items-center gap-4 hover:bg-black/70 transition-all duration-150 cursor-pointer group shadow-card glass-border hover:border-white/[0.10]"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center shrink-0">
                     <span className="text-white text-xs font-bold">
@@ -324,7 +475,7 @@ export default function AdminPersonalPage() {
                     {plan?.name ?? "Sin plan"}
                   </span>
                   <span
-                    className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider ${
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${
                       cli.status === "enabled"
                         ? "bg-green-900/60 text-green-400"
                         : cli.status === "debtor"

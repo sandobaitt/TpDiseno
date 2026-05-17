@@ -14,8 +14,8 @@ export function DayColumn({ day, onSelect }: DayColumnProps) {
       onClick={() => onSelect(day.dayAbbr)}
       className={`relative flex flex-col gap-3 min-w-[160px] w-full rounded-2xl p-4 transition-all cursor-pointer ${
         active
-          ? "bg-neutral-800/60 border border-lime-400/40 shadow-[0_0_24px_rgba(163,230,53,0.08)]"
-          : "bg-neutral-900/50 border border-transparent hover:border-zinc-800/50"
+          ? "bg-neutral-800/60 border border-lime-400/40 shadow-[0_0_28px_rgba(149,253,0,0.10)] shadow-card"
+          : "bg-neutral-900/50 glass-border hover:border-white/[0.08]"
       }`}
     >
       {active && (

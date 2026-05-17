@@ -59,22 +59,36 @@ const allRows: RowData[] = clientsMock.map((c, i) => {
   };
 });
 
-const debtors = allRows.filter((r) => r.status === "debtor");
-const paid = allRows.filter((r) => r.status === "paid");
+const uniquePlans = [...new Set(allRows.map((r) => r.plan).filter((p) => p !== "Sin plan"))];
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 8;
 
 export default function PaymentsPage() {
   const [activeTab, setActiveTab] = React.useState<TabId>("debtors");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(
-    null,
-  );
+  const [search, setSearch] = React.useState("");
+  const [filterPlan, setFilterPlan] = React.useState("");
+  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
 
-  const activeData = activeTab === "debtors" ? debtors : paid;
-  const totalPages = Math.ceil(activeData.length / ITEMS_PER_PAGE);
+  React.useEffect(() => { setCurrentPage(1); }, [search, filterPlan, activeTab]);
+
+  const filteredData = React.useMemo(() => {
+    const tabData = allRows.filter((r) => r.status === (activeTab === "debtors" ? "debtor" : "paid"));
+    const q = search.toLowerCase().trim();
+    return tabData.filter((r) => {
+      if (q && !r.name.toLowerCase().includes(q)) return false;
+      if (filterPlan && r.plan !== filterPlan) return false;
+      return true;
+    });
+  }, [activeTab, search, filterPlan]);
+
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = activeData.slice(start, start + ITEMS_PER_PAGE);
+  const paginatedData = filteredData.slice(start, start + ITEMS_PER_PAGE);
+
+  const debtorCount = allRows.filter((r) => r.status === "debtor").length;
+  const paidCount = allRows.filter((r) => r.status === "paid").length;
+  const hasFilters = search.length > 0 || filterPlan.length > 0;
 
   const columns = [
     {
@@ -120,7 +134,7 @@ export default function PaymentsPage() {
         const isPaidRow = row.status === "paid";
         return (
           <div
-            className={`inline-flex gap-1.5 items-center px-2.5 py-1 rounded-3xl ${
+            className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full ${
               isPaidRow ? "bg-green-900" : "bg-orange-950"
             }`}
           >
@@ -145,54 +159,112 @@ export default function PaymentsPage() {
         subtitle="Control de pagos y cuotas mensuales."
       />
 
-      <section className="px-7 pb-7 max-sm:px-4">
-        <div className="flex gap-2 mb-6">
+      <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-4">
+        {/* Tabs */}
+        <div className="flex gap-2">
           <button
-            onClick={() => {
-              setActiveTab("debtors");
-              setCurrentPage(1);
-            }}
-            className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
+            onClick={() => { setActiveTab("debtors"); setCurrentPage(1); setSearch(""); setFilterPlan(""); }}
+            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "debtors"
-                ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
-                : "text-stone-500 hover:text-stone-300"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
             }`}
           >
-            <i className="ti ti-alert-triangle text-base mr-2" />
+            <i className="ti ti-alert-triangle text-base" />
             Deudores
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "debtors" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
+              {debtorCount}
+            </span>
           </button>
           <button
-            onClick={() => {
-              setActiveTab("paid");
-              setCurrentPage(1);
-            }}
-            className={`px-5 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors ${
+            onClick={() => { setActiveTab("paid"); setCurrentPage(1); setSearch(""); setFilterPlan(""); }}
+            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "paid"
-                ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
-                : "text-stone-500 hover:text-stone-300"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
             }`}
           >
-            <i className="ti ti-circle-check text-base mr-2" />
+            <i className="ti ti-circle-check text-base" />
             Pagados
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "paid" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
+              {paidCount}
+            </span>
           </button>
         </div>
 
-        <div className="p-5 rounded-2xl bg-neutral-900">
-          <DataTable
-            columns={columns}
-            data={paginatedData}
-            getRowKey={(row) => row.id}
-            minWidthClass="min-w-[700px] lg:min-w-0"
-            gridTemplateClass="grid-cols-[minmax(220px,_1fr)_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr]"
-            onRowClick={(row) => setSelectedClientId(row.id)}
-          />
+        {/* Search + Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[200px] max-w-[320px]">
+            <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nombre..."
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
+                <i className="ti ti-x text-xs" />
+              </button>
+            )}
+          </div>
+
+          <select
+            value={filterPlan}
+            onChange={(e) => setFilterPlan(e.target.value)}
+            className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer transition-all appearance-none pr-7"
+            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
+          >
+            <option value="">Todos los planes</option>
+            {uniquePlans.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </select>
+
+          {hasFilters && (
+            <button
+              onClick={() => { setSearch(""); setFilterPlan(""); }}
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+            >
+              Limpiar
+            </button>
+          )}
+
+          <span className="text-xs text-gray-600 ml-auto">{filteredData.length} registros</span>
         </div>
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
+        {/* Table */}
+        <div className="p-5 rounded-2xl bg-neutral-900 glass-border shadow-card">
+          {filteredData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <i className="ti ti-search-off text-3xl text-gray-700" />
+              <p className="text-sm text-gray-600 font-medium">Sin resultados para los filtros aplicados</p>
+              <button
+                onClick={() => { setSearch(""); setFilterPlan(""); }}
+                className="text-xs text-lime-400 hover:text-lime-300 transition-colors cursor-pointer"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={paginatedData}
+              getRowKey={(row) => row.id}
+              minWidthClass="min-w-[700px] lg:min-w-0"
+              gridTemplateClass="grid-cols-[minmax(220px,_1fr)_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr]"
+              onRowClick={(row) => setSelectedClientId(row.id)}
+            />
+          )}
+        </div>
+
+        {filteredData.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </section>
 
       <Dialog

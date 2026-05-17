@@ -21,7 +21,7 @@ export function AccessControlCard({
   };
 
   return (
-    <article className="flex flex-col gap-3 p-6 rounded-2xl bg-stone-900">
+    <article className="flex flex-col gap-3 p-6 rounded-2xl bg-stone-900 shadow-card glass-border">
       <header className="flex justify-between items-center">
         <h3 className="text-base font-bold text-white">Control de Acceso</h3>
         <button

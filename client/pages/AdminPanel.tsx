@@ -7,7 +7,7 @@ export default function AdminPanel() {
     <DashboardLayout headerNav="Dashboard">
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         {/* Hero Card */}
-        <div className="bg-[#171717] rounded-2xl flex flex-col md:flex-row overflow-hidden">
+        <div className="bg-[#171717] rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-card glass-border">
           <div
             className="w-full md:w-[30%] min-h-[200px] flex items-center justify-center relative bg-cover bg-center"
             style={{ backgroundImage: `url(${fotoAdmin})` }}
@@ -54,7 +54,7 @@ export default function AdminPanel() {
           {metricsMock.map((m) => (
             <div
               key={m.id}
-              className="bg-[#171717] rounded-2xl p-5 flex flex-col gap-3"
+              className="bg-[#171717] rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border"
             >
               <div className="flex items-center justify-between">
                 <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
@@ -94,7 +94,7 @@ export default function AdminPanel() {
               {newsMock.map((ev) => (
                 <div
                   key={ev.id}
-                  className="bg-[#171717] rounded-2xl p-4 flex items-center gap-4 hover:bg-[#1a1a1a] transition-colors relative overflow-hidden"
+                  className="bg-[#171717] rounded-2xl p-4 flex items-center gap-4 hover:bg-[#1c1c1c] transition-all duration-150 relative overflow-hidden shadow-card glass-border"
                 >
                   {ev.urgent && (
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500/50 rounded-l-2xl" />
@@ -123,14 +123,14 @@ export default function AdminPanel() {
             <h2 className="text-white text-sm font-extrabold tracking-wider">
               HISTORIAL
             </h2>
-            <div className="bg-[#171717] rounded-2xl p-6 flex flex-col items-center justify-center gap-6 min-h-[280px]">
-              <div className="w-16 h-16 rounded-full bg-lime-400/10 flex items-center justify-center">
+            <div className="bg-[#171717] rounded-2xl p-6 flex flex-col items-center justify-center gap-6 min-h-[280px] shadow-card glass-border">
+              <div className="w-16 h-16 rounded-2xl bg-lime-400/10 flex items-center justify-center">
                 <i className="ti ti-clock text-2xl text-lime-400/60" />
               </div>
               <p className="text-gray-600 text-xs text-center leading-relaxed max-w-[180px]">
                 Historial de actividad y movimientos recientes de la sede.
               </p>
-              <button className="px-6 py-3 rounded-full bg-lime-400 text-black text-xs font-extrabold tracking-wider hover:brightness-110 transition-all shadow-[0_0_16px_rgba(163,230,53,0.2)] cursor-pointer">
+              <button className="px-6 py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold tracking-wider hover:brightness-110 active:scale-[0.97] transition-all shadow-btn-lime cursor-pointer">
                 CONSULTAR HISTORIAL
               </button>
             </div>

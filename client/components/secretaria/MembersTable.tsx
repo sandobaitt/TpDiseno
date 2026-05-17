@@ -28,10 +28,19 @@ interface MembersTableProps {
   className?: string;
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 8;
 
 export function MembersTable({ className = "" }: MembersTableProps) {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [search, setSearch] = React.useState("");
+  const [filterStatuses, setFilterStatuses] = React.useState<Set<string>>(new Set());
+  const [filterPlan, setFilterPlan] = React.useState<Set<string>>(new Set());
+
+  const toggleStatus = (s: string) =>
+    setFilterStatuses((prev) => { const n = new Set(prev); n.has(s) ? n.delete(s) : n.add(s); return n; });
+  const togglePlan = (p: string) =>
+    setFilterPlan((prev) => { const n = new Set(prev); n.has(p) ? n.delete(p) : n.add(p); return n; });
+
   const initialsStyles = [
     { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
     { initialsColor: "text-violet-400", initialsBackground: "bg-gray-800" },
@@ -84,14 +93,10 @@ export function MembersTable({ className = "" }: MembersTableProps) {
 
   const getStatusText = (status: Member["status"]["type"]) => {
     switch (status) {
-      case "enabled":
-        return "Habilitado";
-      case "debtor":
-        return "Deudor";
-      case "inactive":
-        return "Inactivo";
-      default:
-        return "Inactivo";
+      case "enabled":  return "Habilitado";
+      case "debtor":   return "Deudor";
+      case "inactive": return "Inactivo";
+      default:         return "Inactivo";
     }
   };
 
@@ -116,35 +121,34 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     };
   });
 
+  const uniquePlans = React.useMemo(
+    () => [...new Set(allMembers.map((m) => m.plan).filter((p) => p !== "-"))],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const filteredMembers = React.useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return allMembers.filter((m) => {
+      if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q) && !m.dni.includes(q)) return false;
+      if (filterStatuses.size > 0 && !filterStatuses.has(m.status.type)) return false;
+      if (filterPlan.size > 0 && !filterPlan.has(m.plan)) return false;
+      return true;
+    });
+  }, [allMembers, search, filterStatuses, filterPlan]);
+
+  React.useEffect(() => { setCurrentPage(1); }, [search, filterStatuses, filterPlan]);
+
   const getStatusStyles = (status: Member["status"]["type"]) => {
     switch (status) {
       case "enabled":
-        return {
-          container: "bg-green-900",
-          dot: "bg-green-500",
-          text: "text-green-500",
-        };
-
+        return { container: "bg-green-900", dot: "bg-green-500", text: "text-green-500" };
       case "debtor":
-        return {
-          container: "bg-orange-950",
-          dot: "bg-red-500",
-          text: "text-red-500",
-        };
-
+        return { container: "bg-orange-950", dot: "bg-red-500", text: "text-red-500" };
       case "inactive":
-        return {
-          container: "bg-stone-900 border border-gray-700",
-          dot: "bg-gray-500",
-          text: "text-gray-400",
-        };
-
+        return { container: "bg-stone-900 border border-gray-700", dot: "bg-gray-500", text: "text-gray-400" };
       default:
-        return {
-          container: "bg-stone-900",
-          dot: "bg-gray-500",
-          text: "text-gray-400",
-        };
+        return { container: "bg-stone-900", dot: "bg-gray-500", text: "text-gray-400" };
     }
   };
 
@@ -152,17 +156,11 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     {
       key: "name",
       header: "NOMBRE",
-
       render: (member: Member) => (
         <div className="flex gap-3 items-center min-w-0">
-          <div
-            className={`flex justify-center items-center w-9 h-9 rounded-full shrink-0 ${member.initialsBackground}`}
-          >
-            <span className={`text-xs font-bold ${member.initialsColor}`}>
-              {member.initials}
-            </span>
+          <div className={`flex justify-center items-center w-9 h-9 rounded-full shrink-0 ${member.initialsBackground}`}>
+            <span className={`text-xs font-bold ${member.initialsColor}`}>{member.initials}</span>
           </div>
-
           <div className="flex flex-col min-w-0">
             <Link
               to={`/miembros/${member.id}`}
@@ -175,69 +173,121 @@ export function MembersTable({ className = "" }: MembersTableProps) {
         </div>
       ),
     },
-
-    {
-      key: "dni",
-      header: "DNI",
-    },
-
-    {
-      key: "plan",
-      header: "PLAN",
-    },
-
+    { key: "dni",  header: "DNI" },
+    { key: "plan", header: "PLAN" },
     {
       key: "status",
       header: "ESTADO",
-
       render: (member: Member) => {
-        const statusStyles = getStatusStyles(member.status.type);
-
+        const s = getStatusStyles(member.status.type);
         return (
-          <div
-            className={`inline-flex gap-1.5 items-center px-2.5 py-1 rounded-3xl whitespace-nowrap ${statusStyles.container}`}
-          >
-            <div className={`w-1.5 h-1.5 rounded-full ${statusStyles.dot}`} />
-
-            <span className={`text-xs font-semibold ${statusStyles.text}`}>
-              {member.status.text}
-            </span>
+          <div className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full whitespace-nowrap ${s.container}`}>
+            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
+            <span className={`text-[11px] font-semibold ${s.text}`}>{member.status.text}</span>
           </div>
         );
       },
     },
-
-    {
-      key: "lastAccess",
-      header: "ÚLTIMO ACCESO",
-      cellClassName: "truncate",
-    },
+    { key: "lastAccess", header: "ÚLTIMO ACCESO", cellClassName: "truncate" },
   ];
 
-  const totalPages = Math.ceil(allMembers.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedMembers = allMembers.slice(start, start + ITEMS_PER_PAGE);
+  const paginatedMembers = filteredMembers.slice(start, start + ITEMS_PER_PAGE);
+  const hasFilters = search.length > 0 || filterStatuses.size > 0 || filterPlan.size > 0;
 
   return (
     <section className={`px-7 pb-7 max-sm:px-4 ${className}`}>
-      <div className="p-5 rounded-2xl bg-neutral-900">
-        <DataTable<Member>
-          columns={columns}
-          data={paginatedMembers}
-          getRowKey={(member) => member.id}
-          minWidthClass="min-w-[900px] lg:min-w-0"
-          gridTemplateClass="
-					grid-cols-[minmax(260px,_1fr)_120px_120px_140px_160px_60px]
-					lg:grid-cols-[minmax(0,_3fr)_1fr_1fr_1.2fr_1.4fr_60px]
-				"
-        />
+      {/* Search + Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="relative flex-1 min-w-[200px] max-w-[320px]">
+          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Nombre, email o DNI..."
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+            >
+              <i className="ti ti-x text-xs" />
+            </button>
+          )}
+        </div>
+
+        {[["enabled", "Habilitado"], ["debtor", "Deudor"], ["inactive", "Inactivo"]].map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => toggleStatus(key)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
+              filterStatuses.has(key)
+                ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
+                : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+
+        {uniquePlans.map((plan) => (
+          <button
+            key={plan}
+            onClick={() => togglePlan(plan)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
+              filterPlan.has(plan)
+                ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
+                : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
+            }`}
+          >
+            {plan}
+          </button>
+        ))}
+
+        {hasFilters && (
+          <button
+            onClick={() => { setSearch(""); setFilterStatuses(new Set()); setFilterPlan(new Set()); }}
+            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+          >
+            Limpiar
+          </button>
+        )}
+
+        <span className="text-xs text-gray-600 ml-auto">{filteredMembers.length} socios</span>
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
+      <div className="p-5 rounded-2xl bg-neutral-900 shadow-card glass-border">
+        {filteredMembers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <i className="ti ti-search-off text-3xl text-gray-700" />
+            <p className="text-sm text-gray-600 font-medium">Sin resultados para los filtros aplicados</p>
+            <button
+              onClick={() => { setSearch(""); setFilterStatuses(new Set()); setFilterPlan(new Set()); }}
+              className="text-xs text-lime-400 hover:text-lime-300 transition-colors cursor-pointer"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        ) : (
+          <DataTable<Member>
+            columns={columns}
+            data={paginatedMembers}
+            getRowKey={(member) => member.id}
+            minWidthClass="min-w-[900px] lg:min-w-0"
+            gridTemplateClass="grid-cols-[minmax(260px,_1fr)_120px_120px_140px_160px_60px] lg:grid-cols-[minmax(0,_3fr)_1fr_1fr_1.2fr_1.4fr_60px]"
+          />
+        )}
+      </div>
+
+      {filteredMembers.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </section>
   );
 }

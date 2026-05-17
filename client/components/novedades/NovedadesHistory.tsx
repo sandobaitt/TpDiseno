@@ -105,7 +105,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
 
   return (
     <section className="flex-1 min-w-0">
-      <div className="bg-neutral-900 rounded-2xl p-6 md:p-8 flex flex-col gap-6">
+      <div className="bg-neutral-900 rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-card glass-border">
         <h1 className="text-white font-extrabold text-2xl md:text-3xl tracking-wider">
           HISTORIAL DE NOVEDADES
         </h1>
@@ -138,7 +138,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
             return (
               <div
                 key={nov.id}
-                className="bg-neutral-800/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-neutral-800 transition-colors group"
+                className="bg-neutral-800/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-neutral-800/80 transition-all duration-150 glass-border hover:border-white/[0.08]"
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center shrink-0 border border-zinc-800">
@@ -148,7 +148,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
                   <div className="flex flex-col gap-1.5 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider ${badge}`}
+                        className={`px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${badge}`}
                       >
                         {cfg.label}
                       </span>
@@ -168,7 +168,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
                     {formatTimestamp(nov.timestamp)}
                   </span>
                   <span
-                    className={`px-3 py-1 rounded-lg text-[10px] font-bold tracking-wider whitespace-nowrap ${st.className}`}
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap ${st.className}`}
                   >
                     {st.label}
                   </span>

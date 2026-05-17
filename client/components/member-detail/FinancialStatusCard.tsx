@@ -20,7 +20,7 @@ export function FinancialStatusCard({
   const hasDebt = pendingBalance > 0;
 
   return (
-    <article className="flex flex-col gap-5 p-6 rounded-2xl bg-stone-900">
+    <article className="flex flex-col gap-5 p-6 rounded-2xl bg-stone-900 shadow-card glass-border">
       <header className="flex justify-between items-center">
         <h3 className="text-base font-bold text-white">Estado Financiero</h3>
         <i className="ti ti-credit-card text-lg text-neutral-600" />
@@ -54,7 +54,7 @@ export function FinancialStatusCard({
 
       <button
         onClick={onCollectPayment}
-        className="flex gap-2 justify-center items-center py-3.5 bg-lime-400 rounded-xl cursor-pointer hover:brightness-105"
+        className="flex gap-2 justify-center items-center py-3.5 bg-lime-400 rounded-xl cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all duration-150 shadow-btn-lime"
       >
         <i className="ti ti-cash-register text-lg text-neutral-900" />
         <span className="text-sm font-extrabold tracking-wider uppercase text-neutral-900">

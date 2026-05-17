@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { findMockUserByEmailOrDni, getPostLoginPath, saveMockSession } from "@/data/users";
 
@@ -47,7 +48,12 @@ export default function Login() {
       />
 
       {/* Floating panel */}
-      <div className="relative z-10 w-full max-w-[448px] mx-4 flex flex-col items-center rounded-[8px] border border-[rgba(64,74,52,0.10)] bg-[rgba(42,42,42,0.80)] shadow-[0_20px_40px_0_rgba(0,0,0,0.60)] backdrop-blur-xl p-12">
+      <motion.div
+        className="relative z-10 w-full max-w-[448px] mx-4 flex flex-col items-center rounded-2xl border border-[rgba(255,255,255,0.07)] bg-[rgba(42,42,42,0.80)] shadow-[0_32px_80px_rgba(0,0,0,0.7)] backdrop-blur-xl p-12"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+      >
         {/* Logo */}
         <div className="pb-8 self-start">
           <Link
@@ -88,7 +94,7 @@ export default function Login() {
                 value={identity}
                 onChange={(e) => setIdentity(e.target.value)}
                 placeholder="ejemplo@correo.com"
-                className="w-full pl-12 pr-4 py-4 rounded-[6px] bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
               />
             </div>
           </div>
@@ -116,7 +122,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-12 pr-12 py-4 rounded-[6px] bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
+                className="w-full pl-12 pr-12 py-4 rounded-xl bg-squat-card-dark text-white placeholder-squat-muted/40 font-inter text-base outline-none focus:ring-1 focus:ring-squat-green/40 transition-all"
               />
               <button
                 type="button"
@@ -135,7 +141,7 @@ export default function Login() {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-4 rounded-[6px] bg-squat-green shadow-[0_10px_30px_0_rgba(149,253,0,0.10)] font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 transition-all"
+              className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150"
             >
               Ingresar
             </button>
@@ -151,7 +157,7 @@ export default function Login() {
             </a>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

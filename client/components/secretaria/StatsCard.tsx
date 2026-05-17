@@ -16,22 +16,26 @@ interface StatCardProps {
 
 function StatCard({ icon, value, label, status, valueColor = "text-white", bgColor = "bg-zinc-900" }: StatCardProps) {
     return (
-        <article className={`flex flex-col gap-2 p-5 rounded-xl ${bgColor}`}>
+        <article className={`flex flex-col gap-2 p-5 rounded-2xl shadow-card glass-border ${bgColor}`}>
             <div className="flex gap-2 items-center">
-                {icon && <i className={`ti ${icon} text-xl text-gray-400`} />}
+                {icon && (
+                    <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-lime-400/10">
+                        <i className={`ti ${icon} text-base text-lime-400`} />
+                    </div>
+                )}
                 {status && (
-                    <>
-                        <div className={`w-2 h-2 ${status.dotColor} rounded-full`} />
-                        <span className={`text-xs font-bold tracking-widest ${status.color} uppercase`}>
+                    <div className="flex gap-1.5 items-center">
+                        <div className={`w-1.5 h-1.5 ${status.dotColor} rounded-full`} />
+                        <span className={`text-[10px] font-bold tracking-widest ${status.color} uppercase`}>
                             {status.text}
                         </span>
-                    </>
+                    </div>
                 )}
             </div>
-            <div className={`mt-1 text-4xl font-extrabold leading-none ${valueColor}`}>
+            <div className={`mt-1 text-4xl font-extrabold leading-none tracking-tight ${valueColor}`}>
                 {value}
             </div>
-            <p className="mt-0.5 text-xs font-semibold tracking-widest text-gray-500 uppercase">
+            <p className="mt-0.5 text-[10px] font-semibold tracking-widest text-gray-500 uppercase">
                 {label}
             </p>
         </article>

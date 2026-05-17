@@ -131,7 +131,7 @@ export default function ProfesorAsistenciaPage() {
           </div>
 
           {/* ── RIGHT: Bitácora List ── */}
-          <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-4">
+          <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-4 shadow-card glass-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <i className="ti ti-notes text-lg text-lime-400" />
@@ -150,12 +150,12 @@ export default function ProfesorAsistenciaPage() {
               </button>
             </div>
 
-            <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
+            <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto scrollbar-thin">
               {bitacoras.map((b) => (
                 <button
                   key={b.id}
                   onClick={() => setSelectedBitacora(b)}
-                  className="w-full text-left bg-neutral-900/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-neutral-900 transition-colors cursor-pointer group border border-transparent hover:border-zinc-800/30"
+                  className="w-full text-left bg-neutral-900/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-neutral-900/80 transition-all duration-150 cursor-pointer group glass-border hover:border-white/[0.08]"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-white text-xs font-bold leading-tight line-clamp-1">
@@ -303,7 +303,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
   const gradient = avatarColors[colorIdx];
 
   return (
-    <div className="bg-black/60 rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-black/70 transition-colors group border border-transparent hover:border-zinc-800/30">
+    <div className="bg-black/60 rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
       <div className="flex items-center gap-3 min-w-0">
         <div
           className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}
@@ -324,9 +324,9 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
       <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={() => onSetStatus("absent")}
-          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "absent"
-              ? "bg-red-500/20 text-red-400 border border-red-500/30"
+              ? "bg-red-500/20 text-red-400 border border-red-500/40"
               : "bg-black text-gray-400 border border-zinc-800 hover:border-red-500/30 hover:text-red-400"
           }`}
         >
@@ -335,9 +335,9 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
         </button>
         <button
           onClick={() => onSetStatus("present")}
-          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "present"
-              ? "bg-lime-400 text-black shadow-[0_0_12px_rgba(163,230,53,0.25)]"
+              ? "bg-lime-400 text-black shadow-btn-lime"
               : "bg-black text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400"
           }`}
         >

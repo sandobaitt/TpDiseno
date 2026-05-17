@@ -57,7 +57,7 @@ export default function AlumnoAjustesPage() {
             </div>
 
             {/* Alert 1 — Crítica */}
-            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-colors group">
+            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500/60 rounded-l-2xl" />
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export default function AlumnoAjustesPage() {
             </div>
 
             {/* Alert 2 — Promocional */}
-            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-colors group">
+            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-lime-400/60 rounded-l-2xl" />
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function AlumnoAjustesPage() {
             </div>
 
             {/* Alert 3 — Éxito */}
-            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-colors group">
+            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-600/40 rounded-l-2xl" />
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default function AlumnoAjustesPage() {
             </div>
 
             {/* Alert 4 — Información */}
-            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-colors group">
+            <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-black/70 transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-600/40 rounded-l-2xl" />
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export default function AlumnoAjustesPage() {
           {/* ── RIGHT: Preferencias ── */}
           <div className="flex flex-col gap-5">
             {/* Preferencias */}
-            <div className="bg-black/60 rounded-2xl p-6 flex flex-col gap-5">
+            <div className="bg-black/60 rounded-2xl p-6 flex flex-col gap-5 shadow-card glass-border">
               <div className="flex items-center gap-2">
                 <i className="ti ti-sliders text-lg text-lime-400" />
                 <h2 className="text-white text-sm font-extrabold">

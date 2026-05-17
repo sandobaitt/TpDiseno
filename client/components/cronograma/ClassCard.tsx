@@ -7,7 +7,7 @@ interface ClassCardProps {
 export function ClassCard({ classItem }: ClassCardProps) {
   const c = classItem;
   return (
-    <div className="bg-neutral-900 rounded-xl p-4 flex flex-col gap-2 border border-zinc-800/50 hover:border-zinc-700/50 transition-colors">
+    <div className="bg-neutral-900 rounded-2xl p-4 flex flex-col gap-2 shadow-card glass-border hover:border-white/[0.10] transition-all duration-150">
       <div className="flex items-center justify-between">
         <span className="text-white text-sm font-bold">{c.time}</span>
         <span className="text-lime-400 text-[10px] font-bold tracking-wider">

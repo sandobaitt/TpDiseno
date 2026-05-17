@@ -118,3 +118,37 @@
     white-space: pre;
   }
 }
+
+@layer utilities {
+  .shadow-card {
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .shadow-btn-lime {
+    box-shadow:
+      0 0 20px rgba(149, 253, 0, 0.2),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-border {
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Thin scrollbar for dark panels */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+  }
+}

@@ -81,7 +81,7 @@ export default function AlumnoPanel() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
           {/* ── LEFT: Attendance Table ── */}
-          <div className="bg-black/60 rounded-2xl p-6 md:p-8 flex flex-col gap-5">
+          <div className="bg-black/60 rounded-2xl p-6 md:p-8 flex flex-col gap-5 shadow-card glass-border">
             <div className="flex items-center justify-between">
               <h2 className="text-white text-lg font-extrabold">
                 Historial de Asistencias
@@ -117,7 +117,7 @@ export default function AlumnoPanel() {
           {/* ── RIGHT: Cards ── */}
           <div className="flex flex-col gap-5">
             {/* Card 1: Certificado Médico */}
-            <div className="bg-black/60 rounded-2xl p-6 flex flex-col gap-5">
+            <div className="bg-black/60 rounded-2xl p-6 flex flex-col gap-5 shadow-card glass-border">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
                   <i className="ti ti-certificate text-lg text-lime-400" />
@@ -127,7 +127,7 @@ export default function AlumnoPanel() {
                 </h3>
               </div>
 
-              <div className="border-2 border-dashed border-zinc-800 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-center hover:border-zinc-700 transition-colors cursor-pointer">
+              <div className="border-2 border-dashed border-lime-400/20 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-center hover:border-lime-400/40 transition-all duration-150 cursor-pointer">
                 <i className="ti ti-file-upload text-2xl text-gray-600" />
                 <div>
                   <p className="text-white text-xs font-semibold">

@@ -234,7 +234,7 @@ export default function AlumnoPagosPage() {
               <button
                 key={m.key}
                 onClick={() => setSelectedMonthKey(m.key)}
-                className="w-full flex items-center justify-between bg-black/60 rounded-2xl p-5 hover:bg-black/70 transition-colors text-left cursor-pointer group border border-transparent hover:border-zinc-800/40"
+                className="w-full flex items-center justify-between bg-black/60 rounded-2xl p-5 hover:bg-black/70 transition-all duration-150 text-left cursor-pointer group shadow-card glass-border hover:border-white/[0.08]"
               >
                 <div className="flex items-center gap-4">
                   <div

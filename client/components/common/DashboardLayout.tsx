@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { SidebarNav, type SidebarNavItem } from "./SidebarNav";
 import { Header as HeaderNav } from "./HeaderNav";
 import { getMockSession, clearMockSession } from "@/data/users";
@@ -18,7 +19,19 @@ export function DashboardLayout({
   headerTitle = "SQUATGYM",
 }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => {
+    try { return localStorage.getItem("sidebar-collapsed") === "true"; } catch { return false; }
+  });
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try { localStorage.setItem("sidebar-collapsed", String(next)); } catch {}
+      return next;
+    });
+  };
   const session = getMockSession();
   const nav = getNavigationByRole(session?.role);
 
@@ -50,6 +63,8 @@ export function DashboardLayout({
           brandTitle="SQUATGYM"
           items={nav.items}
           footerItems={footerItems}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={toggleSidebarCollapse}
         />
 
         {sidebarOpen && (
@@ -59,13 +74,24 @@ export function DashboardLayout({
           />
         )}
 
-        <main className="flex flex-col flex-1 md:ml-[248px] w-full min-w-0">
+        <main className={`flex flex-col flex-1 w-full min-w-0 transition-[margin-left] duration-[280ms] ease-in-out ${sidebarCollapsed ? "md:ml-[68px]" : "md:ml-[248px]"}`}>
           <HeaderNav
             nav={headerNav}
             title={headerTitle}
             onMenuClick={() => setSidebarOpen(true)}
           />
-          {children}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              className="pt-6 flex flex-col flex-1"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </>
