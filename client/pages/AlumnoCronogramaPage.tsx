@@ -2,15 +2,35 @@ import * as React from "react";
 import { DayColumn } from "@/components/cronograma/DayColumn";
 import { weekMock } from "@/data/schedule";
 
-export default function AlumnoCronogramaPage() {
-  const [week, setWeek] = React.useState(weekMock);
-  const weekLabel = "MAY 12 - MAY 18";
+const MONTHS = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
+const BASE_MONDAY = new Date(2025, 4, 12); // May 12, 2025
 
-  const handleSelectDay = (dayAbbr: string) => {
-    setWeek((prev) =>
-      prev.map((d) => ({ ...d, isActive: d.dayAbbr === dayAbbr })),
-    );
-  };
+function buildWeek(offset: number) {
+  return weekMock.map((day, i) => {
+    const d = new Date(BASE_MONDAY);
+    d.setDate(BASE_MONDAY.getDate() + offset * 7 + i);
+    return { ...day, date: d.getDate(), month: MONTHS[d.getMonth()] };
+  });
+}
+
+function weekLabel(offset: number) {
+  const first = new Date(BASE_MONDAY);
+  first.setDate(BASE_MONDAY.getDate() + offset * 7);
+  const last = new Date(first);
+  last.setDate(first.getDate() + 6);
+  return `${MONTHS[first.getMonth()]} ${first.getDate()} - ${MONTHS[last.getMonth()]} ${last.getDate()}`;
+}
+
+export default function AlumnoCronogramaPage() {
+  const [weekOffset, setWeekOffset] = React.useState(0);
+  const [activeDay, setActiveDay] = React.useState(weekMock.find((d) => d.isActive)?.dayAbbr ?? "");
+
+  const week = React.useMemo(() => {
+    const w = buildWeek(weekOffset);
+    return w.map((d) => ({ ...d, isActive: d.dayAbbr === activeDay }));
+  }, [weekOffset, activeDay]);
+
+  const handleSelectDay = (dayAbbr: string) => setActiveDay(dayAbbr);
 
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
@@ -25,13 +45,19 @@ export default function AlumnoCronogramaPage() {
           </div>
 
           <div className="flex items-center gap-2 bg-neutral-800/80 rounded-xl px-4 py-2.5 border border-zinc-800/50">
-            <button className="text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button
+              onClick={() => setWeekOffset((o) => o - 1)}
+              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+            >
               <i className="ti ti-chevron-left text-sm" />
             </button>
             <span className="text-white text-xs font-bold tracking-wider px-3">
-              {weekLabel}
+              {weekLabel(weekOffset)}
             </span>
-            <button className="text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button
+              onClick={() => setWeekOffset((o) => o + 1)}
+              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+            >
               <i className="ti ti-chevron-right text-sm" />
             </button>
           </div>

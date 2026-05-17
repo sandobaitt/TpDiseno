@@ -5,6 +5,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
+import { FilterSelect } from "../common/FilterSelect";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 
@@ -33,13 +34,8 @@ const ITEMS_PER_PAGE = 8;
 export function MembersTable({ className = "" }: MembersTableProps) {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
-  const [filterStatuses, setFilterStatuses] = React.useState<Set<string>>(new Set());
-  const [filterPlan, setFilterPlan] = React.useState<Set<string>>(new Set());
-
-  const toggleStatus = (s: string) =>
-    setFilterStatuses((prev) => { const n = new Set(prev); n.has(s) ? n.delete(s) : n.add(s); return n; });
-  const togglePlan = (p: string) =>
-    setFilterPlan((prev) => { const n = new Set(prev); n.has(p) ? n.delete(p) : n.add(p); return n; });
+  const [filterStatus, setFilterStatus] = React.useState("");
+  const [filterPlan, setFilterPlan] = React.useState("");
 
   const initialsStyles = [
     { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
@@ -121,8 +117,13 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     };
   });
 
+  const activePlanNames = React.useMemo(
+    () => new Set(plansMock.filter((p) => p.status === "active").map((p) => p.name)),
+    [],
+  );
+
   const uniquePlans = React.useMemo(
-    () => [...new Set(allMembers.map((m) => m.plan).filter((p) => p !== "-"))],
+    () => [...new Set(allMembers.map((m) => m.plan).filter((p) => p !== "-" && activePlanNames.has(p)))],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -131,13 +132,13 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     const q = search.toLowerCase().trim();
     return allMembers.filter((m) => {
       if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q) && !m.dni.includes(q)) return false;
-      if (filterStatuses.size > 0 && !filterStatuses.has(m.status.type)) return false;
-      if (filterPlan.size > 0 && !filterPlan.has(m.plan)) return false;
+      if (filterStatus && m.status.type !== filterStatus) return false;
+      if (filterPlan && m.plan !== filterPlan) return false;
       return true;
     });
-  }, [allMembers, search, filterStatuses, filterPlan]);
+  }, [allMembers, search, filterStatus, filterPlan]);
 
-  React.useEffect(() => { setCurrentPage(1); }, [search, filterStatuses, filterPlan]);
+  React.useEffect(() => { setCurrentPage(1); }, [search, filterStatus, filterPlan]);
 
   const getStatusStyles = (status: Member["status"]["type"]) => {
     switch (status) {
@@ -194,7 +195,7 @@ export function MembersTable({ className = "" }: MembersTableProps) {
   const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedMembers = filteredMembers.slice(start, start + ITEMS_PER_PAGE);
-  const hasFilters = search.length > 0 || filterStatuses.size > 0 || filterPlan.size > 0;
+  const hasFilters = search.length > 0 || filterStatus !== "" || filterPlan !== "";
 
   return (
     <section className={`px-7 pb-7 max-sm:px-4 ${className}`}>
@@ -218,37 +219,27 @@ export function MembersTable({ className = "" }: MembersTableProps) {
           )}
         </div>
 
-        {[["enabled", "Habilitado"], ["debtor", "Deudor"], ["inactive", "Inactivo"]].map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => toggleStatus(key)}
-            className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
-              filterStatuses.has(key)
-                ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
+        <FilterSelect
+          value={filterStatus}
+          onChange={setFilterStatus}
+          placeholder="Estado"
+          options={[
+            { value: "enabled", label: "Habilitado" },
+            { value: "debtor", label: "Deudor" },
+            { value: "inactive", label: "Inactivo" },
+          ]}
+        />
 
-        {uniquePlans.map((plan) => (
-          <button
-            key={plan}
-            onClick={() => togglePlan(plan)}
-            className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
-              filterPlan.has(plan)
-                ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
-            }`}
-          >
-            {plan}
-          </button>
-        ))}
+        <FilterSelect
+          value={filterPlan}
+          onChange={setFilterPlan}
+          placeholder="Plan"
+          options={uniquePlans.map((p) => ({ value: p, label: p }))}
+        />
 
         {hasFilters && (
           <button
-            onClick={() => { setSearch(""); setFilterStatuses(new Set()); setFilterPlan(new Set()); }}
+            onClick={() => { setSearch(""); setFilterStatus(""); setFilterPlan(""); }}
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
           >
             Limpiar
@@ -264,7 +255,7 @@ export function MembersTable({ className = "" }: MembersTableProps) {
             <i className="ti ti-search-off text-3xl text-gray-700" />
             <p className="text-sm text-gray-600 font-medium">Sin resultados para los filtros aplicados</p>
             <button
-              onClick={() => { setSearch(""); setFilterStatuses(new Set()); setFilterPlan(new Set()); }}
+              onClick={() => { setSearch(""); setFilterStatus(""); setFilterPlan(""); }}
               className="text-xs text-lime-400 hover:text-lime-300 transition-colors cursor-pointer"
             >
               Limpiar filtros

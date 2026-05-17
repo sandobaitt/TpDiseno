@@ -1,5 +1,33 @@
+import { Link } from "react-router-dom";
 import { metricsMock, newsMock } from "@/data/dashboard";
+import { novedadesMock, type Novedad } from "@/data/novedades";
 import fotoAdmin from "@/assets/foto-admin.jpeg";
+
+const TYPE_CONFIG = {
+  incident: { label: "Incidente",      dot: "bg-red-400",    text: "text-red-400"    },
+  change:   { label: "Cambio turno",   dot: "bg-amber-400",  text: "text-amber-400"  },
+  normal:   { label: "Novedad",        dot: "bg-blue-400",   text: "text-blue-400"   },
+};
+
+const STATUS_CONFIG = {
+  resolved:    { label: "Resuelto",    color: "text-green-400" },
+  in_progress: { label: "En curso",   color: "text-amber-400" },
+  closed:      { label: "Cerrado",     color: "text-gray-500"  },
+};
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `hace ${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `hace ${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  return `hace ${days}d`;
+}
+
+const recentNovedades: Novedad[] = [...novedadesMock]
+  .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  .slice(0, 4);
 
 export default function AdminPanel() {
   return (
@@ -55,7 +83,7 @@ export default function AdminPanel() {
               className="bg-[#171717] rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border"
             >
               <div className="flex items-center justify-between">
-                <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${m.warning ? "bg-red-500/10" : "bg-lime-400/10"}`}>
                   <i className={`${m.icon} text-lg ${m.iconColor}`} />
                 </div>
                 {m.variation && !m.warning && (
@@ -121,16 +149,37 @@ export default function AdminPanel() {
             <h2 className="text-white text-sm font-extrabold tracking-wider">
               HISTORIAL
             </h2>
-            <div className="bg-[#171717] rounded-2xl p-6 flex flex-col items-center justify-center gap-6 min-h-[280px] shadow-card glass-border">
-              <div className="w-16 h-16 rounded-2xl bg-lime-400/10 flex items-center justify-center">
-                <i className="ti ti-clock text-2xl text-lime-400/60" />
+            <div className="bg-[#171717] rounded-2xl shadow-card glass-border flex flex-col overflow-hidden">
+              {/* Recent novedades list */}
+              <div className="flex flex-col divide-y divide-white/[0.04]">
+                {recentNovedades.map((nov) => {
+                  const type = TYPE_CONFIG[nov.type];
+                  const status = STATUS_CONFIG[nov.status];
+                  return (
+                    <div key={nov.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.02] transition-colors">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${type.dot}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white text-xs font-semibold truncate">{nov.entityName}</p>
+                        <p className="text-gray-600 text-[10px]">{type.label}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-0.5 shrink-0">
+                        <span className={`text-[10px] font-bold ${status.color}`}>{status.label}</span>
+                        <span className="text-gray-600 text-[9px]">{timeAgo(nov.timestamp)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <p className="text-gray-600 text-xs text-center leading-relaxed max-w-[180px]">
-                Historial de actividad y movimientos recientes de la sede.
-              </p>
-              <button className="px-6 py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold tracking-wider hover:brightness-110 active:scale-[0.97] transition-all shadow-btn-lime cursor-pointer">
-                CONSULTAR HISTORIAL
-              </button>
+              {/* Footer button */}
+              <div className="p-4 border-t border-white/[0.04]">
+                <Link
+                  to="/admin/novedades"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold tracking-wider hover:brightness-110 active:scale-[0.97] transition-all shadow-btn-lime"
+                >
+                  <i className="ti ti-clock-history text-sm" />
+                  CONSULTAR HISTORIAL
+                </Link>
+              </div>
             </div>
           </div>
         </div>

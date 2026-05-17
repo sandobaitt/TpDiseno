@@ -67,11 +67,11 @@ export const newsMock: NewsEvent[] = [
   },
   {
     id: "n2",
-    icon: "ti ti-crown",
-    iconBg: "bg-zinc-800",
-    iconColor: "text-gray-400",
-    title: "Nueva Membresía Anual",
-    description: "Plan Elite adquirido en recepción.",
+    icon: "ti ti-arrows-exchange",
+    iconBg: "bg-amber-400/10",
+    iconColor: "text-amber-400",
+    title: "Cambio de Turno Aprobado",
+    description: "Clase de Crossfit PM reagendada al jueves.",
     timestamp: "Hace 45 min",
   },
   {

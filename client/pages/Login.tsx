@@ -1,14 +1,36 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { findMockUserByEmailOrDni, getPostLoginPath, saveMockSession } from "@/data/users";
+import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, type AppUser } from "@/data/users";
+
+const DEBUG_USERS: AppUser[] = [
+  appUsersMock.find((u) => u.role === "admin")!,
+  appUsersMock.find((u) => u.role === "secretario")!,
+  appUsersMock.find((u) => u.role === "profesor")!,
+  appUsersMock.find((u) => u.role === "alumno")!,
+];
+
+const ROLE_STYLE: Record<string, { label: string; bg: string; text: string; dot: string }> = {
+  admin:      { label: "Admin",       bg: "bg-lime-400/10",   text: "text-lime-400",   dot: "bg-lime-400"   },
+  secretario: { label: "Secretario",  bg: "bg-violet-400/10", text: "text-violet-400", dot: "bg-violet-400" },
+  profesor:   { label: "Profesor",    bg: "bg-blue-400/10",   text: "text-blue-400",   dot: "bg-blue-400"   },
+  alumno:     { label: "Alumno",      bg: "bg-gray-400/10",   text: "text-gray-400",   dot: "bg-gray-500"   },
+};
+
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+}
 
 export default function Login() {
   const navigate = useNavigate();
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+
+  const clickRef = useRef({ count: 0, lastTime: 0 });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -25,6 +47,28 @@ export default function Login() {
       toast.error("Contraseña incorrecta.");
       return;
     }
+    saveMockSession(user);
+    toast.success(`Hola, ${user.fullName}`);
+    navigate(getPostLoginPath(user.role), { replace: true });
+  };
+
+  const handleIngreseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const now = Date.now();
+    if (now - clickRef.current.lastTime < 600) {
+      clickRef.current.count += 1;
+    } else {
+      clickRef.current.count = 1;
+    }
+    clickRef.current.lastTime = now;
+
+    if (clickRef.current.count >= 3) {
+      e.preventDefault();
+      clickRef.current.count = 0;
+      setShowDebug(true);
+    }
+  };
+
+  const handleQuickLogin = (user: AppUser) => {
     saveMockSession(user);
     toast.success(`Hola, ${user.fullName}`);
     navigate(getPostLoginPath(user.role), { replace: true });
@@ -137,10 +181,59 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Debug quick-login panel */}
+          <AnimatePresence>
+            {showDebug && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="rounded-2xl border border-white/[0.07] bg-black/40 backdrop-blur-sm overflow-hidden"
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <i className="ti ti-bug text-xs text-gray-500" />
+                    <span className="text-gray-500 text-[10px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDebug(false)}
+                    className="text-gray-600 hover:text-gray-400 transition-colors cursor-pointer"
+                  >
+                    <i className="ti ti-x text-xs" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 p-3">
+                  {DEBUG_USERS.map((user) => {
+                    const s = ROLE_STYLE[user.role];
+                    return (
+                      <button
+                        key={user.id}
+                        type="button"
+                        onClick={() => handleQuickLogin(user)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.05] hover:border-white/[0.10] transition-all cursor-pointer text-left group"
+                      >
+                        <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
+                          <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
+                          <span className={`text-[9px] font-bold ${s.text}`}>{s.label}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"
+              onClick={handleIngreseClick}
               className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150"
             >
               Ingresar
@@ -148,15 +241,6 @@ export default function Login() {
           </div>
         </form>
 
-        {/* Footer note */}
-        <div className="pt-8">
-          <p className="font-inter text-sm text-center">
-            <span className="text-squat-muted">¿Eres nuevo? </span>
-            <a href="#" className="font-medium text-squat-green hover:opacity-80 transition-opacity">
-              Regístrate aquí
-            </a>
-          </p>
-        </div>
       </motion.div>
     </div>
   );

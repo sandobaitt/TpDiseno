@@ -2,10 +2,38 @@ import * as React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   timeSlots,
-  daysMock,
   blocksMock,
   type TimeBlock,
+  type DayInfo,
 } from "@/data/adminAttendance";
+
+const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const DAY_ABBRS = ["LUN","MAR","MIE","JUE","VIE","SAB","DOM"];
+const BASE_MONDAY = new Date(2023, 10, 12); // Nov 12, 2023
+
+function buildWeekDays(offset: number): DayInfo[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return DAY_ABBRS.map((abbr, i) => {
+    const d = new Date(BASE_MONDAY);
+    d.setDate(BASE_MONDAY.getDate() + offset * 7 + i);
+    d.setHours(0, 0, 0, 0);
+    const isActive = (offset === 0 && i === 2) || d.getTime() === today.getTime();
+    return { abbr, number: d.getDate(), isActive };
+  });
+}
+
+function weekLabel(offset: number): string {
+  const first = new Date(BASE_MONDAY);
+  first.setDate(BASE_MONDAY.getDate() + offset * 7);
+  const last = new Date(first);
+  last.setDate(first.getDate() + 6);
+  const year = last.getFullYear();
+  if (first.getMonth() === last.getMonth()) {
+    return `${first.getDate()} - ${last.getDate()} ${MONTHS_ES[last.getMonth()]}, ${year}`;
+  }
+  return `${first.getDate()} ${MONTHS_ES[first.getMonth()]} - ${last.getDate()} ${MONTHS_ES[last.getMonth()]}, ${year}`;
+}
 
 type AttendanceStatus = "present" | "absent" | "pending";
 
@@ -29,6 +57,8 @@ function generateAttendance() {
 }
 
 export default function AdminAsistenciaPage() {
+  const [weekOffset, setWeekOffset] = React.useState(0);
+  const weekDays = React.useMemo(() => buildWeekDays(weekOffset), [weekOffset]);
   const [attendanceMap] = React.useState(generateAttendance);
   const [selectedSlot, setSelectedSlot] = React.useState<{ day: number; time: string } | null>(null);
 
@@ -55,11 +85,18 @@ export default function AdminAsistenciaPage() {
             </h1>
             <div className="h-px bg-white/[0.06] mt-4" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-900 glass-border text-gray-300 text-xs font-bold hover:border-zinc-700 transition-colors cursor-pointer shadow-card">
-            <i className="ti ti-calendar text-sm text-lime-400" />
-            12 - 18 Noviembre, 2023
-            <i className="ti ti-chevron-down text-gray-500 text-xs" />
-          </button>
+          <div className="flex items-center bg-neutral-900 glass-border rounded-xl shadow-card overflow-hidden">
+            <button onClick={() => setWeekOffset((o) => o - 1)} className="px-3 py-2.5 text-gray-500 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+              <i className="ti ti-chevron-left text-sm" />
+            </button>
+            <span className="flex items-center gap-2 px-2 text-gray-300 text-xs font-bold whitespace-nowrap">
+              <i className="ti ti-calendar text-sm text-lime-400" />
+              {weekLabel(weekOffset)}
+            </span>
+            <button onClick={() => setWeekOffset((o) => o + 1)} className="px-3 py-2.5 text-gray-500 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+              <i className="ti ti-chevron-right text-sm" />
+            </button>
+          </div>
         </div>
 
         {/* Metric cards */}
@@ -131,7 +168,7 @@ export default function AdminAsistenciaPage() {
             {/* Day headers */}
             <div className="grid grid-cols-[72px_repeat(7,1fr)] gap-2 mb-4">
               <div />
-              {daysMock.map((d) => (
+              {weekDays.map((d) => (
                 <div
                   key={d.abbr}
                   className={`flex flex-col items-center py-3 rounded-xl transition-all ${
@@ -183,7 +220,7 @@ export default function AdminAsistenciaPage() {
                     </span>
                   </div>
 
-                  {daysMock.map((day, dayIdx) => {
+                  {weekDays.map((day, dayIdx) => {
                     const blocks = blocksAtTime.filter((b) => b.day === dayIdx);
                     const hasMultiple = blocks.length > 1;
                     const isConflict = blocks.some((b) => b.isConflict);
@@ -289,7 +326,7 @@ export default function AdminAsistenciaPage() {
                 </div>
                 <div>
                   <h2 className="text-white text-base font-extrabold">
-                    {daysMock[selectedSlot.day].abbr} {daysMock[selectedSlot.day].number} · {selectedSlot.time} – {slotEnd}
+                    {weekDays[selectedSlot.day].abbr} {weekDays[selectedSlot.day].number} · {selectedSlot.time} – {slotEnd}
                   </h2>
                   <p className="text-gray-500 text-[10px]">
                     Profesores asignados a este horario

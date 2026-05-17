@@ -81,7 +81,7 @@ export default function Index() {
                   to="/login"
                   className="font-jakarta font-extrabold text-lg text-squat-ink px-8 py-4 rounded-xl bg-squat-green shadow-[0_0_32px_rgba(149,253,0,0.25)] hover:brightness-105 active:scale-[0.98] transition-all duration-150"
                 >
-                  Inscribirme Ahora
+                  Iniciar Sesión
                 </Link>
               </div>
             </div>

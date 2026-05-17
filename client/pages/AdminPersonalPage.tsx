@@ -11,6 +11,7 @@ import {
 import { clientsMock, type Client, type ClientStatus } from "@/data/clients";
 import { branchesMock } from "@/data/branches";
 import { plansMock } from "@/data/plans";
+import { FilterSelect } from "@/components/common/FilterSelect";
 
 type TabId = "staff" | "students";
 
@@ -52,18 +53,11 @@ export default function AdminPersonalPage() {
   const [staffList, setStaffList] = React.useState<Employee[]>(employeesMock);
   const [studentList, setStudentList] = React.useState<Client[]>(clientsMock);
 
-  // Search & filters (multi-select)
+  // Search & filters
   const [search, setSearch] = React.useState("");
-  const [filterRoles, setFilterRoles] = React.useState<Set<EmployeeRole>>(new Set());
-  const [filterPlans, setFilterPlans] = React.useState<Set<string>>(new Set());
-  const [filterStatuses, setFilterStatuses] = React.useState<Set<ClientStatus>>(new Set());
-
-  const toggleRole = (role: EmployeeRole) =>
-    setFilterRoles((prev) => { const s = new Set(prev); s.has(role) ? s.delete(role) : s.add(role); return s; });
-  const togglePlan = (id: string) =>
-    setFilterPlans((prev) => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
-  const toggleStatus = (st: ClientStatus) =>
-    setFilterStatuses((prev) => { const s = new Set(prev); s.has(st) ? s.delete(st) : s.add(st); return s; });
+  const [filterRole, setFilterRole] = React.useState("");
+  const [filterPlan, setFilterPlan] = React.useState("");
+  const [filterStatus, setFilterStatus] = React.useState("");
 
   const [selectedEmployee, setSelectedEmployee] =
     React.useState<Employee | null>(null);
@@ -92,24 +86,24 @@ export default function AdminPersonalPage() {
     const q = search.toLowerCase();
     return staffList.filter((emp) => {
       const matchesSearch = !q || emp.fullName.toLowerCase().includes(q) || emp.email.toLowerCase().includes(q);
-      const matchesRole = filterRoles.size === 0 || filterRoles.has(emp.role);
+      const matchesRole = !filterRole || emp.role === filterRole;
       return matchesSearch && matchesRole;
     });
-  }, [staffList, search, filterRoles]);
+  }, [staffList, search, filterRole]);
 
   const filteredStudents = React.useMemo(() => {
     const q = search.toLowerCase();
     return studentList.filter((cli) => {
       const matchesSearch = !q || cli.fullName.toLowerCase().includes(q) || cli.email.toLowerCase().includes(q);
-      const matchesPlan = filterPlans.size === 0 || (cli.membership != null && filterPlans.has(cli.membership.planId));
-      const matchesStatus = filterStatuses.size === 0 || filterStatuses.has(cli.status);
+      const matchesPlan = !filterPlan || (cli.membership != null && cli.membership.planId === filterPlan);
+      const matchesStatus = !filterStatus || cli.status === filterStatus;
       return matchesSearch && matchesPlan && matchesStatus;
     });
-  }, [studentList, search, filterPlans, filterStatuses]);
+  }, [studentList, search, filterPlan, filterStatus]);
 
   // Reset page when filters change
-  React.useEffect(() => { setStaffPage(1); }, [search, filterRoles]);
-  React.useEffect(() => { setStudentPage(1); }, [search, filterPlans, filterStatuses]);
+  React.useEffect(() => { setStaffPage(1); }, [search, filterRole]);
+  React.useEffect(() => { setStudentPage(1); }, [search, filterPlan, filterStatus]);
 
   const staffTotalPages = Math.ceil(filteredStaff.length / ITEMS_PER_PAGE);
   const studentTotalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE);
@@ -248,7 +242,7 @@ export default function AdminPersonalPage() {
               setActiveTab("staff");
               setStaffPage(1);
               setSearch("");
-              setFilterRoles(new Set());
+              setFilterRole("");
             }}
             className={`px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "staff"
@@ -264,8 +258,8 @@ export default function AdminPersonalPage() {
               setActiveTab("students");
               setStudentPage(1);
               setSearch("");
-              setFilterPlans(new Set());
-              setFilterStatuses(new Set());
+              setFilterPlan("");
+              setFilterStatus("");
             }}
             className={`px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "students"
@@ -280,98 +274,58 @@ export default function AdminPersonalPage() {
 
         {/* Search + filters */}
         <div className="flex flex-col gap-3">
-          {/* Search bar */}
-          <div className="relative">
-            <i className="ti ti-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={activeTab === "staff" ? "Buscar por nombre o correo..." : "Buscar por nombre o correo..."}
-              className="w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-800/60 glass-border text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-              >
-                <i className="ti ti-x text-sm" />
-              </button>
-            )}
-          </div>
-
-          {/* Filters */}
-          {activeTab === "staff" ? (
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-gray-600 text-[10px] font-semibold tracking-widest">CARGO</span>
-              {(["manager", "reception", "trainer", "accounting", "admin"] as EmployeeRole[]).map((role) => (
+          <div className="flex gap-2 flex-wrap">
+            {/* Search bar */}
+            <div className="relative flex-1 min-w-[200px]">
+              <i className="ti ti-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nombre o correo..."
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-neutral-800/60 glass-border text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+              />
+              {search && (
                 <button
-                  key={role}
-                  onClick={() => toggleRole(role)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
-                    filterRoles.has(role)
-                      ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
-                      : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
-                  }`}
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
                 >
-                  {roleLabels[role]}
-                </button>
-              ))}
-              {filterRoles.size > 0 && (
-                <button
-                  onClick={() => setFilterRoles(new Set())}
-                  className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1"
-                >
-                  Limpiar
+                  <i className="ti ti-x text-sm" />
                 </button>
               )}
             </div>
-          ) : (
-            <div className="flex flex-wrap gap-4 items-start">
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-gray-600 text-[10px] font-semibold tracking-widest">ESTADO</span>
-                {(["enabled", "debtor", "inactive"] as ClientStatus[]).map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => toggleStatus(st)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
-                      filterStatuses.has(st)
-                        ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
-                        : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
-                    }`}
-                  >
-                    {statusLabels[st]}
-                  </button>
-                ))}
-                {filterStatuses.size > 0 && (
-                  <button onClick={() => setFilterStatuses(new Set())} className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1">
-                    Limpiar
-                  </button>
+
+            {/* Dropdown filters */}
+            {activeTab === "staff" ? (
+              <FilterSelect
+                value={filterRole}
+                onChange={setFilterRole}
+                placeholder="Cargo"
+                options={(["manager", "reception", "trainer", "accounting", "admin"] as EmployeeRole[]).map(
+                  (role) => ({ value: role, label: roleLabels[role] }),
                 )}
-              </div>
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-gray-600 text-[10px] font-semibold tracking-widest">PLAN</span>
-                {plansMock.map((plan) => (
-                  <button
-                    key={plan.id}
-                    onClick={() => togglePlan(plan.id)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-150 cursor-pointer ${
-                      filterPlans.has(plan.id)
-                        ? "bg-lime-400/15 text-lime-400 border border-lime-400/40"
-                        : "bg-zinc-800/60 text-gray-500 border border-zinc-700/40 hover:text-gray-300 hover:border-zinc-600"
-                    }`}
-                  >
-                    {plan.name}
-                  </button>
-                ))}
-                {filterPlans.size > 0 && (
-                  <button onClick={() => setFilterPlans(new Set())} className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer ml-1">
-                    Limpiar
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+              />
+            ) : (
+              <>
+                <FilterSelect
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                  placeholder="Estado"
+                  options={[
+                    { value: "enabled", label: "Habilitado" },
+                    { value: "debtor", label: "Deudor" },
+                    { value: "inactive", label: "Inactivo" },
+                  ]}
+                />
+                <FilterSelect
+                  value={filterPlan}
+                  onChange={setFilterPlan}
+                  placeholder="Plan"
+                  options={plansMock.filter((p) => p.status === "active").map((p) => ({ value: p.id, label: p.name }))}
+                />
+              </>
+            )}
+          </div>
 
           {/* Results count */}
           <p className="text-gray-600 text-[11px]">
@@ -498,169 +452,98 @@ export default function AdminPersonalPage() {
       </div>
 
       {/* Dialog: Employee CRUD */}
-      <Dialog
-        open={!!selectedEmployee}
-        onOpenChange={(o) => !o && closeDialog()}
-      >
-        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+      <Dialog open={!!selectedEmployee} onOpenChange={(o) => !o && closeDialog()}>
+        <DialogContent className="max-w-md bg-[#111111] border-zinc-800/60 text-white p-0 overflow-hidden">
           {selectedEmployee && (
-            <div className="flex flex-col gap-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">
-                      {getInitials(selectedEmployee.fullName)}
-                    </span>
+            <div className="flex flex-col">
+              <div className="h-px bg-gradient-to-r from-transparent via-lime-400/50 to-transparent" />
+              <div className="p-6 pt-8 flex flex-col gap-5">
+                <div className="flex items-start gap-4">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${getRoleStyle(selectedEmployee.role).avatar} border border-white/[0.07] flex items-center justify-center shrink-0`}>
+                    <span className="text-white font-extrabold text-base">{getInitials(selectedEmployee.fullName)}</span>
                   </div>
-                  <div>
-                    <h2 className="text-white text-base font-extrabold">
-                      {editing ? "EDITAR PERSONAL" : selectedEmployee.fullName}
-                    </h2>
-                    <p className="text-gray-600 text-[10px]">
-                      ID: {selectedEmployee.id}
-                    </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        {editing && <p className="text-lime-400/60 text-[10px] font-bold tracking-widest mb-1">EDITANDO</p>}
+                        <h2 className="text-white font-extrabold text-base leading-tight">
+                          {editing ? (editName || selectedEmployee.fullName) : selectedEmployee.fullName}
+                        </h2>
+                        {!editing && (
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${getRoleStyle(selectedEmployee.role).badge}`}>
+                              {roleLabels[selectedEmployee.role]}
+                            </span>
+                            <span className={`flex items-center gap-1.5 text-[10px] font-semibold ${selectedEmployee.status === "active" ? "text-lime-400" : "text-gray-500"}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${selectedEmployee.status === "active" ? "bg-lime-400 shadow-[0_0_5px_rgba(163,230,53,0.7)]" : "bg-gray-600"}`} />
+                              {statusLabels[selectedEmployee.status]}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      {!editing && (
+                        <button onClick={() => setEditing(true)} className="shrink-0 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-gray-400 text-[10px] font-bold hover:bg-white/[0.08] hover:text-white transition-all cursor-pointer flex items-center gap-1.5">
+                          <i className="ti ti-pencil text-xs" />
+                          Editar
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                {!editing && (
-                  <button
-                    onClick={() => setEditing(true)}
-                    className="px-3 py-1.5 rounded-lg bg-lime-400/10 text-lime-400 text-[10px] font-bold hover:bg-lime-400/20 transition-colors cursor-pointer"
-                  >
-                    <i className="ti ti-pencil text-xs mr-1" />
-                    Editar
-                  </button>
-                )}
-              </div>
 
-              <div className="bg-black/40 rounded-xl p-4 flex flex-col gap-3">
                 {editing ? (
-                  <>
-                    <Field
-                      label="NOMBRE"
-                      value={editName}
-                      onChange={setEditName}
-                    />
-                    <Field
-                      label="EMAIL"
-                      value={editEmail}
-                      onChange={setEditEmail}
-                    />
+                  <div className="flex flex-col gap-3">
+                    <Field label="NOMBRE" value={editName} onChange={setEditName} />
+                    <Field label="EMAIL" value={editEmail} onChange={setEditEmail} />
                     <Field label="DNI" value={editDni} onChange={setEditDni} />
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                        ROL
-                      </span>
-                      <select
-                        value={editRole}
-                        onChange={(e) =>
-                          setEditRole(e.target.value as EmployeeRole)
-                        }
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                      >
-                        {(Object.keys(roleLabels) as EmployeeRole[]).map(
-                          (r) => (
-                            <option key={r} value={r}>
-                              {roleLabels[r]}
-                            </option>
-                          ),
-                        )}
+                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">ROL</span>
+                      <select value={editRole} onChange={(e) => setEditRole(e.target.value as EmployeeRole)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
+                        {(Object.keys(roleLabels) as EmployeeRole[]).map((r) => <option key={r} value={r}>{roleLabels[r]}</option>)}
                       </select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                        ESTADO
-                      </span>
-                      <select
-                        value={editStatus}
-                        onChange={(e) =>
-                          setEditStatus(e.target.value as EmployeeStatus)
-                        }
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                      >
+                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">ESTADO</span>
+                      <select value={editStatus} onChange={(e) => setEditStatus(e.target.value as EmployeeStatus)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
                         <option value="active">Activo</option>
                         <option value="inactive">Inactivo</option>
                       </select>
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                        SUCURSAL
-                      </span>
-                      <select
-                        value={editBranchId}
-                        onChange={(e) => setEditBranchId(e.target.value)}
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                      >
-                        {branchesMock.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.code} - {b.name}
-                          </option>
-                        ))}
+                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">SUCURSAL</span>
+                      <select value={editBranchId} onChange={(e) => setEditBranchId(e.target.value)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
+                        {branchesMock.map((b) => <option key={b.id} value={b.id}>{b.code} – {b.name}</option>)}
                       </select>
                     </div>
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <InfoRow label="EMAIL" value={selectedEmployee.email} />
-                    <InfoRow label="DNI" value={selectedEmployee.dni ?? "-"} />
-                    <InfoRow
-                      label="ROL"
-                      value={roleLabels[selectedEmployee.role]}
-                    />
-                    <InfoRow
-                      label="ESTADO"
-                      value={
-                        statusLabels[selectedEmployee.status] ??
-                        selectedEmployee.status
-                      }
-                    />
-                    <InfoRow
-                      label="SUCURSAL"
-                      value={
-                        branchesMock.find(
-                          (b) => b.id === selectedEmployee.branchId,
-                        )?.code ?? "-"
-                      }
-                    />
-                    <InfoRow
-                      label="CREADO"
-                      value={formatDate(selectedEmployee.createdAt)}
-                    />
-                  </>
+                  <div className="rounded-2xl border border-white/[0.05] overflow-hidden">
+                    <InfoIconRow icon="ti-mail" label="EMAIL" value={selectedEmployee.email} />
+                    <InfoIconRow icon="ti-id" label="DNI" value={selectedEmployee.dni ?? "—"} />
+                    <InfoIconRow icon="ti-building" label="SUCURSAL" value={branchesMock.find((b) => b.id === selectedEmployee.branchId)?.name ?? "—"} />
+                    <InfoIconRow icon="ti-calendar" label="ALTA" value={formatDate(selectedEmployee.createdAt)} />
+                  </div>
+                )}
+
+                {editing ? (
+                  <div className="flex gap-2.5">
+                    <button
+                      onClick={() => { setEditing(false); setEditName(selectedEmployee.fullName); setEditEmail(selectedEmployee.email); setEditDni(selectedEmployee.dni ?? ""); setEditRole(selectedEmployee.role); setEditStatus(selectedEmployee.status); setEditBranchId(selectedEmployee.branchId); }}
+                      className="flex-1 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-gray-400 text-xs font-bold hover:bg-white/[0.07] transition-all cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button onClick={handleEditEmployee} className="flex-1 py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer">
+                      Guardar Cambios
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={handleDeleteEmployee} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/[0.12] text-red-400/60 text-[11px] font-bold hover:bg-red-500/[0.06] hover:text-red-400 hover:border-red-500/20 transition-all cursor-pointer">
+                    <i className="ti ti-trash text-sm" />
+                    Eliminar Personal
+                  </button>
                 )}
               </div>
-
-              {editing && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setEditing(false);
-                      setEditName(selectedEmployee.fullName);
-                      setEditEmail(selectedEmployee.email);
-                      setEditDni(selectedEmployee.dni ?? "");
-                      setEditRole(selectedEmployee.role);
-                      setEditStatus(selectedEmployee.status);
-                      setEditBranchId(selectedEmployee.branchId);
-                    }}
-                    className="flex-1 py-3 rounded-xl bg-neutral-900 text-gray-300 text-xs font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleEditEmployee}
-                    className="flex-1 py-3 rounded-xl bg-lime-400 text-black text-xs font-bold hover:brightness-110 transition-all cursor-pointer"
-                  >
-                    Guardar Cambios
-                  </button>
-                </div>
-              )}
-
-              <button
-                onClick={handleDeleteEmployee}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-950/30 text-red-400 text-xs font-bold hover:bg-red-950/50 transition-colors cursor-pointer"
-              >
-                <i className="ti ti-trash text-sm" />
-                Eliminar Personal
-              </button>
             </div>
           )}
         </DialogContent>
@@ -668,170 +551,112 @@ export default function AdminPersonalPage() {
 
       {/* Dialog: Client CRUD */}
       <Dialog open={!!selectedClient} onOpenChange={(o) => !o && closeDialog()}>
-        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+        <DialogContent className="max-w-md bg-[#111111] border-zinc-800/60 text-white p-0 overflow-hidden">
           {selectedClient && (
-            <div className="flex flex-col gap-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">
-                      {getInitials(selectedClient.fullName)}
-                    </span>
-                  </div>
-                  <div>
-                    <h2 className="text-white text-base font-extrabold">
-                      {editing ? "EDITAR ALUMNO" : selectedClient.fullName}
-                    </h2>
-                    <p className="text-gray-600 text-[10px]">
-                      ID: {selectedClient.id}
-                    </p>
-                  </div>
-                </div>
-                {!editing && (
-                  <button
-                    onClick={() => setEditing(true)}
-                    className="px-3 py-1.5 rounded-lg bg-lime-400/10 text-lime-400 text-[10px] font-bold hover:bg-lime-400/20 transition-colors cursor-pointer"
-                  >
-                    <i className="ti ti-pencil text-xs mr-1" />
-                    Editar
-                  </button>
-                )}
+            <div className="flex flex-col">
+              <div className="h-px bg-gradient-to-r from-transparent via-lime-400/50 to-transparent" />
+              <div className="p-6 pt-8 flex flex-col gap-5">
+                {(() => {
+                  const clientPlan = selectedClient.membership
+                    ? plansMock.find((p) => p.id === selectedClient.membership!.planId)
+                    : undefined;
+                  const st = selectedClient.status;
+                  const stStyle = st === "enabled"
+                    ? { dot: "bg-lime-400 shadow-[0_0_5px_rgba(163,230,53,0.7)]", text: "text-lime-400" }
+                    : st === "debtor"
+                    ? { dot: "bg-orange-400", text: "text-orange-400" }
+                    : { dot: "bg-gray-600", text: "text-gray-500" };
+                  return (
+                    <>
+                      <div className="flex items-start gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-zinc-700 to-zinc-900 border border-white/[0.07] flex items-center justify-center shrink-0">
+                          <span className="text-white font-extrabold text-base">{getInitials(selectedClient.fullName)}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              {editing && <p className="text-lime-400/60 text-[10px] font-bold tracking-widest mb-1">EDITANDO</p>}
+                              <h2 className="text-white font-extrabold text-base leading-tight">
+                                {editing ? (editClientName || selectedClient.fullName) : selectedClient.fullName}
+                              </h2>
+                              {!editing && (
+                                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                  {clientPlan && (
+                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-zinc-800/80 text-gray-300 border border-white/[0.06]">
+                                      {clientPlan.name}
+                                    </span>
+                                  )}
+                                  <span className={`flex items-center gap-1.5 text-[10px] font-semibold ${stStyle.text}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${stStyle.dot}`} />
+                                    {statusLabels[st]}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            {!editing && (
+                              <button onClick={() => setEditing(true)} className="shrink-0 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-gray-400 text-[10px] font-bold hover:bg-white/[0.08] hover:text-white transition-all cursor-pointer flex items-center gap-1.5">
+                                <i className="ti ti-pencil text-xs" />
+                                Editar
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {editing ? (
+                        <div className="flex flex-col gap-3">
+                          <Field label="NOMBRE" value={editClientName} onChange={setEditClientName} />
+                          <Field label="EMAIL" value={editClientEmail} onChange={setEditClientEmail} />
+                          <Field label="DNI" value={editClientDni} onChange={setEditClientDni} />
+                          <Field label="TELÉFONO" value={editClientPhone} onChange={setEditClientPhone} />
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-gray-500 text-[10px] font-semibold tracking-widest">ESTADO</span>
+                            <select value={editClientStatus} onChange={(e) => setEditClientStatus(e.target.value as ClientStatus)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
+                              <option value="enabled">Habilitado</option>
+                              <option value="debtor">Deudor</option>
+                              <option value="inactive">Inactivo</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <span className="text-gray-500 text-[10px] font-semibold tracking-widest">SUCURSAL</span>
+                            <select value={editClientBranchId} onChange={(e) => setEditClientBranchId(e.target.value)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
+                              {branchesMock.map((b) => <option key={b.id} value={b.id}>{b.code} – {b.name}</option>)}
+                            </select>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-white/[0.05] overflow-hidden">
+                          <InfoIconRow icon="ti-mail" label="EMAIL" value={selectedClient.email} />
+                          <InfoIconRow icon="ti-id" label="DNI" value={selectedClient.dni} />
+                          {selectedClient.phone && <InfoIconRow icon="ti-phone" label="TELÉFONO" value={selectedClient.phone} />}
+                          <InfoIconRow icon="ti-building" label="SUCURSAL" value={branchesMock.find((b) => b.id === selectedClient.branchId)?.name ?? "—"} />
+                          {clientPlan && <InfoIconRow icon="ti-crown" label="PLAN" value={clientPlan.name} />}
+                          {selectedClient.membership && <InfoIconRow icon="ti-calendar-check" label="MEMBRESÍA" value={`Desde ${formatDate(selectedClient.membership.startDate)}`} />}
+                        </div>
+                      )}
+
+                      {editing ? (
+                        <div className="flex gap-2.5">
+                          <button
+                            onClick={() => { setEditing(false); setEditClientName(selectedClient.fullName); setEditClientEmail(selectedClient.email); setEditClientDni(selectedClient.dni); setEditClientPhone(selectedClient.phone ?? ""); setEditClientStatus(selectedClient.status); setEditClientBranchId(selectedClient.branchId); }}
+                            className="flex-1 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-gray-400 text-xs font-bold hover:bg-white/[0.07] transition-all cursor-pointer"
+                          >
+                            Cancelar
+                          </button>
+                          <button onClick={handleEditClient} className="flex-1 py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer">
+                            Guardar Cambios
+                          </button>
+                        </div>
+                      ) : (
+                        <button onClick={handleDeleteClient} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/[0.12] text-red-400/60 text-[11px] font-bold hover:bg-red-500/[0.06] hover:text-red-400 hover:border-red-500/20 transition-all cursor-pointer">
+                          <i className="ti ti-trash text-sm" />
+                          Eliminar Alumno
+                        </button>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
-
-              <div className="bg-black/40 rounded-xl p-4 flex flex-col gap-3">
-                {editing ? (
-                  <>
-                    <Field
-                      label="NOMBRE"
-                      value={editClientName}
-                      onChange={setEditClientName}
-                    />
-                    <Field
-                      label="EMAIL"
-                      value={editClientEmail}
-                      onChange={setEditClientEmail}
-                    />
-                    <Field
-                      label="DNI"
-                      value={editClientDni}
-                      onChange={setEditClientDni}
-                    />
-                    <Field
-                      label="TELÉFONO"
-                      value={editClientPhone}
-                      onChange={setEditClientPhone}
-                    />
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                        ESTADO
-                      </span>
-                      <select
-                        value={editClientStatus}
-                        onChange={(e) =>
-                          setEditClientStatus(e.target.value as ClientStatus)
-                        }
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                      >
-                        <option value="enabled">Habilitado</option>
-                        <option value="debtor">Deudor</option>
-                        <option value="inactive">Inactivo</option>
-                      </select>
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-                        SUCURSAL
-                      </span>
-                      <select
-                        value={editClientBranchId}
-                        onChange={(e) => setEditClientBranchId(e.target.value)}
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
-                      >
-                        {branchesMock.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.code} - {b.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <InfoRow label="EMAIL" value={selectedClient.email} />
-                    <InfoRow label="DNI" value={selectedClient.dni} />
-                    {selectedClient.phone && (
-                      <InfoRow label="TELÉFONO" value={selectedClient.phone} />
-                    )}
-                    <InfoRow
-                      label="ESTADO"
-                      value={
-                        statusLabels[selectedClient.status] ??
-                        selectedClient.status
-                      }
-                    />
-                    <InfoRow
-                      label="SUCURSAL"
-                      value={
-                        branchesMock.find(
-                          (b) => b.id === selectedClient.branchId,
-                        )?.code ?? "-"
-                      }
-                    />
-                    {(() => {
-                      const plan = selectedClient.membership
-                        ? plansMock.find(
-                            (p) => p.id === selectedClient.membership!.planId,
-                          )
-                        : undefined;
-                      return plan ? (
-                        <InfoRow label="PLAN" value={plan.name} />
-                      ) : null;
-                    })()}
-                    {selectedClient.membership && (
-                      <InfoRow
-                        label="MEMBRESÍA"
-                        value={`${statusLabels[selectedClient.membership.status] ?? selectedClient.membership.status} (desde ${formatDate(selectedClient.membership.startDate)})`}
-                      />
-                    )}
-                    <InfoRow
-                      label="CREADO"
-                      value={formatDate(selectedClient.createdAt)}
-                    />
-                  </>
-                )}
-              </div>
-
-              {editing && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setEditing(false);
-                      setEditClientName(selectedClient.fullName);
-                      setEditClientEmail(selectedClient.email);
-                      setEditClientDni(selectedClient.dni);
-                      setEditClientPhone(selectedClient.phone ?? "");
-                      setEditClientStatus(selectedClient.status);
-                      setEditClientBranchId(selectedClient.branchId);
-                    }}
-                    className="flex-1 py-3 rounded-xl bg-neutral-900 text-gray-300 text-xs font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleEditClient}
-                    className="flex-1 py-3 rounded-xl bg-lime-400 text-black text-xs font-bold hover:brightness-110 transition-all cursor-pointer"
-                  >
-                    Guardar Cambios
-                  </button>
-                </div>
-              )}
-
-              <button
-                onClick={handleDeleteClient}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-950/30 text-red-400 text-xs font-bold hover:bg-red-950/50 transition-colors cursor-pointer"
-              >
-                <i className="ti ti-trash text-sm" />
-                Eliminar Alumno
-              </button>
             </div>
           )}
         </DialogContent>
@@ -840,20 +665,10 @@ export default function AdminPersonalPage() {
   );
 }
 
-function Field({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-}) {
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-        {label}
-      </span>
+      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -863,15 +678,24 @@ function Field({
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoIconRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between pb-2 border-b border-zinc-800/40 last:border-b-0">
-      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">
-        {label}
-      </span>
-      <span className="text-white text-xs font-bold text-right max-w-[60%] truncate">
-        {value}
-      </span>
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04] last:border-b-0 bg-black/20">
+      <div className="w-7 h-7 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center justify-center shrink-0">
+        <i className={`ti ${icon} text-gray-500 text-sm`} />
+      </div>
+      <span className="text-gray-500 text-[10px] font-semibold tracking-widest w-20 shrink-0">{label}</span>
+      <span className="text-white text-xs font-medium ml-auto text-right truncate">{value}</span>
     </div>
   );
+}
+
+function getRoleStyle(role: EmployeeRole): { avatar: string; badge: string } {
+  switch (role) {
+    case "trainer":    return { avatar: "from-lime-900/80 to-zinc-950",   badge: "bg-lime-950/60 text-lime-400 border border-lime-800/40" };
+    case "manager":    return { avatar: "from-violet-900/80 to-zinc-950", badge: "bg-violet-950/60 text-violet-400 border border-violet-800/40" };
+    case "reception":  return { avatar: "from-blue-900/80 to-zinc-950",   badge: "bg-blue-950/60 text-blue-400 border border-blue-800/40" };
+    case "accounting": return { avatar: "from-amber-900/80 to-zinc-950",  badge: "bg-amber-950/60 text-amber-400 border border-amber-800/40" };
+    default:           return { avatar: "from-zinc-700 to-zinc-900",      badge: "bg-zinc-800 text-gray-300 border border-zinc-700/40" };
+  }
 }
