@@ -1,3 +1,4 @@
+"use client";
 import * as React from "react";
 
 export interface PaymentTransaction {
@@ -14,152 +15,152 @@ interface PaymentHistoryProps {
   transactions?: PaymentTransaction[];
 }
 
-const defaultTransactions: PaymentTransaction[] = [
-  {
-    id: "1",
-    type: "unpaid",
-    title: "Cuota Mensual",
-    date: "Vencimiento: 10 del mes",
-    amount: 28500,
-    status: "Impago",
-  },
-  {
-    id: "2",
-    type: "payment",
-    title: "Cuota Mensual",
-    date: "Pagado: mes anterior",
-    amount: 28500,
-    status: "Aprobado",
-    paymentMethod: "MercadoPago",
-  },
-  {
-    id: "3",
-    type: "payment",
-    title: "Producto Kiosco",
-    date: "Pagado: fecha anterior",
-    amount: 1200,
-    status: "Aprobado",
-    paymentMethod: "Efectivo",
-  },
+type TabId = "payments" | "medical";
+
+const HEALTH_CONDITIONS = [
+  "Lesión o cirugía reciente",
+  "Presión arterial alta o baja",
+  "Antecedentes cardíacos",
+  "Diabetes o problemas metabólicos",
+  "Asma o problemas respiratorios",
+  "Medicación habitual",
 ];
 
-const tabs = [
-  {
-    id: "payments",
-    label: "Historial de Pagos",
-    icon: "ti-receipt",
-    active: true,
-  },
-  {
-    id: "medical",
-    label: "Legajo Médico",
-    icon: "ti-stethoscope",
-    active: false,
-  },
-  {
-    id: "notifications",
-    label: "Logs de Notificaciones",
-    icon: "ti-history",
-    active: false,
-  },
-];
+export function PaymentHistory({ transactions = [] }: PaymentHistoryProps) {
+  const [activeTab, setActiveTab] = React.useState<TabId>("payments");
 
-export function PaymentHistory({
-  transactions = defaultTransactions,
-}: PaymentHistoryProps) {
   return (
     <section className="flex flex-col flex-1 gap-5 p-6 rounded-2xl bg-stone-900">
       <nav className="flex items-center gap-2 flex-wrap">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`flex gap-2 items-center px-4 py-2.5 text-sm font-medium rounded-lg cursor-pointer ${
-              tab.active
-                ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
-                : "text-stone-500"
-            }`}
-          >
-            <i className={`ti ${tab.icon} text-base`} />
-            {tab.label}
-          </button>
-        ))}
+        <TabBtn id="payments" label="Historial de Pagos" icon="ti-receipt" active={activeTab === "payments"} onClick={() => setActiveTab("payments")} />
+        <TabBtn id="medical" label="Legajo Médico" icon="ti-stethoscope" active={activeTab === "medical"} onClick={() => setActiveTab("medical")} />
       </nav>
 
-      <div className="flex flex-col gap-1">
-        <header className="flex justify-between items-center mb-1">
-          <div className="flex flex-col gap-0.5">
-            <h3 className="text-xl font-extrabold text-white">
-              Últimos Movimientos
-            </h3>
-            <p className="text-xs text-stone-500">
-              Registro de las últimas transacciones.
+      {activeTab === "payments" && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-white text-lg font-extrabold">Últimos Movimientos</h3>
+              <p className="text-stone-500 text-xs mt-0.5">Registro de las últimas transacciones.</p>
+            </div>
+            <button className="flex items-center gap-1 text-lime-400 text-xs font-medium cursor-pointer hover:text-lime-300 transition-colors">
+              Ver todo <i className="ti ti-arrow-right text-xs" />
+            </button>
+          </div>
+
+          {transactions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 gap-2">
+              <i className="ti ti-receipt-off text-2xl text-gray-700" />
+              <p className="text-xs text-gray-600">Sin movimientos registrados</p>
+            </div>
+          ) : (
+            <div className="flex flex-col divide-y divide-white/[0.04]">
+              {transactions.map((tx) => (
+                <TransactionRow key={tx.id} transaction={tx} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "medical" && (
+        <div className="flex flex-col gap-4">
+          <div>
+            <h3 className="text-white text-lg font-extrabold">Legajo Médico</h3>
+            <p className="text-stone-500 text-xs mt-0.5">Información de salud declarada por el socio.</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <InfoField label="Grupo Sanguíneo" value="No declarado" />
+            <InfoField label="Contacto de Emergencia" value="No declarado" />
+          </div>
+
+          <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+            <p className="text-[10px] font-bold text-gray-500 tracking-widest px-4 py-2.5 border-b border-white/[0.05] bg-zinc-900/50">
+              DECLARACIÓN DE SALUD
+            </p>
+            {HEALTH_CONDITIONS.map((cond) => (
+              <div
+                key={cond}
+                className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.04] last:border-0"
+              >
+                <span className="text-xs text-gray-400">{cond}</span>
+                <span className="text-[10px] text-gray-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+                  Sin declarar
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
+            <i className="ti ti-info-circle text-amber-400 text-sm shrink-0" />
+            <p className="text-amber-400/80 text-xs">
+              La declaración jurada debe ser completada al momento de la inscripción.
             </p>
           </div>
-          <button className="flex gap-1 items-center text-sm font-medium text-lime-400 cursor-pointer">
-            Ver Todo
-            <i className="ti ti-arrow-right text-sm" />
-          </button>
-        </header>
-
-        <div className="flex flex-col gap-2 mt-2">
-          {transactions.map((tx) => (
-            <TransactionRow key={tx.id} transaction={tx} />
-          ))}
         </div>
-      </div>
+      )}
     </section>
   );
 }
 
-interface TransactionRowProps {
-  transaction: PaymentTransaction;
-}
-
-function TransactionRow({ transaction }: TransactionRowProps) {
-  const isUnpaid = transaction.type === "unpaid";
-
+function TabBtn({
+  label, icon, active, onClick,
+}: { id: string; label: string; icon: string; active: boolean; onClick: () => void }) {
   return (
-    <article
-      className={`flex gap-3.5 items-center px-4 py-3.5 rounded-xl ${
-        isUnpaid ? "border-red-500 bg-neutral-800 border-[3px]" : "bg-stone-900"
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-all ${
+        active
+          ? "text-lime-400 border-2 border-lime-400 bg-zinc-800 font-semibold"
+          : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.04]"
       }`}
     >
-      <div
-        className={`flex justify-center items-center w-8 h-8 rounded-full flex-[shrink] ${
-          isUnpaid ? "bg-orange-950" : "bg-lime-950"
-        }`}
-      >
-        <i
-          className={`ti ${isUnpaid ? "ti-x" : "ti-check"} text-base ${
-            isUnpaid ? "text-red-500" : "text-lime-400"
-          }`}
-        />
+      <i className={`ti ${icon} text-base`} />
+      {label}
+    </button>
+  );
+}
+
+function InfoField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 p-3 rounded-xl bg-zinc-900 border border-white/[0.05]">
+      <span className="text-[10px] text-gray-600 font-semibold tracking-wider uppercase">{label}</span>
+      <span className="text-sm text-gray-400">{value}</span>
+    </div>
+  );
+}
+
+function TransactionRow({ transaction }: { transaction: PaymentTransaction }) {
+  const isUnpaid = transaction.type === "unpaid";
+  return (
+    <div className="flex items-center gap-3 py-3.5">
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUnpaid ? "bg-red-950" : "bg-lime-950"}`}>
+        <i className={`ti ${isUnpaid ? "ti-x" : "ti-check"} text-sm ${isUnpaid ? "text-red-400" : "text-lime-400"}`} />
       </div>
 
-      <div className="flex flex-col flex-1 gap-0.5">
-        <h4 className="text-sm font-semibold text-white">
-          {transaction.title}
-        </h4>
-        <p className="text-xs text-stone-500">
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-white truncate capitalize">{transaction.title}</p>
+        <p className="text-xs text-stone-500 mt-0.5">
           {transaction.date}
-          {transaction.paymentMethod && ` • ${transaction.paymentMethod}`}
+          {transaction.paymentMethod && ` · ${transaction.paymentMethod}`}
         </p>
       </div>
 
-      <div className="flex flex-col gap-1 items-end">
-        <div
-          className={`text-base font-bold ${isUnpaid ? "text-red-400" : "text-white"}`}
-        >
+      <div className="flex flex-col items-end gap-1 shrink-0">
+        <span className={`text-sm font-bold ${isUnpaid ? "text-red-400" : "text-white"}`}>
           ${transaction.amount.toLocaleString()}
-        </div>
-        <div
-          className={`px-2 py-0.5 text-xs font-bold tracking-wide uppercase rounded ${
-            isUnpaid ? "text-white bg-red-500" : "bg-zinc-800 text-zinc-500"
-          }`}
-        >
+        </span>
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+          isUnpaid
+            ? "bg-red-950 text-red-400"
+            : transaction.status === "Aprobado"
+              ? "bg-lime-950 text-lime-400"
+              : "bg-zinc-800 text-gray-500"
+        }`}>
           {transaction.status}
-        </div>
+        </span>
       </div>
-    </article>
+    </div>
   );
 }

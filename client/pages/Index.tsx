@@ -67,7 +67,7 @@ export default function Index() {
               <p className="font-jakarta font-bold text-squat-green text-sm tracking-[3px] uppercase mb-4">
                 El Laboratorio Cinético
               </p>
-              <h1 className="font-jakarta font-extrabold text-5xl sm:text-7xl lg:text-[96px] leading-none tracking-[-4px] text-white mb-6">
+              <h1 className="font-jakarta font-extrabold text-5xl sm:text-7xl lg:text-[96px] leading-[1.3] tracking-[-4px] text-white mb-6">
                 ENTRENA SIN{" "}
                 <span className="text-squat-green">LÍMITES</span>{" "}
                 EN SQUATGYM
@@ -76,14 +76,6 @@ export default function Index() {
                 Gestión digital completa, acceso multisucursal y los mejores
                 planes para tu transformación.
               </p>
-              <div className="flex flex-wrap items-center gap-4 mt-8">
-                <Link
-                  to="/login"
-                  className="font-jakarta font-extrabold text-lg text-squat-ink px-8 py-4 rounded-xl bg-squat-green shadow-[0_0_32px_rgba(149,253,0,0.25)] hover:brightness-105 active:scale-[0.98] transition-all duration-150"
-                >
-                  Iniciar Sesión
-                </Link>
-              </div>
             </div>
           </div>
 

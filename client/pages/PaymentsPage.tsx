@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLocation } from "react-router-dom";
 import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { FilterSelect } from "@/components/common/FilterSelect";
@@ -64,11 +65,17 @@ const uniquePlans = [...new Set(allRows.map((r) => r.plan).filter((p) => p !== "
 const ITEMS_PER_PAGE = 8;
 
 export default function PaymentsPage() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<TabId>("debtors");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
   const [filterPlan, setFilterPlan] = React.useState("");
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const state = location.state as { clientId?: string } | null;
+    if (state?.clientId) setSelectedClientId(state.clientId);
+  }, []);
 
   React.useEffect(() => { setCurrentPage(1); }, [search, filterPlan, activeTab]);
 

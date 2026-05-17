@@ -2,12 +2,12 @@
 "use client";
 
 import * as React from "react";
-import { Link } from "react-router-dom";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
 import { FilterSelect } from "../common/FilterSelect";
 import { clientsMock, type Client } from "@/data/clients";
 import { plansMock } from "@/data/plans";
+import { MemberDetailModal } from "./MemberDetailModal";
 
 interface Member {
   id: string;
@@ -38,6 +38,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
   const [search, setSearch] = React.useState("");
   const [filterStatus, setFilterStatus] = React.useState("");
   const [filterPlan, setFilterPlan] = React.useState("");
+  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
 
   const initialsStyles = [
     { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
@@ -165,12 +166,12 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
             <span className={`text-xs font-bold ${member.initialsColor}`}>{member.initials}</span>
           </div>
           <div className="flex flex-col min-w-0">
-            <Link
-              to={`/miembros/${member.id}`}
-              className="text-sm font-semibold text-white truncate hover:text-lime-400 transition-colors"
+            <button
+              onClick={() => setSelectedClientId(member.id)}
+              className="text-sm font-semibold text-white truncate hover:text-lime-400 transition-colors text-left cursor-pointer"
             >
               {member.name}
-            </Link>
+            </button>
             <p className="text-xs text-gray-500 truncate">{member.email}</p>
           </div>
         </div>
@@ -291,6 +292,12 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
           onPageChange={setCurrentPage}
         />
       )}
+
+      <MemberDetailModal
+        clientId={selectedClientId}
+        extraClients={extraClients}
+        onClose={() => setSelectedClientId(null)}
+      />
     </section>
   );
 }

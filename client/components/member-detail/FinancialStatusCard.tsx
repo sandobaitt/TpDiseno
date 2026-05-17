@@ -7,16 +7,10 @@ interface FinancialStatusCardProps {
 }
 
 export function FinancialStatusCard({
-  pendingBalance = 111111,
+  pendingBalance = 0,
   overdueDays = 0,
   onCollectPayment,
 }: FinancialStatusCardProps) {
-  const paymentMethods = [
-    { icon: "ti-qrcode", label: "Mercado" },
-    { icon: "ti-cash", label: "Efectivo" },
-    { icon: "ti-building-bank", label: "Transf" },
-  ];
-
   const hasDebt = pendingBalance > 0;
 
   return (
@@ -30,9 +24,7 @@ export function FinancialStatusCard({
         <p className="text-xs font-semibold tracking-widest uppercase text-zinc-500">
           Saldo Pendiente
         </p>
-        <div
-          className={`text-5xl font-black leading-none ${hasDebt ? "text-red-400" : "text-lime-400"}`}
-        >
+        <div className={`text-5xl font-black leading-none ${hasDebt ? "text-red-400" : "text-lime-400"}`}>
           <span className="text-2xl font-bold">$</span>
           {pendingBalance.toLocaleString()}
         </div>
@@ -52,31 +44,17 @@ export function FinancialStatusCard({
         )}
       </div>
 
-      <button
-        onClick={onCollectPayment}
-        className="flex gap-2 justify-center items-center py-3.5 bg-lime-400 rounded-xl cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all duration-150 shadow-btn-lime"
-      >
-        <i className="ti ti-cash-register text-lg text-neutral-900" />
-        <span className="text-sm font-extrabold tracking-wider uppercase text-neutral-900">
-          Cobrar Saldo
-        </span>
-      </button>
-
-      <div className="flex justify-around items-center">
-        {paymentMethods.map((method, index) => (
-          <button
-            key={index}
-            className="flex flex-col gap-1 items-center cursor-pointer hover:opacity-80"
-          >
-            <div className="flex justify-center items-center w-10 h-10 rounded-lg bg-zinc-800">
-              <i className={`ti ${method.icon} text-lg text-zinc-500`} />
-            </div>
-            <span className="text-xs font-medium tracking-wider uppercase text-stone-500">
-              {method.label}
-            </span>
-          </button>
-        ))}
-      </div>
+      {hasDebt && (
+        <button
+          onClick={onCollectPayment}
+          className="flex gap-2 justify-center items-center py-3.5 bg-lime-400 rounded-xl cursor-pointer hover:brightness-105 active:scale-[0.98] transition-all duration-150 shadow-btn-lime"
+        >
+          <i className="ti ti-cash-register text-lg text-neutral-900" />
+          <span className="text-sm font-extrabold tracking-wider uppercase text-neutral-900">
+            Cobrar Saldo
+          </span>
+        </button>
+      )}
     </article>
   );
 }
