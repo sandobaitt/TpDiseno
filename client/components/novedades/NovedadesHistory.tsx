@@ -1,11 +1,24 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { Novedad, NovedadType, NovedadStatus } from "@/data/novedades";
 
 type FilterKey = "all" | "staff" | "classes";
 
 interface NovedadesHistoryProps {
   novedades: Novedad[];
+  onResolve?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const typeConfig: Record<
@@ -88,7 +101,7 @@ function formatTimestamp(iso: string) {
 
 const ITEMS_PER_PAGE = 4;
 
-export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
+export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHistoryProps) {
   const [activeFilter, setActiveFilter] = React.useState<FilterKey>("all");
   const [currentPage, setCurrentPage] = React.useState(1);
 
@@ -138,7 +151,7 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
             return (
               <div
                 key={nov.id}
-                className="bg-neutral-800/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-neutral-800/80 transition-all duration-150 glass-border hover:border-white/[0.08]"
+                className="bg-neutral-800/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-neutral-800/80 transition-all duration-150 glass-border hover:border-white/[0.08] group/row"
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center shrink-0 border border-zinc-800">
@@ -163,15 +176,60 @@ export function NovedadesHistory({ novedades }: NovedadesHistoryProps) {
                   </div>
                 </div>
 
-                <div className="flex md:flex-col items-center md:items-end gap-3 md:gap-2 shrink-0 md:ml-4">
+                <div className="flex md:flex-col items-end gap-2 shrink-0 md:ml-4">
                   <span className="text-gray-600 text-xs whitespace-nowrap">
                     {formatTimestamp(nov.timestamp)}
                   </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap ${st.className}`}
-                  >
-                    {st.label}
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    {nov.status === "in_progress" && onResolve ? (
+                      <button
+                        onClick={() => onResolve(nov.id)}
+                        className="group relative px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap bg-blue-900/60 text-blue-400 border border-blue-500/20 hover:bg-green-900/60 hover:text-green-400 hover:border-green-500/30 transition-all duration-200 cursor-pointer overflow-hidden"
+                      >
+                        <span className="flex items-center gap-1 group-hover:opacity-0 transition-opacity duration-150">
+                          En Proceso
+                        </span>
+                        <span className="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                          <i className="ti ti-circle-check text-xs" />
+                          Resolver
+                        </span>
+                      </button>
+                    ) : (
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap ${st.className}`}>
+                        {st.label}
+                      </span>
+                    )}
+
+                    {onDelete && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
+                            <i className="ti ti-trash text-sm" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-neutral-900 border border-white/[0.08] text-white">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-white">¿Eliminar novedad?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-500">
+                              Vas a eliminar <span className="text-white font-semibold">{nov.entityName}</span>. Esta acción no se puede deshacer.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-neutral-800 border-zinc-700 text-gray-300 hover:bg-neutral-700 hover:text-white cursor-pointer">
+                              Cancelar
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => onDelete(nov.id)}
+                              className="bg-red-500/80 hover:bg-red-500 text-white border-0 cursor-pointer"
+                            >
+                              Eliminar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
                 </div>
               </div>
             );

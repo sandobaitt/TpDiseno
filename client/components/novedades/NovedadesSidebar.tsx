@@ -3,13 +3,274 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { teachersMock } from "@/data/teachers";
 import { weekMock } from "@/data/schedule";
+import type { Novedad } from "@/data/novedades";
 
+/* ── helpers ── */
+const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const DAYS_ES   = ["LU","MA","MI","JU","VI","SA","DO"];
+const HOURS     = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+const MINUTES   = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
+
+/* ── DatePicker ── */
+function DatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+  const today = new Date();
+  const selected = value ? new Date(value + "T00:00:00") : null;
+  const [viewYear,  setViewYear]  = React.useState(selected?.getFullYear()  ?? today.getFullYear());
+  const [viewMonth, setViewMonth] = React.useState(selected?.getMonth()     ?? today.getMonth());
+
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+
+  /* build grid: Mon-first */
+  const firstDow = new Date(viewYear, viewMonth, 1).getDay();
+  const blanks   = firstDow === 0 ? 6 : firstDow - 1;
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const cells: (number | null)[] = [
+    ...Array(blanks).fill(null),
+    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+  ];
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  function prevMonth() {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
+    else setViewMonth(m => m - 1);
+  }
+  function nextMonth() {
+    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
+    else setViewMonth(m => m + 1);
+  }
+  function selectDay(day: number) {
+    const d  = new Date(viewYear, viewMonth, day);
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    onChange(`${d.getFullYear()}-${mm}-${dd}`);
+    setOpen(false);
+  }
+  function goToday() {
+    const t = new Date();
+    setViewYear(t.getFullYear());
+    setViewMonth(t.getMonth());
+    selectDay(t.getDate());
+  }
+
+  const displayValue = selected
+    ? selected.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    : null;
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={cn(
+          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border text-sm transition-all cursor-pointer",
+          open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
+        )}
+      >
+        <i className="ti ti-calendar text-gray-600 text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", displayValue ? "text-white" : "text-gray-600")}>
+          {displayValue ?? "dd/mm/aaaa"}
+        </span>
+        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.7)] p-4 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+          {/* nav */}
+          <div className="flex items-center justify-between mb-3">
+            <button type="button" onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+              <i className="ti ti-chevron-left text-xs" />
+            </button>
+            <span className="text-white text-xs font-bold tracking-wider">
+              {MONTHS_ES[viewMonth]} {viewYear}
+            </span>
+            <button type="button" onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+              <i className="ti ti-chevron-right text-xs" />
+            </button>
+          </div>
+
+          {/* day headers */}
+          <div className="grid grid-cols-7 mb-1">
+            {DAYS_ES.map(d => (
+              <span key={d} className="text-center text-[9px] font-bold tracking-wider text-gray-600 py-1">{d}</span>
+            ))}
+          </div>
+
+          {/* day cells */}
+          <div className="grid grid-cols-7 gap-y-0.5">
+            {cells.map((day, i) => {
+              if (!day) return <div key={`b-${i}`} />;
+              const isSel  = selected && selected.getDate() === day && selected.getMonth() === viewMonth && selected.getFullYear() === viewYear;
+              const isToday = today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear;
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => selectDay(day)}
+                  className={cn(
+                    "w-7 h-7 mx-auto flex items-center justify-center rounded-lg text-xs font-medium transition-all cursor-pointer",
+                    isSel  ? "bg-lime-400 text-black font-extrabold" :
+                    isToday ? "bg-lime-400/15 text-lime-400 font-bold" :
+                    "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                  )}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* footer */}
+          <div className="flex justify-between mt-3 pt-3 border-t border-white/[0.05]">
+            <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+              Borrar
+            </button>
+            <button type="button" onClick={goToday} className="text-[10px] text-lime-400 hover:text-lime-300 transition-colors cursor-pointer font-bold">
+              Hoy
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── TimePicker ── */
+function TimePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = React.useState(false);
+  const ref     = React.useRef<HTMLDivElement>(null);
+  const hourRef = React.useRef<HTMLDivElement>(null);
+  const minRef  = React.useRef<HTMLDivElement>(null);
+
+  const [hour, setHour] = React.useState(value ? value.split(":")[0] : "");
+  const [min,  setMin]  = React.useState(value ? value.split(":")[1] : "");
+
+  // sync when parent resets value to ""
+  React.useEffect(() => {
+    setHour(value ? value.split(":")[0] : "");
+    setMin(value  ? value.split(":")[1] : "");
+  }, [value]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    setTimeout(() => {
+      hourRef.current?.querySelector("[data-selected]")?.scrollIntoView({ block: "center" });
+      minRef.current?.querySelector("[data-selected]")?.scrollIntoView({ block: "center" });
+    }, 50);
+  }, [open]);
+
+  function selectHour(h: string) {
+    setHour(h);
+    if (min) onChange(`${h}:${min}`);
+  }
+
+  function selectMin(m: string) {
+    setMin(m);
+    if (hour) { onChange(`${hour}:${m}`); setOpen(false); }
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={cn(
+          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border text-sm transition-all cursor-pointer",
+          open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
+        )}
+      >
+        <i className="ti ti-clock text-gray-600 text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", value ? "text-white" : "text-gray-600")}>
+          {value || "--:--"}
+        </span>
+        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.7)] p-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+          <div className="flex gap-2">
+            {/* hours */}
+            <div className="flex-1 flex flex-col gap-1">
+              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">HORA</span>
+              <div ref={hourRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
+                {HOURS.map(h => (
+                  <button
+                    key={h}
+                    type="button"
+                    data-selected={hour === h ? "" : undefined}
+                    onClick={() => selectHour(h)}
+                    className={cn(
+                      "w-full py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                      hour === h ? "bg-lime-400 text-black font-extrabold" : "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                    )}
+                  >
+                    {h}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-px bg-white/[0.06] self-stretch" />
+
+            {/* minutes */}
+            <div className="flex-1 flex flex-col gap-1">
+              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">MIN</span>
+              <div ref={minRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
+                {MINUTES.map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    data-selected={min === m ? "" : undefined}
+                    onClick={() => selectMin(m)}
+                    className={cn(
+                      "w-full py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer",
+                      min === m ? "bg-lime-400 text-black font-extrabold" : "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                    )}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {value && (
+            <div className="mt-2 pt-2 border-t border-white/[0.05] text-center">
+              <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+                Borrar
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── main data ── */
 type EventTypeValue = "incident" | "change" | "normal";
 
 const EVENT_TYPES = [
-  { value: "incident" as EventTypeValue, label: "Incidente", icon: "ti-alert-triangle", color: "text-red-400", bg: "bg-red-500/10" },
-  { value: "change" as EventTypeValue, label: "Cambio de turno", icon: "ti-arrows-exchange", color: "text-amber-400", bg: "bg-amber-500/10" },
-  { value: "normal" as EventTypeValue, label: "Novedad general", icon: "ti-info-circle", color: "text-blue-400", bg: "bg-blue-500/10" },
+  { value: "incident" as EventTypeValue, label: "Incidente",       icon: "ti-alert-triangle",  color: "text-red-400",   bg: "bg-red-500/10"   },
+  { value: "change"   as EventTypeValue, label: "Cambio de turno", icon: "ti-arrows-exchange",  color: "text-amber-400", bg: "bg-amber-500/10" },
+  { value: "normal"   as EventTypeValue, label: "Novedad general", icon: "ti-info-circle",      color: "text-blue-400",  bg: "bg-blue-500/10"  },
 ];
 
 interface Suggestion {
@@ -38,62 +299,78 @@ const ALL_SUGGESTIONS: Suggestion[] = [
   })),
 ];
 
-export function NovedadesSidebar() {
-  const [eventType, setEventType] = React.useState<EventTypeValue | "">("");
+interface NovedadesSidebarProps {
+  onAdd?: (novedad: Novedad) => void;
+}
+
+export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
+  const [eventType,     setEventType]     = React.useState<EventTypeValue | "">("");
   const [eventTypeOpen, setEventTypeOpen] = React.useState(false);
   const eventTypeRef = React.useRef<HTMLDivElement>(null);
 
-  const [assignQuery, setAssignQuery] = React.useState("");
-  const [assignFocused, setAssignFocused] = React.useState(false);
+  const [assignQuery,    setAssignQuery]    = React.useState("");
+  const [assignFocused,  setAssignFocused]  = React.useState(false);
   const [assignSelected, setAssignSelected] = React.useState<Suggestion | null>(null);
   const assignRef = React.useRef<HTMLDivElement>(null);
 
-  const [timestamp, setTimestamp] = React.useState("");
-  const [detail, setDetail] = React.useState("");
+  const [dateVal, setDateVal] = React.useState("");
+  const [timeVal, setTimeVal] = React.useState("");
+  const [detail,  setDetail]  = React.useState("");
 
   React.useEffect(() => {
     if (!eventTypeOpen) return;
-    const handler = (e: MouseEvent) => {
+    const h = (e: MouseEvent) => {
       if (eventTypeRef.current && !eventTypeRef.current.contains(e.target as Node))
         setEventTypeOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [eventTypeOpen]);
 
   React.useEffect(() => {
     if (!assignFocused) return;
-    const handler = (e: MouseEvent) => {
+    const h = (e: MouseEvent) => {
       if (assignRef.current && !assignRef.current.contains(e.target as Node))
         setAssignFocused(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [assignFocused]);
 
   const filteredSuggestions = React.useMemo(() => {
     const q = assignQuery.toLowerCase().trim();
     if (!q) return ALL_SUGGESTIONS;
     return ALL_SUGGESTIONS.filter(
-      (s) =>
-        s.label.toLowerCase().includes(q) ||
-        s.sublabel.toLowerCase().includes(q),
+      (s) => s.label.toLowerCase().includes(q) || s.sublabel.toLowerCase().includes(q),
     );
   }, [assignQuery]);
 
   const profesores = filteredSuggestions.filter((s) => s.entityType === "profesor");
-  const clases = filteredSuggestions.filter((s) => s.entityType === "clase");
+  const clases     = filteredSuggestions.filter((s) => s.entityType === "clase");
 
   const selectedEventType = EVENT_TYPES.find((e) => e.value === eventType);
-  const canSubmit = eventType !== "" && assignSelected !== null && timestamp !== "" && detail.trim() !== "";
+  const hasAssigned = assignSelected !== null || assignQuery.trim() !== "";
+  const canSubmit   = eventType !== "" && hasAssigned && dateVal !== "" && timeVal !== "" && detail.trim() !== "";
 
   function handleSubmit() {
     if (!canSubmit) return;
-    toast.success("Novedad registrada y notificaciones enviadas.");
+    const entityName = assignSelected?.label ?? assignQuery.trim();
+    const novedad: Novedad = {
+      id: `nov_${Date.now()}`,
+      type: eventType as Novedad["type"],
+      entityType: assignSelected?.entityType ?? "profesor",
+      entityName,
+      timestamp: new Date(`${dateVal}T${timeVal}`).toISOString(),
+      detail: detail.trim(),
+      status: "in_progress",
+    };
+    onAdd?.(novedad);
+    toast.success("Novedad registrada con éxito.");
     setEventType("");
     setAssignSelected(null);
     setAssignQuery("");
-    setTimestamp("");
+    setDateVal("");
+    setTimeVal("");
     setDetail("");
   }
 
@@ -112,9 +389,7 @@ export function NovedadesSidebar() {
           <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-circle-plus text-xl text-lime-400" />
           </div>
-          <h2 className="text-white font-extrabold text-sm tracking-[0.15em]">
-            REGISTRAR NOVEDAD
-          </h2>
+          <h2 className="text-white font-extrabold text-sm tracking-[0.15em]">REGISTRAR NOVEDAD</h2>
         </div>
 
         <div className="flex flex-col gap-5">
@@ -153,9 +428,7 @@ export function NovedadesSidebar() {
                       onClick={() => { setEventType(opt.value); setEventTypeOpen(false); }}
                       className={cn(
                         "w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left",
-                        eventType === opt.value
-                          ? "bg-white/[0.06] text-white"
-                          : "text-gray-400 hover:bg-white/[0.04] hover:text-white",
+                        eventType === opt.value ? "bg-white/[0.06] text-white" : "text-gray-400 hover:bg-white/[0.04] hover:text-white",
                       )}
                     >
                       <span className={`w-7 h-7 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
@@ -176,32 +449,19 @@ export function NovedadesSidebar() {
             <div ref={assignRef} className="relative">
               {assignSelected ? (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border border-lime-400/25">
-                  <span className={cn(
-                    "w-7 h-7 rounded-lg flex items-center justify-center shrink-0",
-                    assignSelected.entityType === "profesor" ? "bg-lime-400/10" : "bg-blue-400/10",
-                  )}>
-                    <i className={cn(
-                      "ti text-sm",
-                      assignSelected.entityType === "profesor" ? "ti-user text-lime-400" : "ti-barbell text-blue-400",
-                    )} />
+                  <span className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", assignSelected.entityType === "profesor" ? "bg-lime-400/10" : "bg-blue-400/10")}>
+                    <i className={cn("ti text-sm", assignSelected.entityType === "profesor" ? "ti-user text-lime-400" : "ti-barbell text-blue-400")} />
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-semibold truncate">{assignSelected.label}</p>
                     <p className="text-gray-500 text-[10px] truncate">{assignSelected.sublabel}</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => { setAssignSelected(null); setAssignQuery(""); }}
-                    className="text-gray-600 hover:text-gray-300 transition-colors cursor-pointer shrink-0"
-                  >
+                  <button type="button" onClick={() => { setAssignSelected(null); setAssignQuery(""); }} className="text-gray-600 hover:text-gray-300 transition-colors cursor-pointer shrink-0">
                     <i className="ti ti-x text-xs" />
                   </button>
                 </div>
               ) : (
-                <div className={cn(
-                  "relative flex items-center rounded-xl border bg-neutral-900 transition-all",
-                  assignFocused ? "border-lime-400/30" : "border-zinc-800",
-                )}>
+                <div className={cn("relative flex items-center rounded-xl border bg-neutral-900 transition-all", assignFocused ? "border-lime-400/30" : "border-zinc-800")}>
                   <i className="ti ti-search absolute left-3 text-gray-600 text-sm pointer-events-none" />
                   <input
                     type="text"
@@ -222,19 +482,10 @@ export function NovedadesSidebar() {
                     <>
                       {profesores.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20">
-                            PROFESORES
-                          </div>
+                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20">PROFESORES</div>
                           {profesores.map((s) => (
-                            <button
-                              key={s.id}
-                              type="button"
-                              onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors"
-                            >
-                              <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0">
-                                <i className="ti ti-user text-[10px] text-lime-400" />
-                              </span>
+                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                              <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0"><i className="ti ti-user text-[10px] text-lime-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>
                                 <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
@@ -245,19 +496,10 @@ export function NovedadesSidebar() {
                       )}
                       {clases.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20 border-t border-white/[0.04]">
-                            CLASES
-                          </div>
+                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20 border-t border-white/[0.04]">CLASES</div>
                           {clases.map((s) => (
-                            <button
-                              key={s.id}
-                              type="button"
-                              onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }}
-                              className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors"
-                            >
-                              <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0">
-                                <i className="ti ti-barbell text-[10px] text-blue-400" />
-                              </span>
+                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                              <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0"><i className="ti ti-barbell text-[10px] text-blue-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>
                                 <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
@@ -276,12 +518,10 @@ export function NovedadesSidebar() {
           {/* Fecha y hora */}
           <div className="flex flex-col gap-2">
             <label className="text-gray-500 text-xs font-semibold tracking-widest">FECHA Y HORA</label>
-            <input
-              type="datetime-local"
-              value={timestamp}
-              onChange={(e) => setTimestamp(e.target.value)}
-              className="w-full bg-neutral-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-lime-400/40 transition-colors [color-scheme:dark]"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <DatePicker value={dateVal} onChange={setDateVal} />
+              <TimePicker value={timeVal} onChange={setTimeVal} />
+            </div>
           </div>
 
           {/* Detalle operativo */}

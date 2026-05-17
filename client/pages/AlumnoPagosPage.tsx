@@ -313,7 +313,13 @@ export default function AlumnoPagosPage() {
       >
         <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
           <div className="p-3">
-            {client && <PaymentCheckoutContent clientId={client.id} />}
+            {client && (
+              <PaymentCheckoutContent
+                clientId={client.id}
+                alumnoMode
+                onClose={() => setSelectedMonthKey(null)}
+              />
+            )}
           </div>
         </DialogContent>
       </Dialog>

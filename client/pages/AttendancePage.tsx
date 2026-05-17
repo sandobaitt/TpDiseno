@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 import { employeesMock } from "@/data/employees";
@@ -352,56 +353,40 @@ export default function AttendancePage() {
             {/* Student: financial status + plan dropdowns */}
             {activeTab === "students" && (
               <>
-                <select
+                <FilterSelect
                   value={filterFinancial}
-                  onChange={(e) => setFilterFinancial(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer transition-all appearance-none pr-7"
-                  style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
-                >
-                  <option value="">Todos los estados</option>
-                  <option value="enabled">Habilitado</option>
-                  <option value="debtor">Deudor</option>
-                  <option value="inactive">Inactivo</option>
-                </select>
-                <select
+                  onChange={setFilterFinancial}
+                  placeholder="Todos los estados"
+                  options={[
+                    { value: "enabled",  label: "Habilitado" },
+                    { value: "debtor",   label: "Deudor"     },
+                    { value: "inactive", label: "Inactivo"   },
+                  ]}
+                />
+                <FilterSelect
                   value={filterPlan}
-                  onChange={(e) => setFilterPlan(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer transition-all appearance-none pr-7"
-                  style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
-                >
-                  <option value="">Todos los planes</option>
-                  {uniquePlans.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
+                  onChange={setFilterPlan}
+                  placeholder="Todos los planes"
+                  options={uniquePlans.map((p) => ({ value: p, label: p }))}
+                />
               </>
             )}
 
             {/* Teacher: role + branch dropdowns */}
             {activeTab === "teachers" && (
               <>
-                <select
+                <FilterSelect
                   value={filterRole}
-                  onChange={(e) => setFilterRole(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer hover:border-white/[0.12] transition-all appearance-none pr-7 relative"
-                  style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
-                >
-                  <option value="">Todos los roles</option>
-                  {Object.entries(roleLabels).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
-                <select
+                  onChange={setFilterRole}
+                  placeholder="Todos los roles"
+                  options={Object.entries(roleLabels).map(([key, label]) => ({ value: key, label }))}
+                />
+                <FilterSelect
                   value={filterBranch}
-                  onChange={(e) => setFilterBranch(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer hover:border-white/[0.12] transition-all appearance-none pr-7"
-                  style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
-                >
-                  <option value="">Todas las sedes</option>
-                  {uniqueBranches.map((b) => (
-                    <option key={b} value={b}>{b}</option>
-                  ))}
-                </select>
+                  onChange={setFilterBranch}
+                  placeholder="Todas las sedes"
+                  options={uniqueBranches.map((b) => ({ value: b, label: b }))}
+                />
               </>
             )}
 

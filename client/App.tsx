@@ -26,6 +26,8 @@ import AlumnoAjustesPage from "./pages/AlumnoAjustesPage";
 import AlumnoPagosPage from "./pages/AlumnoPagosPage";
 import ProfesorAsistenciaPage from "./pages/ProfesorAsistenciaPage";
 import ProfesorReemplazosPage from "./pages/ProfesorReemplazosPage";
+import ProfesorCronogramaPage from "./pages/ProfesorCronogramaPage";
+import ProfesorHorasPage from "./pages/ProfesorHorasPage";
 import AdminAsistenciaPage from "./pages/AdminAsistenciaPage";
 import AdminPersonalPage from "./pages/AdminPersonalPage";
 
@@ -54,6 +56,8 @@ const App = () => (
             <Route path="/profesor" element={<ProfesorAsistenciaPage />} />
             <Route path="/profesor/asistencia" element={<ProfesorAsistenciaPage />} />
             <Route path="/profesor/reemplazos" element={<ProfesorReemplazosPage />} />
+            <Route path="/profesor/cronograma" element={<ProfesorCronogramaPage />} />
+            <Route path="/profesor/horas" element={<ProfesorHorasPage />} />
             <Route path="/secretaria" element={<Secretaria />} />
             <Route path="/secretaria/asistencia" element={<AttendancePage />} />
             <Route path="/secretaria/cobros" element={<PaymentsPage />} />

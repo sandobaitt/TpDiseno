@@ -51,7 +51,7 @@ export default function AlumnoAjustesPage() {
 
   function handleDeleteConfirm() {
     clearMockSession();
-    navigate("/");
+    navigate("/", { replace: true });
   }
 
   return (

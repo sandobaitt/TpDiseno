@@ -89,7 +89,7 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
 
   function handleLogout() {
     clearMockSession();
-    navigate("/");
+    navigate("/", { replace: true });
   }
 
   return (

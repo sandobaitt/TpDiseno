@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
+import { FilterSelect } from "@/components/common/FilterSelect";
 import HeaderPage from "@/components/common/HeaderPage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
@@ -208,17 +209,12 @@ export default function PaymentsPage() {
             )}
           </div>
 
-          <select
+          <FilterSelect
             value={filterPlan}
-            onChange={(e) => setFilterPlan(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-neutral-900 glass-border text-xs font-semibold text-gray-400 outline-none cursor-pointer transition-all appearance-none pr-7"
-            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E\")", backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
-          >
-            <option value="">Todos los planes</option>
-            {uniquePlans.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
+            onChange={setFilterPlan}
+            placeholder="Todos los planes"
+            options={uniquePlans.map((p) => ({ value: p, label: p }))}
+          />
 
           {hasFilters && (
             <button
@@ -273,7 +269,10 @@ export default function PaymentsPage() {
         <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
           <div className="p-3">
             {selectedClientId && (
-              <PaymentCheckoutContent clientId={selectedClientId} />
+              <PaymentCheckoutContent
+                clientId={selectedClientId}
+                onClose={() => setSelectedClientId(null)}
+              />
             )}
           </div>
         </DialogContent>

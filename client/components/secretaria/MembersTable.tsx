@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
 import { FilterSelect } from "../common/FilterSelect";
-import { clientsMock } from "@/data/clients";
+import { clientsMock, type Client } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 
 interface Member {
@@ -27,11 +27,13 @@ interface Member {
 
 interface MembersTableProps {
   className?: string;
+  extraClients?: Client[];
+  onAddClick?: () => void;
 }
 
 const ITEMS_PER_PAGE = 8;
 
-export function MembersTable({ className = "" }: MembersTableProps) {
+export function MembersTable({ className = "", extraClients = [], onAddClick }: MembersTableProps) {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
   const [filterStatus, setFilterStatus] = React.useState("");
@@ -96,7 +98,7 @@ export function MembersTable({ className = "" }: MembersTableProps) {
     }
   };
 
-  const allMembers: Member[] = clientsMock.map((client, index) => {
+  const allMembers: Member[] = [...extraClients, ...clientsMock].map((client, index) => {
     const style = initialsStyles[index % initialsStyles.length];
     const planName =
       plansMock.find((p) => p.id === client.membership?.planId)?.name ?? "-";
@@ -247,6 +249,16 @@ export function MembersTable({ className = "" }: MembersTableProps) {
         )}
 
         <span className="text-xs text-gray-600 ml-auto">{filteredMembers.length} socios</span>
+
+        {onAddClick && (
+          <button
+            onClick={onAddClick}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-lime-400 text-squat-ink text-xs font-extrabold tracking-wider hover:brightness-105 active:scale-[0.98] transition-all duration-150 cursor-pointer shadow-btn-lime shrink-0"
+          >
+            <i className="ti ti-user-plus text-sm" />
+            AGREGAR SOCIO
+          </button>
+        )}
       </div>
 
       <div className="p-5 rounded-2xl bg-neutral-900 shadow-card glass-border">

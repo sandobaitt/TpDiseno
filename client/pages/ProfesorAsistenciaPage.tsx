@@ -169,7 +169,7 @@ export default function ProfesorAsistenciaPage() {
                 <i className="ti ti-notes text-lg text-lime-400" />
                 <div>
                   <h2 className="text-white text-sm font-extrabold">
-                    Bitácora
+                    Observaciones
                   </h2>
                   <p className="text-gray-600 text-[10px]">Notas de la Clase</p>
                 </div>
@@ -250,7 +250,7 @@ export default function ProfesorAsistenciaPage() {
             <div className="flex items-center gap-2">
               <i className="ti ti-notes text-lg text-lime-400" />
               <h2 className="text-white text-sm font-extrabold">
-                Nueva Bitácora
+                Nueva Observación
               </h2>
             </div>
 
@@ -261,7 +261,7 @@ export default function ProfesorAsistenciaPage() {
               <input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="Título de la bitácora..."
+                placeholder="Título de la observación..."
                 className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
