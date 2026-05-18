@@ -14,8 +14,8 @@ export function DayColumn({ day, onSelect }: DayColumnProps) {
       onClick={() => onSelect(day.dayAbbr)}
       className={`relative flex flex-col gap-3 min-w-[160px] w-full rounded-2xl p-4 transition-all cursor-pointer ${
         active
-          ? "bg-neutral-800/60 border border-lime-400/40 shadow-[0_0_28px_rgba(149,253,0,0.10)] shadow-card"
-          : "bg-neutral-900/50 glass-border hover:border-white/[0.08]"
+          ? "bg-app-card/60 border border-lime-400/40 shadow-[0_0_28px_rgba(149,253,0,0.10)] shadow-card"
+          : "bg-app-bg/50 glass-border hover:border-app-border/[0.08]"
       }`}
     >
       {active && (
@@ -25,13 +25,13 @@ export function DayColumn({ day, onSelect }: DayColumnProps) {
         </>
       )}
 
-      <div className="flex flex-col items-center gap-0.5 pb-2 border-b border-zinc-800/40">
+      <div className="flex flex-col items-center gap-0.5 pb-2 border-b border-app-border/[0.08]">
         <span
-          className={`text-xs font-bold tracking-widest ${active ? "text-lime-400" : "text-gray-500"}`}
+          className={`text-xs font-bold tracking-widest ${active ? "text-lime-400" : "text-app-subtle"}`}
         >
           {day.dayAbbr}
         </span>
-        <span className="text-gray-600 text-[11px] font-medium">
+        <span className="text-app-faint text-[11px] font-medium">
           {day.date} {day.month}
         </span>
       </div>
@@ -40,7 +40,7 @@ export function DayColumn({ day, onSelect }: DayColumnProps) {
         {day.classes.length > 0 ? (
           day.classes.map((cls) => <ClassCard key={cls.id} classItem={cls} />)
         ) : (
-          <div className="flex flex-col items-center justify-center gap-2 py-8 text-gray-600">
+          <div className="flex flex-col items-center justify-center gap-2 py-8 text-app-faint">
             <i className="ti ti-calendar-off text-xl" />
             <span className="text-xs font-medium">Sin clases</span>
           </div>

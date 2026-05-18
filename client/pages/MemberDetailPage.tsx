@@ -13,8 +13,8 @@ export default function MemberDetailPage() {
   if (!client) {
     return (
       <div className="flex flex-col items-center justify-center px-7 py-16 text-center">
-        <i className="ti ti-user-off text-6xl text-gray-600 mb-4" />
-        <p className="text-sm text-gray-500">Socio no encontrado.</p>
+        <i className="ti ti-user-off text-6xl text-app-faint mb-4" />
+        <p className="text-sm text-app-subtle">Socio no encontrado.</p>
       </div>
     );
   }
@@ -69,13 +69,13 @@ export default function MemberDetailPage() {
       <div className="px-7 pb-7 max-sm:px-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex gap-2 items-center text-sm text-gray-500 hover:text-gray-300 mb-4 cursor-pointer"
+          className="flex gap-2 items-center text-sm text-app-subtle hover:text-app-muted mb-4 cursor-pointer"
         >
           <i className="ti ti-arrow-left text-base" />
           Volver
         </button>
 
-        <div className="p-6 rounded-2xl bg-neutral-900">
+        <div className="p-6 rounded-2xl bg-app-bg">
           <MemberDetail
             member={{
               id: client.id,

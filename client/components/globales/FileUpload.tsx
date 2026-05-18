@@ -33,8 +33,8 @@ function FileUpload() {
 
   return (
     <div
-      className={`flex flex-col justify-center items-center px-5 py-8 rounded-xl border-2 border-dashed cursor-pointer bg-zinc-800 ${
-        dragActive ? "border-lime-400" : "border-neutral-700"
+      className={`flex flex-col justify-center items-center px-5 py-8 rounded-xl border-2 border-dashed cursor-pointer bg-app-card ${
+        dragActive ? "border-lime-400" : "border-app-border/[0.20]"
       }`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
@@ -42,8 +42,8 @@ function FileUpload() {
       onDrop={handleDrop}
       onClick={() => document.getElementById("file-input")?.click()}
     >
-      <div className="flex justify-center items-center mb-3 w-12 h-12 rounded-xl bg-zinc-800">
-        <i className="ti ti-file-description text-2xl text-gray-400" />
+      <div className="flex justify-center items-center mb-3 w-12 h-12 rounded-xl bg-app-surface">
+        <i className="ti ti-file-description text-2xl text-app-muted" />
       </div>
 
       {uploadedFile ? (
@@ -57,10 +57,10 @@ function FileUpload() {
         </div>
       ) : (
         <div className="text-center">
-          <p className="mb-1 text-sm font-medium text-white">
+          <p className="mb-1 text-sm font-medium text-app-text">
             Arrastrar documento o hacer clic
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-app-subtle">
             Formatos: PDF, JPG, PNG (Max 5MB)
           </p>
         </div>

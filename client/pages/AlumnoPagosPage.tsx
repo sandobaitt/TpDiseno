@@ -115,32 +115,32 @@ function ReceiptPopup({ payment, planName, onClose }: ReceiptPopupProps) {
           <i className="ti ti-receipt text-2xl text-lime-400" />
         </div>
         <div>
-          <h2 className="text-white text-lg font-extrabold">Comprobante</h2>
-          <p className="text-gray-500 text-xs">{payment.reference}</p>
+          <h2 className="text-app-text text-lg font-extrabold">Comprobante</h2>
+          <p className="text-app-subtle text-xs">{payment.reference}</p>
         </div>
       </div>
 
-      <div className="bg-black/40 rounded-xl p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+      <div className="bg-app-surface rounded-xl p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             PERIODO
           </span>
-          <span className="text-white text-sm font-bold">
+          <span className="text-app-text text-sm font-bold">
             {payment.period
               ? `${new Date(payment.period.from).toLocaleDateString("es-AR", { day: "numeric", month: "short" })} - ${new Date(payment.period.to).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}`
               : "-"}
           </span>
         </div>
 
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+        <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             PLAN
           </span>
-          <span className="text-white text-sm font-bold">{planName}</span>
+          <span className="text-app-text text-sm font-bold">{planName}</span>
         </div>
 
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+        <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             MONTO
           </span>
           <span className="text-lime-400 text-base font-extrabold">
@@ -148,29 +148,29 @@ function ReceiptPopup({ payment, planName, onClose }: ReceiptPopupProps) {
           </span>
         </div>
 
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+        <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             MÉTODO DE PAGO
           </span>
-          <span className="text-white text-sm font-bold">
+          <span className="text-app-text text-sm font-bold">
             {getMethodLabel(payment.method)}
           </span>
         </div>
 
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+        <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             FECHA DE PAGO
           </span>
-          <span className="text-white text-sm font-bold">
+          <span className="text-app-text text-sm font-bold">
             {formatDate(payment.createdAt)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
+          <span className="text-app-subtle text-xs font-semibold tracking-wider">
             ESTADO
           </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-xs font-bold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/15/40 text-lime-400 text-xs font-bold">
             <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
             Aprobado
           </span>
@@ -179,7 +179,7 @@ function ReceiptPopup({ payment, planName, onClose }: ReceiptPopupProps) {
 
       <button
         onClick={onClose}
-        className="w-full py-3 rounded-xl bg-neutral-900 text-white text-xs font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
+        className="w-full py-3 rounded-xl bg-app-bg text-app-text text-xs font-bold hover:bg-app-card transition-colors cursor-pointer"
       >
         CERRAR
       </button>
@@ -216,10 +216,10 @@ export default function AlumnoPagosPage() {
   return (
     <>
       <div className="px-7 pb-7 max-sm:px-4">
-        <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
+        <h1 className="text-app-text text-3xl md:text-4xl font-extrabold leading-tight">
           HISTORIAL DE PAGOS
         </h1>
-        <p className="text-gray-600 text-sm mt-2 max-w-xl leading-relaxed">
+        <p className="text-app-faint text-sm mt-2 max-w-xl leading-relaxed">
           Revisá el estado de tus cuotas mensuales y realizá el pago de las
           pendientes.
         </p>
@@ -233,12 +233,12 @@ export default function AlumnoPagosPage() {
               <button
                 key={m.key}
                 onClick={() => setSelectedMonthKey(m.key)}
-                className="w-full flex items-center justify-between bg-black/60 rounded-2xl p-5 hover:bg-black/70 transition-all duration-150 text-left cursor-pointer group shadow-card glass-border hover:border-white/[0.08]"
+                className="w-full flex items-center justify-between bg-app-surface rounded-2xl p-5 hover:bg-app-card transition-all duration-150 text-left cursor-pointer group shadow-card glass-border hover:border-app-border/[0.08]"
               >
                 <div className="flex items-center gap-4">
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      isPaid ? "bg-lime-400/10" : "bg-red-900/20"
+                      isPaid ? "bg-lime-400/10" : "bg-red-500/12"
                     }`}
                   >
                     {isPaid ? (
@@ -249,11 +249,11 @@ export default function AlumnoPagosPage() {
                   </div>
 
                   <div>
-                    <p className="text-white text-sm font-bold capitalize">
+                    <p className="text-app-text text-sm font-bold capitalize">
                       {m.label}
                     </p>
                     {isPaid && m.payment && (
-                      <p className="text-gray-500 text-xs mt-0.5">
+                      <p className="text-app-subtle text-xs mt-0.5">
                         {getMethodLabel(m.payment.method)} · $
                         {m.payment.amountArs.toLocaleString()}
                       </p>
@@ -268,15 +268,15 @@ export default function AlumnoPagosPage() {
 
                 <div className="flex items-center gap-3">
                   {isPaid ? (
-                    <span className="px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-[10px] font-bold">
+                    <span className="px-3 py-1 rounded-full bg-lime-400/15 border border-lime-400/25 text-lime-400 text-[10px] font-bold">
                       Pagado
                     </span>
                   ) : (
-                    <span className="px-3 py-1 rounded-full bg-red-900/40 text-red-400 text-[10px] font-bold">
+                    <span className="px-3 py-1 rounded-full bg-red-500/12 border border-red-500/25 text-red-400 text-[10px] font-bold">
                       Adeuda
                     </span>
                   )}
-                  <i className="ti ti-chevron-right text-gray-600 text-sm group-hover:text-gray-400 transition-colors" />
+                  <i className="ti ti-chevron-right text-app-faint text-sm group-hover:text-app-muted transition-colors" />
                 </div>
               </button>
             );
@@ -295,7 +295,7 @@ export default function AlumnoPagosPage() {
         open={!!selectedMonth && selectedMonth.status === "paid"}
         onOpenChange={(open) => !open && setSelectedMonthKey(null)}
       >
-        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+        <DialogContent className="max-w-lg bg-app-card-deep border-app-border/[0.12] text-app-text">
           {selectedMonth?.payment && (
             <ReceiptPopup
               payment={selectedMonth.payment}
@@ -311,7 +311,7 @@ export default function AlumnoPagosPage() {
         open={!!selectedMonth && selectedMonth.status === "unpaid"}
         onOpenChange={(open) => !open && setSelectedMonthKey(null)}
       >
-        <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
+        <DialogContent className="max-w-6xl bg-app-card-deep border-app-border/[0.12] max-h-[90vh] overflow-y-auto text-app-text [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
           <div className="p-3">
             {client && (
               <PaymentCheckoutContent

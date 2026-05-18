@@ -41,10 +41,10 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
 
   const initialsStyles = [
-    { initialsColor: "text-lime-400", initialsBackground: "bg-zinc-800" },
-    { initialsColor: "text-violet-400", initialsBackground: "bg-gray-800" },
-    { initialsColor: "text-blue-400", initialsBackground: "bg-slate-800" },
-    { initialsColor: "text-gray-400", initialsBackground: "bg-zinc-800" },
+    { initialsColor: "text-lime-400",   initialsBackground: "bg-app-card" },
+    { initialsColor: "text-violet-400", initialsBackground: "bg-app-surface" },
+    { initialsColor: "text-blue-400",   initialsBackground: "bg-app-surface" },
+    { initialsColor: "text-app-muted",  initialsBackground: "bg-app-card" },
   ];
 
   const getInitials = (fullName: string) => {
@@ -146,13 +146,13 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
   const getStatusStyles = (status: Member["status"]["type"]) => {
     switch (status) {
       case "enabled":
-        return { container: "bg-green-900", dot: "bg-green-500", text: "text-green-500" };
+        return { container: "bg-green-500/15", dot: "bg-green-500", text: "text-green-500" };
       case "debtor":
-        return { container: "bg-orange-950", dot: "bg-red-500", text: "text-red-500" };
+        return { container: "bg-orange-500/15", dot: "bg-red-500", text: "text-red-500" };
       case "inactive":
-        return { container: "bg-stone-900 border border-gray-700", dot: "bg-gray-500", text: "text-gray-400" };
+        return { container: "bg-app-surface border border-app-border/[0.15]", dot: "bg-app-subtle", text: "text-app-subtle" };
       default:
-        return { container: "bg-stone-900", dot: "bg-gray-500", text: "text-gray-400" };
+        return { container: "bg-app-surface", dot: "bg-app-subtle", text: "text-app-subtle" };
     }
   };
 
@@ -168,11 +168,11 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
           <div className="flex flex-col min-w-0">
             <button
               onClick={() => setSelectedClientId(member.id)}
-              className="text-sm font-semibold text-white truncate hover:text-lime-400 transition-colors text-left cursor-pointer"
+              className="text-sm font-semibold text-app-text truncate hover:text-lime-400 transition-colors text-left cursor-pointer"
             >
               {member.name}
             </button>
-            <p className="text-xs text-gray-500 truncate">{member.email}</p>
+            <p className="text-xs text-app-subtle truncate">{member.email}</p>
           </div>
         </div>
       ),
@@ -205,17 +205,17 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
       {/* Search + Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-app-subtle text-sm pointer-events-none" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Nombre, email o DNI..."
-            className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+            className="w-full pl-9 pr-8 py-2 rounded-xl bg-app-bg glass-border text-sm text-app-text placeholder-app-faint outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-app-subtle hover:text-app-muted cursor-pointer"
             >
               <i className="ti ti-x text-xs" />
             </button>
@@ -243,13 +243,13 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
         {hasFilters && (
           <button
             onClick={() => { setSearch(""); setFilterStatus(""); setFilterPlan(""); }}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+            className="text-xs text-app-subtle hover:text-app-muted transition-colors cursor-pointer ml-1"
           >
             Limpiar
           </button>
         )}
 
-        <span className="text-xs text-gray-600 ml-auto">{filteredMembers.length} socios</span>
+        <span className="text-xs text-app-faint ml-auto">{filteredMembers.length} socios</span>
 
         {onAddClick && (
           <button
@@ -262,11 +262,11 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
         )}
       </div>
 
-      <div className="p-5 rounded-2xl bg-neutral-900 shadow-card glass-border">
+      <div className="p-5 rounded-2xl bg-app-bg shadow-card glass-border">
         {filteredMembers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <i className="ti ti-search-off text-3xl text-gray-700" />
-            <p className="text-sm text-gray-600 font-medium">Sin resultados para los filtros aplicados</p>
+            <i className="ti ti-search-off text-3xl text-app-faint" />
+            <p className="text-sm text-app-faint font-medium">Sin resultados para los filtros aplicados</p>
             <button
               onClick={() => { setSearch(""); setFilterStatus(""); setFilterPlan(""); }}
               className="text-xs text-lime-400 hover:text-lime-300 transition-colors cursor-pointer"

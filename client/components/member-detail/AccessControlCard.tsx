@@ -21,9 +21,9 @@ export function AccessControlCard({
   };
 
   return (
-    <article className="flex flex-col gap-3 p-6 rounded-2xl bg-stone-900 shadow-card glass-border">
+    <article className="flex flex-col gap-3 p-6 rounded-2xl bg-app-surface shadow-card glass-border">
       <header className="flex justify-between items-center">
-        <h3 className="text-base font-bold text-white">Control de Acceso</h3>
+        <h3 className="text-base font-bold text-app-text">Control de Acceso</h3>
         <button
           className={`flex justify-end items-center pr-1 w-11 h-6 rounded-xl cursor-pointer transition-colors ${
             blocked ? "bg-red-500" : "bg-lime-400"
@@ -38,7 +38,7 @@ export function AccessControlCard({
         </button>
       </header>
 
-      <p className="text-xs leading-normal text-zinc-500">
+      <p className="text-xs leading-normal text-app-subtle">
         {blocked
           ? "Acceso bloqueado para este usuario."
           : "Permitir acceso para este usuario."}

@@ -45,7 +45,7 @@ export function FilterSelect({ value, onChange, placeholder, options }: FilterSe
           "flex items-center gap-2 pl-3 pr-2.5 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer whitespace-nowrap",
           value
             ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-            : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300",
+            : "bg-app-bg border-app-border/[0.06] text-app-subtle hover:border-app-border/[0.12] hover:text-app-muted",
         )}
       >
         {selected?.label ?? placeholder}
@@ -58,7 +58,7 @@ export function FilterSelect({ value, onChange, placeholder, options }: FilterSe
       </button>
 
       {open && (
-        <div className={`absolute top-full mt-1.5 z-50 min-w-[152px] rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden py-1 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100 ${alignRight ? "right-0" : "left-0"}`}>
+        <div className={`absolute top-full mt-1.5 z-50 min-w-[152px] rounded-xl bg-app-bg border border-app-border/[0.08] shadow-dropdown overflow-hidden py-1 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100 ${alignRight ? "right-0" : "left-0"}`}>
           <button
             type="button"
             onClick={() => { onChange(""); setOpen(false); }}
@@ -66,7 +66,7 @@ export function FilterSelect({ value, onChange, placeholder, options }: FilterSe
               "w-full text-left px-3 py-2 text-xs font-medium transition-colors",
               !value
                 ? "text-lime-400 bg-lime-400/10"
-                : "text-gray-500 hover:bg-white/[0.04] hover:text-gray-300",
+                : "text-app-subtle hover:bg-app-hover/[0.04] hover:text-app-muted",
             )}
           >
             {placeholder}
@@ -80,7 +80,7 @@ export function FilterSelect({ value, onChange, placeholder, options }: FilterSe
                 "w-full text-left px-3 py-2 text-xs font-medium transition-colors",
                 value === opt.value
                   ? "text-lime-400 bg-lime-400/10"
-                  : "text-gray-400 hover:bg-white/[0.04] hover:text-white",
+                  : "text-app-muted hover:bg-app-hover/[0.04] hover:text-app-text",
               )}
             >
               {opt.label}

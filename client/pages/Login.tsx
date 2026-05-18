@@ -171,7 +171,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 text-squat-muted hover:text-white transition-colors"
+                className="absolute right-4 text-squat-muted hover:text-app-text transition-colors"
                 aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 <svg width="22" height="15" viewBox="0 0 22 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -189,17 +189,17 @@ export default function Login() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.18, ease: "easeOut" }}
-                className="rounded-2xl border border-white/[0.07] bg-black/40 backdrop-blur-sm overflow-hidden"
+                className="rounded-2xl border border-white/[0.07] bg-[rgba(30,30,30,0.85)] backdrop-blur-sm overflow-hidden"
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
                   <div className="flex items-center gap-2">
-                    <i className="ti ti-bug text-xs text-gray-500" />
-                    <span className="text-gray-500 text-[10px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
+                    <i className="ti ti-bug text-xs text-white/50" />
+                    <span className="text-white/50 text-[10px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowDebug(false)}
-                    className="text-gray-600 hover:text-gray-400 transition-colors cursor-pointer"
+                    className="text-white/30 hover:text-white/60 transition-colors cursor-pointer"
                   >
                     <i className="ti ti-x text-xs" />
                   </button>
@@ -212,7 +212,7 @@ export default function Login() {
                         key={user.id}
                         type="button"
                         onClick={() => handleQuickLogin(user)}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.05] hover:border-white/[0.10] transition-all cursor-pointer text-left group"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] hover:border-white/[0.14] transition-all cursor-pointer text-left group"
                       >
                         <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
                           <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>

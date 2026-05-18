@@ -36,27 +36,27 @@ export default function AlumnoCronogramaPage() {
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
+            <h1 className="text-app-text text-3xl md:text-4xl font-extrabold leading-tight mt-1">
               CRONOGRAMA DE CLASES
             </h1>
-            <p className="text-gray-600 text-sm mt-1">
+            <p className="text-app-faint text-sm mt-1">
               Consulta tus sesiones de entrenamiento.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-neutral-800/80 rounded-xl px-4 py-2.5 border border-zinc-800/50">
+          <div className="flex items-center gap-2 bg-app-card/80 rounded-xl px-4 py-2.5 border border-app-border/[0.12]/50">
             <button
               onClick={() => setWeekOffset((o) => o - 1)}
-              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+              className="text-app-subtle hover:text-app-text transition-colors cursor-pointer"
             >
               <i className="ti ti-chevron-left text-sm" />
             </button>
-            <span className="text-white text-xs font-bold tracking-wider px-3">
+            <span className="text-app-text text-xs font-bold tracking-wider px-3">
               {weekLabel(weekOffset)}
             </span>
             <button
               onClick={() => setWeekOffset((o) => o + 1)}
-              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
+              className="text-app-subtle hover:text-app-text transition-colors cursor-pointer"
             >
               <i className="ti ti-chevron-right text-sm" />
             </button>

@@ -64,11 +64,11 @@ export function SidebarNav({
 
   const itemBase =
     "relative flex items-center py-2.5 rounded-xl w-full text-left transition-colors duration-150";
-  const itemHover = "hover:bg-white/[0.04] cursor-pointer";
+  const itemHover = "hover:bg-app-hover/[0.04] cursor-pointer";
 
   const renderItemInner = (item: SidebarNavItem, isActive: boolean) => {
-    const iconColor = isActive ? "text-lime-400" : "text-gray-500";
-    const textColor = isActive ? "text-lime-400" : "text-gray-500";
+    const iconColor = isActive ? "text-lime-400" : "text-app-subtle";
+    const textColor = isActive ? "text-lime-400" : "text-app-subtle";
     const textWeight = isActive ? "font-bold" : "font-semibold";
 
     return (
@@ -76,7 +76,7 @@ export function SidebarNav({
         {isActive && (
           <motion.div
             layoutId="nav-active"
-            className={`absolute inset-0 rounded-xl bg-white/[0.06] ${!isCollapsed ? "border-l-2 border-lime-400" : "border border-lime-400/30"}`}
+            className={`absolute inset-0 rounded-xl bg-app-hover/[0.06] ${!isCollapsed ? "border-l-2 border-lime-400" : "border border-lime-400/30"}`}
             transition={{ duration: 0.22, ease: "easeOut" }}
           />
         )}
@@ -103,13 +103,13 @@ export function SidebarNav({
     <motion.aside
       animate={{ width: isCollapsed ? 68 : 248 }}
       transition={{ duration: 0.28, ease: "easeInOut" }}
-      className={`flex fixed inset-y-0 left-0 z-20 flex-col bg-neutral-900 min-h-screen overflow-hidden border-r border-white/[0.04] transition-transform duration-300 ease-in-out md:translate-x-0 ${
+      className={`flex fixed inset-y-0 left-0 z-20 flex-col bg-app-bg min-h-screen overflow-hidden border-r border-app-border/[0.04] transition-transform duration-300 ease-in-out md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } ${className}`}
     >
       {/* Header */}
       <header
-        className={`pt-7 pb-5 flex items-center border-b border-white/[0.05] ${
+        className={`pt-7 pb-5 flex items-center border-b border-app-border/[0.05] ${
           isCollapsed ? "px-3 justify-center flex-col gap-3" : "px-6 justify-between"
         }`}
       >
@@ -121,7 +121,7 @@ export function SidebarNav({
             {onToggleCollapse && (
               <button
                 onClick={onToggleCollapse}
-                className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-gray-500 hover:text-lime-400 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
+                className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-app-subtle hover:text-lime-400 hover:bg-app-hover/[0.06] transition-all duration-150 cursor-pointer"
                 aria-label="Expandir sidebar"
               >
                 <i className="ti ti-chevron-right text-sm" />
@@ -135,7 +135,7 @@ export function SidebarNav({
                 {brandTitle}
               </h1>
               {effectiveSubtitle && (
-                <p className="mt-1.5 text-[10px] font-semibold tracking-widest text-gray-500 uppercase whitespace-nowrap">
+                <p className="mt-1.5 text-[10px] font-semibold tracking-widest text-app-subtle uppercase whitespace-nowrap">
                   {effectiveSubtitle}
                 </p>
               )}
@@ -144,7 +144,7 @@ export function SidebarNav({
               {onToggleCollapse && (
                 <button
                   onClick={onToggleCollapse}
-                  className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
+                  className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.06] transition-all duration-150 cursor-pointer"
                   aria-label="Contraer sidebar"
                 >
                   <i className="ti ti-chevron-left text-sm" />
@@ -153,7 +153,7 @@ export function SidebarNav({
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="md:hidden text-gray-400 hover:text-white"
+                  className="md:hidden text-app-muted hover:text-app-text"
                   aria-label="Cerrar menú"
                 >
                   <i className="ti ti-x text-2xl" />
@@ -217,7 +217,7 @@ export function SidebarNav({
 
       {/* Footer */}
       {footerItems.length > 0 && (
-        <footer className={`pb-7 border-t border-white/[0.05] pt-3 ${isCollapsed ? "px-2" : "px-3"}`}>
+        <footer className={`pb-7 border-t border-app-border/[0.05] pt-3 ${isCollapsed ? "px-2" : "px-3"}`}>
           <div className="flex flex-col gap-0.5">
             {footerItems.map((item) => (
               <button

@@ -71,28 +71,28 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
         type="button"
         onClick={() => setOpen(o => !o)}
         className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border text-sm transition-all cursor-pointer",
-          open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
+          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-app-bg border text-sm transition-all cursor-pointer",
+          open ? "border-lime-400/30" : "border-app-border/[0.12] hover:border-app-input-border",
         )}
       >
-        <i className="ti ti-calendar text-gray-600 text-sm shrink-0" />
-        <span className={cn("flex-1 text-left", displayValue ? "text-white" : "text-gray-600")}>
+        <i className="ti ti-calendar text-app-faint text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", displayValue ? "text-app-text" : "text-app-faint")}>
           {displayValue ?? "dd/mm/aaaa"}
         </span>
-        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+        <i className={cn("ti ti-chevron-down text-app-faint text-xs transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.7)] p-4 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-app-bg border border-app-border/[0.08] shadow-dropdown p-4 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
           {/* nav */}
           <div className="flex items-center justify-between mb-3">
-            <button type="button" onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button type="button" onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-app-hover/[0.06] text-app-subtle hover:text-app-text transition-colors cursor-pointer">
               <i className="ti ti-chevron-left text-xs" />
             </button>
-            <span className="text-white text-xs font-bold tracking-wider">
+            <span className="text-app-text text-xs font-bold tracking-wider">
               {MONTHS_ES[viewMonth]} {viewYear}
             </span>
-            <button type="button" onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button type="button" onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-app-hover/[0.06] text-app-subtle hover:text-app-text transition-colors cursor-pointer">
               <i className="ti ti-chevron-right text-xs" />
             </button>
           </div>
@@ -100,7 +100,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
           {/* day headers */}
           <div className="grid grid-cols-7 mb-1">
             {DAYS_ES.map(d => (
-              <span key={d} className="text-center text-[9px] font-bold tracking-wider text-gray-600 py-1">{d}</span>
+              <span key={d} className="text-center text-[9px] font-bold tracking-wider text-app-faint py-1">{d}</span>
             ))}
           </div>
 
@@ -119,7 +119,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
                     "w-7 h-7 mx-auto flex items-center justify-center rounded-lg text-xs font-medium transition-all cursor-pointer",
                     isSel  ? "bg-lime-400 text-black font-extrabold" :
                     isToday ? "bg-lime-400/15 text-lime-400 font-bold" :
-                    "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                    "text-app-muted hover:bg-app-hover/[0.06] hover:text-app-text",
                   )}
                 >
                   {day}
@@ -129,8 +129,8 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
           </div>
 
           {/* footer */}
-          <div className="flex justify-between mt-3 pt-3 border-t border-white/[0.05]">
-            <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+          <div className="flex justify-between mt-3 pt-3 border-t border-app-border/[0.05]">
+            <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-app-subtle hover:text-app-muted transition-colors cursor-pointer">
               Borrar
             </button>
             <button type="button" onClick={goToday} className="text-[10px] text-lime-400 hover:text-lime-300 transition-colors cursor-pointer font-bold">
@@ -192,23 +192,23 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
         type="button"
         onClick={() => setOpen(o => !o)}
         className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border text-sm transition-all cursor-pointer",
-          open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
+          "w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-app-bg border text-sm transition-all cursor-pointer",
+          open ? "border-lime-400/30" : "border-app-border/[0.12] hover:border-app-input-border",
         )}
       >
-        <i className="ti ti-clock text-gray-600 text-sm shrink-0" />
-        <span className={cn("flex-1 text-left", value ? "text-white" : "text-gray-600")}>
+        <i className="ti ti-clock text-app-faint text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", value ? "text-app-text" : "text-app-faint")}>
           {value || "--:--"}
         </span>
-        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+        <i className={cn("ti ti-chevron-down text-app-faint text-xs transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.7)] p-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-app-bg border border-app-border/[0.08] shadow-dropdown p-3 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
           <div className="flex gap-2">
             {/* hours */}
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">HORA</span>
+              <span className="text-[9px] font-bold tracking-wider text-app-faint text-center">HORA</span>
               <div ref={hourRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
                 {HOURS.map(h => (
                   <button
@@ -218,7 +218,7 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
                     onClick={() => selectHour(h)}
                     className={cn(
                       "w-full py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer",
-                      hour === h ? "bg-lime-400 text-black font-extrabold" : "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                      hour === h ? "bg-lime-400 text-black font-extrabold" : "text-app-muted hover:bg-app-hover/[0.06] hover:text-app-text",
                     )}
                   >
                     {h}
@@ -227,11 +227,11 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
               </div>
             </div>
 
-            <div className="w-px bg-white/[0.06] self-stretch" />
+            <div className="w-px bg-app-border/[0.06] self-stretch" />
 
             {/* minutes */}
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">MIN</span>
+              <span className="text-[9px] font-bold tracking-wider text-app-faint text-center">MIN</span>
               <div ref={minRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
                 {MINUTES.map(m => (
                   <button
@@ -241,7 +241,7 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
                     onClick={() => selectMin(m)}
                     className={cn(
                       "w-full py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer",
-                      min === m ? "bg-lime-400 text-black font-extrabold" : "text-gray-400 hover:bg-white/[0.06] hover:text-white",
+                      min === m ? "bg-lime-400 text-black font-extrabold" : "text-app-muted hover:bg-app-hover/[0.06] hover:text-app-text",
                     )}
                   >
                     {m}
@@ -252,8 +252,8 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
           </div>
 
           {value && (
-            <div className="mt-2 pt-2 border-t border-white/[0.05] text-center">
-              <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+            <div className="mt-2 pt-2 border-t border-app-border/[0.05] text-center">
+              <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-app-subtle hover:text-app-muted transition-colors cursor-pointer">
                 Borrar
               </button>
             </div>
@@ -382,28 +382,28 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
   return (
     <aside className="w-full lg:w-[25%] shrink-0">
-      <div className="bg-[#151515] rounded-2xl p-6 md:p-8 flex flex-col gap-6 h-full shadow-[inset_0_2px_8px_rgba(0,0,0,0.4)]">
+      <div className="bg-app-elevated rounded-2xl p-6 md:p-8 flex flex-col gap-6 h-full shadow-card glass-border">
 
         {/* Header */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-circle-plus text-xl text-lime-400" />
           </div>
-          <h2 className="text-white font-extrabold text-sm tracking-[0.15em]">REGISTRAR NOVEDAD</h2>
+          <h2 className="text-app-text font-extrabold text-sm tracking-[0.15em]">REGISTRAR NOVEDAD</h2>
         </div>
 
         <div className="flex flex-col gap-5">
 
           {/* Tipo de evento */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">TIPO DE EVENTO</label>
+            <label className="text-app-subtle text-xs font-semibold tracking-widest">TIPO DE EVENTO</label>
             <div ref={eventTypeRef} className="relative">
               <button
                 type="button"
                 onClick={() => setEventTypeOpen((o) => !o)}
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm transition-all cursor-pointer",
-                  eventTypeOpen ? "border-lime-400/30 bg-neutral-900" : "border-zinc-800 bg-neutral-900",
+                  eventTypeOpen ? "border-lime-400/30 bg-app-bg" : "border-app-border/[0.12] bg-app-bg",
                 )}
               >
                 {selectedEventType ? (
@@ -411,16 +411,16 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                     <span className={`w-7 h-7 rounded-lg ${selectedEventType.bg} flex items-center justify-center shrink-0`}>
                       <i className={`ti ${selectedEventType.icon} text-sm ${selectedEventType.color}`} />
                     </span>
-                    <span className="flex-1 text-white text-left">{selectedEventType.label}</span>
+                    <span className="flex-1 text-app-text text-left">{selectedEventType.label}</span>
                   </>
                 ) : (
-                  <span className="flex-1 text-gray-500 text-left">Seleccionar categoría...</span>
+                  <span className="flex-1 text-app-subtle text-left">Seleccionar categoría...</span>
                 )}
-                <i className={cn("ti ti-chevron-down text-gray-500 text-xs transition-transform duration-150 shrink-0", eventTypeOpen && "rotate-180")} />
+                <i className={cn("ti ti-chevron-down text-app-subtle text-xs transition-transform duration-150 shrink-0", eventTypeOpen && "rotate-180")} />
               </button>
 
               {eventTypeOpen && (
-                <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden py-1 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+                <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-app-bg border border-app-border/[0.08] shadow-dropdown overflow-hidden py-1 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
                   {EVENT_TYPES.map((opt) => (
                     <button
                       key={opt.value}
@@ -428,7 +428,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                       onClick={() => { setEventType(opt.value); setEventTypeOpen(false); }}
                       className={cn(
                         "w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left",
-                        eventType === opt.value ? "bg-white/[0.06] text-white" : "text-gray-400 hover:bg-white/[0.04] hover:text-white",
+                        eventType === opt.value ? "bg-app-hover/[0.06] text-app-text" : "text-app-muted hover:bg-app-hover/[0.04] hover:text-app-text",
                       )}
                     >
                       <span className={`w-7 h-7 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
@@ -445,50 +445,50 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Asignado a */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">ASIGNADO A</label>
+            <label className="text-app-subtle text-xs font-semibold tracking-widest">ASIGNADO A</label>
             <div ref={assignRef} className="relative">
               {assignSelected ? (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border border-lime-400/25">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-app-bg border border-lime-400/25">
                   <span className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", assignSelected.entityType === "profesor" ? "bg-lime-400/10" : "bg-blue-400/10")}>
                     <i className={cn("ti text-sm", assignSelected.entityType === "profesor" ? "ti-user text-lime-400" : "ti-barbell text-blue-400")} />
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-semibold truncate">{assignSelected.label}</p>
-                    <p className="text-gray-500 text-[10px] truncate">{assignSelected.sublabel}</p>
+                    <p className="text-app-text text-sm font-semibold truncate">{assignSelected.label}</p>
+                    <p className="text-app-subtle text-[10px] truncate">{assignSelected.sublabel}</p>
                   </div>
-                  <button type="button" onClick={() => { setAssignSelected(null); setAssignQuery(""); }} className="text-gray-600 hover:text-gray-300 transition-colors cursor-pointer shrink-0">
+                  <button type="button" onClick={() => { setAssignSelected(null); setAssignQuery(""); }} className="text-app-faint hover:text-app-muted transition-colors cursor-pointer shrink-0">
                     <i className="ti ti-x text-xs" />
                   </button>
                 </div>
               ) : (
-                <div className={cn("relative flex items-center rounded-xl border bg-neutral-900 transition-all", assignFocused ? "border-lime-400/30" : "border-zinc-800")}>
-                  <i className="ti ti-search absolute left-3 text-gray-600 text-sm pointer-events-none" />
+                <div className={cn("relative flex items-center rounded-xl border bg-app-bg transition-all", assignFocused ? "border-lime-400/30" : "border-app-border/[0.12]")}>
+                  <i className="ti ti-search absolute left-3 text-app-faint text-sm pointer-events-none" />
                   <input
                     type="text"
                     value={assignQuery}
                     onChange={(e) => setAssignQuery(e.target.value)}
                     onFocus={() => setAssignFocused(true)}
                     placeholder="Buscar profesor o clase..."
-                    className="w-full bg-transparent pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none"
+                    className="w-full bg-transparent pl-9 pr-4 py-3 text-sm text-app-text placeholder:text-app-faint outline-none"
                   />
                 </div>
               )}
 
               {assignFocused && !assignSelected && (
-                <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden max-h-[220px] overflow-y-auto animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+                <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-app-bg border border-app-border/[0.08] shadow-dropdown overflow-hidden max-h-[220px] overflow-y-auto animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
                   {filteredSuggestions.length === 0 ? (
-                    <div className="px-4 py-4 text-xs text-gray-600 text-center">Sin resultados</div>
+                    <div className="px-4 py-4 text-xs text-app-faint text-center">Sin resultados</div>
                   ) : (
                     <>
                       {profesores.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20">PROFESORES</div>
+                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-app-faint bg-app-surface/50">PROFESORES</div>
                           {profesores.map((s) => (
-                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-app-hover/[0.04] transition-colors">
                               <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0"><i className="ti ti-user text-[10px] text-lime-400" /></span>
                               <div className="min-w-0">
-                                <p className="text-white text-xs font-semibold truncate">{s.label}</p>
-                                <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
+                                <p className="text-app-text text-xs font-semibold truncate">{s.label}</p>
+                                <p className="text-app-subtle text-[10px] truncate">{s.sublabel}</p>
                               </div>
                             </button>
                           ))}
@@ -496,13 +496,13 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                       )}
                       {clases.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20 border-t border-white/[0.04]">CLASES</div>
+                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-app-faint bg-app-surface/50 border-t border-app-border/[0.04]">CLASES</div>
                           {clases.map((s) => (
-                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-app-hover/[0.04] transition-colors">
                               <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0"><i className="ti ti-barbell text-[10px] text-blue-400" /></span>
                               <div className="min-w-0">
-                                <p className="text-white text-xs font-semibold truncate">{s.label}</p>
-                                <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
+                                <p className="text-app-text text-xs font-semibold truncate">{s.label}</p>
+                                <p className="text-app-subtle text-[10px] truncate">{s.sublabel}</p>
                               </div>
                             </button>
                           ))}
@@ -517,7 +517,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Fecha y hora */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">FECHA Y HORA</label>
+            <label className="text-app-subtle text-xs font-semibold tracking-widest">FECHA Y HORA</label>
             <div className="grid grid-cols-2 gap-2">
               <DatePicker value={dateVal} onChange={setDateVal} />
               <TimePicker value={timeVal} onChange={setTimeVal} />
@@ -526,13 +526,13 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Detalle operativo */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">DETALLE OPERATIVO</label>
+            <label className="text-app-subtle text-xs font-semibold tracking-widest">DETALLE OPERATIVO</label>
             <textarea
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
               placeholder="Describa el incidente o motivo de la novedad..."
               rows={4}
-              className="w-full bg-neutral-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none focus:border-lime-400/40 transition-colors resize-none"
+              className="w-full bg-app-bg border border-app-border/[0.12] rounded-xl px-4 py-3 text-sm text-app-text placeholder:text-app-faint outline-none focus:border-lime-400/40 transition-colors resize-none"
             />
           </div>
         </div>
@@ -545,7 +545,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
             "w-full py-4 rounded-xl font-extrabold text-sm tracking-wider transition-all",
             canSubmit
               ? "bg-lime-400 text-black hover:brightness-110 active:brightness-95 shadow-[0_0_20px_rgba(163,230,53,0.25)] cursor-pointer"
-              : "bg-neutral-800 text-gray-600 cursor-not-allowed",
+              : "bg-app-card text-app-faint cursor-not-allowed",
           )}
         >
           <span className="flex items-center justify-center gap-2">

@@ -29,24 +29,6 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         to: "/secretaria/cobros",
       },
       {
-        id: "kiosk",
-        label: "Kiosco",
-        iconClassName: "ti ti-shopping-cart",
-        disabled: true,
-      },
-      {
-        id: "comms",
-        label: "Comunicaciones",
-        iconClassName: "ti ti-message",
-        disabled: true,
-      },
-      {
-        id: "schedule",
-        label: "Cronogramas",
-        iconClassName: "ti ti-calendar",
-        disabled: true,
-      },
-      {
         id: "news",
         label: "Novedades",
         iconClassName: "ti ti-speakerphone",

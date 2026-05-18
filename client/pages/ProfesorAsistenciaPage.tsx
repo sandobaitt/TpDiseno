@@ -79,12 +79,12 @@ export default function ProfesorAsistenciaPage() {
       <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold">
+            <h1 className="text-app-text text-3xl md:text-4xl font-extrabold">
               CrossFit WOD
             </h1>
             <i className="ti ti-circle-check text-lime-400 text-2xl" />
           </div>
-          <div className="flex items-center gap-5 text-sm text-gray-400">
+          <div className="flex items-center gap-5 text-sm text-app-muted">
             <span className="flex items-center gap-1.5">
               <i className="ti ti-clock text-lime-400 text-sm" />
               18:00 - 19:00
@@ -96,38 +96,38 @@ export default function ProfesorAsistenciaPage() {
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800/60" />
+        <div className="h-px bg-app-card/60" />
 
         <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6 items-start">
           {/* LEFT: Student List */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-white text-sm font-extrabold tracking-wider">
+              <h2 className="text-app-text text-sm font-extrabold tracking-wider">
                 LISTA DE ALUMNOS
-                <span className="ml-2 text-[10px] font-bold text-gray-600">
+                <span className="ml-2 text-[10px] font-bold text-app-faint">
                   {filteredStudents.length}/{classStudentsMock.length}
                 </span>
               </h2>
               <button
                 onClick={() => markAll("present")}
-                className="px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-[10px] font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-app-bg text-lime-400 text-[10px] font-bold hover:bg-app-card transition-colors cursor-pointer"
               >
                 Marcar Todos
               </button>
             </div>
 
             <div className="relative">
-              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-app-subtle text-sm pointer-events-none" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar alumno..."
-                className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-black/60 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-app-surface glass-border text-sm text-app-text placeholder-app-faint outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-app-subtle hover:text-app-muted cursor-pointer"
                 >
                   <i className="ti ti-x text-xs" />
                 </button>
@@ -136,8 +136,8 @@ export default function ProfesorAsistenciaPage() {
 
             {filteredStudents.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
-                <i className="ti ti-search-off text-3xl text-gray-700" />
-                <p className="text-sm text-gray-600 font-medium">Sin resultados para "{search}"</p>
+                <i className="ti ti-search-off text-3xl text-app-faint" />
+                <p className="text-sm text-app-faint font-medium">Sin resultados para "{search}"</p>
               </div>
             )}
 
@@ -163,15 +163,15 @@ export default function ProfesorAsistenciaPage() {
           </div>
 
           {/* RIGHT: Bitácora List */}
-          <div className="bg-black/60 rounded-2xl p-5 flex flex-col gap-4 shadow-card glass-border">
+          <div className="bg-app-surface rounded-2xl p-5 flex flex-col gap-4 shadow-card glass-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <i className="ti ti-notes text-lg text-lime-400" />
                 <div>
-                  <h2 className="text-white text-sm font-extrabold">
+                  <h2 className="text-app-text text-sm font-extrabold">
                     Observaciones
                   </h2>
-                  <p className="text-gray-600 text-[10px]">Notas de la Clase</p>
+                  <p className="text-app-faint text-[10px]">Notas de la Clase</p>
                 </div>
               </div>
               <button
@@ -187,18 +187,18 @@ export default function ProfesorAsistenciaPage() {
                 <button
                   key={b.id}
                   onClick={() => setSelectedBitacora(b)}
-                  className="w-full text-left bg-neutral-900/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-neutral-900/80 transition-all duration-150 cursor-pointer group glass-border hover:border-white/[0.08]"
+                  className="w-full text-left bg-app-bg/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-app-bg/80 transition-all duration-150 cursor-pointer group glass-border hover:border-app-border/[0.08]"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-white text-xs font-bold leading-tight line-clamp-1">
+                    <span className="text-app-text text-xs font-bold leading-tight line-clamp-1">
                       {b.title}
                     </span>
-                    <i className="ti ti-chevron-right text-gray-600 text-[10px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <i className="ti ti-chevron-right text-app-faint text-[10px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">
+                  <p className="text-app-subtle text-[10px] leading-relaxed line-clamp-2">
                     {b.content}
                   </p>
-                  <span className="text-gray-600 text-[9px]">
+                  <span className="text-app-faint text-[9px]">
                     {formatDate(b.createdAt)}
                   </span>
                 </button>
@@ -213,7 +213,7 @@ export default function ProfesorAsistenciaPage() {
         open={!!selectedBitacora}
         onOpenChange={(o) => !o && setSelectedBitacora(null)}
       >
-        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+        <DialogContent className="max-w-lg bg-app-card-deep border-app-border/[0.12] text-app-text">
           {selectedBitacora && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
@@ -221,21 +221,21 @@ export default function ProfesorAsistenciaPage() {
                   <i className="ti ti-notes text-lg text-lime-400" />
                 </div>
                 <div>
-                  <h2 className="text-white text-base font-extrabold">
+                  <h2 className="text-app-text text-base font-extrabold">
                     {selectedBitacora.title}
                   </h2>
-                  <p className="text-gray-600 text-[10px]">
+                  <p className="text-app-faint text-[10px]">
                     {formatDate(selectedBitacora.createdAt)}
                   </p>
                 </div>
               </div>
               {selectedBitacora.studentName && (
-                <div className="flex items-center gap-2 text-gray-400 text-xs">
+                <div className="flex items-center gap-2 text-app-muted text-xs">
                   <i className="ti ti-user-circle text-sm" />
                   {selectedBitacora.studentName}
                 </div>
               )}
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-app-muted text-sm leading-relaxed">
                 {selectedBitacora.content}
               </p>
             </div>
@@ -245,35 +245,35 @@ export default function ProfesorAsistenciaPage() {
 
       {/* Dialog: Nueva Bitácora */}
       <Dialog open={showForm} onOpenChange={(o) => !o && setShowForm(false)}>
-        <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
+        <DialogContent className="max-w-lg bg-app-card-deep border-app-border/[0.12] text-app-text">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-2">
               <i className="ti ti-notes text-lg text-lime-400" />
-              <h2 className="text-white text-sm font-extrabold">
+              <h2 className="text-app-text text-sm font-extrabold">
                 Nueva Observación
               </h2>
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-app-subtle text-[10px] font-semibold tracking-widest">
                 TÍTULO
               </label>
               <input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 placeholder="Título de la observación..."
-                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
+                className="w-full bg-app-bg rounded-xl px-4 py-2.5 text-sm text-app-text placeholder:text-app-faint outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-app-subtle text-[10px] font-semibold tracking-widest">
                 ALUMNO (OPCIONAL)
               </label>
               <select
                 value={formStudent}
                 onChange={(e) => setFormStudent(e.target.value)}
-                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
+                className="w-full bg-app-bg rounded-xl px-4 py-2.5 text-sm text-app-text appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer"
               >
                 <option value="">Seleccionar alumno...</option>
                 {classStudentsMock.map((s) => (
@@ -285,7 +285,7 @@ export default function ProfesorAsistenciaPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-app-subtle text-[10px] font-semibold tracking-widest">
                 CONTENIDO
               </label>
               <textarea
@@ -293,7 +293,7 @@ export default function ProfesorAsistenciaPage() {
                 onChange={(e) => setFormContent(e.target.value)}
                 placeholder="Describí la novedad o anotación..."
                 rows={5}
-                className="w-full bg-neutral-900 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
+                className="w-full bg-app-bg rounded-xl px-4 py-3 text-sm text-app-text placeholder:text-app-faint outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
 
@@ -335,20 +335,20 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
   const gradient = avatarColors[colorIdx];
 
   return (
-    <div className="bg-black/60 rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
+    <div className="bg-app-surface rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-app-card transition-all duration-150 shadow-card glass-border hover:border-app-border/[0.08]">
       <div className="flex items-center gap-3 min-w-0">
         <div
           className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}
         >
-          <span className="text-white text-xs font-bold">
+          <span className="text-app-text text-xs font-bold">
             {getInitials(student.name)}
           </span>
         </div>
         <div className="min-w-0">
-          <p className="text-white text-sm font-bold truncate">
+          <p className="text-app-text text-sm font-bold truncate">
             {student.name}
           </p>
-          <p className="text-gray-500 text-[10px] truncate">
+          <p className="text-app-subtle text-[10px] truncate">
             {student.plan} · {student.weekSession}
           </p>
         </div>
@@ -358,8 +358,8 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
           onClick={() => onSetStatus("absent")}
           className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "absent"
-              ? "bg-red-500/20 text-red-400 border border-red-500/40"
-              : "bg-black text-gray-400 border border-zinc-800 hover:border-red-500/30 hover:text-red-400"
+              ? "bg-red-500/15 text-red-400 border border-red-500/40"
+              : "bg-app-surface text-app-muted border border-app-border/[0.10] hover:border-red-500/30 hover:text-red-400"
           }`}
         >
           <i className="ti ti-x text-xs mr-1" />
@@ -370,7 +370,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
           className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "present"
               ? "bg-lime-400 text-black shadow-btn-lime"
-              : "bg-black text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400"
+              : "bg-app-surface text-app-muted border border-app-border/[0.10] hover:border-lime-400/30 hover:text-lime-400"
           }`}
         >
           <i className="ti ti-check text-xs mr-1" />

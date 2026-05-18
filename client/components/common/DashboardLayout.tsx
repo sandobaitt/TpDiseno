@@ -31,22 +31,22 @@ function LogoutDialog({
             onClick={onCancel}
           />
           <motion.div
-            className="relative z-10 w-full max-w-sm bg-neutral-900 rounded-2xl border border-white/[0.08] shadow-[0_32px_80px_rgba(0,0,0,0.8)] overflow-hidden"
+            className="relative z-10 w-full max-w-sm bg-app-bg rounded-2xl border border-app-border/[0.08] shadow-dropdown overflow-hidden"
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-app-border/[0.08] to-transparent" />
             <div className="p-8 flex flex-col items-center gap-6">
               <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
                 <i className="ti ti-logout text-2xl text-red-400" />
               </div>
               <div className="text-center flex flex-col gap-2">
-                <h2 className="text-white text-lg font-extrabold tracking-tight">
+                <h2 className="text-app-text text-lg font-extrabold tracking-tight">
                   ¿Cerrar sesión?
                 </h2>
-                <p className="text-gray-500 text-sm leading-relaxed">
+                <p className="text-app-subtle text-sm leading-relaxed">
                   Tu sesión se cerrará y tendrás que volver a ingresar tus credenciales.
                 </p>
               </div>
@@ -59,7 +59,7 @@ function LogoutDialog({
                 </button>
                 <button
                   onClick={onCancel}
-                  className="w-full py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-300 text-sm font-bold hover:bg-white/[0.08] hover:border-white/[0.10] active:scale-[0.98] transition-all duration-150 cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-app-hover/[0.04] border border-app-border/[0.06] text-app-muted text-sm font-bold hover:bg-app-hover/[0.08] hover:border-app-border/[0.10] active:scale-[0.98] transition-all duration-150 cursor-pointer"
                 >
                   Seguir aquí
                 </button>
@@ -125,7 +125,7 @@ export function DashboardLayout() {
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"
       />
-      <div className="flex bg-neutral-900 min-h-screen relative overflow-hidden">
+      <div className="flex bg-app-bg min-h-screen relative overflow-hidden">
         <SidebarNav
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -152,7 +152,7 @@ export function DashboardLayout() {
           <AnimatePresence mode="popLayout">
             <motion.div
               key={location.pathname}
-              className="pt-6 flex flex-col flex-1"
+              className="pt-6 flex flex-col flex-1 bg-app-bg-page"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

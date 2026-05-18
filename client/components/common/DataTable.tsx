@@ -35,12 +35,12 @@ export function DataTable<T>({
       <div className={minWidthClass}>
         {/* HEADER */}
         <header
-          className={`${template} gap-4 pb-3 mb-1 border-b border-white/[0.06]`}
+          className={`${template} gap-4 pb-3 mb-1 border-b border-app-border/[0.06]`}
         >
           {columns.map((column) => (
             <div
               key={column.key}
-              className={`min-w-0 text-[11px] font-semibold tracking-widest text-gray-500 uppercase ${
+              className={`min-w-0 text-[11px] font-semibold tracking-widest text-app-subtle uppercase ${
                 column.headerClassName ?? ""
               }`}
             >
@@ -58,12 +58,12 @@ export function DataTable<T>({
               <div
                 key={key}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={`${template} gap-4 items-center py-3.5 border-b border-white/[0.04] transition-colors duration-100 ${onRowClick ? "hover:bg-white/[0.025] cursor-pointer" : ""} ${rowClassName}`}
+                className={`${template} gap-4 items-center py-3.5 border-b border-app-border/[0.04] transition-colors duration-100 ${onRowClick ? "hover:bg-app-hover/[0.025] cursor-pointer" : ""} ${rowClassName}`}
               >
                 {columns.map((column) => (
                   <div
                     key={column.key}
-                    className={`min-w-0 text-sm text-gray-400 ${
+                    className={`min-w-0 text-sm text-app-muted ${
                       column.cellClassName ?? ""
                     }`}
                   >

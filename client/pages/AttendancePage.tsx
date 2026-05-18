@@ -19,18 +19,18 @@ const roleLabels: Record<string, string> = {
 };
 
 const roleBadgeStyles: Record<string, string> = {
-  reception: "bg-blue-950/60 text-blue-400 border border-blue-500/20",
-  manager: "bg-violet-950/60 text-violet-400 border border-violet-500/20",
-  trainer: "bg-lime-950/60 text-lime-400 border border-lime-500/20",
-  accounting: "bg-amber-950/60 text-amber-400 border border-amber-500/20",
-  admin: "bg-zinc-800 text-gray-300 border border-zinc-700/40",
+  reception: "bg-blue-500/15 text-blue-400 border border-blue-500/20",
+  manager: "bg-violet-500/15 text-violet-400 border border-violet-500/20",
+  trainer: "bg-lime-400/15 text-lime-400 border border-lime-500/20",
+  accounting: "bg-amber-500/15 text-amber-400 border border-amber-500/20",
+  admin: "bg-app-card text-app-muted border border-app-input-border/40",
 };
 
 const avatarStyles = [
-  { bg: "bg-zinc-800", text: "text-lime-400" },
+  { bg: "bg-app-card", text: "text-lime-400" },
   { bg: "bg-gray-800", text: "text-violet-400" },
   { bg: "bg-slate-800", text: "text-blue-400" },
-  { bg: "bg-zinc-800", text: "text-gray-400" },
+  { bg: "bg-app-card", text: "text-app-muted" },
 ];
 
 function getInitials(fullName: string) {
@@ -63,7 +63,7 @@ const employeesData = employeesMock.map((e, i) => {
     name: e.fullName,
     role: e.role,
     roleLabel: roleLabels[e.role] ?? e.role,
-    roleBadge: roleBadgeStyles[e.role] ?? "bg-zinc-800 text-gray-400 border border-zinc-700/40",
+    roleBadge: roleBadgeStyles[e.role] ?? "bg-app-card text-app-muted border border-app-input-border/40",
     branch: branch?.code ?? "Sin sede",
     status: e.status,
     initials: getInitials(e.fullName),
@@ -88,9 +88,9 @@ function getFinancialStyle(status: string) {
       label: "Deudor",
     };
   return {
-    container: "bg-zinc-800/60 border border-zinc-700/40",
+    container: "bg-app-card/60 border border-app-input-border/40",
     dot: "bg-gray-500",
-    text: "text-gray-400",
+    text: "text-app-muted",
     label: "Inactivo",
   };
 }
@@ -113,15 +113,15 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, iconBg, iconColor, valueColor }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
+    <div className="flex items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
         <i className={`ti ${icon} text-base ${iconColor}`} />
       </div>
       <div>
-        <p className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-white"}`}>
+        <p className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-app-text"}`}>
           {value}
         </p>
-        <p className="text-[11px] text-gray-500 font-medium">{label}</p>
+        <p className="text-[11px] text-app-subtle font-medium">{label}</p>
       </div>
     </div>
   );
@@ -230,15 +230,15 @@ export default function AttendancePage() {
         {/* Header */}
         <div className="flex items-start justify-between flex-wrap gap-3 pt-1">
           <div>
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="text-app-text text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
               CONTROL DE ASISTENCIA
             </h1>
-            <p className="text-gray-500 text-sm mt-1">Registro de presencia diario del gimnasio.</p>
-            <div className="h-px bg-white/[0.06] mt-4" />
+            <p className="text-app-subtle text-sm mt-1">Registro de presencia diario del gimnasio.</p>
+            <div className="h-px bg-app-hover/[0.06] mt-4" />
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 glass-border">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-app-bg glass-border">
             <i className="ti ti-calendar text-lime-400 text-sm" />
-            <span className="text-xs font-semibold text-gray-300">{todayLabel}</span>
+            <span className="text-xs font-semibold text-app-muted">{todayLabel}</span>
           </div>
         </div>
 
@@ -248,8 +248,8 @@ export default function AttendancePage() {
             icon="ti-users"
             label="Total registros"
             value={total}
-            iconBg="bg-zinc-800"
-            iconColor="text-gray-400"
+            iconBg="bg-app-card"
+            iconColor="text-app-muted"
           />
           <StatCard
             icon="ti-circle-check"
@@ -267,14 +267,14 @@ export default function AttendancePage() {
             iconColor="text-red-400"
             valueColor="text-red-400"
           />
-          <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
+          <div className="flex items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-lime-400/10">
               <i className="ti ti-chart-bar text-base text-lime-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-2xl font-extrabold leading-tight text-white">{rate}%</p>
-              <p className="text-[11px] text-gray-500 font-medium">Tasa de asistencia</p>
-              <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
+              <p className="text-2xl font-extrabold leading-tight text-app-text">{rate}%</p>
+              <p className="text-[11px] text-app-subtle font-medium">Tasa de asistencia</p>
+              <div className="mt-1.5 h-1 rounded-full bg-app-card overflow-hidden">
                 <div
                   className="h-full rounded-full bg-lime-400 transition-all duration-500"
                   style={{ width: `${rate}%` }}
@@ -293,12 +293,12 @@ export default function AttendancePage() {
               className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
                 activeTab === "students"
                   ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                  : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
+                  : "text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.03]"
               }`}
             >
               <i className="ti ti-users text-base" />
               Alumnos
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "students" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "students" ? "bg-lime-400/20 text-lime-400" : "bg-app-card text-app-subtle"}`}>
                 {studentsData.length}
               </span>
             </button>
@@ -307,12 +307,12 @@ export default function AttendancePage() {
               className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
                 activeTab === "teachers"
                   ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                  : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
+                  : "text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.03]"
               }`}
             >
               <i className="ti ti-user-star text-base" />
               Profesores / Staff
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "teachers" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "teachers" ? "bg-lime-400/20 text-lime-400" : "bg-app-card text-app-subtle"}`}>
                 {employeesData.length}
               </span>
             </button>
@@ -321,15 +321,15 @@ export default function AttendancePage() {
           {/* Search + Filters */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-app-subtle text-sm pointer-events-none" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nombre..."
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+                className="w-full pl-9 pr-8 py-2 rounded-xl bg-app-bg glass-border text-sm text-app-text placeholder-app-faint outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
+                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-app-subtle hover:text-app-muted cursor-pointer">
                   <i className="ti ti-x text-xs" />
                 </button>
               )}
@@ -343,7 +343,7 @@ export default function AttendancePage() {
                 className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
                   presenceFilter === f
                     ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                    : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
+                    : "bg-app-bg border-app-border/[0.06] text-app-subtle hover:border-app-border/[0.12] hover:text-app-muted"
                 }`}
               >
                 {f === "all" ? "Todos" : f === "present" ? "Presentes" : "Ausentes"}
@@ -393,32 +393,32 @@ export default function AttendancePage() {
             {(search || presenceFilter !== "all" || filterFinancial || filterPlan || filterRole || filterBranch) && (
               <button
                 onClick={clearFilters}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+                className="text-xs text-app-subtle hover:text-app-muted transition-colors cursor-pointer ml-1"
               >
                 Limpiar
               </button>
             )}
 
-            <span className="text-xs text-gray-600 ml-auto">
+            <span className="text-xs text-app-faint ml-auto">
               {activeTab === "students" ? filteredStudents.length : filteredTeachers.length} registros
             </span>
           </div>
 
           {/* Table card */}
-          <div className="rounded-2xl bg-neutral-900 shadow-card glass-border overflow-hidden">
+          <div className="rounded-2xl bg-app-bg shadow-card glass-border overflow-hidden">
             {/* Column headers */}
             {activeTab === "students" ? (
               <>
-                <div className="grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600">ALUMNO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">ESTADO FINANCIERO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
+                <div className="grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-app-border/[0.05]">
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint">ALUMNO</span>
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">ESTADO FINANCIERO</span>
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">CHECK-IN</span>
                 </div>
                 <div>
                   {filteredStudents.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-14 gap-2">
-                      <i className="ti ti-search-off text-3xl text-gray-700" />
-                      <p className="text-sm text-gray-600 font-medium">Sin resultados</p>
+                      <i className="ti ti-search-off text-3xl text-app-faint" />
+                      <p className="text-sm text-app-faint font-medium">Sin resultados</p>
                     </div>
                   ) : null}
                   {paginatedStudents.map((row) => {
@@ -427,7 +427,7 @@ export default function AttendancePage() {
                     return (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[minmax(0,1fr)_160px_152px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                        className="grid grid-cols-[minmax(0,1fr)_160px_152px] items-center px-6 py-4 border-b border-app-border/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
                       >
                         {/* Name + plan */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -435,8 +435,8 @@ export default function AttendancePage() {
                             <span className={`text-sm font-bold ${row.initialsText}`}>{row.initials}</span>
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{row.name}</p>
-                            <p className="text-[11px] text-gray-500 truncate">{row.plan}</p>
+                            <p className="text-sm font-semibold text-app-text truncate">{row.name}</p>
+                            <p className="text-[11px] text-app-subtle truncate">{row.plan}</p>
                           </div>
                         </div>
 
@@ -455,7 +455,7 @@ export default function AttendancePage() {
                             className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                               !present
                                 ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                                : "bg-transparent text-app-faint border border-app-border/[0.12] hover:border-red-500/20 hover:text-red-400/60"
                             }`}
                           >
                             <i className="ti ti-x text-[10px] shrink-0" />
@@ -466,7 +466,7 @@ export default function AttendancePage() {
                             className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                               present
                                 ? "bg-lime-400 text-black shadow-btn-lime"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                                : "bg-transparent text-app-faint border border-app-border/[0.12] hover:border-lime-400/30 hover:text-lime-400/60"
                             }`}
                           >
                             <i className="ti ti-check text-[10px] shrink-0" />
@@ -480,16 +480,16 @@ export default function AttendancePage() {
               </>
             ) : (
               <>
-                <div className="grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600">EMPLEADO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">SUCURSAL</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
+                <div className="grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-app-border/[0.05]">
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint">EMPLEADO</span>
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">SUCURSAL</span>
+                  <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">CHECK-IN</span>
                 </div>
                 <div>
                   {filteredTeachers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-14 gap-2">
-                      <i className="ti ti-search-off text-3xl text-gray-700" />
-                      <p className="text-sm text-gray-600 font-medium">Sin resultados</p>
+                      <i className="ti ti-search-off text-3xl text-app-faint" />
+                      <p className="text-sm text-app-faint font-medium">Sin resultados</p>
                     </div>
                   ) : null}
                   {paginatedTeachers.map((row) => {
@@ -497,7 +497,7 @@ export default function AttendancePage() {
                     return (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[minmax(0,1fr)_120px_152px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                        className="grid grid-cols-[minmax(0,1fr)_120px_152px] items-center px-6 py-4 border-b border-app-border/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
                       >
                         {/* Name + role */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -505,7 +505,7 @@ export default function AttendancePage() {
                             <span className={`text-sm font-bold ${row.initialsText}`}>{row.initials}</span>
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{row.name}</p>
+                            <p className="text-sm font-semibold text-app-text truncate">{row.name}</p>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${row.roleBadge}`}>
                               {row.roleLabel}
                             </span>
@@ -514,7 +514,7 @@ export default function AttendancePage() {
 
                         {/* Branch */}
                         <div className="flex justify-center">
-                          <span className="text-xs text-gray-400 font-medium">{row.branch}</span>
+                          <span className="text-xs text-app-muted font-medium">{row.branch}</span>
                         </div>
 
                         {/* Ausente / Presente dual button */}
@@ -526,7 +526,7 @@ export default function AttendancePage() {
                             className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                               !present
                                 ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                                : "bg-transparent text-app-faint border border-app-border/[0.12] hover:border-red-500/20 hover:text-red-400/60"
                             }`}
                           >
                             <i className="ti ti-x text-[10px] shrink-0" />
@@ -539,7 +539,7 @@ export default function AttendancePage() {
                             className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                               present
                                 ? "bg-lime-400 text-black shadow-btn-lime"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                                : "bg-transparent text-app-faint border border-app-border/[0.12] hover:border-lime-400/30 hover:text-lime-400/60"
                             }`}
                           >
                             <i className="ti ti-check text-[10px] shrink-0" />

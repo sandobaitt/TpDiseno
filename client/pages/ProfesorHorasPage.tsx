@@ -59,10 +59,10 @@ export default function ProfesorHorasPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
+        <h1 className="text-app-text text-3xl md:text-4xl font-extrabold leading-tight mt-1">
           MIS HORAS
         </h1>
-        <p className="text-gray-600 text-sm mt-1">
+        <p className="text-app-faint text-sm mt-1">
           Detalle de clases dictadas y horas trabajadas por período.
         </p>
       </div>
@@ -76,7 +76,7 @@ export default function ProfesorHorasPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               period === p
                 ? "bg-lime-400/10 border border-lime-400/40 text-lime-400"
-                : "bg-neutral-900 glass-border text-gray-500 hover:text-gray-300 hover:border-white/[0.10]"
+                : "bg-app-bg glass-border text-app-subtle hover:text-app-muted hover:border-app-border/[0.10]"
             }`}
           >
             {PERIOD_LABELS[p]}
@@ -86,59 +86,59 @@ export default function ProfesorHorasPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-neutral-900 glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
+        <div className="bg-app-bg glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-clock text-lime-400 text-base" />
           </div>
-          <p className="text-white text-2xl font-extrabold mt-1">{fmtHours(totalMins)}</p>
-          <p className="text-gray-500 text-[10px] font-semibold tracking-wider">HORAS TRABAJADAS</p>
+          <p className="text-app-text text-2xl font-extrabold mt-1">{fmtHours(totalMins)}</p>
+          <p className="text-app-subtle text-[10px] font-semibold tracking-wider">HORAS TRABAJADAS</p>
         </div>
 
-        <div className="bg-neutral-900 glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
+        <div className="bg-app-bg glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-barbell text-lime-400 text-base" />
           </div>
-          <p className="text-white text-2xl font-extrabold mt-1">{totalClases}</p>
-          <p className="text-gray-500 text-[10px] font-semibold tracking-wider">CLASES DICTADAS</p>
+          <p className="text-app-text text-2xl font-extrabold mt-1">{totalClases}</p>
+          <p className="text-app-subtle text-[10px] font-semibold tracking-wider">CLASES DICTADAS</p>
         </div>
 
-        <div className="bg-neutral-900 glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
+        <div className="bg-app-bg glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-users text-lime-400 text-base" />
           </div>
-          <p className="text-white text-2xl font-extrabold mt-1">{avgAlumnos}</p>
-          <p className="text-gray-500 text-[10px] font-semibold tracking-wider">PROMEDIO ALUMNOS</p>
+          <p className="text-app-text text-2xl font-extrabold mt-1">{avgAlumnos}</p>
+          <p className="text-app-subtle text-[10px] font-semibold tracking-wider">PROMEDIO ALUMNOS</p>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-neutral-900 glass-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-app-bg glass-border rounded-2xl overflow-hidden shadow-card">
         {/* Column headers */}
-        <div className="grid grid-cols-[1fr_120px_100px_100px] px-6 py-3 border-b border-white/[0.05]">
-          <span className="text-[10px] font-bold tracking-widest text-gray-600">CLASE</span>
-          <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">HORARIO</span>
-          <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">DURACIÓN</span>
-          <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">ALUMNOS</span>
+        <div className="grid grid-cols-[1fr_120px_100px_100px] px-6 py-3 border-b border-app-border/[0.05]">
+          <span className="text-[10px] font-bold tracking-widest text-app-faint">CLASE</span>
+          <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">HORARIO</span>
+          <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">DURACIÓN</span>
+          <span className="text-[10px] font-bold tracking-widest text-app-faint text-center">ALUMNOS</span>
         </div>
 
         {entries.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-14 gap-2">
-            <i className="ti ti-clock-off text-3xl text-gray-700" />
-            <p className="text-sm text-gray-600 font-medium">Sin registros en este período</p>
+            <i className="ti ti-clock-off text-3xl text-app-faint" />
+            <p className="text-sm text-app-faint font-medium">Sin registros en este período</p>
           </div>
         ) : (
           <>
             {entries.map((entry) => (
               <div
                 key={entry.id}
-                className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors"
+                className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-b border-app-border/[0.04] last:border-0 hover:bg-app-hover/[0.02] transition-colors"
               >
                 <div className="min-w-0">
-                  <p className="text-white text-sm font-semibold truncate">{entry.classTitle}</p>
-                  <p className="text-gray-500 text-[11px]">{entry.dayName}, {entry.date}</p>
+                  <p className="text-app-text text-sm font-semibold truncate">{entry.classTitle}</p>
+                  <p className="text-app-subtle text-[11px]">{entry.dayName}, {entry.date}</p>
                 </div>
                 <div className="flex justify-center">
-                  <span className="text-gray-300 text-xs font-medium">{entry.startTime}</span>
+                  <span className="text-app-muted text-xs font-medium">{entry.startTime}</span>
                 </div>
                 <div className="flex justify-center">
                   <span className="px-2.5 py-1 rounded-lg bg-lime-400/10 text-lime-400 text-[10px] font-bold">
@@ -146,19 +146,19 @@ export default function ProfesorHorasPage() {
                   </span>
                 </div>
                 <div className="flex justify-center">
-                  <span className="text-gray-300 text-xs font-medium">
+                  <span className="text-app-muted text-xs font-medium">
                     {entry.studentsPresent}
-                    <span className="text-gray-600">/{entry.studentsTotal}</span>
+                    <span className="text-app-faint">/{entry.studentsTotal}</span>
                   </span>
                 </div>
               </div>
             ))}
 
             {/* Total row */}
-            <div className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-t border-white/[0.08] bg-white/[0.02]">
+            <div className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-t border-app-border/[0.08] bg-white/[0.02]">
               <div>
-                <span className="text-white text-xs font-extrabold tracking-wider">TOTAL PERÍODO</span>
-                <span className="text-gray-600 text-[10px] ml-2">{totalClases} clases</span>
+                <span className="text-app-text text-xs font-extrabold tracking-wider">TOTAL PERÍODO</span>
+                <span className="text-app-faint text-[10px] ml-2">{totalClases} clases</span>
               </div>
               <div />
               <div className="flex justify-center">

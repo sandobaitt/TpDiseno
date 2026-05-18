@@ -14,7 +14,7 @@ interface StatCardProps {
     bgColor?: string;
 }
 
-function StatCard({ icon, value, label, status, valueColor = "text-white", bgColor = "bg-zinc-900" }: StatCardProps) {
+function StatCard({ icon, value, label, status, valueColor = "text-app-text", bgColor = "bg-app-surface" }: StatCardProps) {
     return (
         <article className={`flex flex-col gap-2 p-5 rounded-2xl shadow-card glass-border ${bgColor}`}>
             <div className="flex gap-2 items-center">
@@ -35,7 +35,7 @@ function StatCard({ icon, value, label, status, valueColor = "text-white", bgCol
             <div className={`mt-1 text-4xl font-extrabold leading-none tracking-tight ${valueColor}`}>
                 {value}
             </div>
-            <p className="mt-0.5 text-[10px] font-semibold tracking-widest text-gray-500 uppercase">
+            <p className="mt-0.5 text-[10px] font-semibold tracking-widest text-app-subtle uppercase">
                 {label}
             </p>
         </article>
@@ -64,7 +64,7 @@ export function StatsCards({ className = "" }: StatsCardsProps) {
                         text: "HABILITADO",
                         dotColor: "bg-green-500"
                     }}
-                    bgColor="bg-stone-900"
+                    bgColor="bg-app-surface"
                 />
 
                 <StatCard
@@ -76,16 +76,16 @@ export function StatsCards({ className = "" }: StatsCardsProps) {
                         dotColor: "bg-red-500"
                     }}
                     valueColor="text-red-500"
-                    bgColor="bg-stone-900"
+                    bgColor="bg-app-surface"
                 />
 
                 <StatCard
                     value="110"
                     label="Sin actividad > 30 días"
                     status={{
-                        color: "text-gray-400",
+                        color: "text-app-muted",
                         text: "INACTIVO",
-                        dotColor: "bg-gray-500"
+                        dotColor: "bg-app-subtle"
                     }}
                 />
             </div>

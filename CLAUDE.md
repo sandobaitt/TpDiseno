@@ -9,6 +9,7 @@ pnpm dev        # Start dev server on port 8080 (client + server, hot-reload)
 pnpm build      # Production build (client + server)
 pnpm typecheck  # TypeScript validation
 pnpm test       # Run Vitest tests
+pnpm test -- path/to/file.spec.ts  # Run a single test file
 pnpm format.fix # Auto-format with Prettier
 ```
 
@@ -25,6 +26,7 @@ Path aliases: `@/*` → `client/` · `@shared/*` → `shared/`
 1. `client/components/ui/` — **solo primitivos "tontos"** (Button, Input, Card…). No conocen el negocio, solo reciben props.
 2. `client/components/<feature>/` — componentes con lógica de negocio. Cada módulo/sección tiene su propia carpeta (ej. `secretaria/`, `admin/`, `alumno/`).
 3. Nunca crear un botón/input nuevo en una carpeta de feature: importar desde `@/components/ui/`.
+4. `client/components/original/` — **legacy/archivado**. No usar ni copiar desde ahí.
 
 ---
 
@@ -33,7 +35,7 @@ Path aliases: `@/*` → `client/` · `@shared/*` → `shared/`
 ```
 1. client/pages/MiPantalla.tsx          ← thin wrapper, solo importa el componente principal
 2. client/components/<feature>/         ← carpeta con toda la lógica y sub-componentes
-3. client/App.tsx                       ← registrar la ruta
+3. client/App.tsx                       ← registrar la ruta dentro del bloque protegido
 ```
 
 **`client/pages/MiPantalla.tsx`** (siempre así de delgado):
@@ -44,11 +46,14 @@ export default function MiPantalla() {
 }
 ```
 
-**`client/App.tsx`** — todas las rutas protegidas usan `RequireAuth`:
+**`client/App.tsx`** — todas las rutas protegidas se anidan dentro del route con `RequireAuth` + `DashboardLayout` ya existente:
 ```tsx
 import MiPantalla from "./pages/MiPantalla";
 // ...
-<Route path="/mi-ruta" element={<RequireAuth><MiPantalla /></RequireAuth>} />
+<Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
+  {/* rutas existentes */}
+  <Route path="/mi-ruta" element={<MiPantalla />} />
+</Route>
 ```
 
 Los archivos `.tsx` van en **PascalCase** siempre.
@@ -88,6 +93,23 @@ Icons: Tabler Icons webfont, cargado dentro de `DashboardLayout`. Usar `classNam
 
 ---
 
+## Componentes comunes reutilizables
+
+Todos en `client/components/common/`:
+
+- **`DataTable`** — listado genérico CSS Grid (ver sección abajo).
+- **`FilterSelect`** — select estilizado para filtros de tabla.
+- **`HeaderNav`** — barra de navegación de sección (breadcrumb/tabs).
+- **`HeaderPage`** — encabezado de página con título y acciones.
+- **`Pagination`** — paginación genérica.
+
+Componentes de apoyo en `client/components/globales/`:
+- `ActionButton` — botón de acción primaria estandarizado.
+- `ErrorBadge` / `ErrorContent` — presentación de errores.
+- `FileUpload` — subida de archivos.
+
+---
+
 ## DataTable
 
 Componente genérico basado en CSS Grid para cualquier listado. Referencia: `client/components/secretaria/MembersTable.tsx`.
@@ -110,6 +132,7 @@ const columns = [
 
 - `gridTemplateClass` controla cantidad y ancho de columnas.
 - Para celdas largas (nombre + email): `min-w-0` en el contenedor, `truncate` en los textos.
+- `minWidthClass` (opcional): controla el scroll horizontal en mobile (default: `min-w-[770px] md:min-w-0`).
 
 ---
 
@@ -136,17 +159,32 @@ Para agregar un item a un rol: editar `client/data/navigation.ts`.
 - Roles: `admin` · `alumno` · `profesor` · `secretario`.
 - Redirección post-login: `getPostLoginPath(role)` en `client/data/users.ts`.
 
+Credenciales de prueba:
+
+| Rol        | Email                    | Contraseña  |
+|------------|--------------------------|-------------|
+| admin      | admin1@squatgym.com      | admin123    |
+| alumno     | alumno1@email.com        | alumno123   |
+| profesor   | profe1@squatgym.com      | profe123    |
+| secretario | secre1@squatgym.com      | secre123    |
+
 ---
 
 ## Mock data
 
-Todo en `client/data/`. Importar por archivo o desde el barrel:
+Todo en `client/data/`. El barrel `@/data` solo exporta las entidades principales:
 
 ```ts
 import { clientsMock, plansMock, paymentsMock } from "@/data";
+// Barrel exporta: branches, plans, clients, employees, users, payments, checkins, teachers
 ```
 
-Entidades: `clients`, `plans`, `branches`, `employees`, `payments`, `checkins`, `teachers`, `schedule`, `novedades`, `replacements`.
+Para entidades no incluidas en el barrel (novedades, schedule, replacements, attendance, bitacoras, classStudents, dashboard), importar directo:
+
+```ts
+import { novedadesMock } from "@/data/novedades";
+import { scheduleMock } from "@/data/schedule";
+```
 
 Relaciones por `id` (ej. `client.membership.planId` → `plans.ts`).
 

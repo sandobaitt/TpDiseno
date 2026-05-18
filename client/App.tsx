@@ -1,5 +1,6 @@
 import "./global.css";
 
+import { ThemeProvider } from "@/lib/theme";
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -34,6 +35,7 @@ import AdminPersonalPage from "./pages/AdminPersonalPage";
 const queryClient = new QueryClient();
 
 const App = () => (
+  <ThemeProvider>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -70,6 +72,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </ThemeProvider>
 );
 
 createRoot(document.getElementById("root")!).render(<App />);

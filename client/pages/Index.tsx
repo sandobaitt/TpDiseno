@@ -247,13 +247,13 @@ export default function Index() {
 
                     <div className="flex flex-col gap-3">
                       <div className="flex items-start gap-2.5">
-                        <i className="ti ti-map-pin text-sm text-gray-600 mt-0.5 shrink-0" />
+                        <i className="ti ti-map-pin text-sm text-app-faint mt-0.5 shrink-0" />
                         <span className="text-sm text-squat-muted">
                           {branch.address.street}, {branch.address.city}
                         </span>
                       </div>
                       <div className="flex items-start gap-2.5">
-                        <i className="ti ti-clock text-sm text-gray-600 mt-0.5 shrink-0" />
+                        <i className="ti ti-clock text-sm text-app-faint mt-0.5 shrink-0" />
                         <div className="flex flex-col gap-0.5">
                           <span className="text-sm text-squat-muted">
                             Lun–Vie: {branch.openingHours.monToFri}
@@ -272,7 +272,7 @@ export default function Index() {
                       </div>
                       {branch.contact?.phone && (
                         <div className="flex items-center gap-2.5">
-                          <i className="ti ti-phone text-sm text-gray-600 shrink-0" />
+                          <i className="ti ti-phone text-sm text-app-faint shrink-0" />
                           <span className="text-sm text-squat-muted">{branch.contact.phone}</span>
                         </div>
                       )}

@@ -14,14 +14,14 @@ export function FinancialStatusCard({
   const hasDebt = pendingBalance > 0;
 
   return (
-    <article className="flex flex-col gap-5 p-6 rounded-2xl bg-stone-900 shadow-card glass-border">
+    <article className="flex flex-col gap-5 p-6 rounded-2xl bg-app-surface shadow-card glass-border">
       <header className="flex justify-between items-center">
-        <h3 className="text-base font-bold text-white">Estado Financiero</h3>
-        <i className="ti ti-credit-card text-lg text-neutral-600" />
+        <h3 className="text-base font-bold text-app-text">Estado Financiero</h3>
+        <i className="ti ti-credit-card text-lg text-app-faint" />
       </header>
 
       <div className="flex flex-col gap-1">
-        <p className="text-xs font-semibold tracking-widest uppercase text-zinc-500">
+        <p className="text-xs font-semibold tracking-widest uppercase text-app-subtle">
           Saldo Pendiente
         </p>
         <div className={`text-5xl font-black leading-none ${hasDebt ? "text-red-400" : "text-lime-400"}`}>
