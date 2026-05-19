@@ -105,9 +105,9 @@ export default function AlumnoPanel() {
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
         {/* LEFT: Attendance Table */}
         <div className="bg-app-surface rounded-2xl p-6 md:p-8 flex flex-col gap-5 shadow-card glass-border">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-app-text text-lg font-extrabold">Historial de Asistencias</h2>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-app-bg text-lime-400 text-xs font-bold hover:brightness-110 transition-all cursor-pointer">
                 <i className="ti ti-file-text text-sm" />PDF
               </button>
@@ -133,7 +133,7 @@ export default function AlumnoPanel() {
         <div className="flex flex-col gap-5">
           {/* Card 1: Certificado Médico */}
           <div className="bg-app-surface rounded-2xl p-6 flex flex-col gap-5 shadow-card glass-border">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3 text-center">
               <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
                 <i className="ti ti-certificate text-lg text-lime-400" />
               </div>
@@ -176,7 +176,7 @@ export default function AlumnoPanel() {
               className="pointer-events-none absolute -right-12 -bottom-12 w-40 h-40 rounded-full"
               style={{ background: "radial-gradient(circle, rgba(163,230,53,0.08) 0%, transparent 70%)" }}
             />
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-3 text-center">
               <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
                 <i className="ti ti-clipboard-text text-lg text-lime-400" />
               </div>

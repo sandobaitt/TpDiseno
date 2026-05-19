@@ -204,7 +204,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
     <section className={`px-7 pb-7 max-sm:px-4 ${className}`}>
       {/* Search + Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="relative flex-1 min-w-[200px] max-w-[320px]">
+        <div className="relative flex-1  md:min-w-[200px] max-w-[320px]">
           <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-app-subtle text-sm pointer-events-none" />
           <input
             value={search}

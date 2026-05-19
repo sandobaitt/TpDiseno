@@ -141,7 +141,8 @@ export default function ProfesorAsistenciaPage() {
               </div>
             )}
 
-            <div className="flex flex-col gap-3">
+            <div className="overflow-x-auto">
+              <div className="flex flex-col gap-3 min-w-[360px]">
               {paginatedStudents.map((student) => {
                 const status = attendance[student.id] ?? null;
                 return (
@@ -153,6 +154,7 @@ export default function ProfesorAsistenciaPage() {
                   />
                 );
               })}
+            </div>
             </div>
 
             <Pagination

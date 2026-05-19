@@ -80,7 +80,7 @@ export default function ProfesorCronogramaPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-3">
         <div className="bg-app-bg glass-border rounded-2xl p-4 flex items-center gap-3 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center shrink-0">
             <i className="ti ti-calendar-event text-lime-400 text-base" />

@@ -168,10 +168,10 @@ export default function PaymentsPage() {
 
       <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-4">
         {/* Tabs */}
-        <div className="flex gap-2">
+        <div className="w-full flex justify-center md:justify-start gap-2">
           <button
             onClick={() => { setActiveTab("debtors"); setCurrentPage(1); setSearch(""); setFilterPlan(""); }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
+            className={`flex flex-col md:flex-row items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "debtors"
                 ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
                 : "text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.03]"
@@ -185,7 +185,7 @@ export default function PaymentsPage() {
           </button>
           <button
             onClick={() => { setActiveTab("paid"); setCurrentPage(1); setSearch(""); setFilterPlan(""); }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
+            className={`flex flex-col md:flex-row items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
               activeTab === "paid"
                 ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
                 : "text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.03]"

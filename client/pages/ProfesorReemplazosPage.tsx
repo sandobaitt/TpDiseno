@@ -40,7 +40,7 @@ export default function ProfesorReemplazosPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-6 border-b border-app-border/[0.12]/50">
+        <div className="flex gap-6 flex-wrap border-b border-app-border/[0.12]/50">
           <button
             onClick={() => setActiveTab("solicitudes")}
             className={`pb-3 text-sm font-bold tracking-wider transition-colors cursor-pointer ${
@@ -113,7 +113,7 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
   const r = request;
 
   return (
-    <div className="bg-app-surface rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 hover:bg-app-card transition-all duration-150 shadow-card glass-border hover:border-app-border/[0.08]">
+    <div className="bg-app-surface rounded-2xl p-5 md:p-6 flex flex-col sm:flex-row md:items-center gap-5 hover:bg-app-card transition-all duration-150 shadow-card glass-border hover:border-app-border/[0.08]">
       {/* Left */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div className="flex items-center gap-2 flex-wrap">
@@ -147,7 +147,7 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
       </div>
 
       {/* Right */}
-      <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-3 shrink-0">
+      <div className="flex flex-col items-start sm:items-start gap-4 md:gap-3 shrink-0">
         <div className="flex flex-col items-center md:items-end">
           <span className="text-lime-400 text-xl font-extrabold leading-none">
             {r.dateLabel}

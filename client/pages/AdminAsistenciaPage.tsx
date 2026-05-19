@@ -100,7 +100,7 @@ export default function AdminAsistenciaPage() {
         </div>
 
         {/* Metric cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Horas Programadas */}
           <div className="rounded-2xl bg-app-card p-5 shadow-card glass-border flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center shrink-0">

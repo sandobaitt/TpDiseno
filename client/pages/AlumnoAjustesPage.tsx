@@ -68,14 +68,14 @@ export default function AlumnoAjustesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-6 mt-8 items-start">
           {/* ── LEFT: Bandeja de Alertas ── */}
           <div className="flex flex-col gap-5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between">
+              <div className="flex mb-2 sm:mb-0 items-center gap-2">
                 <i className="ti ti-bell text-lg text-lime-400" />
                 <h2 className="text-app-text text-sm font-extrabold">
                   Bandeja de Alertas
                 </h2>
               </div>
-              <button className="text-lime-400 text-[10px] font-bold tracking-widest hover:brightness-110 transition-all cursor-pointer">
+              <button className="mt_2 sm:mt-0 text-lime-400 text-[10px] font-bold tracking-widest hover:brightness-110 transition-all cursor-pointer">
                 MARCAR TODO COMO LEÍDO
               </button>
             </div>
@@ -83,8 +83,8 @@ export default function AlumnoAjustesPage() {
             {/* Alert 1 — Crítica */}
             <div className="bg-app-surface rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-app-card transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500/60 rounded-l-2xl" />
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   <i className="ti ti-alert-triangle text-red-400 text-base" />
                   <h3 className="text-app-text text-sm font-bold">
                     Vencimiento de Membresía
@@ -111,8 +111,8 @@ export default function AlumnoAjustesPage() {
             {/* Alert 2 — Promocional */}
             <div className="bg-app-surface rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-app-card transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-lime-400/60 rounded-l-2xl" />
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   <i className="ti ti-ticket text-lime-400 text-base" />
                   <h3 className="text-app-text text-sm font-bold">
                     Desbloqueá: Clínica de Fuerza
@@ -139,8 +139,8 @@ export default function AlumnoAjustesPage() {
             {/* Alert 3 — Éxito */}
             <div className="bg-app-surface rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-app-card transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-600/40 rounded-l-2xl" />
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   <i className="ti ti-circle-check text-app-subtle text-base" />
                   <h3 className="text-app-text text-sm font-bold">
                     Último Pago Procesado
@@ -159,8 +159,8 @@ export default function AlumnoAjustesPage() {
             {/* Alert 4 — Información */}
             <div className="bg-app-surface rounded-2xl p-5 flex flex-col gap-3 relative overflow-hidden hover:bg-app-card transition-all duration-150 shadow-card glass-border">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-600/40 rounded-l-2xl" />
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   <i className="ti ti-clock text-blue-400 text-base" />
                   <h3 className="text-app-text text-sm font-bold">
                     Actualización de Horarios
@@ -248,13 +248,13 @@ export default function AlumnoAjustesPage() {
                 {/* Modo Silencio */}
                 <button
                   onClick={() => setSilencio((s) => !s)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex flex-col sm:flex-row items-center justify-between px-4 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                     silencio
                       ? "bg-amber-400/10 border-amber-400/30 text-amber-300"
                       : "bg-white/[0.03] border-app-border/[0.12]/40 text-app-text hover:bg-app-hover/[0.06] hover:border-app-input-border/60"
                   }`}
                 >
-                  <span className="flex items-center gap-2.5">
+                  <span className="flex flex-col sm:flex-row items-center gap-2.5">
                     <i className={`ti ti-moon text-sm ${silencio ? "text-amber-400" : "text-app-subtle"}`} />
                     Modo Silencio
                   </span>
@@ -270,9 +270,9 @@ export default function AlumnoAjustesPage() {
                 {/* Visibilidad del Perfil */}
                 <button
                   onClick={cycleVisibilidad}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.03] border border-app-border/[0.12]/40 text-app-text text-xs font-bold hover:bg-app-hover/[0.06] hover:border-app-input-border/60 transition-all cursor-pointer"
+                  className="w-full flex flex-col sm:flex-row items-center justify-between px-4 py-3 rounded-xl bg-white/[0.03] border border-app-border/[0.12]/40 text-app-text text-xs font-bold hover:bg-app-hover/[0.06] hover:border-app-input-border/60 transition-all cursor-pointer"
                 >
-                  <span className="flex items-center gap-2.5">
+                  <span className="flex flex-col sm:flex-row items-center gap-2.5">
                     <i className={`${VISIBILIDAD_ICON[visibilidad]} text-app-subtle text-sm`} />
                     Visibilidad del Perfil
                   </span>
@@ -285,9 +285,9 @@ export default function AlumnoAjustesPage() {
                 {!confirmDelete ? (
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-red-500/[0.04] border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/[0.08] hover:border-red-500/40 transition-all cursor-pointer"
+                    className="w-full flex flex-col sm:flex-row items-center justify-between px-4 py-3 rounded-xl bg-red-500/[0.04] border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/[0.08] hover:border-red-500/40 transition-all cursor-pointer"
                   >
-                    <span className="flex items-center gap-2.5">
+                    <span className="flex flex-col sm:flex-row items-center gap-2.5">
                       <i className="ti ti-trash text-sm" />
                       Eliminar Cuenta
                     </span>

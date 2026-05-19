@@ -16,8 +16,8 @@ interface StatCardProps {
 
 function StatCard({ icon, value, label, status, valueColor = "text-app-text", bgColor = "bg-app-surface" }: StatCardProps) {
     return (
-        <article className={`flex flex-col gap-2 p-5 rounded-2xl shadow-card glass-border ${bgColor}`}>
-            <div className="flex gap-2 items-center">
+        <article className={`w-full flex flex-col items-center justify-center md:items-start md:justify-start gap-2 p-5 rounded-2xl shadow-card glass-border ${bgColor}`}>
+            <div className="flex border-4 border-red-600  gap-2 items-center">
                 {icon && (
                     <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-lime-400/10">
                         <i className={`ti ${icon} text-base text-lime-400`} />

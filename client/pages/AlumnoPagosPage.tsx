@@ -224,7 +224,8 @@ export default function AlumnoPagosPage() {
           pendientes.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3">
+        <div className="overflow-x-auto">
+        <div className="flex flex-col gap-3 min-w-[360px]">
           {paginatedMonths.map((m) => {
             const isPaid = m.status === "paid";
             const isUnpaid = m.status === "unpaid";
@@ -281,6 +282,7 @@ export default function AlumnoPagosPage() {
               </button>
             );
           })}
+        </div>
         </div>
 
         <Pagination

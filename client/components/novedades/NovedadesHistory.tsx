@@ -117,7 +117,7 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
   const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
 
   return (
-    <section className="flex-1 min-w-0">
+    <section className="flex-1 w-full">
       <div className="bg-app-bg rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-card glass-border">
         <h1 className="text-app-text font-extrabold text-2xl md:text-3xl tracking-wider">
           HISTORIAL DE NOVEDADES
@@ -151,7 +151,7 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
             return (
               <div
                 key={nov.id}
-                className="bg-app-card/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-app-card/80 transition-all duration-150 glass-border hover:border-app-border/[0.08] group/row"
+                className="bg-app-card/50 rounded-xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-app-card/80 transition-all duration-150 glass-border hover:border-app-border/[0.08] group/row text-red-600"
               >
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-app-bg flex items-center justify-center shrink-0 border border-app-border/[0.12]">
@@ -176,7 +176,7 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
                   </div>
                 </div>
 
-                <div className="flex md:flex-col items-end gap-2 shrink-0 md:ml-4">
+                <div className="flex flex-col md:flex-col items-center md:items-end justify-between md:justify-normal gap-2 shrink-0 md:ml-4 w-full md:w-auto">
                   <span className="text-app-faint text-xs whitespace-nowrap">
                     {formatTimestamp(nov.timestamp)}
                   </span>

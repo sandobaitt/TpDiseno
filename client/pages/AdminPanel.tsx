@@ -119,7 +119,7 @@ function TabInformacion() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {metricsMock.map((m) => (
           <div key={m.id} className="bg-app-bg-page rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between">
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${m.warning ? "bg-red-500/10" : "bg-lime-400/10"}`}>
                 <i className={`${m.icon} text-lg ${m.iconColor}`} />
               </div>
@@ -251,7 +251,7 @@ function TabFinanzas() {
   return (
     <>
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-4">
         {[
           { icon: "ti ti-tag",         color: "text-lime-400",   bg: "bg-lime-400/10",   label: "DESCUENTOS ACTIVOS",   value: activos   },
           { icon: "ti ti-tag-off",      color: "text-app-subtle", bg: "bg-app-card",      label: "DESCUENTOS INACTIVOS", value: inactivos },

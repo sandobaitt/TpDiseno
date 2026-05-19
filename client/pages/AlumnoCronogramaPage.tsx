@@ -34,7 +34,7 @@ export default function AlumnoCronogramaPage() {
 
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h1 className="text-app-text text-3xl md:text-4xl font-extrabold leading-tight mt-1">
               CRONOGRAMA DE CLASES

@@ -157,7 +157,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 md:gap-6 relative z-10">
+            <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-4 md:gap-6 relative z-10">
               <div className="flex flex-col gap-1">
                 <span className="text-app-subtle text-xs uppercase tracking-widest font-semibold">PLAN ACTUAL</span>
                 <span className="text-app-text text-sm md:text-base font-medium">{plan?.name ?? "Sin plan"}</span>

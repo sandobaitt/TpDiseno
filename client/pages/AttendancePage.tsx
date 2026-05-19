@@ -113,11 +113,11 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, iconBg, iconColor, valueColor }: StatCardProps) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
+    <div className="flex flex-col md:flex-row md:items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
         <i className={`ti ${icon} text-base ${iconColor}`} />
       </div>
-      <div>
+      <div className="flex flex-col md:flex-row">
         <p className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-app-text"}`}>
           {value}
         </p>
@@ -267,11 +267,11 @@ export default function AttendancePage() {
             iconColor="text-red-400"
             valueColor="text-red-400"
           />
-          <div className="flex items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
+          <div className="flex flex-col md:flex-row gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-lime-400/10">
               <i className="ti ti-chart-bar text-base text-lime-400" />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 flex-col md:flex-row min-w-0">
               <p className="text-2xl font-extrabold leading-tight text-app-text">{rate}%</p>
               <p className="text-[11px] text-app-subtle font-medium">Tasa de asistencia</p>
               <div className="mt-1.5 h-1 rounded-full bg-app-card overflow-hidden">
@@ -405,7 +405,7 @@ export default function AttendancePage() {
           </div>
 
           {/* Table card */}
-          <div className="rounded-2xl bg-app-bg shadow-card glass-border overflow-hidden">
+          <div className="rounded-2xl bg-app-bg shadow-card glass-border overflow-x-auto">
             {/* Column headers */}
             {activeTab === "students" ? (
               <>

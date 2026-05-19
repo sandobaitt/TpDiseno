@@ -518,7 +518,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
           {/* Fecha y hora */}
           <div className="flex flex-col gap-2">
             <label className="text-app-subtle text-xs font-semibold tracking-widest">FECHA Y HORA</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2">
               <DatePicker value={dateVal} onChange={setDateVal} />
               <TimePicker value={timeVal} onChange={setTimeVal} />
             </div>

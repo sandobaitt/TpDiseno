@@ -95,16 +95,17 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
   }
 
   return (
-    <header className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-3.5 border-b bg-app-bg border-app-border/[0.05] ${className}`}>
-      <nav className="flex gap-2 items-center max-md:hidden">
-        <span className="text-sm text-app-subtle">{nav}</span>
-      </nav>
+      <header className={`flex flex-col md:flex-row md:items-center sticky top-0 z-10 px-7 max-sm:px-4 py-3 border-b bg-app-bg border-app-border/[0.05] ${className}`}>
+        <div className="hidden max-md:flex justify-center w-full pb-1.5">
+          <h1 className="text-lg font-extrabold tracking-tight text-lime-400">{title}</h1>
+        </div>
 
-      <div className="hidden gap-2 items-center max-md:flex">
-        <h1 className="text-lg font-extrabold tracking-tight text-lime-400">{title}</h1>
-      </div>
+        <div className="flex items-center w-full">
+          <nav className="flex gap-2 items-center max-md:hidden">
+            <span className="text-sm text-app-subtle">{nav}</span>
+          </nav>
 
-      <div className="flex gap-1 items-center">
+          <div className="flex justify-center md:ml-auto md:justify-end gap-1 items-center w-full md:w-auto">
 
         {/* Bell */}
         <div ref={bellRef} className="relative">
@@ -233,6 +234,7 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
           </button>
         </div>
 
+      </div>
       </div>
     </header>
   );

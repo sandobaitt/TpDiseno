@@ -85,7 +85,7 @@ export default function ProfesorHorasPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 max-sm:grid-cols-1 gap-3">
         <div className="bg-app-bg glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-clock text-lime-400 text-base" />
@@ -112,7 +112,8 @@ export default function ProfesorHorasPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-app-bg glass-border rounded-2xl overflow-hidden shadow-card">
+      <div className="bg-app-bg glass-border rounded-2xl overflow-x-auto shadow-card">
+        <div className="min-w-[600px]">
         {/* Column headers */}
         <div className="grid grid-cols-[1fr_120px_100px_100px] px-6 py-3 border-b border-app-border/[0.05]">
           <span className="text-[10px] font-bold tracking-widest text-app-faint">CLASE</span>
@@ -172,6 +173,7 @@ export default function ProfesorHorasPage() {
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );
