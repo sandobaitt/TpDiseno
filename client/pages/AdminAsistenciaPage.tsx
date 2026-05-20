@@ -131,8 +131,18 @@ function generateAttendance() {
 export default function AdminAsistenciaPage() {
   const [weekOffset, setWeekOffset] = React.useState(0);
   const weekDays = React.useMemo(() => getDayInfo(weekOffset), [weekOffset]);
-  const [attendanceMap] = React.useState(generateAttendance);
+  const [attendanceMap, setAttendanceMap] = React.useState(generateAttendance);
   const [selectedSlot, setSelectedSlot] = React.useState<{ day: number; time: string } | null>(null);
+
+  function handleStatusChange(day: number, time: string, blockId: string, newStatus: AttendanceStatus) {
+    setAttendanceMap((prev) => {
+      const next = new Map(prev);
+      const key = `${day}-${time}`;
+      const entries = next.get(key) ?? [];
+      next.set(key, entries.map((e) => (e.blockId === blockId ? { ...e, status: newStatus } : e)));
+      return next;
+    });
+  }
 
   const slotAttendance = selectedSlot
     ? (attendanceMap.get(`${selectedSlot.day}-${selectedSlot.time}`) ?? [])
@@ -413,7 +423,25 @@ export default function AdminAsistenciaPage() {
                         <p className="text-app-subtle text-[10px]">{sa.type}</p>
                       </div>
                     </div>
-                    <StatusBadge status={sa.status} />
+                    <div className="flex items-center gap-1">
+                      {(["present", "absent", "pending"] as AttendanceStatus[]).map((status) => (
+                        <button
+                          key={status}
+                          onClick={() => handleStatusChange(selectedSlot!.day, selectedSlot!.time, sa.blockId, status)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider transition-all cursor-pointer ${
+                            sa.status === status
+                              ? status === "present"
+                                ? "bg-green-500/15 text-green-400 border border-green-500/30"
+                                : status === "absent"
+                                  ? "bg-red-500/15 text-red-400 border border-red-500/30"
+                                  : "bg-app-card/60 text-app-muted border border-app-input-border/40"
+                              : "bg-transparent text-app-faint border border-transparent hover:text-app-muted hover:border-app-border/[0.10]"
+                          }`}
+                        >
+                          {status === "present" ? "Asistió" : status === "absent" ? "Ausente" : "Pendiente"}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -441,17 +469,4 @@ export default function AdminAsistenciaPage() {
   );
 }
 
-function StatusBadge({ status }: { status: AttendanceStatus }) {
-  const config = {
-    present: { dot: "bg-green-400", label: "Asistió", text: "text-green-400", bg: "bg-green-500/10 border border-green-500/20" },
-    absent:  { dot: "bg-red-400",   label: "Ausente", text: "text-red-400",   bg: "bg-red-500/10 border border-red-500/20"   },
-    pending: { dot: "bg-gray-500",  label: "Pendiente", text: "text-app-muted", bg: "bg-app-card/60 border border-app-input-border/40" },
-  };
-  const c = config[status];
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${c.bg}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-      <span className={`text-[10px] font-bold ${c.text}`}>{c.label}</span>
-    </span>
-  );
-}
+

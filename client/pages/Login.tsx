@@ -1,6 +1,6 @@
-import { FormEvent, useState, useRef } from "react";
+import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, type AppUser } from "@/data/users";
 
@@ -28,9 +28,7 @@ export default function Login() {
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showDebug, setShowDebug] = useState(false);
-
-  const clickRef = useRef({ count: 0, lastTime: 0 });
+  const [quickOpen, setQuickOpen] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -50,22 +48,6 @@ export default function Login() {
     saveMockSession(user);
     toast.success(`Hola, ${user.fullName}`);
     navigate(getPostLoginPath(user.role), { replace: true });
-  };
-
-  const handleIngreseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const now = Date.now();
-    if (now - clickRef.current.lastTime < 600) {
-      clickRef.current.count += 1;
-    } else {
-      clickRef.current.count = 1;
-    }
-    clickRef.current.lastTime = now;
-
-    if (clickRef.current.count >= 3) {
-      e.preventDefault();
-      clickRef.current.count = 0;
-      setShowDebug(true);
-    }
   };
 
   const handleQuickLogin = (user: AppUser) => {
@@ -181,63 +163,57 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Debug quick-login panel */}
-          <AnimatePresence>
-            {showDebug && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
-                className="rounded-2xl border border-white/[0.07] bg-[rgba(30,30,30,0.85)] backdrop-blur-sm overflow-hidden"
-              >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
-                  <div className="flex items-center gap-2">
-                    <i className="ti ti-bug text-xs text-white/50" />
-                    <span className="text-white/50 text-[10px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowDebug(false)}
-                    className="text-white/30 hover:text-white/60 transition-colors cursor-pointer"
-                  >
-                    <i className="ti ti-x text-xs" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-2 p-3">
-                  {DEBUG_USERS.map((user) => {
-                    const s = ROLE_STYLE[user.role];
-                    return (
-                      <button
-                        key={user.id}
-                        type="button"
-                        onClick={() => handleQuickLogin(user)}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] hover:border-white/[0.14] transition-all cursor-pointer text-left group"
-                      >
-                        <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
-                          <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
-                          <span className={`text-[9px] font-bold ${s.text}`}>{s.label}</span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"
-              onClick={handleIngreseClick}
-              className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150"
+              className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150 cursor-pointer"
             >
               Ingresar
             </button>
+          </div>
+
+          {/* Quick login dropdown */}
+          <div className="border-t border-white/[0.07] pt-4 mt-2">
+            <button
+              type="button"
+              onClick={() => setQuickOpen((v) => !v)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/[0.12] transition-all cursor-pointer text-left group"
+            >
+              <div className="flex items-center gap-2">
+                <i className="ti ti-bolt text-xs text-white/40" />
+                <span className="text-white/50 text-[10px] font-bold tracking-widest">INICIO DE SESIÓN RÁPIDO</span>
+              </div>
+              <i className={`ti ti-chevron-down text-white/30 text-xs transition-transform duration-200 ${quickOpen ? "rotate-180" : ""}`} />
+            </button>
+            {quickOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="grid grid-cols-2 gap-2 mt-2"
+              >
+                {DEBUG_USERS.map((user) => {
+                  const s = ROLE_STYLE[user.role];
+                  return (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => handleQuickLogin(user)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] hover:border-white/[0.14] transition-all cursor-pointer text-left group"
+                    >
+                      <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
+                        <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
+                        <span className={`text-[9px] font-bold ${s.text}`}>{s.label}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </motion.div>
+            )}
           </div>
         </form>
 
