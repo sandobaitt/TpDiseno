@@ -307,7 +307,7 @@ export default function Index() {
             ))}
           </nav>
           <p className="font-inter text-xs text-white/40 tracking-[1.2px] uppercase text-center sm:text-right">
-            © 2024 SQUATGYM. TODOS LOS DERECHOS RESERVADOS.
+            © 2026 SQUATGYM. TODOS LOS DERECHOS RESERVADOS.
           </p>
         </div>
       </footer>

@@ -1,4 +1,9 @@
 import * as React from "react";
+import { buildWeekFromWorkoutTypes } from "@/data/schedule";
+import { workoutTypesMock } from "@/data/workoutTypes";
+import { teachersMock } from "@/data/teachers";
+import { classStudentsMock } from "@/data/classStudents";
+import { getMockSession } from "@/data/users";
 
 interface HoraEntry {
   id: string;
@@ -9,7 +14,6 @@ interface HoraEntry {
   durationMin: number;
   studentsPresent: number;
   studentsTotal: number;
-  period: "semana" | "mes" | "anterior";
 }
 
 type Period = "semana" | "mes" | "anterior";
@@ -20,20 +24,13 @@ const PERIOD_LABELS: Record<Period, string> = {
   anterior: "Mes anterior",
 };
 
-const horasMock: HoraEntry[] = [
-  { id: "h1",  date: "13 MAY", dayName: "Martes",    classTitle: "HIIT ZONE",           startTime: "08:00", durationMin: 45, studentsPresent: 9,  studentsTotal: 15, period: "semana" },
-  { id: "h2",  date: "13 MAY", dayName: "Martes",    classTitle: "FUNCIONAL INTENSO",   startTime: "17:30", durationMin: 50, studentsPresent: 12, studentsTotal: 12, period: "semana" },
-  { id: "h3",  date: "12 MAY", dayName: "Lunes",     classTitle: "CROSS FIT WOD",       startTime: "07:00", durationMin: 45, studentsPresent: 8,  studentsTotal: 12, period: "semana" },
-  { id: "h4",  date: "08 MAY", dayName: "Jueves",    classTitle: "CROSS FIT ENDURANCE", startTime: "09:00", durationMin: 60, studentsPresent: 6,  studentsTotal: 12, period: "mes"    },
-  { id: "h5",  date: "06 MAY", dayName: "Martes",    classTitle: "HIIT ZONE",           startTime: "08:00", durationMin: 45, studentsPresent: 11, studentsTotal: 15, period: "mes"    },
-  { id: "h6",  date: "06 MAY", dayName: "Martes",    classTitle: "FUNCIONAL INTENSO",   startTime: "17:30", durationMin: 50, studentsPresent: 10, studentsTotal: 12, period: "mes"    },
-  { id: "h7",  date: "05 MAY", dayName: "Lunes",     classTitle: "CROSS FIT WOD",       startTime: "07:00", durationMin: 45, studentsPresent: 7,  studentsTotal: 12, period: "mes"    },
-  { id: "h8",  date: "30 ABR", dayName: "Miércoles", classTitle: "HALTEROFILIA AVANZADA", startTime: "18:00", durationMin: 60, studentsPresent: 10, studentsTotal: 10, period: "anterior" },
-  { id: "h9",  date: "29 ABR", dayName: "Martes",    classTitle: "HIIT ZONE",           startTime: "08:00", durationMin: 45, studentsPresent: 13, studentsTotal: 15, period: "anterior" },
-  { id: "h10", date: "28 ABR", dayName: "Lunes",     classTitle: "CROSS FIT WOD",       startTime: "07:00", durationMin: 45, studentsPresent: 9,  studentsTotal: 12, period: "anterior" },
-  { id: "h11", date: "24 ABR", dayName: "Jueves",    classTitle: "CROSS FIT ENDURANCE", startTime: "09:00", durationMin: 60, studentsPresent: 5,  studentsTotal: 12, period: "anterior" },
-  { id: "h12", date: "22 ABR", dayName: "Martes",    classTitle: "FUNCIONAL INTENSO",   startTime: "17:30", durationMin: 50, studentsPresent: 11, studentsTotal: 12, period: "anterior" },
-];
+const BASE_MONDAY = new Date(2025, 4, 12);
+
+const PERIOD_WEEKS: Record<Period, number[]> = {
+  semana: [0],
+  mes: [-3, -2, -1, 0],
+  anterior: [-7, -6, -5, -4],
+};
 
 function fmtHours(mins: number) {
   const h = Math.floor(mins / 60);
@@ -44,10 +41,43 @@ function fmtHours(mins: number) {
 export default function ProfesorHorasPage() {
   const [period, setPeriod] = React.useState<Period>("mes");
 
+  const teacherName = React.useMemo(() => {
+    const session = getMockSession();
+    const t = teachersMock.find((t) => t.fullName === session?.fullName);
+    return t?.fullName ?? "";
+  }, []);
+
   const entries = React.useMemo(() => {
-    if (period === "mes") return horasMock.filter((e) => e.period === "semana" || e.period === "mes");
-    return horasMock.filter((e) => e.period === period);
-  }, [period]);
+    const offsets = PERIOD_WEEKS[period];
+    const all: HoraEntry[] = [];
+    let idCounter = 0;
+
+    for (const offset of offsets) {
+      const baseDate = new Date(BASE_MONDAY);
+      baseDate.setDate(baseDate.getDate() + offset * 7);
+      const week = buildWeekFromWorkoutTypes(baseDate, workoutTypesMock, teachersMock, classStudentsMock);
+
+      for (const day of week) {
+        for (const cls of day.classes) {
+          if (cls.coach !== teacherName) continue;
+          idCounter++;
+          const total = cls.enrolledStudentIds.length;
+          const present = Math.floor(total * 0.75);
+          all.push({
+            id: `he_${idCounter}`,
+            date: `${day.date} ${day.month}`,
+            dayName: day.dayFull,
+            classTitle: cls.title,
+            startTime: cls.time,
+            durationMin: cls.durationMin,
+            studentsPresent: Math.max(1, present),
+            studentsTotal: total,
+          });
+        }
+      }
+    }
+    return all;
+  }, [period, teacherName]);
 
   const totalMins     = entries.reduce((s, e) => s + e.durationMin, 0);
   const totalClases   = entries.length;

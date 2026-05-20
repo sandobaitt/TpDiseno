@@ -24,9 +24,11 @@ export default function ProfesorAsistenciaPage() {
   const [selectedBitacora, setSelectedBitacora] =
     React.useState<Bitacora | null>(null);
   const [showForm, setShowForm] = React.useState(false);
+  const [editingBitacoraId, setEditingBitacoraId] = React.useState<string | null>(null);
   const [formTitle, setFormTitle] = React.useState("");
   const [formContent, setFormContent] = React.useState("");
   const [formStudent, setFormStudent] = React.useState("");
+  const [viewingStudent, setViewingStudent] = React.useState<ClassStudent | null>(null);
 
   const filteredStudents = React.useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -51,19 +53,41 @@ export default function ProfesorAsistenciaPage() {
 
   const handleSave = () => {
     if (!formTitle.trim() || !formContent.trim()) return;
-    const newBitacora: Bitacora = {
-      id: `bit_${Date.now()}`,
-      title: formTitle.trim(),
-      content: formContent.trim(),
-      studentName: formStudent || undefined,
-      createdAt: new Date().toISOString(),
-    };
-    setBitacoras((prev) => [newBitacora, ...prev]);
+
+    if (editingBitacoraId) {
+      setBitacoras((prev) =>
+        prev.map((b) =>
+          b.id === editingBitacoraId
+            ? { ...b, title: formTitle.trim(), content: formContent.trim(), studentName: formStudent || undefined }
+            : b
+        )
+      );
+      toast.success("Bitácora actualizada");
+    } else {
+      const newBitacora: Bitacora = {
+        id: `bit_${Date.now()}`,
+        title: formTitle.trim(),
+        content: formContent.trim(),
+        studentName: formStudent || undefined,
+        createdAt: new Date().toISOString(),
+      };
+      setBitacoras((prev) => [newBitacora, ...prev]);
+      toast.success("Bitácora agregada");
+    }
+
     setShowForm(false);
+    setEditingBitacoraId(null);
     setFormTitle("");
     setFormContent("");
     setFormStudent("");
-    toast.success("Bitácora agregada");
+  };
+
+  const handleEditBitacora = (b: Bitacora) => {
+    setEditingBitacoraId(b.id);
+    setFormTitle(b.title);
+    setFormContent(b.content);
+    setFormStudent(b.studentName ?? "");
+    setShowForm(true);
   };
 
   function formatDate(iso: string) {
@@ -151,6 +175,7 @@ export default function ProfesorAsistenciaPage() {
                     student={student}
                     status={status}
                     onSetStatus={(s) => setStatus(student.id, s)}
+                    onView={() => setViewingStudent(student)}
                   />
                 );
               })}
@@ -186,29 +211,84 @@ export default function ProfesorAsistenciaPage() {
 
             <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto scrollbar-thin">
               {bitacoras.map((b) => (
-                <button
+                <div
                   key={b.id}
-                  onClick={() => setSelectedBitacora(b)}
-                  className="w-full text-left bg-app-bg/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-app-bg/80 transition-all duration-150 cursor-pointer group glass-border hover:border-app-border/[0.08]"
+                  className="w-full bg-app-bg/50 rounded-xl p-3 flex flex-col gap-1 hover:bg-app-bg/80 transition-all duration-150 group glass-border hover:border-app-border/[0.08]"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="text-app-text text-xs font-bold leading-tight line-clamp-1">
-                      {b.title}
-                    </span>
-                    <i className="ti ti-chevron-right text-app-faint text-[10px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
+                  <span className="text-app-text text-xs font-bold leading-tight line-clamp-1">
+                    {b.title}
+                  </span>
                   <p className="text-app-subtle text-[10px] leading-relaxed line-clamp-2">
                     {b.content}
                   </p>
-                  <span className="text-app-faint text-[9px]">
-                    {formatDate(b.createdAt)}
-                  </span>
-                </button>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <span className="text-app-faint text-[9px]">
+                      {formatDate(b.createdAt)}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => setSelectedBitacora(b)}
+                        className="px-2.5 py-1 rounded-lg text-[9px] font-bold tracking-wider bg-app-surface text-app-muted border border-app-border/[0.10] hover:border-blue-400/30 hover:text-blue-400 transition-all cursor-pointer"
+                      >
+                        <i className="ti ti-eye text-[10px] mr-0.5" />
+                        Ver
+                      </button>
+                      <button
+                        onClick={() => handleEditBitacora(b)}
+                        className="px-2.5 py-1 rounded-lg text-[9px] font-bold tracking-wider bg-app-surface text-app-muted border border-app-border/[0.10] hover:border-amber-400/30 hover:text-amber-400 transition-all cursor-pointer"
+                      >
+                        <i className="ti ti-pencil text-[10px] mr-0.5" />
+                        Editar
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Dialog: Ver Alumno */}
+      <Dialog
+        open={!!viewingStudent}
+        onOpenChange={(o) => !o && setViewingStudent(null)}
+      >
+        <DialogContent className="max-w-md bg-app-card-deep border-app-border/[0.12] text-app-text">
+          {viewingStudent && (
+            <div className="flex flex-col gap-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-800 to-blue-950 flex items-center justify-center">
+                  <span className="text-app-text text-sm font-bold">
+                    {getInitials(viewingStudent.name)}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-app-text text-lg font-extrabold">
+                    {viewingStudent.name}
+                  </h2>
+                  <p className="text-app-faint text-xs">Datos del alumno</p>
+                </div>
+              </div>
+
+              <div className="bg-app-surface rounded-xl p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+                  <span className="text-app-subtle text-xs font-semibold tracking-wider">PLAN</span>
+                  <span className="text-app-text text-sm font-bold">{viewingStudent.plan}</span>
+                </div>
+                <div className="flex items-center justify-between pb-3 border-b border-app-border/[0.12]/40">
+                  <span className="text-app-subtle text-xs font-semibold tracking-wider">SESIÓN SEMANAL</span>
+                  <span className="text-app-text text-sm font-bold">{viewingStudent.weekSession}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-app-subtle text-xs font-semibold tracking-wider">CLASE</span>
+                  <span className="text-app-text text-sm font-bold">CrossFit WOD</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Dialog: Ver Bitácora */}
       <Dialog
@@ -245,14 +325,16 @@ export default function ProfesorAsistenciaPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: Nueva Bitácora */}
-      <Dialog open={showForm} onOpenChange={(o) => !o && setShowForm(false)}>
+      {/* Dialog: Nueva / Editar Bitácora */}
+      <Dialog open={showForm} onOpenChange={(o) => {
+        if (!o) { setEditingBitacoraId(null); setShowForm(false); }
+      }}>
         <DialogContent className="max-w-lg bg-app-card-deep border-app-border/[0.12] text-app-text">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-2">
-              <i className="ti ti-notes text-lg text-lime-400" />
+              <i className={`ti ${editingBitacoraId ? "ti-pencil" : "ti-notes"} text-lg text-lime-400`} />
               <h2 className="text-app-text text-sm font-extrabold">
-                Nueva Observación
+                {editingBitacoraId ? "Editar Observación" : "Nueva Observación"}
               </h2>
             </div>
 
@@ -304,7 +386,7 @@ export default function ProfesorAsistenciaPage() {
               disabled={!formTitle.trim() || !formContent.trim()}
               className="w-full py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              GUARDAR BITÁCORA
+              {editingBitacoraId ? "GUARDAR CAMBIOS" : "GUARDAR BITÁCORA"}
             </button>
           </div>
         </DialogContent>
@@ -319,6 +401,7 @@ interface StudentCardProps {
   student: ClassStudent;
   status: AttendanceStatus;
   onSetStatus: (status: AttendanceStatus) => void;
+  onView: () => void;
 }
 
 const avatarColors = [
@@ -332,7 +415,7 @@ const avatarColors = [
   "from-blue-900 to-slate-950",
 ];
 
-function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
+function StudentCard({ student, status, onSetStatus, onView }: StudentCardProps) {
   const colorIdx = student.name.charCodeAt(0) % avatarColors.length;
   const gradient = avatarColors[colorIdx];
 
@@ -356,6 +439,13 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={onView}
+          className="px-3 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer bg-app-surface text-app-muted border border-app-border/[0.10] hover:border-blue-400/30 hover:text-blue-400"
+        >
+          <i className="ti ti-eye text-xs mr-1" />
+          Ver
+        </button>
         <button
           onClick={() => onSetStatus("absent")}
           className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${

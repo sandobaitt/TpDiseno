@@ -61,7 +61,7 @@ export const appUsersMock: AppUser[] = [
     createdAt: "2025-11-20T09:05:00.000Z",
   },
 
-  // Profesor (2)
+  // Profesor (5)
   {
     id: "us_pr_001",
     fullName: "Tomás Ibáñez",
@@ -81,6 +81,36 @@ export const appUsersMock: AppUser[] = [
     status: "active",
     password: "profe123",
     createdAt: "2026-01-22T08:30:00.000Z",
+  },
+  {
+    id: "us_pr_003",
+    fullName: "Lautaro Roldán",
+    email: "profe3@squatgym.com",
+    dni: "31.500.789",
+    role: "profesor",
+    status: "active",
+    password: "profe123",
+    createdAt: "2025-11-10T14:00:00.000Z",
+  },
+  {
+    id: "us_pr_004",
+    fullName: "Valentina Méndez",
+    email: "profe4@squatgym.com",
+    dni: "34.888.222",
+    role: "profesor",
+    status: "active",
+    password: "profe123",
+    createdAt: "2026-03-05T09:00:00.000Z",
+  },
+  {
+    id: "us_pr_005",
+    fullName: "Gonzalo Paz",
+    email: "profe5@squatgym.com",
+    dni: "30.111.444",
+    role: "profesor",
+    status: "active",
+    password: "profe123",
+    createdAt: "2024-08-20T11:00:00.000Z",
   },
 
   // Secretario (2)

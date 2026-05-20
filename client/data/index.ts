@@ -6,3 +6,4 @@ export * from "./users";
 export * from "./payments";
 export * from "./checkins";
 export * from "./teachers";
+export * from "./workoutTypes";

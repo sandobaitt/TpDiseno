@@ -98,16 +98,16 @@ const roleNavigation: Record<string, RoleNavConfig> = {
     panelName: "profesor",
     items: [
       {
-        id: "schedule",
-        label: "Cronograma",
-        iconClassName: "ti ti-calendar",
-        to: "/profesor/cronograma",
-      },
-      {
         id: "students",
         label: "Asistencia y alumnos",
         iconClassName: "ti ti-users",
         to: "/profesor/asistencia",
+      },
+      {
+        id: "schedule",
+        label: "Cronograma",
+        iconClassName: "ti ti-calendar",
+        to: "/profesor/cronograma",
       },
       {
         id: "replacements",

@@ -2,6 +2,7 @@ import * as React from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { teachersMock } from "@/data/teachers";
+import { workoutTypesMock } from "@/data/workoutTypes";
 import { weekMock } from "@/data/schedule";
 import type { Novedad } from "@/data/novedades";
 
@@ -286,7 +287,10 @@ const ALL_SUGGESTIONS: Suggestion[] = [
     .map((t) => ({
       id: t.id,
       label: t.fullName,
-      sublabel: t.specialties.slice(0, 2).join(" · "),
+      sublabel: t.specialtyIds
+        .map((id) => workoutTypesMock.find((w) => w.id === id)?.name ?? id)
+        .slice(0, 2)
+        .join(" · "),
       entityType: "profesor" as const,
     })),
   ...Array.from(

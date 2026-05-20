@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
 import { replacementsMock, type ReplacementRequest } from "@/data/replacements";
+import { novedadesMock } from "@/data/novedades";
+import { NovedadesHistory } from "@/components/novedades/NovedadesHistory";
 
 type TabId = "solicitudes" | "novedades";
 
@@ -92,10 +94,7 @@ export default function ProfesorReemplazosPage() {
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-app-faint gap-3">
-            <i className="ti ti-speakerphone text-4xl text-app-faint" />
-            <p className="text-sm font-medium">No hay novedades disponibles</p>
-          </div>
+          <NovedadesHistory novedades={novedadesMock} />
         )}
       </div>
   );

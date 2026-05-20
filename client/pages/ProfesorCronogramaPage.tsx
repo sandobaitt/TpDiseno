@@ -1,6 +1,9 @@
 import * as React from "react";
 import { DayColumn } from "@/components/cronograma/DayColumn";
 import { weekMock } from "@/data/schedule";
+import { teachersMock } from "@/data/teachers";
+import { workoutTypesMock } from "@/data/workoutTypes";
+import { getMockSession } from "@/data/users";
 
 const MONTHS = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
 const BASE_MONDAY = new Date(2025, 4, 12);
@@ -23,14 +26,26 @@ function weekLabel(offset: number) {
 
 export default function ProfesorCronogramaPage() {
   const [weekOffset, setWeekOffset] = React.useState(0);
+
+  const teacherName = React.useMemo(() => {
+    const session = getMockSession();
+    if (!session) return "";
+    const teacher = teachersMock.find((t) => t.fullName === session.fullName);
+    return teacher?.fullName ?? "";
+  }, []);
+
   const [activeDay, setActiveDay] = React.useState(
     weekMock.find((d) => d.isActive)?.dayAbbr ?? "",
   );
 
   const week = React.useMemo(() => {
     const w = buildWeek(weekOffset);
-    return w.map((d) => ({ ...d, isActive: d.dayAbbr === activeDay }));
-  }, [weekOffset, activeDay]);
+    return w.map((d) => ({
+      ...d,
+      classes: d.classes.filter((c) => !teacherName || c.coach === teacherName),
+      isActive: d.dayAbbr === activeDay,
+    }));
+  }, [weekOffset, activeDay, teacherName]);
 
   const totalClases = week.reduce((sum, d) => sum + d.classes.length, 0);
   const totalMins = week.reduce(
@@ -44,6 +59,11 @@ export default function ProfesorCronogramaPage() {
   const horas = Math.floor(totalMins / 60);
   const mins = totalMins % 60;
 
+  const teacher = React.useMemo(
+    () => teachersMock.find((t) => t.fullName === teacherName),
+    [teacherName],
+  );
+
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
 
@@ -56,6 +76,23 @@ export default function ProfesorCronogramaPage() {
           <p className="text-app-faint text-sm mt-1">
             Tu agenda de clases para la semana.
           </p>
+          {teacher && teacher.specialtyIds.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {teacher.specialtyIds.map((id) => {
+                const wt = workoutTypesMock.find((w) => w.id === id);
+                if (!wt) return null;
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-app-card text-app-muted"
+                  >
+                    <i className={`ti ${wt.icon} text-[10px]`} />
+                    {wt.name}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Week navigator */}

@@ -6,7 +6,8 @@ export interface Teacher {
   email: string;
   dni: string;
   phone?: string;
-  specialties: string[];
+  /** IDs que referencian workoutTypesMock */
+  specialtyIds: string[];
   branchIds: string[];
   status: TeacherStatus;
   hiredAt: string; // ISO
@@ -20,7 +21,7 @@ export const teachersMock: Teacher[] = [
     email: "tomas.ibanez@squatgym.com",
     dni: "33.300.001",
     phone: "+54 11 5555-0301",
-    specialties: ["Musculación", "Powerlifting", "HIIT"],
+    specialtyIds: ["wt_001", "wt_002", "wt_005"],
     branchIds: ["br_001", "br_002"],
     status: "active",
     hiredAt: "2025-05-01",
@@ -32,7 +33,7 @@ export const teachersMock: Teacher[] = [
     email: "micaela.sosa@squatgym.com",
     dni: "33.300.002",
     phone: "+54 11 5555-0302",
-    specialties: ["Crossfit", "Funcional", "Yoga"],
+    specialtyIds: ["wt_003", "wt_004", "wt_006", "wt_011"],
     branchIds: ["br_001"],
     status: "active",
     hiredAt: "2026-01-22",
@@ -44,7 +45,7 @@ export const teachersMock: Teacher[] = [
     email: "lautaro.roldan@squatgym.com",
     dni: "31.500.789",
     phone: "+54 11 5555-0303",
-    specialties: ["Boxeo", "Funcional", "HIIT"],
+    specialtyIds: ["wt_008", "wt_006", "wt_005"],
     branchIds: ["br_002", "br_003"],
     status: "active",
     hiredAt: "2025-11-10",
@@ -56,7 +57,7 @@ export const teachersMock: Teacher[] = [
     email: "valentina.mendez@squatgym.com",
     dni: "34.888.222",
     phone: "+54 11 5555-0304",
-    specialties: ["Spinning", "Zumba", "Funcional"],
+    specialtyIds: ["wt_009", "wt_010", "wt_012", "wt_006"],
     branchIds: ["br_001", "br_003"],
     status: "active",
     hiredAt: "2026-03-05",
@@ -67,7 +68,7 @@ export const teachersMock: Teacher[] = [
     fullName: "Gonzalo Paz",
     email: "gonzalo.paz@squatgym.com",
     dni: "30.111.444",
-    specialties: ["Musculación", "Crossfit"],
+    specialtyIds: ["wt_001", "wt_003"],
     branchIds: ["br_002"],
     status: "inactive",
     hiredAt: "2024-08-20",
