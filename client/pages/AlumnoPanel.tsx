@@ -3,7 +3,52 @@ import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { attendanceMock, type AttendanceRecord } from "@/data/attendance";
+import { getMockSession } from "@/data/users";
+import { clientsMock } from "@/data/clients";
+import { classStudentsMock } from "@/data/classStudents";
+import { weekMock, type DaySchedule, type GymClass } from "@/data/schedule";
+import type { AttendanceRecord } from "@/data/attendance";
+
+interface EnrichedRecord extends AttendanceRecord {
+  dayAbbr: string;
+  time: string;
+}
+
+const BASE_DATE = new Date(2025, 4, 12);
+const PAST_WEEKS = 4;
+
+function buildAttendanceForStudent(studentIds: string[]): EnrichedRecord[] {
+  const records: EnrichedRecord[] = [];
+  let counter = 0;
+
+  for (let w = -PAST_WEEKS; w <= 0; w++) {
+    weekMock.forEach((day: DaySchedule, dayIdx: number) => {
+      day.classes.forEach((cls: GymClass) => {
+        const match = cls.enrolledStudentIds.some((id) => studentIds.includes(id));
+        if (!match) return;
+
+        const d = new Date(BASE_DATE);
+        d.setDate(BASE_DATE.getDate() + w * 7 + dayIdx);
+        const [h, m] = cls.time.split(":").map(Number);
+        d.setHours(h, m);
+        counter++;
+
+        records.push({
+          id: `att_st_${counter}`,
+          date: d.toISOString(),
+          className: cls.title,
+          trainer: cls.coach,
+          status: w === 0 ? "present" : Math.random() > 0.25 ? "present" : "absent",
+          dayAbbr: day.dayAbbr,
+          time: cls.time,
+        });
+      });
+    });
+  }
+
+  records.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return records;
+}
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -27,14 +72,26 @@ const ITEMS_PER_PAGE = 4;
 
 export default function AlumnoPanel() {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const totalPages = Math.ceil(attendanceMock.length / ITEMS_PER_PAGE);
-  const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = attendanceMock.slice(start, start + ITEMS_PER_PAGE);
 
-  // Certificado médico
+  const session = React.useMemo(() => getMockSession(), []);
+  const client = React.useMemo(
+    () => (session ? clientsMock.find((c) => c.fullName === session.fullName) : undefined),
+    [session],
+  );
+  const classStudentIds = React.useMemo(
+    () => (client ? classStudentsMock.filter((s) => s.clientId === client.id).map((s) => s.id) : []),
+    [client],
+  );
+  const [attendanceRecords] = React.useState<EnrichedRecord[]>(() =>
+    classStudentIds.length > 0 ? buildAttendanceForStudent(classStudentIds) : [],
+  );
+
+  const totalPages = Math.max(1, Math.ceil(attendanceRecords.length / ITEMS_PER_PAGE));
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = attendanceRecords.slice(start, start + ITEMS_PER_PAGE);
+
   const [certUploaded, setCertUploaded] = React.useState(false);
 
-  // DDJJ
   const [ddjjOpen, setDdjjOpen] = React.useState(false);
   const [conditions, setConditions] = React.useState<boolean[]>(Array(HEALTH_CONDITIONS.length).fill(false));
   const [bloodType, setBloodType] = React.useState("");
@@ -57,28 +114,28 @@ export default function AlumnoPanel() {
     {
       key: "date",
       header: "FECHA",
-      render: (row: AttendanceRecord) => (
+      render: (row: EnrichedRecord) => (
         <span className="text-app-muted text-sm">{formatDate(row.date)}</span>
       ),
     },
     {
       key: "className",
       header: "CLASE",
-      render: (row: AttendanceRecord) => (
+      render: (row: EnrichedRecord) => (
         <span className="text-app-text text-sm font-semibold">{row.className}</span>
       ),
     },
     {
       key: "trainer",
       header: "ENTRENADOR",
-      render: (row: AttendanceRecord) => (
+      render: (row: EnrichedRecord) => (
         <span className="text-app-muted text-sm">{row.trainer}</span>
       ),
     },
     {
       key: "status",
       header: "ESTADO",
-      render: (row: AttendanceRecord) =>
+      render: (row: EnrichedRecord) =>
         row.status === "present" ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-400/15 border border-lime-400/25 text-lime-400 text-xs font-bold">
             <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
@@ -100,10 +157,14 @@ export default function AlumnoPanel() {
         <span className="text-lime-400 text-xs font-bold tracking-widest">
           MI PERFIL Y ASISTENCIA
         </span>
+        {client && (
+          <span className="text-app-subtle text-xs ml-auto">
+            {client.fullName} · {client.dni}
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
-        {/* LEFT: Attendance Table */}
         <div className="bg-app-surface rounded-2xl p-6 md:p-8 flex flex-col gap-5 shadow-card glass-border">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h2 className="text-app-text text-lg font-extrabold">Historial de Asistencias</h2>
@@ -117,21 +178,27 @@ export default function AlumnoPanel() {
             </div>
           </div>
 
-          <DataTable
-            columns={columns}
-            data={paginatedData}
-            getRowKey={(row) => row.id}
-            minWidthClass="min-w-[600px]"
-            gridTemplateClass="grid-cols-[1fr_1fr_1fr_1fr]"
-            rowClassName="hover:bg-app-card/30 transition-colors"
-          />
-
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          {attendanceRecords.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-14 gap-3 text-app-faint">
+              <i className="ti ti-calendar-off text-3xl" />
+              <p className="text-sm font-medium">Sin registros de asistencia</p>
+            </div>
+          ) : (
+            <>
+              <DataTable
+                columns={columns}
+                data={paginatedData}
+                getRowKey={(row) => row.id}
+                minWidthClass="min-w-[600px]"
+                gridTemplateClass="grid-cols-[1fr_1fr_1fr_1fr]"
+                rowClassName="hover:bg-app-card/30 transition-colors"
+              />
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </>
+          )}
         </div>
 
-        {/* RIGHT: Cards */}
         <div className="flex flex-col gap-5">
-          {/* Card 1: Certificado Médico */}
           <div className="bg-app-surface rounded-2xl p-6 flex flex-col gap-5 shadow-card glass-border">
             <div className="flex flex-col sm:flex-row items-center gap-3 text-center">
               <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
@@ -170,7 +237,6 @@ export default function AlumnoPanel() {
             )}
           </div>
 
-          {/* Card 2: DDJJ de Salud */}
           <div className="bg-app-surface rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden shadow-card glass-border">
             <div
               className="pointer-events-none absolute -right-12 -bottom-12 w-40 h-40 rounded-full"
@@ -209,11 +275,9 @@ export default function AlumnoPanel() {
         </div>
       </div>
 
-      {/* DDJJ Dialog */}
       <Dialog open={ddjjOpen} onOpenChange={(open) => !open && setDdjjOpen(false)}>
         <DialogContent className="max-w-lg bg-app-card-deep border-app-border/[0.12] text-app-text max-h-[90vh] overflow-y-auto [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
           <div className="flex flex-col gap-6 p-1">
-            {/* Header */}
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-lime-400/10 flex items-center justify-center shrink-0">
                 <i className="ti ti-clipboard-text text-xl text-lime-400" />
@@ -224,7 +288,6 @@ export default function AlumnoPanel() {
               </div>
             </div>
 
-            {/* Datos básicos */}
             <div className="flex flex-col gap-3">
               <p className="text-app-subtle text-[10px] font-bold tracking-widest uppercase">Datos Básicos</p>
               <div className="flex flex-col gap-1.5">
@@ -249,7 +312,6 @@ export default function AlumnoPanel() {
               </div>
             </div>
 
-            {/* Condiciones de salud */}
             <div className="flex flex-col gap-3">
               <p className="text-app-subtle text-[10px] font-bold tracking-widest uppercase">Condiciones de Salud</p>
               <div className="flex flex-col gap-2">
@@ -279,7 +341,6 @@ export default function AlumnoPanel() {
               </p>
             </div>
 
-            {/* Nota legal */}
             <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
               <i className="ti ti-alert-triangle text-amber-400 text-sm shrink-0 mt-0.5" />
               <p className="text-amber-400/80 text-xs leading-relaxed">
@@ -288,7 +349,6 @@ export default function AlumnoPanel() {
               </p>
             </div>
 
-            {/* Aceptación */}
             <button
               onClick={() => setAccepted((v) => !v)}
               className="flex items-start gap-3 text-left cursor-pointer group"
@@ -304,7 +364,6 @@ export default function AlumnoPanel() {
               </span>
             </button>
 
-            {/* Botón enviar */}
             <button
               onClick={handleDdjjSubmit}
               disabled={!accepted}
