@@ -352,7 +352,7 @@ export default function AdminPersonalPage() {
                   className="w-full text-left bg-app-surface rounded-2xl p-5 flex items-center gap-4 hover:bg-app-card transition-all duration-150 cursor-pointer group shadow-card glass-border hover:border-app-border/[0.10]"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center shrink-0">
-                    <span className="text-app-text text-xs font-bold">
+                    <span className="text-white text-xs font-bold">
                       {getInitials(emp.fullName)}
                     </span>
                   </div>
@@ -412,7 +412,7 @@ export default function AdminPersonalPage() {
                   className="w-full text-left bg-app-surface rounded-2xl p-5 flex items-center gap-4 hover:bg-app-card transition-all duration-150 cursor-pointer group shadow-card glass-border hover:border-app-border/[0.10]"
                 >
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center shrink-0">
-                    <span className="text-app-text text-xs font-bold">
+                    <span className="text-white text-xs font-bold">
                       {getInitials(cli.fullName)}
                     </span>
                   </div>
@@ -460,7 +460,7 @@ export default function AdminPersonalPage() {
               <div className="p-6 pt-8 flex flex-col gap-5">
                 <div className="flex items-start gap-4">
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${getRoleStyle(selectedEmployee.role).avatar} border border-app-border/[0.07] flex items-center justify-center shrink-0`}>
-                    <span className="text-app-text font-extrabold text-base">{getInitials(selectedEmployee.fullName)}</span>
+                    <span className="text-white font-extrabold text-base">{getInitials(selectedEmployee.fullName)}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -570,7 +570,7 @@ export default function AdminPersonalPage() {
                     <>
                       <div className="flex items-start gap-4">
                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-zinc-700 to-zinc-900 border border-app-border/[0.07] flex items-center justify-center shrink-0">
-                          <span className="text-app-text font-extrabold text-base">{getInitials(selectedClient.fullName)}</span>
+                          <span className="text-white font-extrabold text-base">{getInitials(selectedClient.fullName)}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">

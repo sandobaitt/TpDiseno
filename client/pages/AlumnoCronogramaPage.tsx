@@ -4,6 +4,14 @@ import { weekMock } from "@/data/schedule";
 import { getMockSession } from "@/data/users";
 import { clientsMock } from "@/data/clients";
 import { classStudentsMock } from "@/data/classStudents";
+import { workoutTypesMock, type WorkoutType } from "@/data/workoutTypes";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const MONTHS = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
 const BASE_MONDAY = new Date(2025, 4, 12);
@@ -24,19 +32,31 @@ function weekLabel(offset: number) {
   return `${MONTHS[first.getMonth()]} ${first.getDate()} - ${MONTHS[last.getMonth()]} ${last.getDate()}`;
 }
 
+function getAllowedWorkoutTypes(planName: string): WorkoutType[] {
+  if (planName === "Musculación") return workoutTypesMock.filter((wt) => wt.name === "Musculación");
+  if (planName === "Pase Libre") return workoutTypesMock.filter((wt) => !wt.isProOnly);
+  if (planName === "Crossfit") return workoutTypesMock.filter((wt) => wt.category === "crossfit" && !wt.isProOnly);
+  return [];
+}
+
 export default function AlumnoCronogramaPage() {
   const [weekOffset, setWeekOffset] = React.useState(0);
   const [activeDay, setActiveDay] = React.useState(weekMock.find((d) => d.isActive)?.dayAbbr ?? "");
 
   const session = React.useMemo(() => getMockSession(), []);
-  const studentIds = React.useMemo(() => {
-    if (!session) return [];
+
+  const { studentIds, planName } = React.useMemo(() => {
+    if (!session) return { studentIds: [], planName: "" };
     const client = clientsMock.find((c) => c.fullName === session.fullName);
-    if (!client) return [];
-    return classStudentsMock
-      .filter((s) => s.clientId === client.id)
-      .map((s) => s.id);
+    if (!client) return { studentIds: [], planName: "" };
+    const studentRecords = classStudentsMock.filter((s) => s.clientId === client.id);
+    return {
+      studentIds: studentRecords.map((s) => s.id),
+      planName: studentRecords[0]?.plan ?? "",
+    };
   }, [session]);
+
+  const allowedWorkoutTypes = React.useMemo(() => getAllowedWorkoutTypes(planName), [planName]);
 
   const week = React.useMemo(() => {
     const w = buildWeek(weekOffset);
@@ -64,7 +84,43 @@ export default function AlumnoCronogramaPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-app-card/80 rounded-xl px-4 py-2.5 border border-app-border/[0.12]/50">
+        <div className="flex items-center gap-3 flex-wrap">
+          {allowedWorkoutTypes.length > 0 && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="flex items-center gap-2 bg-app-card/80 hover:bg-app-card border border-app-border/[0.12]/50 text-app-subtle hover:text-app-text rounded-xl px-4 py-2.5 text-xs font-semibold tracking-wide transition-colors cursor-pointer">
+                  <i className="ti ti-list-check text-sm" />
+                  Ver clases habilitadas
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-app-text text-lg font-bold">
+                    Clases habilitadas con tu plan
+                  </DialogTitle>
+                  <p className="text-app-faint text-xs mt-0.5">Plan: <span className="text-app-subtle font-semibold">{planName}</span></p>
+                </DialogHeader>
+                <ul className="flex flex-col gap-2 mt-2 max-h-[60vh] overflow-y-auto pr-1">
+                  {allowedWorkoutTypes.map((wt) => (
+                    <li
+                      key={wt.id}
+                      className="flex items-start gap-3 bg-app-card/60 border border-app-border/[0.12]/40 rounded-xl px-4 py-3"
+                    >
+                      <span className="mt-0.5 text-app-accent text-xl">
+                        <i className={`ti ${wt.icon}`} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-app-text text-sm font-semibold leading-tight">{wt.name}</p>
+                        <p className="text-app-faint text-xs mt-0.5 leading-snug">{wt.description}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          <div className="flex items-center gap-2 bg-app-card/80 rounded-xl px-4 py-2.5 border border-app-border/[0.12]/50">
           <button
             onClick={() => setWeekOffset((o) => o - 1)}
             className="text-app-subtle hover:text-app-text transition-colors cursor-pointer"
@@ -80,6 +136,7 @@ export default function AlumnoCronogramaPage() {
           >
             <i className="ti ti-chevron-right text-sm" />
           </button>
+        </div>
         </div>
       </div>
 

@@ -294,7 +294,7 @@ function TabFinanzas() {
               {/* Percentage circle */}
               <div className="w-12 h-12 rounded-xl bg-lime-400/10 flex flex-col items-center justify-center shrink-0">
                 <span className="text-lime-400 text-lg font-extrabold leading-none">{d.porcentaje}%</span>
-                <span className="text-lime-400/60 text-[8px] font-bold">OFF</span>
+                <span className="text-lime-400 text-[8px] font-bold opacity-60">OFF</span>
               </div>
 
               {/* Info */}
@@ -418,7 +418,7 @@ function TabFinanzas() {
               <div className="flex items-center gap-3 p-3 rounded-xl bg-lime-400/5 border border-lime-400/20">
                 <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex flex-col items-center justify-center shrink-0">
                   <span className="text-lime-400 text-sm font-extrabold leading-none">{pct}%</span>
-                  <span className="text-lime-400/60 text-[8px] font-bold">OFF</span>
+                  <span className="text-lime-400 text-[8px] font-bold opacity-60">OFF</span>
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
