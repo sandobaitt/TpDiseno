@@ -144,11 +144,10 @@ export default function AttendancePage() {
   const uniqueBranches = [...new Set(employeesData.map((e) => e.branch).filter(Boolean))];
   const uniquePlans = [...new Set(studentsData.map((s) => s.plan).filter((p) => p !== "Sin plan"))];
 
-  const [studentCheckins, setStudentCheckins] = React.useState<Record<string, boolean>>({
-    cl_001: true,
-    cl_002: false,
-    cl_003: true,
-    cl_004: false,
+  const [studentCheckins, setStudentCheckins] = React.useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    clientsMock.forEach((c) => { initial[c.id] = Math.random() > 0.5; });
+    return initial;
   });
 
   const [teacherCheckins, setTeacherCheckins] = React.useState<Record<string, boolean>>({});
