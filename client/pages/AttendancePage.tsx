@@ -113,15 +113,15 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, iconBg, iconColor, valueColor }: StatCardProps) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
+    <div className="flex flex-col md:flex-row md:items-center  gap-4 rounded-2xl bg-app-bg px-5 py-4 shadow-card glass-border">
       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
         <i className={`ti ${icon} text-base ${iconColor}`} />
       </div>
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row md:items-center gap-2">
         <p className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-app-text"}`}>
           {value}
         </p>
-        <p className="text-[11px] text-app-subtle font-medium">{label}</p>
+        <p className="text-[11px] text-app-subtle font-medium align-middle">{label}</p>
       </div>
     </div>
   );
