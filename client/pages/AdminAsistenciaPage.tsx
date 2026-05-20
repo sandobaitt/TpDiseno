@@ -1,31 +1,103 @@
 import * as React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {
-  timeSlots,
-  blocksMock,
-  type TimeBlock,
-  type DayInfo,
-} from "@/data/adminAttendance";
+import { buildWeekFromWorkoutTypes, DAY_NAMES } from "@/data/schedule";
+import { workoutTypesMock } from "@/data/workoutTypes";
+import { teachersMock } from "@/data/teachers";
+import { classStudentsMock } from "@/data/classStudents";
+import { replacementsMock } from "@/data/replacements";
 
 const MONTHS_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const DAY_ABBRS = ["LUN","MAR","MIE","JUE","VIE","SAB","DOM"];
-const BASE_MONDAY = new Date(2023, 10, 12); // Nov 12, 2023
 
-function buildWeekDays(offset: number): DayInfo[] {
+function getActiveTeachers() {
+  return teachersMock.filter((t) => t.status === "active");
+}
+
+function computeTimeSlots(): string[] {
+  const times = new Set<string>();
+  for (const wt of workoutTypesMock) {
+    for (const slot of wt.weeklySlots) {
+      times.add(slot.time);
+    }
+  }
+  return Array.from(times).sort();
+}
+
+const ALL_TIMES = computeTimeSlots();
+
+function endTime(start: string, durationMin: number): string {
+  const [h, m] = start.split(":").map(Number);
+  const total = h * 60 + m + durationMin;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+interface SlotBlock {
+  id: string;
+  day: number;
+  start: string;
+  end: string;
+  trainer: string;
+  type: string;
+  isPro?: boolean;
+  isConflict?: boolean;
+}
+
+function generateBlocks(): SlotBlock[] {
+  const baseDate = new Date(2025, 4, 12);
+  const week = buildWeekFromWorkoutTypes(baseDate, workoutTypesMock, teachersMock, classStudentsMock);
+  const blocks: SlotBlock[] = [];
+  const seenAtDayTime = new Map<string, number>();
+
+  week.forEach((day, dayIdx) => {
+    for (const cls of day.classes) {
+      const key = `${dayIdx}_${cls.time}`;
+      const existing = seenAtDayTime.get(key);
+      if (existing !== undefined) {
+        blocks[existing].isConflict = true;
+        blocks.push({
+          id: `blk_conflict_${blocks.length}`,
+          day: dayIdx,
+          start: cls.time,
+          end: endTime(cls.time, cls.durationMin),
+          trainer: cls.coach,
+          type: cls.title,
+          isPro: cls.isPro,
+          isConflict: true,
+        });
+        continue;
+      }
+      seenAtDayTime.set(key, blocks.length);
+      blocks.push({
+        id: cls.id,
+        day: dayIdx,
+        start: cls.time,
+        end: endTime(cls.time, cls.durationMin),
+        trainer: cls.coach,
+        type: cls.title,
+        isPro: cls.isPro,
+      });
+    }
+  });
+
+  return blocks;
+}
+
+const dynamicBlocks = generateBlocks();
+
+function getDayInfo(offset: number) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return DAY_ABBRS.map((abbr, i) => {
-    const d = new Date(BASE_MONDAY);
-    d.setDate(BASE_MONDAY.getDate() + offset * 7 + i);
+  return DAY_NAMES.map((day, i) => {
+    const d = new Date(2025, 4, 12);
+    d.setDate(d.getDate() + offset * 7 + i);
     d.setHours(0, 0, 0, 0);
     const isActive = (offset === 0 && i === 2) || d.getTime() === today.getTime();
-    return { abbr, number: d.getDate(), isActive };
+    return { abbr: day.abbr, number: d.getDate(), isActive };
   });
 }
 
 function weekLabel(offset: number): string {
-  const first = new Date(BASE_MONDAY);
-  first.setDate(BASE_MONDAY.getDate() + offset * 7);
+  const first = new Date(2025, 4, 12);
+  first.setDate(first.getDate() + offset * 7);
   const last = new Date(first);
   last.setDate(first.getDate() + 6);
   const year = last.getFullYear();
@@ -47,7 +119,7 @@ interface SlotAttendance {
 function generateAttendance() {
   const statuses: AttendanceStatus[] = ["present", "absent", "pending"];
   const map = new Map<string, SlotAttendance[]>();
-  blocksMock.forEach((b) => {
+  dynamicBlocks.forEach((b) => {
     const key = `${b.day}-${b.start}`;
     if (!map.has(key)) map.set(key, []);
     const status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -58,7 +130,7 @@ function generateAttendance() {
 
 export default function AdminAsistenciaPage() {
   const [weekOffset, setWeekOffset] = React.useState(0);
-  const weekDays = React.useMemo(() => buildWeekDays(weekOffset), [weekOffset]);
+  const weekDays = React.useMemo(() => getDayInfo(weekOffset), [weekOffset]);
   const [attendanceMap] = React.useState(generateAttendance);
   const [selectedSlot, setSelectedSlot] = React.useState<{ day: number; time: string } | null>(null);
 
@@ -67,8 +139,19 @@ export default function AdminAsistenciaPage() {
     : [];
 
   const slotEnd = selectedSlot
-    ? (blocksMock.find((b) => b.day === selectedSlot.day && b.start === selectedSlot.time)?.end ?? selectedSlot.time)
+    ? (dynamicBlocks.find((b) => b.day === selectedSlot.day && b.start === selectedSlot.time)?.end ?? selectedSlot.time)
     : "";
+
+  const totalMins = dynamicBlocks
+    .filter((b) => !b.isConflict)
+    .reduce((s, b) => {
+      const [h1, m1] = b.start.split(":").map(Number);
+      const [h2, m2] = b.end.split(":").map(Number);
+      return s + (h2 * 60 + m2 - (h1 * 60 + m1));
+    }, 0);
+  const totalHrs = Math.floor(totalMins / 60);
+  const activeTeachers = getActiveTeachers();
+  const pendingReplacements = replacementsMock.length;
 
   return (
     <>
@@ -109,7 +192,7 @@ export default function AdminAsistenciaPage() {
             <div>
               <p className="text-app-subtle text-[10px] font-semibold tracking-widest">HORAS PROGRAMADAS</p>
               <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-2xl font-extrabold text-lime-400">342</span>
+                <span className="text-2xl font-extrabold text-lime-400">{totalHrs}</span>
                 <span className="text-xs font-bold text-lime-400/70">hrs</span>
               </div>
             </div>
@@ -120,19 +203,23 @@ export default function AdminAsistenciaPage() {
             <p className="text-app-subtle text-[10px] font-semibold tracking-widest">STAFF ACTIVO</p>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {["A", "D", "F"].map((letter, i) => (
+                {activeTeachers.slice(0, 3).map((t, i) => (
                   <div
-                    key={i}
+                    key={t.id}
                     className="w-8 h-8 rounded-full bg-app-surface border-2 border-app-card flex items-center justify-center"
                   >
-                    <span className="text-app-text text-[10px] font-bold">{letter}</span>
+                    <span className="text-app-text text-[10px] font-bold">
+                      {t.fullName.split(" ").map((s) => s[0]).join("").slice(0, 2)}
+                    </span>
                   </div>
                 ))}
               </div>
-              <div className="w-8 h-8 rounded-full bg-lime-400/10 border-2 border-app-card flex items-center justify-center">
-                <span className="text-lime-400 text-[10px] font-bold">+12</span>
-              </div>
-              <span className="text-app-subtle text-[10px] font-medium ml-1">15 miembros</span>
+              {activeTeachers.length > 3 && (
+                <div className="w-8 h-8 rounded-full bg-lime-400/10 border-2 border-app-card flex items-center justify-center">
+                  <span className="text-lime-400 text-[10px] font-bold">+{activeTeachers.length - 3}</span>
+                </div>
+              )}
+              <span className="text-app-subtle text-[10px] font-medium ml-1">{activeTeachers.length} miembros</span>
             </div>
           </div>
 
@@ -143,7 +230,9 @@ export default function AdminAsistenciaPage() {
             </div>
             <div>
               <p className="text-red-400/70 text-[10px] font-semibold tracking-widest">CONFLICTOS</p>
-              <p className="text-2xl font-extrabold text-red-400 mt-0.5">2</p>
+              <p className="text-2xl font-extrabold text-red-400 mt-0.5">
+                {dynamicBlocks.filter((b) => b.isConflict).length}
+              </p>
               <p className="text-red-400/60 text-[10px]">Solapamientos detectados</p>
             </div>
           </div>
@@ -155,8 +244,8 @@ export default function AdminAsistenciaPage() {
             </div>
             <div>
               <p className="text-app-subtle text-[10px] font-semibold tracking-widest">REEMPLAZOS</p>
-              <p className="text-2xl font-extrabold text-amber-400 mt-0.5">1</p>
-              <p className="text-app-faint text-[10px]">Turno descubierto (Jue)</p>
+              <p className="text-2xl font-extrabold text-amber-400 mt-0.5">{pendingReplacements}</p>
+              <p className="text-app-faint text-[10px]">Solicitudes pendientes</p>
             </div>
           </div>
         </div>
@@ -192,8 +281,8 @@ export default function AdminAsistenciaPage() {
             <div className="h-px bg-app-border/[0.12] mb-2" />
 
             {/* Time rows */}
-            {timeSlots.map((time, rowIdx) => {
-              const blocksAtTime = blocksMock.filter((b) => b.start === time);
+            {ALL_TIMES.map((time, rowIdx) => {
+              const blocksAtTime = dynamicBlocks.filter((b) => b.start === time);
               const hasAnyBlock = blocksAtTime.length > 0;
 
               return (
@@ -221,19 +310,6 @@ export default function AdminAsistenciaPage() {
                           key={`${time}-${day.abbr}`}
                           className={`min-h-[64px] rounded-xl ${day.isActive ? "bg-lime-400/[0.03]" : ""}`}
                         />
-                      );
-                    }
-
-                    if (blocks[0].isFree) {
-                      return (
-                        <div
-                          key={`${time}-${day.abbr}`}
-                          className="min-h-[64px] rounded-xl border border-dashed border-app-border/[0.15] bg-app-card/40 flex items-center justify-center"
-                        >
-                          <span className="text-app-faint text-[9px] font-semibold tracking-wider">
-                            LIBRE
-                          </span>
-                        </div>
                       );
                     }
 

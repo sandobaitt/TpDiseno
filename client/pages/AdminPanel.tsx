@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { metricsMock, newsMock } from "@/data/dashboard";
 import { novedadesMock, type Novedad } from "@/data/novedades";
-import fotoAdmin from "@/assets/foto-admin.jpeg";
+import { branchesMock } from "@/data/branches";
 
 /* ─── Types ─────────────────────────────────────────── */
 
@@ -493,21 +493,21 @@ export default function AdminPanel() {
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
       {/* Hero Card */}
       <div className="bg-app-bg-page rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-card glass-border">
-        <div
-          className="w-full md:w-[30%] min-h-[200px] flex items-center justify-center relative bg-cover bg-center"
-          style={{ backgroundImage: `url(${fotoAdmin})` }}
-        >
-          <div className="absolute inset-0 bg-black/40" />
+        <div className="w-full md:w-[30%] min-h-[200px] bg-gradient-to-br from-lime-800/40 to-lime-900/20 flex items-center justify-center relative">
+          <i className="ti ti-building-skyscraper text-6xl text-lime-500/30" />
+          <div className="absolute inset-0 bg-black/20" />
         </div>
         <div className="flex-1 p-6 md:p-8 flex flex-col gap-4">
-          <h1 className="text-app-text text-3xl md:text-4xl font-extrabold">SEDE CENTRAL</h1>
+          <h1 className="text-app-text text-3xl md:text-4xl font-extrabold">{branchesMock[0].name.toUpperCase()}</h1>
           <div className="flex items-center gap-2">
             <i className="ti ti-map-pin text-lime-400 text-sm" />
-            <span className="text-app-muted text-sm">Av. Principal 1234, Distrito Financiero</span>
+            <span className="text-app-muted text-sm">{branchesMock[0].address.street}, {branchesMock[0].address.city}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_6px_rgba(163,230,53,0.6)]" />
-            <span className="text-lime-400 text-xs font-bold tracking-wider">OPERATIVA</span>
+            <span className={`w-2 h-2 rounded-full ${branchesMock[0].status === "active" ? "bg-lime-400 shadow-[0_0_6px_rgba(163,230,53,0.6)]" : "bg-app-faint"} `} />
+            <span className={`text-xs font-bold tracking-wider ${branchesMock[0].status === "active" ? "text-lime-400" : "text-app-faint"}`}>
+              {branchesMock[0].status === "active" ? "OPERATIVA" : "INACTIVA"}
+            </span>
           </div>
         </div>
       </div>
