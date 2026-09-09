@@ -1,5 +1,6 @@
 import * as React from "react";
-import { DayColumn } from "@/components/cronograma/DayColumn";
+import { UnifiedCalendar } from "@/components/cronograma/UnifiedCalendar";
+import { ClassCard } from "@/components/cronograma/ClassCard";
 import { weekMock } from "@/data/schedule";
 
 const MONTHS = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
@@ -114,16 +115,12 @@ export default function ProfesorCronogramaPage() {
         </div>
       </div>
 
-      {/* Day columns */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-        {week.map((day) => (
-          <DayColumn
-            key={day.dayAbbr}
-            day={day}
-            onSelect={(abbr) => setActiveDay(abbr)}
-          />
-        ))}
-      </div>
+        <UnifiedCalendar
+          days={week}
+          getItemsForDay={(day) => day.classes}
+          renderItem={(cls) => <ClassCard key={cls.id} classItem={cls} />}
+          onSelectDay={(abbr) => setActiveDay(abbr)}
+        />
     </div>
   );
 }

@@ -1,17 +1,26 @@
-import type { DaySchedule } from "@/data/schedule";
-import { ClassCard } from "./ClassCard";
+import * as React from "react";
 
-interface DayColumnProps {
-  day: DaySchedule;
-  onSelect: (dayAbbr: string) => void;
+export interface DayBase {
+  dayAbbr: string;
+  date: number;
+  month?: string;
+  isActive?: boolean;
 }
 
-export function DayColumn({ day, onSelect }: DayColumnProps) {
+interface DayColumnProps<T> {
+  day: DayBase;
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
+  onSelect?: (dayAbbr: string) => void;
+  emptyMessage?: string;
+}
+
+export function DayColumn<T>({ day, items, renderItem, onSelect, emptyMessage = "Sin clases" }: DayColumnProps<T>) {
   const active = day.isActive;
 
   return (
     <div
-      onClick={() => onSelect(day.dayAbbr)}
+      onClick={() => onSelect?.(day.dayAbbr)}
       className={`relative flex flex-col gap-3 min-w-[160px] w-full rounded-2xl p-4 transition-all cursor-pointer ${
         active
           ? "bg-neutral-800/60 border border-lime-400/40 shadow-[0_0_28px_rgba(149,253,0,0.10)] shadow-card"
@@ -32,17 +41,17 @@ export function DayColumn({ day, onSelect }: DayColumnProps) {
           {day.dayAbbr}
         </span>
         <span className="text-gray-600 text-[11px] font-medium">
-          {day.date} {day.month}
+          {day.date} {day.month || ""}
         </span>
       </div>
 
       <div className="flex flex-col gap-3">
-        {day.classes.length > 0 ? (
-          day.classes.map((cls) => <ClassCard key={cls.id} classItem={cls} />)
+        {items.length > 0 ? (
+          items.map(renderItem)
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 py-8 text-gray-600">
             <i className="ti ti-calendar-off text-xl" />
-            <span className="text-xs font-medium">Sin clases</span>
+            <span className="text-xs font-medium text-center leading-tight max-w-[120px]">{emptyMessage}</span>
           </div>
         )}
       </div>

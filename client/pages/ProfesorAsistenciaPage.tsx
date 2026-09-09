@@ -335,7 +335,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
   const gradient = avatarColors[colorIdx];
 
   return (
-    <div className="bg-black/60 rounded-2xl p-4 flex items-center justify-between gap-4 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
+    <div className="bg-black/60 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
       <div className="flex items-center gap-3 min-w-0">
         <div
           className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0`}
@@ -353,7 +353,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2 shrink-0 max-sm:w-full max-sm:justify-between">
         <button
           onClick={() => onSetStatus("absent")}
           className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
@@ -362,8 +362,9 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
               : "bg-black text-gray-400 border border-zinc-800 hover:border-red-500/30 hover:text-red-400"
           }`}
         >
-          <i className="ti ti-x text-xs mr-1" />
-          Ausente
+          <i className="ti ti-x text-xs sm:mr-1" />
+          <span className="max-sm:hidden">Ausente</span>
+          <span className="sm:hidden">No</span>
         </button>
         <button
           onClick={() => onSetStatus("present")}
@@ -373,8 +374,9 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
               : "bg-black text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400"
           }`}
         >
-          <i className="ti ti-check text-xs mr-1" />
-          Presente
+          <i className="ti ti-check text-xs sm:mr-1" />
+          <span className="max-sm:hidden">Presente</span>
+          <span className="sm:hidden">Sí</span>
         </button>
       </div>
     </div>

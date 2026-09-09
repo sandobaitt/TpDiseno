@@ -251,7 +251,7 @@ function TabFinanzas() {
   return (
     <>
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { icon: "ti ti-tag",         color: "text-lime-400",   bg: "bg-lime-400/10",   label: "DESCUENTOS ACTIVOS",   value: activos   },
           { icon: "ti ti-tag-off",      color: "text-gray-500",   bg: "bg-zinc-800",      label: "DESCUENTOS INACTIVOS", value: inactivos },

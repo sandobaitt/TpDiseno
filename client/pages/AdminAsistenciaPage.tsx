@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { UnifiedCalendar } from "@/components/cronograma/UnifiedCalendar";
+import { AdminShiftCard } from "@/components/cronograma/AdminShiftCard";
 import {
   timeSlots,
   blocksMock,
@@ -161,153 +163,29 @@ export default function AdminAsistenciaPage() {
           </div>
         </div>
 
-        {/* Calendar Timeline */}
-        <div className="rounded-2xl bg-neutral-900 shadow-card glass-border p-5 overflow-x-auto">
-          <div className="min-w-[860px]">
-
-            {/* Day headers */}
-            <div className="grid grid-cols-[72px_repeat(7,1fr)] gap-2 mb-4">
-              <div />
-              {weekDays.map((d) => (
-                <div
-                  key={d.abbr}
-                  className={`flex flex-col items-center py-3 rounded-xl transition-all ${
-                    d.isActive
-                      ? "bg-lime-400/10 border border-lime-400/40 shadow-[0_0_16px_rgba(149,253,0,0.06)]"
-                      : "hover:bg-white/[0.03]"
-                  }`}
-                >
-                  <span
-                    className={`text-[9px] font-bold tracking-widest ${
-                      d.isActive ? "text-lime-400" : "text-gray-600"
-                    }`}
-                  >
-                    {d.abbr}
-                  </span>
-                  <span
-                    className={`text-xl font-extrabold mt-0.5 ${
-                      d.isActive ? "text-lime-400" : "text-gray-400"
-                    }`}
-                  >
-                    {d.number}
-                  </span>
-                  {d.isActive && (
-                    <div className="w-1 h-1 rounded-full bg-lime-400 mt-1" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Divider */}
-            <div className="h-px bg-white/[0.05] mb-3" />
-
-            {/* Time rows */}
-            {timeSlots.map((time) => {
-              const blocksAtTime = blocksMock.filter((b) => b.start === time);
-              const hasAnyBlock = blocksAtTime.length > 0;
-
-              return (
-                <div
-                  key={time}
-                  className={`grid grid-cols-[72px_repeat(7,1fr)] gap-2 mb-2 ${
-                    hasAnyBlock ? "" : "opacity-40"
-                  }`}
-                >
-                  {/* Time label */}
-                  <div className="flex items-start pt-3">
-                    <span className="text-gray-600 text-[10px] font-semibold tabular-nums">
-                      {time}
-                    </span>
-                  </div>
-
-                  {weekDays.map((day, dayIdx) => {
-                    const blocks = blocksAtTime.filter((b) => b.day === dayIdx);
-                    const hasMultiple = blocks.length > 1;
-                    const isConflict = blocks.some((b) => b.isConflict);
-
-                    if (blocks.length === 0) {
-                      return (
-                        <div
-                          key={`${time}-${day.abbr}`}
-                          className="min-h-[60px] rounded-xl"
-                        />
-                      );
-                    }
-
-                    if (blocks[0].isFree) {
-                      return (
-                        <div
-                          key={`${time}-${day.abbr}`}
-                          className="min-h-[60px] rounded-xl border border-dashed border-zinc-800 flex items-center justify-center"
-                        >
-                          <span className="text-gray-700 text-[9px] font-medium tracking-wider">
-                            LIBRE
-                          </span>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <button
-                        key={`${time}-${day.abbr}`}
-                        onClick={() => setSelectedSlot({ day: dayIdx, time })}
-                        className={`w-full text-left rounded-xl p-3 flex flex-col gap-1.5 transition-all duration-150 cursor-pointer active:scale-[0.98] shadow-card ${
-                          isConflict
-                            ? "bg-amber-950/40 border border-amber-500/25 hover:border-amber-500/40"
-                            : "bg-[#1a1a1a] glass-border hover:border-white/[0.12]"
-                        }`}
-                      >
-                        {/* Time range */}
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`text-[9px] font-bold tracking-wider ${
-                              isConflict ? "text-amber-400" : "text-lime-400"
-                            }`}
-                          >
-                            {blocks[0].start} – {blocks[0].end}
-                          </span>
-                          {blocks[0].isPro && !hasMultiple && (
-                            <span className="px-1.5 py-0.5 rounded bg-lime-400/15 text-lime-400 text-[8px] font-bold tracking-wider">
-                              PRO
-                            </span>
-                          )}
-                          {isConflict && (
-                            <i className="ti ti-alert-triangle text-amber-400 text-[10px]" />
-                          )}
-                        </div>
-
-                        {/* Trainers */}
-                        {hasMultiple ? (
-                          <div className="flex flex-col gap-0.5">
-                            {blocks.map((b) => (
-                              <div key={b.id} className="flex flex-col">
-                                <span className="text-white text-[11px] font-bold leading-tight">
-                                  {b.trainer}
-                                </span>
-                                <span className="text-gray-500 text-[9px]">{b.type}</span>
-                              </div>
-                            ))}
-                            <span className="text-amber-400 text-[8px] font-bold tracking-wider mt-0.5">
-                              {blocks.length} profesores
-                            </span>
-                          </div>
-                        ) : (
-                          <>
-                            <span className="text-white text-xs font-bold leading-tight">
-                              {blocks[0].trainer}
-                            </span>
-                            <span className="text-gray-500 text-[9px]">
-                              {blocks[0].type}
-                            </span>
-                          </>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
+        {/* Unified Calendar Timeline */}
+        <div className="w-full">
+          <UnifiedCalendar
+            days={weekDays.map((d) => ({
+              dayAbbr: d.abbr,
+              date: d.number,
+              isActive: d.isActive,
+            }))}
+            getItemsForDay={(day) => {
+              const dayIdx = weekDays.findIndex((d) => d.number === day.date);
+              return blocksMock
+                .filter((b) => b.day === dayIdx)
+                .sort((a, b) => a.start.localeCompare(b.start));
+            }}
+            renderItem={(shift) => (
+              <AdminShiftCard
+                key={`${shift.id}-${shift.start}`}
+                shift={shift}
+                onSelect={(s) => setSelectedSlot({ day: s.day, time: s.start })}
+              />
+            )}
+            emptyMessage="Sin turnos asignados"
+          />
         </div>
       </div>
 
