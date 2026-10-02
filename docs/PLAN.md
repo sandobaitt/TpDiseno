@@ -2,6 +2,8 @@
 
 Aprobado el 01/10/2026. Parte del diagnóstico ([`DIAGNOSTICO.md`](DIAGNOSTICO.md)) y la matriz de casos de uso ([`COBERTURA_CU.md`](COBERTURA_CU.md)).
 
+> **Estado (02/10/2026):** todas las etapas, de E0 a E15, quedaron ejecutadas, con un commit cada una. El resultado está en [`COBERTURA_CU.md`](COBERTURA_CU.md) y las decisiones tomadas en el camino, en `MEMORY.md`.
+
 - **Cómo se ejecuta:**
   - Cada etapa lleva un commit en español.
   - Antes de cerrar cada etapa se corren `npm run typecheck`, `npm test` y `npm run build`, y se hace una prueba manual.

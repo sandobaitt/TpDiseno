@@ -18,9 +18,10 @@ Es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4
 - La fuente de verdad son los casos de uso de abajo y `docs/Escenario completo SQUATGYM.pdf`.
 
 **Documentación de trabajo:**
-- [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md): estado y problemas detectados.
+- [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md): estado inicial y problemas detectados (histórico).
 - [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md): cobertura de cada CU.
 - [`docs/PLAN.md`](docs/PLAN.md): etapas y decisiones.
+- [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md): recorrido sugerido para la presentación.
 
 ## Comandos (npm)
 
@@ -63,7 +64,7 @@ client/
 ├── domain/            Reglas de negocio como funciones puras, con tests
 ├── store/             Store central en memoria + registro de actividad
 ├── lib/, hooks/       Utilidades (cn, fechas, formatos) y hooks
-docs/                  Diagnóstico, cobertura de CU, plan y escenario
+docs/                  Diagnóstico, cobertura de CU, plan, guion de la defensa y escenario
 ```
 
 La migración por módulo terminó en E14: ya no quedan carpetas viejas.

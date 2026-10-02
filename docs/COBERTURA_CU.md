@@ -1,56 +1,70 @@
 # Matriz de cobertura de casos de uso
 
-Está actualizada al **01/10/2026**, al terminar la Fase 1 y antes de cualquier cambio en el código.
+Actualizada al **02/10/2026**, al terminar la Fase 3 (etapas E0 a E15).
 
 **Estados:**
-- ✅ **Completo:** cumple el CU de punta a punta, con el actor correcto.
+- ✅ **Completo:** cumple el CU de punta a punta, con el actor correcto, dentro de lo que permite un prototipo sin backend.
 - 🟡 **Parcial:** existe una pantalla, pero le faltan partes del CU o el flujo está cortado.
 - ❌ **Falta:** no hay pantalla o la que hay es decorativa.
 
-**Columna "Acceso hoy":** no existe control de rol, así que cualquier usuario logueado entra a cualquier ruta escribiendo la URL. La columna indica en qué menú aparece la pantalla.
-
-**Columna "Etapa":** la etapa de [`PLAN.md`](PLAN.md) que va a cubrir lo que falta.
+**Acceso:** cada ruta se controla por rol (`domain/permissions.ts`, con tests). Lo que puede hacer cada rol dentro de la ficha del alumno sale de `studentCapabilities(rol)`.
 
 ## Resumen
 
-| Módulo | ✅ Completos | 🟡 Parciales | ❌ Faltan |
-|---|---|---|---|
-| Gestión de Alumnos (14) | 0 | 10 | 4 |
-| Gestión de Personal (10) | 0 | 7 | 3 |
-| **Total (24)** | **0** | **17** | **7** |
+| Módulo | Línea base (01/10) | Ahora |
+|---|---|---|
+| Gestión de Alumnos (14) | 0 ✅ · 10 🟡 · 4 ❌ | **14 ✅** |
+| Gestión de Personal (10) | 0 ✅ · 7 🟡 · 3 ❌ | **10 ✅** |
+| **Total (24)** | **0 ✅ · 17 🟡 · 7 ❌** | **24 ✅** |
+
+Las limitaciones propias del prototipo (datos simulados, emails y archivos simulados) están al final.
+
+El detalle de lo que faltaba en cada CU al empezar está en la versión de este archivo del commit de E0: `git show 9a3d900:docs/COBERTURA_CU.md`.
 
 ---
 
 ## Gestión de Alumnos
 
-| # | Caso de uso | Actor | Estado | Pantalla y ruta | Archivo(s) | Acceso hoy | Qué falta | Etapa |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Registrar inscripción de alumno | Secretaria | 🟡 | "Agregar socio" en Gestión de socios (`/secretaria`) | `components/secretaria/NuevoSocioModal.tsx` | Menú de secretaria | • Peso, estatura y antecedentes.<br>• Adjuntar certificado médico.<br>• Autorización de un adulto para menores.<br>• Validar duplicados (DNI y email) y formatos.<br>• La sede está fija en `br_001`.<br>• Cuota proporcional.<br>• El alumno queda "Habilitado" sin pagar.<br>• Los datos de salud no se guardan.<br>• El alumno nuevo se pierde al navegar.<br>• Cerrar el modal borra todo.<br>• No queda registro de quién lo hizo. | E6 |
-| 2 | Completar declaración jurada de salud | Alumno | 🟡 | "Mi perfil y asistencia" (`/alumno`), tarjetas "Certificado médico" y "DDJJ de salud" | `pages/AlumnoPanel.tsx` | Menú de alumno | • El certificado no abre un selector de archivo: un clic y ya figura "Confirmado".<br>• La DDJJ no se guarda ni se vincula al alumno.<br>• La secretaria no la ve: el legajo dice siempre "Sin declarar".<br>• Hay 3 listas distintas de condiciones de salud. | E6, E9 |
-| 3 | Consultar estado de cuenta | Alumno / Secretaria | 🟡 | "Pagos" del alumno (`/alumno/pagos`). Secretaria: ficha del alumno y "Cobros y facturación" (`/secretaria/cobros`) | `pages/AlumnoPagosPage.tsx`, `components/secretaria/MemberDetailModal.tsx`, `components/member-detail/*`, `pages/PaymentsPage.tsx` | Menú de alumno y de secretaria | • Los meses pasados figuran "Pagado" con pagos inventados.<br>• No hay monto adeudado total ni fecha límite (día 5).<br>• Muestra deuda y días de atraso fijos ($28.500 y "14 días").<br>• El estado no se calcula desde los pagos.<br>• Fechas corridas un día por la zona horaria.<br>• El alumno se busca por nombre. | E7, E9 |
-| 4 | Registrar pago de cuota | Secretaria | 🟡 (flujo roto) | Diálogo de cobro en "Cobros y facturación" (`/secretaria/cobros`) | `components/cobros/PaymentCheckoutContent.tsx`, `pages/PaymentsPage.tsx` | Menú de secretaria | • Al confirmar no registra el pago y no cambia el estado.<br>• No emite recibo digital.<br>• Recargo por mora con interés activado por defecto (contradice la regla).<br>• Dice "Tarjeta" en vez de "Débito".<br>• Cobra un solo mes aunque se deban varios.<br>• No queda quién cobró. | E1, E7 |
-| 5 | Aplicar restricción de acceso por deuda | Sistema / Secretaria | ❌ | Tarjeta "Control de acceso" en la ficha del alumno (toggle decorativo) | `components/member-detail/AccessControlCard.tsx` | Menú de secretaria | • Bloqueo automático al superar el umbral de mora (constante configurable).<br>• Efecto en la asistencia.<br>• Restricción manual con motivo y registro. | E7 |
-| 6 | Gestionar asistencia de alumnos | Secretaria / Profesor | 🟡 | "Control de asistencia", pestaña Alumnos (`/secretaria/asistencia`). "Asistencia y alumnos" (`/profesor/asistencia`) | `pages/AttendancePage.tsx`, `pages/ProfesorAsistenciaPage.tsx`, `data/classStudents.ts` | Menú de secretaria y de profesor | • No es por clase ni por sede.<br>• Se puede marcar presente a un deudor.<br>• La clase del profesor es fija y sus alumnos no existen en el sistema.<br>• No se guarda.<br>• No se puede modificar un día anterior.<br>• No queda registro. | E8 |
-| 7 | Consultar historial de asistencia | Alumno | 🟡 | "Mi perfil y asistencia" (`/alumno`), tabla "Historial de asistencias" | `pages/AlumnoPanel.tsx`, `data/attendance.ts` | Menú de alumno | • Todos los alumnos ven el mismo historial.<br>• No distingue ausencia justificada de sin justificar.<br>• Los botones PDF y CSV no hacen nada.<br>• Obliga a deslizar de costado en el celular. | E8 |
-| 8 | Consultar cronograma y plan contratado | Alumno | 🟡 | "Cronograma de clases" (`/alumno/cronograma`) | `pages/AlumnoCronogramaPage.tsx`, `components/cronograma/*`, `data/schedule.ts` | Menú de alumno | • No muestra el plan contratado.<br>• No marca qué clases habilita el plan.<br>• Las clases no tienen sede.<br>• La semana base está fija en 2025 y repite las mismas clases.<br>• Tiene "Reservar", que no está en ningún CU. | E1, E8 |
-| 9 | Aplicar promoción o descuento | Secretaria / Administrador | 🟡 | Selector "Aplicar promoción" del cobro | `components/cobros/PaymentCheckoutContent.tsx` | Menú de secretaria | • La lista está fija en el componente y es distinta a la de Admin → Finanzas (otro grupo).<br>• No hay cupones ni planes familiares.<br>• No controla la vigencia.<br>• El "10% efectivo" se aplica con cualquier medio. | E7 |
-| 10 | Enviar alerta de vencimiento de cuota | Sistema | 🟡 (estático) | "Ajustes y alertas" (`/alumno/ajustes`) y campana | `pages/AlumnoAjustesPage.tsx`, `components/common/HeaderNav.tsx` | Menú de alumno | • Son 4 alertas fijas, con fechas de 2023.<br>• No se calculan desde el estado de cuenta.<br>• La campana del alumno está vacía.<br>• "Marcar todo como leído" no hace nada.<br>• Las preferencias no se guardan. | E9 |
-| 11 | Gestionar alta, baja y modificación de alumno | Administrador | 🟡 | "Gestión de personal", pestaña Alumnos (`/admin/personal`) | `pages/AdminPersonalPage.tsx` | Menú de admin | • No hay alta.<br>• La baja borra sin confirmar y para siempre.<br>• Las ediciones quedan solo en esa pantalla.<br>• No hay validaciones.<br>• Está escondido bajo "Personal".<br>• La edición desde secretaria no guarda. | E1, E10 |
-| 12 | Consultar inscripciones por sede | Encargado | ❌ | — | — | — | • No existe el rol Encargado ni la pantalla.<br>• Los usuarios no tienen sede. | E2, E10 |
-| 13 | Verificar habilitación para ingresar a clase | Sistema / Secretaria | ❌ | Solo un badge de "estado financiero" fijo en asistencia | — | — | • Chequear cuota al día y clase incluida en el plan.<br>• Los datos no relacionan plan con actividad. | E7 |
-| 14 | Enviar notificación a alumnos | Secretaria | ❌ | Ítem "Comunicaciones" deshabilitado | `data/navigation.ts` | — | • Envío masivo o personalizado.<br>• Plantillas.<br>• Registro de quién la recibió. | E9 |
+| # | Caso de uso | Actor | Estado | Dónde (ruta) | Cómo se cumple | Etapa |
+|---|---|---|---|---|---|---|
+| 1 | Registrar inscripción | Secretaria | ✅ | `/secretaria/alumnos/nuevo` (y `/admin/alumnos/nuevo`) | **Inscripción en 5 pasos:** datos personales, contacto, salud, plan y sede, y confirmación.<br>• DNI y email sin duplicados; avisa apenas se escriben.<br>• Si es menor, pide adulto responsable y autorización firmada.<br>• Peso, estatura, condiciones, antecedentes y DDJJ; certificado opcional.<br>• Muestra la cuota de alta proporcional.<br>• Guarda borrador y registra quién inscribió. | E6 |
+| 2 | Completar DDJJ de salud | Alumno | ✅ | `/alumno` (Mi perfil) | Usa el mismo formulario de la inscripción. El certificado subido queda "Pendiente de revisión": secretaría recibe el aviso y lo marca como revisado en la ficha. | E6, E9 |
+| 3 | Consultar estado de cuenta | Alumno / Secretaria | ✅ | `/alumno/pagos`; ficha del alumno; `/secretaria/cobros` | El estado se calcula desde los pagos y nunca se guarda (`domain/billing.ts`). Muestra:<br>• monto adeudado y fecha límite;<br>• cuotas del mes (proporcionales cuando corresponde);<br>• recibos. | E3, E7, E9 |
+| 4 | Registrar pago de cuota | Secretaria | ✅ | Cobros, ficha y Control de acceso | Cobro sin recargo:<br>• cuotas de la más vieja a la más nueva, con adelanto de hasta 6;<br>• 4 medios de pago;<br>• recibo digital imprimible.<br>El estado cambia en todas las pantallas y queda quién cobró. | E4, E7 |
+| 5 | Restricción de acceso por deuda | Sistema / Secretaria | ✅ | Ficha (Habilitación) y Control de acceso | **Automática:** bloqueo con 15 días de atraso (constante en `data/rules.ts`).<br>**Manual:** con motivo y registro de quién la aplicó; se ve como "Restringido" en la lista. | E3, E7 |
+| 6 | Gestionar asistencia por clase y sede | Secretaria / Profesor | ✅ | `/secretaria/asistencia`, `/profesor/asistencia` | Lista por clase (día, sede y clase del cronograma):<br>• los bloqueados no se pueden marcar presentes;<br>• se guarda con "último registro";<br>• se corrige hasta 30 días atrás.<br>El profesor ve solo sus clases. | E8 |
+| 7 | Consultar historial de asistencia | Alumno | ✅ | `/alumno` (Mi asistencia) | Muestra asistió, ausencia justificada y ausencia sin justificar, con resumen del mes. Se exporta a CSV o se imprime. | E8 |
+| 8 | Consultar cronograma y plan | Alumno | ✅ | `/alumno/cronograma` | Plan con sus clases. Cronograma semanal con las clases incluidas resaltadas, filtro por sede y "solo mis clases". | E8 |
+| 9 | Aplicar promoción o descuento | Secretaria / Administrador | ✅ | Diálogo de cobro | Promos vigentes, cupones con código y plan familiar, con sus condiciones (efectivo, antigüedad, semestral) y el motivo cuando no aplican. Se aplica una por cobro. La configuración de promos es del grupo de Finanzas (ver notas). | E7 |
+| 10 | Enviar alerta de vencimiento | Sistema | ✅ | Campana del alumno y `/alumno/ajustes` | Avisos calculados con el estado de cuenta: por vencer, vencida y acceso suspendido. Se marcan como leídos y las preferencias se guardan. | E9 |
+| 11 | Alta, baja y modificación de alumno | Administrador | ✅ | `/admin/alumnos` | Alta con el formulario de inscripción y modificación validada. Baja lógica con motivo y confirmación. Al reactivar no se cobran los meses de baja. | E10 |
+| 12 | Consultar inscripciones por sede | Encargado | ✅ | `/encargado/inscripciones` | Altas y bajas por mes, gráfico de 6 meses (con tabla accesible), detalle por plan y quién inscribió. Solo consulta. | E10 |
+| 13 | Verificar habilitación para clase | Sistema / Secretaria | ✅ | `/secretaria/acceso` y asistencia por clase | Se busca por DNI o nombre, con una clase de hoy opcional. El resultado se ve en grande, con texto e ícono: si puede entrar y por qué no (deuda, restricción, baja o clase fuera del plan). | E7, E8 |
+| 14 | Enviar notificación a alumnos | Secretaria | ✅ | `/secretaria/comunicaciones` | Plantillas y destinatarios (todos, sede, plan, por vencer, deudores o un alumno), con vista previa y cantidad. El mensaje llega con el nombre de cada alumno; tiene historial con destinatarios y borrador. | E9 |
 
 ## Gestión de Personal
 
-| # | Caso de uso | Actor | Estado | Pantalla y ruta | Archivo(s) | Acceso hoy | Qué falta | Etapa |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Registrar asistencia de profesor | Secretaria / Encargado | 🟡 | "Control de asistencia", pestaña Profesores/Staff (`/secretaria/asistencia`) | `pages/AttendancePage.tsx`, `data/employees.ts` | Menú de secretaria | • Lista empleados (secretarias, gerente) en lugar de profesores.<br>• No muestra el turno.<br>• El estado inicial es aleatorio.<br>• No se guarda.<br>• No existe el Encargado. | E11 |
-| 2 | Consultar asistencia de profesores | Encargado | 🟡 (actor incorrecto) | "Asistencia" del admin (`/admin/asistencia`) | `pages/AdminAsistenciaPage.tsx`, `data/adminAttendance.ts` | Menú de admin | • No existe el Encargado y no hay filtro por sede.<br>• Los estados son aleatorios y los KPIs fijos.<br>• Todas las semanas muestran lo mismo, con fecha base 2023.<br>• Los profesores no existen en el sistema. | E11 |
-| 3 | Confirmar o modificar asistencia de profesor | Encargado | ❌ | — (el detalle del turno es de solo lectura) | — | — | • Confirmar o corregir el registro, con motivo y registro de quién lo hizo. | E11 |
-| 4 | Registrar novedad interna | Encargado / Secretaria | 🟡 (casi completo) | "Novedades" (`/secretaria/novedades`, `/admin/novedades`), formulario "Registrar novedad" | `components/novedades/NovedadesSidebar.tsx`, `pages/NovedadesPage.tsx` | Menú de secretaria y de admin | • Falta el tipo "Ausencia".<br>• No guarda sede ni autor.<br>• "Notificar" no notifica.<br>• Se pierde al navegar.<br>• Fecha y hora no arrancan en "ahora". | E12 |
-| 5 | Consultar historial de novedades | Encargado / Administrador | 🟡 | "Historial de novedades" (`/admin/novedades`) | `components/novedades/NovedadesHistory.tsx` | Menú de admin y de secretaria | • Faltan filtros por sede, fecha, tipo y estado.<br>• No hay mensaje cuando la lista está vacía.<br>• Las novedades se borran en lugar de anularse.<br>• No existe el Encargado. | E12 |
-| 6 | Consultar horas trabajadas | Profesor | 🟡 | "Mis horas" (`/profesor/horas`) | `pages/ProfesorHorasPage.tsx` | Menú de profesor | • Los datos están fijos dentro de la página y son iguales para todos los profesores.<br>• Faltan filtros por sede y tipo de clase.<br>• No se vincula con asistencias ni reemplazos.<br>• La tabla se corta en el celular. | E12 |
-| 7 | Notificar cambio de horario o reemplazo | Sistema | ❌ | — (la campana del profesor siempre está vacía) | `components/common/HeaderNav.tsx` | — | • Aviso al profesor cuando cambia su agenda o se le asigna un reemplazo. | E12 |
-| 8 | Confirmar o rechazar reemplazo | Profesor | 🟡 (flujo roto) | "Reemplazos y novedades" (`/profesor/reemplazos`) | `pages/ProfesorReemplazosPage.tsx`, `data/replacements.ts` | Menú de profesor | • Confirmar y rechazar hacen lo mismo.<br>• No hay aviso ni confirmación.<br>• No cambia el cronograma ni las horas.<br>• Las fechas no coinciden.<br>• No se filtra por profesor. | E1, E12 |
-| 9 | Registrar observaciones de jornada | Profesor | 🟡 | Panel "Observaciones" en `/profesor/asistencia` | `pages/ProfesorAsistenciaPage.tsx`, `data/bitacoras.ts` | Menú de profesor | • El encargado no las ve.<br>• No se vinculan a clase, fecha ni profesor.<br>• No se guardan. | E12 |
-| 10 | Detectar diferencias con el cronograma | Sistema | ❌ | — (tarjeta "Conflictos 2" decorativa en `/admin/asistencia`) | — | — | • Comparar horas registradas contra programadas, con un aviso discreto para encargado, admin y profesor. | E12 |
+| # | Caso de uso | Actor | Estado | Dónde (ruta) | Cómo se cumple | Etapa |
+|---|---|---|---|---|---|---|
+| 1 | Registrar asistencia de profesor en su turno | Secretaria / Encargado | ✅ | `/secretaria/asistencia` (Profesores), `/encargado/asistencia` (Registrar turnos) | Según el cronograma del día, con los reemplazos: presente o ausente, con motivo. | E11 |
+| 2 | Consultar asistencia de profesores | Encargado | ✅ | `/encargado/asistencia` (Semana de la sede) | Programado contra registrado, con KPIs y filtros (profesor, empleado o contratado). Las semanas anteriores son el historial. El admin consulta todas las sedes. | E11 |
+| 3 | Confirmar o modificar asistencia | Encargado | ✅ | `/encargado/asistencia` | Se confirma de a uno o todo junto. La corrección pide motivo y conserva el valor anterior. También se pueden registrar turnos faltantes. | E11 |
+| 4 | Registrar novedad interna | Encargado / Secretaria | ✅ | `/encargado/novedades`, `/secretaria/novedades` | Tipos Ausencia, Incidente, Cambio de turno y General, vinculados a un profesor o una clase. Lleva sede, autor y hora; tiene borrador y aviso al profesor. | E12 |
+| 5 | Consultar historial de novedades | Encargado / Administrador | ✅ | `/encargado/novedades`, `/admin/novedades` | Filtros por tipo, estado, fechas y sede (admin). No se borran: se anulan con motivo. | E12 |
+| 6 | Consultar horas trabajadas | Profesor | ✅ | `/profesor/horas` | Horas reales desde el cronograma y los registros, por período, sede y clase, con alumnos por clase. | E12 |
+| 7 | Notificar cambio de horario o reemplazo | Sistema | ✅ | Campanas del profesor y del encargado | Al profesor le llegan los reemplazos pendientes y las novedades que lo involucran. Al encargado, los reemplazos rechazados (clase sin cubrir), las observaciones y los turnos para confirmar. | E9, E12 |
+| 8 | Confirmar o rechazar reemplazo | Profesor | ✅ | `/profesor/reemplazos` | Pide confirmación. Al aceptar, cambian el cronograma y las horas; al rechazar, se avisa al encargado. | E4, E12 |
+| 9 | Registrar observaciones de jornada | Profesor | ✅ | `/profesor/asistencia`; el encargado y el admin en `/…/observaciones` | Se vinculan a la clase y la fecha. Las ve el encargado de esa sede (y el admin). Tienen borrador. | E12, E13 |
+| 10 | Detectar diferencias con el cronograma | Sistema | ✅ | `/profesor/horas` y asistencia docente | El profesor ve un aviso cuando le faltan horas. El encargado y el admin ven "Horas por profesor", con una insignia si hay diferencia. | E12 |
+
+---
+
+## Limitaciones del prototipo (se aclaran en la defensa)
+
+- **Sin backend:** los datos son simulados y viven en memoria. **Recargar la página reinicia la demo**; los borradores de los formularios sí se conservan.
+- **Archivos simulados:** certificados y autorizaciones guardan solo nombre y tamaño; se controla el formato y el tamaño máximo.
+- **Emails simulados:** las comunicaciones llegan a la campana de la app; el email figura como opción, pero no se envía.
+- **Promociones (CU 9):**
+  - La configuración es del grupo de Finanzas: el cobro lee `data/promotions.ts`, con los mismos ids que su lista.
+  - Hay que confirmar con el grupo si las promociones se acumulan.
+- **Reactivación:** los meses de baja no se cobran. Es una decisión propia, porque el escenario no lo dice. Está para confirmar.

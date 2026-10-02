@@ -1,5 +1,7 @@
 # Diagnóstico del front-end de SquatGym
 
+> Este documento describe cómo estaba el proyecto **antes** de los cambios (01/10/2026). El estado actual está en [`COBERTURA_CU.md`](COBERTURA_CU.md).
+
 - **Fecha:** 01/10/2026.
 - **Rama:** `fixes-features-lucas`, en el commit `5e41cc7`.
 - **Alcance:** módulos **Gestión de Alumnos** (14 CU) y **Gestión de Personal** (10 CU).

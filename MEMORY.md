@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E14. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E15 (cierre de la Fase 3). Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -26,7 +26,12 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E14 terminadas**. Sigue **E15**, el cierre: actualizar `docs/COBERTURA_CU.md`, el README y un guion breve para la defensa.
+- Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
+- En E15 se resolvió lo siguiente:
+  - **Cobertura final** (`docs/COBERTURA_CU.md`): los 24 CU con su ruta, cómo se cumplen y en qué etapa, más las limitaciones del prototipo. La línea base del 01/10 quedó en el commit de E0 (`9a3d900`).
+  - **Guion de la defensa** (`docs/GUION_DEFENSA.md`): de 10 a 12 minutos, con un recorrido por rol y las decisiones que conviene explicar.
+  - **README:** cómo correrlo y todos los usuarios de prueba, con qué mirar en cada uno.
+  - **Diagnóstico y plan:** quedan como documentos históricos, con una nota arriba que remite a la cobertura.
 - En E14 se resolvió lo siguiente:
   - **Carga diferida (`React.lazy`):** el bloque principal bajó de 736 KB a 520 KB (166 KB gzip). Cada pantalla se descarga cuando se usa.
   - **Dependencias quitadas** (66 paquetes): `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three` y `@tanstack/react-query`. También se sacaron `QueryClientProvider` y el Toaster de Radix, porque se usa sonner.
@@ -201,10 +206,11 @@
 
 ## Pendientes
 
-- Etapa E15 de `docs/PLAN.md` (cierre).
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
 - Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
 - Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
+- Confirmar con el grupo la regla de reactivación (hoy los meses de baja no se cobran).
+- Decidir si los íconos y las fuentes se sirven desde el repo (ver "Problemas conocidos").
 - Avisar al grupo del panel del admin (`AdminPanel`, otro grupo): lee la semilla de novedades y solo conoce los tipos incidente, cambio y general. Las ausencias y las anulaciones que se hacen en la app no aparecen ahí. Si quieren mostrarlas, tienen que sumar `absence` a su `TYPE_CONFIG`.
 
 ## Problemas conocidos (los más graves)
