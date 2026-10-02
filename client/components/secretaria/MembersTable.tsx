@@ -1,6 +1,3 @@
-// MembersTable.tsx
-"use client";
-
 import * as React from "react";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
@@ -8,6 +5,7 @@ import { FilterSelect } from "../common/FilterSelect";
 import { clientsMock, type Client } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 import { MemberDetailModal } from "./MemberDetailModal";
+import { matchesPersonSearch } from "@/lib/format";
 
 interface Member {
   id: string;
@@ -132,9 +130,8 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
   );
 
   const filteredMembers = React.useMemo(() => {
-    const q = search.toLowerCase().trim();
     return allMembers.filter((m) => {
-      if (q && !m.name.toLowerCase().includes(q) && !m.email.toLowerCase().includes(q) && !m.dni.includes(q)) return false;
+      if (!matchesPersonSearch(search, { name: m.name, dni: m.dni, email: m.email })) return false;
       if (filterStatus && m.status.type !== filterStatus) return false;
       if (filterPlan && m.plan !== filterPlan) return false;
       return true;
@@ -210,11 +207,13 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Nombre, email o DNI..."
+            aria-label="Buscar alumno por nombre, email o DNI"
             className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
+              aria-label="Limpiar búsqueda"
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
             >
               <i className="ti ti-x text-xs" />

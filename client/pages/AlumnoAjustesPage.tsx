@@ -1,16 +1,19 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { clearMockSession } from "@/data/users";
+import { Link } from "react-router-dom";
 
 interface ToggleProps {
   checked: boolean;
   onChange: (v: boolean) => void;
+  label: string;
 }
 
-function Toggle({ checked, onChange }: ToggleProps) {
+function Toggle({ checked, onChange, label }: ToggleProps) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
       onClick={() => onChange(!checked)}
       className={`relative w-10 h-6 rounded-full transition-colors cursor-pointer ${
         checked ? "bg-lime-400" : "bg-zinc-700"
@@ -25,34 +28,10 @@ function Toggle({ checked, onChange }: ToggleProps) {
   );
 }
 
-type Visibilidad = "Público" | "Solo miembros" | "Privado";
-const VISIBILIDAD_CYCLE: Visibilidad[] = ["Público", "Solo miembros", "Privado"];
-const VISIBILIDAD_ICON: Record<Visibilidad, string> = {
-  "Público":        "ti ti-world",
-  "Solo miembros":  "ti ti-users",
-  "Privado":        "ti ti-lock",
-};
-
 export default function AlumnoAjustesPage() {
-  const navigate = useNavigate();
   const [pushMobile, setPushMobile] = React.useState(true);
   const [webNotif, setWebNotif] = React.useState(true);
   const [email, setEmail] = React.useState(false);
-  const [silencio, setSilencio] = React.useState(false);
-  const [visibilidad, setVisibilidad] = React.useState<Visibilidad>("Público");
-  const [confirmDelete, setConfirmDelete] = React.useState(false);
-
-  function cycleVisibilidad() {
-    setVisibilidad((v) => {
-      const idx = VISIBILIDAD_CYCLE.indexOf(v);
-      return VISIBILIDAD_CYCLE[(idx + 1) % VISIBILIDAD_CYCLE.length];
-    });
-  }
-
-  function handleDeleteConfirm() {
-    clearMockSession();
-    navigate("/", { replace: true });
-  }
 
   return (
     <div className="px-7 pb-7 max-sm:px-4">
@@ -61,8 +40,7 @@ export default function AlumnoAjustesPage() {
           AJUSTES Y ALERTAS
         </h1>
         <p className="text-gray-600 text-sm mt-2 max-w-xl leading-relaxed">
-          Gestiona tus preferencias de comunicación y revisa las alertas
-          críticas de tu cuenta en el laboratorio cinético.
+          Revisá los avisos de tu cuenta y elegí por dónde querés recibirlos.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-6 mt-8 items-start">
@@ -178,7 +156,7 @@ export default function AlumnoAjustesPage() {
           </div>
 
           {/* ── RIGHT: Configuración unificada ── */}
-          <div className="bg-black/60 rounded-2xl shadow-card glass-border flex flex-col divide-y divide-zinc-800/50">
+          <div className="bg-black/60 rounded-2xl shadow-card glass-border flex flex-col">
 
             {/* Preferencias */}
             <div className="p-6 flex flex-col gap-5">
@@ -203,7 +181,7 @@ export default function AlumnoAjustesPage() {
                       <p className="text-gray-600 text-[10px]">Alertas instantáneas en la app</p>
                     </div>
                   </div>
-                  <Toggle checked={pushMobile} onChange={setPushMobile} />
+                  <Toggle checked={pushMobile} onChange={setPushMobile} label="Avisos en el celular" />
                 </div>
 
                 {/* Web Notificaciones */}
@@ -217,7 +195,7 @@ export default function AlumnoAjustesPage() {
                       <p className="text-gray-600 text-[10px]">Alertas mientras navegas</p>
                     </div>
                   </div>
-                  <Toggle checked={webNotif} onChange={setWebNotif} />
+                  <Toggle checked={webNotif} onChange={setWebNotif} label="Avisos en la web" />
                 </div>
 
                 {/* Correo Electrónico */}
@@ -231,91 +209,8 @@ export default function AlumnoAjustesPage() {
                       <p className="text-gray-600 text-[10px]">Resúmenes y recibos</p>
                     </div>
                   </div>
-                  <Toggle checked={email} onChange={setEmail} />
+                  <Toggle checked={email} onChange={setEmail} label="Avisos por correo electrónico" />
                 </div>
-              </div>
-            </div>
-
-            {/* Privacidad y Datos */}
-            <div className="p-6 flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <i className="ti ti-shield text-base text-lime-400" />
-                <h2 className="text-white text-sm font-extrabold">Privacidad y Datos</h2>
-              </div>
-
-              <div className="flex flex-col gap-2">
-
-                {/* Modo Silencio */}
-                <button
-                  onClick={() => setSilencio((s) => !s)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                    silencio
-                      ? "bg-amber-400/10 border-amber-400/30 text-amber-300"
-                      : "bg-white/[0.03] border-zinc-800/40 text-white hover:bg-white/[0.06] hover:border-zinc-700/60"
-                  }`}
-                >
-                  <span className="flex items-center gap-2.5">
-                    <i className={`ti ti-moon text-sm ${silencio ? "text-amber-400" : "text-gray-500"}`} />
-                    Modo Silencio
-                  </span>
-                  {silencio ? (
-                    <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">
-                      Activo
-                    </span>
-                  ) : (
-                    <span className="text-[10px] text-gray-600">Desactivado</span>
-                  )}
-                </button>
-
-                {/* Visibilidad del Perfil */}
-                <button
-                  onClick={cycleVisibilidad}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.03] border border-zinc-800/40 text-white text-xs font-bold hover:bg-white/[0.06] hover:border-zinc-700/60 transition-all cursor-pointer"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <i className={`${VISIBILIDAD_ICON[visibilidad]} text-gray-500 text-sm`} />
-                    Visibilidad del Perfil
-                  </span>
-                  <span className="text-[10px] text-gray-400 bg-white/[0.06] px-2 py-0.5 rounded-full">
-                    {visibilidad}
-                  </span>
-                </button>
-
-                {/* Eliminar Cuenta */}
-                {!confirmDelete ? (
-                  <button
-                    onClick={() => setConfirmDelete(true)}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-red-500/[0.04] border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/[0.08] hover:border-red-500/40 transition-all cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <i className="ti ti-trash text-sm" />
-                      Eliminar Cuenta
-                    </span>
-                    <i className="ti ti-chevron-right text-red-400/50 text-sm" />
-                  </button>
-                ) : (
-                  <div className="rounded-xl border border-red-500/30 bg-red-500/[0.06] p-4 flex flex-col gap-3">
-                    <p className="text-red-300 text-xs font-bold">¿Confirmar eliminación?</p>
-                    <p className="text-gray-500 text-[10px] leading-relaxed">
-                      Esta acción cerrará tu sesión y eliminará tu cuenta. No se puede deshacer.
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setConfirmDelete(false)}
-                        className="flex-1 py-2 rounded-lg bg-white/[0.05] border border-zinc-700/40 text-gray-300 text-xs font-bold hover:bg-white/[0.08] transition-all cursor-pointer"
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        onClick={handleDeleteConfirm}
-                        className="flex-1 py-2 rounded-lg bg-red-500/80 text-white text-xs font-bold hover:bg-red-500 transition-all cursor-pointer"
-                      >
-                        Confirmar
-                      </button>
-                    </div>
-                  </div>
-                )}
-
               </div>
             </div>
 

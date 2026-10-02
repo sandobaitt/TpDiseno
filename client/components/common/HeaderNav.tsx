@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { novedadesMock, type Novedad } from "@/data/novedades";
@@ -51,9 +50,11 @@ interface HeaderProps {
   title: string;
   className?: string;
   onMenuClick?: () => void;
+  /** Abre la confirmación de cierre de sesión (la maneja DashboardLayout). */
+  onLogoutClick?: () => void;
 }
 
-export function Header({ nav, title, className = "", onMenuClick }: HeaderProps) {
+export function Header({ nav, title, className = "", onMenuClick, onLogoutClick }: HeaderProps) {
   const navigate = useNavigate();
   const session = getMockSession();
   const role = session?.role ?? "alumno";
@@ -88,6 +89,11 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
   }, [userOpen]);
 
   function handleLogout() {
+    setUserOpen(false);
+    if (onLogoutClick) {
+      onLogoutClick();
+      return;
+    }
     clearMockSession();
     navigate("/", { replace: true });
   }
@@ -108,6 +114,8 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
         <div ref={bellRef} className="relative">
           <button
             onClick={() => { setBellOpen((o) => !o); setUserOpen(false); }}
+            aria-label="Notificaciones"
+            aria-expanded={bellOpen}
             className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
           >
             <i className="ti ti-bell text-[18px]" />
@@ -171,6 +179,8 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
         <div ref={userRef} className="relative ml-1">
           <button
             onClick={() => { setUserOpen((o) => !o); setBellOpen(false); }}
+            aria-label="Menú de usuario"
+            aria-expanded={userOpen}
             className="flex justify-center items-center w-9 h-9 rounded-xl cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-all duration-150 glass-border"
           >
             <span className="text-white text-[11px] font-extrabold">{initials}</span>
@@ -206,6 +216,7 @@ export function Header({ nav, title, className = "", onMenuClick }: HeaderProps)
         <div className="hidden max-md:flex ml-1">
           <button
             onClick={onMenuClick}
+            aria-label="Abrir menú"
             className="flex items-center justify-center w-9 h-9 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
           >
             <i className="ti ti-menu-2 text-xl" />

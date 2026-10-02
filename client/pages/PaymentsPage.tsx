@@ -9,6 +9,7 @@ import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutConte
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 import { paymentsMock } from "@/data/payments";
+import { formatARS, matchesPersonSearch } from "@/lib/format";
 
 type TabId = "debtors" | "paid";
 
@@ -29,6 +30,7 @@ const avatarStyles = [
 interface RowData {
   id: string;
   name: string;
+  dni: string;
   plan: string;
   amount: number;
   status: "paid" | "debtor";
@@ -37,28 +39,32 @@ interface RowData {
   initialsText: string;
 }
 
-const allRows: RowData[] = clientsMock.map((c, i) => {
-  const plan = plansMock.find((p) => p.id === c.membership?.planId);
-  const planName = plan?.name ?? "Sin plan";
-  const membershipPayment = paymentsMock.find(
-    (p) => p.clientId === c.id && p.concept === "membership",
-  );
-  const style = avatarStyles[i % avatarStyles.length];
+// Solo alumnos con plan y no dados de baja: los inactivos no tienen cuota que cobrar.
+const allRows: RowData[] = clientsMock
+  .filter((c) => c.status !== "inactive" && c.membership)
+  .map((c, i) => {
+    const plan = plansMock.find((p) => p.id === c.membership?.planId);
+    const planName = plan?.name ?? "Sin plan";
+    const membershipPayment = paymentsMock.find(
+      (p) => p.clientId === c.id && p.concept === "membership",
+    );
+    const style = avatarStyles[i % avatarStyles.length];
 
-  const isPaid =
-    c.status === "enabled" && membershipPayment?.status === "approved";
+    const isPaid =
+      c.status === "enabled" && membershipPayment?.status === "approved";
 
-  return {
-    id: c.id,
-    name: c.fullName,
-    plan: planName,
-    amount: membershipPayment?.amountArs ?? plan?.monthlyPriceArs ?? 0,
-    status: isPaid ? "paid" : "debtor",
-    initials: getInitials(c.fullName),
-    initialsBg: style.bg,
-    initialsText: style.text,
-  };
-});
+    return {
+      id: c.id,
+      name: c.fullName,
+      dni: c.dni,
+      plan: planName,
+      amount: membershipPayment?.amountArs ?? plan?.monthlyPriceArs ?? 0,
+      status: isPaid ? "paid" : "debtor",
+      initials: getInitials(c.fullName),
+      initialsBg: style.bg,
+      initialsText: style.text,
+    };
+  });
 
 const uniquePlans = [...new Set(allRows.map((r) => r.plan).filter((p) => p !== "Sin plan"))];
 
@@ -81,9 +87,8 @@ export default function PaymentsPage() {
 
   const filteredData = React.useMemo(() => {
     const tabData = allRows.filter((r) => r.status === (activeTab === "debtors" ? "debtor" : "paid"));
-    const q = search.toLowerCase().trim();
     return tabData.filter((r) => {
-      if (q && !r.name.toLowerCase().includes(q)) return false;
+      if (!matchesPersonSearch(search, { name: r.name, dni: r.dni })) return false;
       if (filterPlan && r.plan !== filterPlan) return false;
       return true;
     });
@@ -129,7 +134,7 @@ export default function PaymentsPage() {
           <span
             className={`text-sm font-bold ${isPaidRow ? "text-lime-400" : "text-red-400"}`}
           >
-            ${row.amount.toLocaleString()}
+            {formatARS(row.amount)}
           </span>
         );
       },
@@ -206,11 +211,12 @@ export default function PaymentsPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nombre..."
+              placeholder="Nombre o DNI..."
+              aria-label="Buscar alumno por nombre o DNI"
               className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
+              <button onClick={() => setSearch("")} aria-label="Limpiar búsqueda" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
                 <i className="ti ti-x text-xs" />
               </button>
             )}

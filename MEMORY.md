@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **01/10/2026**, al terminar la etapa E0. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **01/10/2026**, al terminar la etapa E1. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,10 +23,22 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 terminada** (documentación). Sigue **E1**: correcciones rápidas.
-- Los cambios en el código todavía no empezaron, así que todo lo de `docs/DIAGNOSTICO.md` sigue vigente.
+- Fase 3: **E0 y E1 terminadas**. Sigue **E2**: roles y permisos.
+- En E1 se corrigió lo siguiente:
+  - Cobro sin recargo, con 4 medios y sin efectivo online.
+  - Datos fijos en lugar de aleatorios.
+  - Se borraron las rutas huérfanas.
+  - Desaparece "Deudor $0".
+  - Las bajas son lógicas y piden confirmación.
+  - La inscripción guarda borrador y confirma antes de cerrar.
+  - Las tablas no se cortan en el celular.
+  - Los íconos se cargan una sola vez.
+  - Búsqueda por nombre o DNI.
+  - Un solo cierre de sesión, con confirmación.
+  - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
+  - El login usa una imagen local.
 - La estructura nueva (`components/alumnos/`, `components/personal/`, `domain/`, `store/`) todavía **no existe**. Las carpetas viejas siguen en uso: `secretaria/`, `member-detail/`, `cobros/`, `cronograma/`, `novedades/` y `globales/`.
-- Los helpers de fechas (`lib/dates.ts`) también se crean en E3. Hasta entonces, cuidado con `new Date("AAAA-MM-DD")`.
+- Ya existen `lib/dates.ts` (solo `todayISO` y `toLocalISODate`), `lib/format.ts`, `hooks/use-draft.ts` y `common/ConfirmDialog.tsx`. En E3 se suman a `lib/dates.ts` los helpers para leer fechas.
 
 ## Pendientes
 
@@ -39,10 +51,11 @@
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
 - No hay control de rol en las rutas y no existe el Encargado (C1, C2).
-- El cobro no registra el pago y suma un recargo con interés (C3).
+- El cobro todavía no registra el pago ni emite recibo (C3). El recargo ya se quitó.
 - El estado de cuenta del alumno muestra pagos inventados (C4).
-- Hay datos aleatorios en la asistencia de profesores (C7).
 - Las fechas de solo día se muestran corridas un día (A1).
+- Los avisos (toasts) y algunos diálogos se ven en tema claro hasta que se apliquen los tokens oscuros (E5).
+- Radix avisa que varios diálogos no tienen título accesible. Se corrige al rehacer cada pantalla.
 
 ## Lo que no hay que romper
 

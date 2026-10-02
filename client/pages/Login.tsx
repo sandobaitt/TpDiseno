@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, type AppUser } from "@/data/users";
+import loginBg from "@/assets/login-bg.jpg";
 
 const DEBUG_USERS: AppUser[] = [
   appUsersMock.find((u) => u.role === "admin")!,
@@ -78,18 +79,12 @@ export default function Login() {
     <div className="relative min-h-screen flex items-center justify-center bg-squat-dark overflow-hidden">
       {/* Background gym image */}
       <img
-        src="https://api.builder.io/api/v1/image/assets/TEMP/519575f6c6683379114a1a76e5d989bd581451a6?width=2560"
+        src={loginBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay"
       />
       {/* Radial gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(80.04% 64.03% at 50% 50%, rgba(19,19,19,0.40) 0%, #131313 80%)",
-        }}
-      />
+      <div className="absolute inset-0 bg-[radial-gradient(80%_64%_at_50%_50%,rgba(19,19,19,0.4)_0%,rgba(19,19,19,1)_80%)]" />
 
       {/* Floating panel */}
       <motion.div
@@ -114,7 +109,7 @@ export default function Login() {
             Bienvenido a SquatGym
           </h1>
           <p className="font-inter text-sm text-squat-muted text-center leading-5">
-            Ingresa tus credenciales para acceder
+            Ingresá con tu correo o DNI y tu contraseña
           </p>
         </div>
 
@@ -122,8 +117,8 @@ export default function Login() {
         <form className="w-full flex flex-col gap-6 pb-4" onSubmit={handleSubmit} noValidate>
           {/* Email / DNI field */}
           <div className="flex flex-col gap-2">
-            <label className="font-inter font-medium text-sm text-[#E5E2E1] leading-5">
-              Correo Electrónico o DNI
+            <label htmlFor="login-identity" className="font-inter font-medium text-sm text-gray-200 leading-5">
+              Correo electrónico o DNI
             </label>
             <div className="relative flex items-center">
               <span className="absolute left-4 pointer-events-none">
@@ -132,6 +127,7 @@ export default function Login() {
                 </svg>
               </span>
               <input
+                id="login-identity"
                 type="text"
                 name="identity"
                 autoComplete="username"
@@ -146,12 +142,16 @@ export default function Login() {
           {/* Password field */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="font-inter font-medium text-sm text-[#E5E2E1] leading-5">
+              <label htmlFor="login-password" className="font-inter font-medium text-sm text-gray-200 leading-5">
                 Contraseña
               </label>
-              <a href="#" className="font-inter text-xs text-squat-green hover:opacity-80 transition-opacity leading-4">
+              <button
+                type="button"
+                onClick={() => toast.info("Para recuperar tu contraseña, pedíselo a la secretaría de tu sede.")}
+                className="font-inter text-xs text-squat-green hover:opacity-80 transition-opacity leading-4"
+              >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </button>
             </div>
             <div className="relative flex items-center">
               <span className="absolute left-4 pointer-events-none">
@@ -160,6 +160,7 @@ export default function Login() {
                 </svg>
               </span>
               <input
+                id="login-password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 autoComplete="current-password"
@@ -199,6 +200,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowDebug(false)}
+                    aria-label="Cerrar acceso rápido"
                     className="text-gray-600 hover:text-gray-400 transition-colors cursor-pointer"
                   >
                     <i className="ti ti-x text-xs" />

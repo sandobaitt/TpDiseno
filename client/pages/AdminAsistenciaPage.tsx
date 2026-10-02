@@ -49,10 +49,11 @@ interface SlotAttendance {
 function generateAttendance() {
   const statuses: AttendanceStatus[] = ["present", "absent", "pending"];
   const map = new Map<string, SlotAttendance[]>();
-  blocksMock.forEach((b) => {
+  // Estado fijo por bloque (antes era aleatorio y cambiaba en cada visita).
+  blocksMock.forEach((b, index) => {
     const key = `${b.day}-${b.start}`;
     if (!map.has(key)) map.set(key, []);
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const status = statuses[index % statuses.length];
     map.get(key)!.push({ blockId: b.id, trainer: b.trainer, type: b.type, status });
   });
   return map;

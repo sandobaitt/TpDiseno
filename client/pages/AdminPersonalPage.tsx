@@ -12,6 +12,8 @@ import { clientsMock, type Client, type ClientStatus } from "@/data/clients";
 import { branchesMock } from "@/data/branches";
 import { plansMock } from "@/data/plans";
 import { FilterSelect } from "@/components/common/FilterSelect";
+import { matchesPersonSearch } from "@/lib/format";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 
 type TabId = "staff" | "students";
 
@@ -65,6 +67,8 @@ export default function AdminPersonalPage() {
     null,
   );
   const [editing, setEditing] = React.useState(false);
+  // Confirmación de baja (lógica): qué registro se quiere dar de baja.
+  const [pendingDeactivation, setPendingDeactivation] = React.useState<"employee" | "client" | null>(null);
 
   const [editName, setEditName] = React.useState("");
   const [editEmail, setEditEmail] = React.useState("");
@@ -83,18 +87,16 @@ export default function AdminPersonalPage() {
 
   // Filtered data
   const filteredStaff = React.useMemo(() => {
-    const q = search.toLowerCase();
     return staffList.filter((emp) => {
-      const matchesSearch = !q || emp.fullName.toLowerCase().includes(q) || emp.email.toLowerCase().includes(q);
+      const matchesSearch = matchesPersonSearch(search, { name: emp.fullName, dni: emp.dni, email: emp.email });
       const matchesRole = !filterRole || emp.role === filterRole;
       return matchesSearch && matchesRole;
     });
   }, [staffList, search, filterRole]);
 
   const filteredStudents = React.useMemo(() => {
-    const q = search.toLowerCase();
     return studentList.filter((cli) => {
-      const matchesSearch = !q || cli.fullName.toLowerCase().includes(q) || cli.email.toLowerCase().includes(q);
+      const matchesSearch = matchesPersonSearch(search, { name: cli.fullName, dni: cli.dni, email: cli.email });
       const matchesPlan = !filterPlan || (cli.membership != null && cli.membership.planId === filterPlan);
       const matchesStatus = !filterStatus || cli.status === filterStatus;
       return matchesSearch && matchesPlan && matchesStatus;
@@ -176,11 +178,13 @@ export default function AdminPersonalPage() {
     toast.success("Personal actualizado");
   }
 
-  function handleDeleteEmployee() {
+  /** Baja lógica: el registro queda inactivo y conserva su historial. */
+  function setEmployeeStatus(status: EmployeeStatus) {
     if (!selectedEmployee) return;
-    setStaffList((prev) => prev.filter((e) => e.id !== selectedEmployee.id));
-    closeDialog();
-    toast.success("Personal eliminado");
+    setStaffList((prev) => prev.map((e) => (e.id === selectedEmployee.id ? { ...e, status } : e)));
+    setSelectedEmployee((prev) => (prev ? { ...prev, status } : null));
+    setEditStatus(status);
+    toast.success(status === "inactive" ? "Personal dado de baja" : "Personal reactivado");
   }
 
   function handleEditClient() {
@@ -217,11 +221,19 @@ export default function AdminPersonalPage() {
     toast.success("Alumno actualizado");
   }
 
-  function handleDeleteClient() {
+  /** Baja lógica: el alumno queda inactivo y conserva su historial de pagos y asistencias. */
+  function setClientStatus(status: ClientStatus) {
     if (!selectedClient) return;
-    setStudentList((prev) => prev.filter((c) => c.id !== selectedClient.id));
-    closeDialog();
-    toast.success("Alumno eliminado");
+    setStudentList((prev) => prev.map((c) => (c.id === selectedClient.id ? { ...c, status } : c)));
+    setSelectedClient((prev) => (prev ? { ...prev, status } : null));
+    setEditClientStatus(status);
+    toast.success(status === "inactive" ? "Alumno dado de baja" : "Alumno reactivado");
+  }
+
+  function confirmDeactivation() {
+    if (pendingDeactivation === "employee") setEmployeeStatus("inactive");
+    if (pendingDeactivation === "client") setClientStatus("inactive");
+    setPendingDeactivation(null);
   }
 
   return (
@@ -282,12 +294,14 @@ export default function AdminPersonalPage() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por nombre o correo..."
+                placeholder="Nombre, correo o DNI..."
+                aria-label="Buscar por nombre, correo o DNI"
                 className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-neutral-800/60 glass-border text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
+                  aria-label="Limpiar búsqueda"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
                 >
                   <i className="ti ti-x text-sm" />
@@ -538,10 +552,17 @@ export default function AdminPersonalPage() {
                     </button>
                   </div>
                 ) : (
-                  <button onClick={handleDeleteEmployee} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/[0.12] text-red-400/60 text-[11px] font-bold hover:bg-red-500/[0.06] hover:text-red-400 hover:border-red-500/20 transition-all cursor-pointer">
-                    <i className="ti ti-trash text-sm" />
-                    Eliminar Personal
-                  </button>
+                  selectedEmployee.status === "inactive" ? (
+                    <button onClick={() => setEmployeeStatus("active")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-lime-400/20 text-lime-400 text-xs font-bold hover:bg-lime-400/[0.06] transition-all cursor-pointer">
+                      <i className="ti ti-user-check text-sm" aria-hidden="true" />
+                      Reactivar
+                    </button>
+                  ) : (
+                    <button onClick={() => setPendingDeactivation("employee")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/[0.06] hover:border-red-500/30 transition-all cursor-pointer">
+                      <i className="ti ti-user-off text-sm" aria-hidden="true" />
+                      Dar de baja
+                    </button>
+                  )
                 )}
               </div>
             </div>
@@ -648,10 +669,17 @@ export default function AdminPersonalPage() {
                           </button>
                         </div>
                       ) : (
-                        <button onClick={handleDeleteClient} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/[0.12] text-red-400/60 text-[11px] font-bold hover:bg-red-500/[0.06] hover:text-red-400 hover:border-red-500/20 transition-all cursor-pointer">
-                          <i className="ti ti-trash text-sm" />
-                          Eliminar Alumno
-                        </button>
+                        selectedClient.status === "inactive" ? (
+                          <button onClick={() => setClientStatus("enabled")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-lime-400/20 text-lime-400 text-xs font-bold hover:bg-lime-400/[0.06] transition-all cursor-pointer">
+                            <i className="ti ti-user-check text-sm" aria-hidden="true" />
+                            Reactivar
+                          </button>
+                        ) : (
+                          <button onClick={() => setPendingDeactivation("client")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/[0.06] hover:border-red-500/30 transition-all cursor-pointer">
+                            <i className="ti ti-user-off text-sm" aria-hidden="true" />
+                            Dar de baja
+                          </button>
+                        )
                       )}
                     </>
                   );
@@ -661,6 +689,24 @@ export default function AdminPersonalPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={pendingDeactivation !== null}
+        onOpenChange={(open) => !open && setPendingDeactivation(null)}
+        title={pendingDeactivation === "client" ? "¿Dar de baja al alumno?" : "¿Dar de baja a esta persona?"}
+        description={
+          <>
+            <span className="font-semibold text-white">
+              {pendingDeactivation === "client" ? selectedClient?.fullName : selectedEmployee?.fullName}
+            </span>{" "}
+            va a quedar inactivo. Su historial se conserva y se puede reactivar cuando quieras.
+          </>
+        }
+        confirmLabel="Sí, dar de baja"
+        onConfirm={confirmDeactivation}
+        tone="danger"
+        iconClassName="ti ti-user-off"
+      />
     </>
   );
 }

@@ -5,7 +5,7 @@ import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutConte
 import { getMockSession } from "@/data/users";
 import { clientsMock, type Client } from "@/data/clients";
 import { plansMock } from "@/data/plans";
-import { paymentsMock, type Payment } from "@/data/payments";
+import { paymentsMock, PAYMENT_METHOD_LABELS, type Payment } from "@/data/payments";
 
 interface MonthRecord {
   key: string;
@@ -80,15 +80,8 @@ function buildMonthHistory(client: Client, planPrice: number): MonthRecord[] {
   return months;
 }
 
-function getMethodLabel(method: string) {
-  const map: Record<string, string> = {
-    cash: "Efectivo",
-    debit: "Débito",
-    credit: "Crédito",
-    transfer: "Transferencia",
-    mp: "Mercado Pago",
-  };
-  return map[method] ?? method;
+function getMethodLabel(method: Payment["method"]) {
+  return PAYMENT_METHOD_LABELS[method];
 }
 
 function formatDate(iso: string) {

@@ -15,7 +15,6 @@ const featuredPlanId = "pl_001";
 export default function Index() {
   return (
     <div className="flex flex-col min-h-screen bg-squat-dark font-inter">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-squat-dark/90 backdrop-blur-md border-b border-white/[0.05]">
         <div className="max-w-[1280px] mx-auto px-6 h-20 flex items-center justify-between">

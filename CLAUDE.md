@@ -41,7 +41,7 @@ El gestor es **npm**: hay `package-lock.json` y los scripts usan `npm run`. No s
 |---|---|
 | Base | React 18 + React Router 6 (SPA), TypeScript, Vite y TailwindCSS 3 |
 | Componentes | Radix/shadcn (`components/ui`), framer-motion y sonner para los avisos (toasts) |
-| Íconos | Tabler Icons, como webfont: `className="ti ti-<nombre>"` |
+| Íconos | Tabler Icons, como webfont: `className="ti ti-<nombre>"`. Se cargan una sola vez, con versión fija, en `index.html`. |
 | Servidor | Express 5 que viene con la plantilla. No se usa: no agregar endpoints ni backend sin consultar. |
 | Deploy | Vercel (`vercel.json`, `api/`). No tocar. |
 
@@ -103,6 +103,16 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 - Sin `console.log` sueltos.
 - Fechas: `new Date("AAAA-MM-DD")` se interpreta en UTC y en Argentina muestra el día anterior. Hay que usar los helpers de fechas (ver MEMORY.md).
 - Los datos de negocio (alumnos, clases, pagos) salen de `client/data/` o del store. **Nunca** se escriben a mano en el JSX.
+
+**Piezas que ya existen y hay que reusar:**
+
+| Pieza | Para qué |
+|---|---|
+| `components/common/ConfirmDialog.tsx` | Confirmar acciones importantes o destructivas. |
+| `lib/format.ts` | `matchesPersonSearch` (busca por nombre sin tildes o por DNI con o sin puntos) y `formatARS` (moneda). |
+| `lib/dates.ts` | `toLocalISODate` y `todayISO`. No usar `toISOString()` para fechas sin hora. |
+| `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
+| `data/payments.ts` | `PAYMENT_METHOD_LABELS`, las etiquetas de los 4 medios de pago aceptados. |
 
 ## Diseño
 

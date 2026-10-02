@@ -5,6 +5,7 @@ import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
 import { employeesMock } from "@/data/employees";
 import { branchesMock } from "@/data/branches";
+import { matchesPersonSearch } from "@/lib/format";
 
 type TabId = "students" | "teachers";
 
@@ -47,6 +48,7 @@ const studentsData = clientsMock.map((c, i) => {
   return {
     id: c.id,
     name: c.fullName,
+    dni: c.dni,
     plan: planName,
     financialStatus: c.status,
     initials: getInitials(c.fullName),
@@ -61,6 +63,7 @@ const employeesData = employeesMock.map((e, i) => {
   return {
     id: e.id,
     name: e.fullName,
+    dni: e.dni,
     role: e.role,
     roleLabel: roleLabels[e.role] ?? e.role,
     roleBadge: roleBadgeStyles[e.role] ?? "bg-zinc-800 text-gray-400 border border-zinc-700/40",
@@ -151,15 +154,13 @@ export default function AttendancePage() {
     cl_004: false,
   });
 
-  const [teacherCheckins, setTeacherCheckins] = React.useState<Record<string, boolean>>({});
-
-  React.useEffect(() => {
-    const initial: Record<string, boolean> = {};
-    employeesMock.forEach((e) => {
-      initial[e.id] = Math.random() > 0.5;
-    });
-    setTeacherCheckins(initial);
-  }, []);
+  // Estado inicial fijo de la demo (antes era aleatorio y cambiaba en cada visita).
+  const [teacherCheckins, setTeacherCheckins] = React.useState<Record<string, boolean>>({
+    em_001: true,
+    em_002: true,
+    em_003: false,
+    em_004: false,
+  });
 
   const clearFilters = () => {
     setSearch("");
@@ -193,9 +194,8 @@ export default function AttendancePage() {
 
   // Filtered lists
   const filteredStudents = React.useMemo(() => {
-    const q = search.toLowerCase().trim();
     return studentsData.filter((s) => {
-      if (q && !s.name.toLowerCase().includes(q)) return false;
+      if (!matchesPersonSearch(search, { name: s.name, dni: s.dni })) return false;
       if (presenceFilter === "present" && !studentCheckins[s.id]) return false;
       if (presenceFilter === "absent" && studentCheckins[s.id]) return false;
       if (filterFinancial && s.financialStatus !== filterFinancial) return false;
@@ -205,9 +205,8 @@ export default function AttendancePage() {
   }, [search, presenceFilter, filterFinancial, filterPlan, studentCheckins]);
 
   const filteredTeachers = React.useMemo(() => {
-    const q = search.toLowerCase().trim();
     return employeesData.filter((e) => {
-      if (q && !e.name.toLowerCase().includes(q)) return false;
+      if (!matchesPersonSearch(search, { name: e.name, dni: e.dni })) return false;
       if (presenceFilter === "present" && !teacherCheckins[e.id]) return false;
       if (presenceFilter === "absent" && teacherCheckins[e.id]) return false;
       if (filterRole && e.role !== filterRole) return false;
@@ -287,10 +286,10 @@ export default function AttendancePage() {
         {/* Tabs + Table */}
         <div className="flex flex-col gap-4">
           {/* Tab bar */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => { setActiveTab("students"); setStudentPage(1); clearFilters(); }}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
                 activeTab === "students"
                   ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
                   : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
@@ -304,7 +303,7 @@ export default function AttendancePage() {
             </button>
             <button
               onClick={() => { setActiveTab("teachers"); setTeacherPage(1); clearFilters(); }}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
                 activeTab === "teachers"
                   ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
                   : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
@@ -325,11 +324,12 @@ export default function AttendancePage() {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por nombre..."
+                placeholder="Nombre o DNI..."
+                aria-label="Buscar por nombre o DNI"
                 className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
+                <button onClick={() => setSearch("")} aria-label="Limpiar búsqueda" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
                   <i className="ti ti-x text-xs" />
                 </button>
               )}
@@ -409,7 +409,7 @@ export default function AttendancePage() {
             {/* Column headers */}
             {activeTab === "students" ? (
               <>
-                <div className="grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
+                <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
                   <span className="text-[10px] font-bold tracking-widest text-gray-600">ALUMNO</span>
                   <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">ESTADO FINANCIERO</span>
                   <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
@@ -427,7 +427,7 @@ export default function AttendancePage() {
                     return (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[minmax(0,1fr)_160px_152px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                        className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_160px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
                       >
                         {/* Name + plan */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -441,7 +441,7 @@ export default function AttendancePage() {
                         </div>
 
                         {/* Financial status */}
-                        <div className="flex justify-center">
+                        <div className="flex sm:justify-center">
                           <div className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full ${fin.container}`}>
                             <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${fin.dot}`} />
                             <span className={`text-[10px] font-semibold ${fin.text}`}>{fin.label}</span>
@@ -452,7 +452,7 @@ export default function AttendancePage() {
                         <div className="flex items-center gap-1.5 justify-center">
                           <button
                             onClick={() => setStudentCheckins((prev) => ({ ...prev, [row.id]: false }))}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                               !present
                                 ? "bg-red-500/20 text-red-400 border border-red-500/30"
                                 : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
@@ -463,7 +463,7 @@ export default function AttendancePage() {
                           </button>
                           <button
                             onClick={() => setStudentCheckins((prev) => ({ ...prev, [row.id]: true }))}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                               present
                                 ? "bg-lime-400 text-black shadow-btn-lime"
                                 : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
@@ -480,7 +480,7 @@ export default function AttendancePage() {
               </>
             ) : (
               <>
-                <div className="grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
+                <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
                   <span className="text-[10px] font-bold tracking-widest text-gray-600">EMPLEADO</span>
                   <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">SUCURSAL</span>
                   <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
@@ -497,7 +497,7 @@ export default function AttendancePage() {
                     return (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[minmax(0,1fr)_120px_152px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                        className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_120px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
                       >
                         {/* Name + role */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -513,7 +513,7 @@ export default function AttendancePage() {
                         </div>
 
                         {/* Branch */}
-                        <div className="flex justify-center">
+                        <div className="flex sm:justify-center">
                           <span className="text-xs text-gray-400 font-medium">{row.branch}</span>
                         </div>
 
@@ -523,7 +523,7 @@ export default function AttendancePage() {
                             onClick={() =>
                               setTeacherCheckins((prev) => ({ ...prev, [row.id]: false }))
                             }
-                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                               !present
                                 ? "bg-red-500/20 text-red-400 border border-red-500/30"
                                 : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
@@ -536,7 +536,7 @@ export default function AttendancePage() {
                             onClick={() =>
                               setTeacherCheckins((prev) => ({ ...prev, [row.id]: true }))
                             }
-                            className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                               present
                                 ? "bg-lime-400 text-black shadow-btn-lime"
                                 : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"

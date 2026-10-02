@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MemberDetail } from "@/components/member-detail/MemberDetail";
 import { clientsMock, type Client, type ClientStatus } from "@/data/clients";
 import { plansMock } from "@/data/plans";
-import { paymentsMock } from "@/data/payments";
+import { paymentsMock, PAYMENT_METHOD_LABELS } from "@/data/payments";
 import { branchesMock } from "@/data/branches";
 import { toast } from "sonner";
 
@@ -87,11 +87,7 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
             p.status === "approved" ? "Aprobado" :
             p.status === "rejected" ? "Rechazado" :
             p.status === "pending"  ? "Pendiente" : "Reintegrado",
-          paymentMethod:
-            p.method === "mp"     ? "MercadoPago"  :
-            p.method === "cash"   ? "Efectivo"     :
-            p.method === "debit"  ? "Débito"       :
-            p.method === "credit" ? "Crédito"      : "Transferencia",
+          paymentMethod: PAYMENT_METHOD_LABELS[p.method],
         }))
       : undefined;
 

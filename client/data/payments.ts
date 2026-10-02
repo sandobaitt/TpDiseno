@@ -1,4 +1,12 @@
-export type PaymentMethod = "cash" | "debit" | "credit" | "transfer" | "mp";
+/** Medios de pago aceptados por SquatGym (regla de negocio). */
+export type PaymentMethod = "cash" | "debit" | "transfer" | "qr";
+
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  cash: "Efectivo",
+  debit: "Débito",
+  transfer: "Transferencia",
+  qr: "QR",
+};
 export type PaymentStatus = "approved" | "pending" | "rejected" | "refunded";
 
 /**
@@ -74,9 +82,9 @@ export const paymentsMock: Payment[] = [
     concept: "product",
     description: "Venta de agua + barra",
     amountArs: 4500,
-    method: "mp",
+    method: "qr",
     status: "approved",
-    reference: "MP-551201",
+    reference: "QR-551201",
   },
   {
     id: "pay_005",

@@ -1,8 +1,9 @@
-"use client";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { clientsMock } from "@/data/clients";
 import { plansMock } from "@/data/plans";
+import { PAYMENT_METHOD_LABELS, type PaymentMethod } from "@/data/payments";
+import { formatARS } from "@/lib/format";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -10,8 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-type PaymentMethod = "efectivo" | "tarjeta" | "transferencia" | "qr";
 
 interface Promo {
   id: string;
@@ -29,12 +28,16 @@ const PROMOS: Promo[] = [
   { id: "bienvenida",  label: "25% OFF Primer Mes",       rate: 0.25, badge: "BIENVENIDA" },
 ];
 
-const PAYMENT_METHODS = [
-  { id: "efectivo" as const,      label: "Efectivo",      icon: "ti-cash" },
-  { id: "tarjeta" as const,       label: "Tarjeta",       icon: "ti-credit-card" },
-  { id: "transferencia" as const, label: "Transferencia", icon: "ti-building-bank" },
-  { id: "qr" as const,            label: "QR",            icon: "ti-qrcode" },
-];
+const METHOD_ICONS: Record<PaymentMethod, string> = {
+  cash: "ti-cash",
+  debit: "ti-credit-card",
+  transfer: "ti-building-bank",
+  qr: "ti-qrcode",
+};
+
+/** En recepción se aceptan los 4 medios; el pago online del alumno no puede ser en efectivo. */
+const STAFF_METHODS: PaymentMethod[] = ["cash", "debit", "transfer", "qr"];
+const ONLINE_METHODS: PaymentMethod[] = ["debit", "transfer", "qr"];
 
 function getInitials(fullName: string) {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -46,16 +49,16 @@ function getInitials(fullName: string) {
 interface PaymentCheckoutContentProps {
   clientId: string;
   onClose?: () => void;
-  /** Modo alumno: sin toggle de mora, descuento automático 10% en efectivo */
+  /** Modo alumno: pago online, sin efectivo ni selector de promociones. */
   alumnoMode?: boolean;
 }
 
 export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }: PaymentCheckoutContentProps) {
   const navigate = useNavigate();
-  const [selectedPayment, setSelectedPayment] = React.useState<PaymentMethod>("efectivo");
+  const methods = alumnoMode ? ONLINE_METHODS : STAFF_METHODS;
+  const [selectedPayment, setSelectedPayment] = React.useState<PaymentMethod>(methods[0]);
   const [promoId, setPromoId] = React.useState("none");
   const [promoOpen, setPromoOpen] = React.useState(false);
-  const [includeMora, setIncludeMora] = React.useState(true);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [paid, setPaid] = React.useState(false);
   const promoRef = React.useRef<HTMLDivElement>(null);
@@ -76,28 +79,11 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
   if (!client) return null;
 
   const isDebtor = client.status === "debtor";
-  const baseAmount = plan?.monthlyPriceArs ?? 40000;
-  const lateFee = 5000;
+  // Regla de negocio: no hay intereses ni recargos por mora; se cobra la cuota del plan.
+  const subtotal = plan?.monthlyPriceArs ?? 0;
 
-  // In alumno mode mora is fixed (applied only if actually debtor, no toggle)
-  const mora = alumnoMode
-    ? (isDebtor ? lateFee : 0)
-    : (includeMora ? lateFee : 0);
-
-  const subtotal = baseAmount + mora;
-
-  // In alumno mode: auto 10% if efectivo, no promo selector
-  const alumnoDiscount = alumnoMode && selectedPayment === "efectivo"
-    ? Math.round(subtotal * 0.10)
-    : 0;
-
-  const adminPromo = PROMOS.find((p) => p.id === promoId)!;
-  const adminDiscount = !alumnoMode && adminPromo.rate > 0
-    ? Math.round(subtotal * adminPromo.rate)
-    : 0;
-
-  const discountAmt = alumnoMode ? alumnoDiscount : adminDiscount;
-  const discountLabel = alumnoMode ? "10% OFF Pago en Efectivo" : adminPromo.label;
+  const activePromo = PROMOS.find((p) => p.id === promoId) ?? PROMOS[0];
+  const discountAmt = !alumnoMode && activePromo.rate > 0 ? Math.round(subtotal * activePromo.rate) : 0;
   const total = subtotal - discountAmt;
 
   function handlePay() { setDialogOpen(true); }
@@ -113,8 +99,6 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
     }
   }
 
-  const activePromo = PROMOS.find((p) => p.id === promoId);
-
   return (
     <>
       <div className="grid grid-cols-12 gap-6 items-start">
@@ -124,13 +108,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
           {/* Account Status Card */}
           <div className="bg-stone-900 rounded-2xl p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden shadow-card glass-border">
             {isDebtor && (
-              <div
-                className="pointer-events-none absolute -right-20 -top-20 w-64 h-64 rounded-xl"
-                style={{
-                  background: "linear-gradient(135deg, rgba(147,0,10,0.20) 0%, rgba(147,0,10,0.00) 100%)",
-                  filter: "blur(32px)",
-                }}
-              />
+              <div className="pointer-events-none absolute -right-20 -top-20 w-64 h-64 rounded-xl blur-[32px] bg-[linear-gradient(135deg,rgba(147,0,10,0.2)_0%,rgba(147,0,10,0)_100%)]" />
             )}
 
             <div className="flex flex-wrap items-start justify-between gap-4 relative z-10">
@@ -142,28 +120,28 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                   <h2 className="text-white font-jakarta text-xl md:text-2xl font-bold leading-8">
                     {client.fullName}
                   </h2>
-                  <p className="text-gray-500 text-sm">
-                    DNI: {client.dni} • Socio #{client.id.replace("cl_", "")}
+                  <p className="text-gray-400 text-sm">
+                    DNI: {client.dni} • Alumno #{client.id.replace("cl_", "")}
                   </p>
                 </div>
               </div>
 
-              {/* MOROSO badge only for actual debtors */}
+              {/* Badge solo para deudores reales */}
               {isDebtor && (
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl border border-red-900 bg-zinc-800 self-start">
-                  <div className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
-                  <span className="text-red-400 text-xs font-bold tracking-widest uppercase">MOROSO</span>
+                  <i className="ti ti-alert-triangle text-red-400 text-sm" aria-hidden="true" />
+                  <span className="text-red-400 text-xs font-bold tracking-widest uppercase">Deudor</span>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 md:gap-6 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 relative z-10">
               <div className="flex flex-col gap-1">
-                <span className="text-gray-500 text-xs uppercase tracking-widest font-semibold">PLAN ACTUAL</span>
+                <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">Plan actual</span>
                 <span className="text-white text-sm md:text-base font-medium">{plan?.name ?? "Sin plan"}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-gray-500 text-xs uppercase tracking-widest font-semibold">VENCIMIENTO</span>
+                <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">Vencimiento</span>
                 <span className={`text-sm md:text-base font-medium ${isDebtor ? "text-red-400" : "text-white"}`}>
                   {client.membership?.endDate
                     ? new Date(client.membership.endDate).toLocaleDateString("es-AR", {
@@ -173,11 +151,11 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                 </span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-gray-500 text-xs uppercase tracking-widest font-semibold">
-                  {alumnoMode ? "A PAGAR" : "DEUDA TOTAL"}
+                <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">
+                  {alumnoMode ? "A pagar" : "Cuota a cobrar"}
                 </span>
                 <span className="text-white font-jakarta text-xl md:text-2xl font-extrabold">
-                  ${subtotal.toLocaleString()}
+                  {formatARS(subtotal)}
                 </span>
               </div>
             </div>
@@ -185,90 +163,46 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
 
           {/* Pricing detail */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-white font-jakarta text-lg font-bold">Detalle de Cotización</h3>
+            <h3 className="text-white font-jakarta text-lg font-bold">Detalle</h3>
 
             <div className="border border-zinc-800 bg-neutral-900 rounded-xl p-2 flex flex-col">
-              {/* Base cuota */}
               <div className="flex items-center justify-between p-4 rounded-md">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-zinc-800 rounded-lg">
-                    <i className="ti ti-receipt text-lg text-gray-400" />
+                    <i className="ti ti-receipt text-lg text-gray-400" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-white text-sm font-bold">
-                      Cuota Base -{" "}
+                      Cuota mensual -{" "}
                       {new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
                     </p>
-                    <p className="text-gray-500 text-xs">{plan?.name}</p>
+                    <p className="text-gray-400 text-xs">{plan?.name}</p>
                   </div>
                 </div>
-                <span className="text-white text-base font-bold shrink-0">${baseAmount.toLocaleString()}</span>
+                <span className="text-white text-base font-bold shrink-0">{formatARS(subtotal)}</span>
               </div>
-
-              {/* Mora row */}
-              {/* Admin mode: always show with toggle | Alumno mode: only show if debtor, no toggle */}
-              {(!alumnoMode || isDebtor) && (
-                <div className="flex items-center justify-between p-4 rounded-md">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-lg transition-colors ${
-                      (alumnoMode ? true : includeMora) ? "bg-red-950" : "bg-zinc-800"
-                    }`}>
-                      <i className={`ti ti-alert-triangle text-lg transition-colors ${
-                        (alumnoMode ? true : includeMora) ? "text-red-400" : "text-gray-600"
-                      }`} />
-                    </div>
-                    <div>
-                      <p className={`text-sm font-bold transition-colors ${
-                        (alumnoMode ? true : includeMora) ? "text-red-400" : "text-gray-600 line-through"
-                      }`}>
-                        Recargo por Mora (15 días)
-                      </p>
-                      <p className={`text-xs transition-colors ${
-                        (alumnoMode ? true : includeMora) ? "text-red-400/70" : "text-gray-700"
-                      }`}>
-                        Interés compuesto 1.5%
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className={`text-base font-bold transition-colors ${
-                      (alumnoMode ? true : includeMora) ? "text-red-400" : "text-gray-600 line-through"
-                    }`}>
-                      +${lateFee.toLocaleString()}
-                    </span>
-                    {/* Toggle only for admin */}
-                    {!alumnoMode && (
-                      <button
-                        onClick={() => setIncludeMora((v) => !v)}
-                        title={includeMora ? "Quitar recargo" : "Aplicar recargo"}
-                        className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer shrink-0 ${includeMora ? "bg-red-500" : "bg-zinc-700"}`}
-                      >
-                        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-200 ${includeMora ? "left-5" : "left-0.5"}`} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
+              <p className="px-4 pb-3 text-xs text-gray-400">Sin recargos por mora.</p>
             </div>
 
-            {/* Promo: admin gets full dropdown, alumno gets an info hint */}
-            {!alumnoMode ? (
+            {/* Promoción: solo la aplica la secretaria */}
+            {!alumnoMode && (
               <div ref={promoRef} className="relative">
                 <button
                   onClick={() => setPromoOpen((v) => !v)}
+                  aria-expanded={promoOpen}
                   className="w-full bg-neutral-900 border border-zinc-800 rounded-xl p-4 flex flex-col gap-2 text-left cursor-pointer hover:border-zinc-700 transition-colors"
                 >
-                  <span className="text-gray-500 text-xs font-semibold uppercase tracking-widest">APLICAR PROMOCIÓN</span>
+                  <span className="text-gray-400 text-xs font-semibold uppercase tracking-widest">Aplicar promoción</span>
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-white text-sm font-medium">{activePromo?.label ?? "Sin promoción"}</span>
-                      {activePromo && activePromo.badge && activePromo.id !== "none" && (
+                      <span className="text-white text-sm font-medium">{activePromo.label}</span>
+                      {activePromo.badge && activePromo.id !== "none" && (
                         <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[10px] font-bold tracking-wider">
                           {activePromo.badge}
                         </span>
                       )}
                     </div>
-                    <i className={`ti ti-chevron-down text-gray-500 text-base transition-transform duration-200 ${promoOpen ? "rotate-180" : ""}`} />
+                    <i className={`ti ti-chevron-down text-gray-400 text-base transition-transform duration-200 ${promoOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                   </div>
                 </button>
 
@@ -281,7 +215,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                         className={`w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer transition-colors hover:bg-zinc-700/50 ${promoId === p.id ? "bg-zinc-700/40" : ""}`}
                       >
                         <div className="flex items-center gap-2">
-                          {promoId === p.id && <i className="ti ti-check text-lime-400 text-xs" />}
+                          {promoId === p.id && <i className="ti ti-check text-lime-400 text-xs" aria-hidden="true" />}
                           <span className={`text-sm ${promoId === p.id ? "text-white font-semibold" : "text-gray-300"}`}>
                             {p.label}
                           </span>
@@ -296,37 +230,30 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                   </div>
                 )}
               </div>
-            ) : (
-              /* Alumno: info chip about efectivo discount */
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-lime-400/5 border border-lime-400/20">
-                <i className="ti ti-tag text-lime-400 text-sm shrink-0" />
-                <p className="text-lime-400/80 text-xs">
-                  Pagá con <span className="font-bold text-lime-400">Efectivo</span> y obtené un{" "}
-                  <span className="font-bold text-lime-400">10% de descuento</span> sobre el total.
-                </p>
-              </div>
             )}
           </div>
         </div>
 
         {/* ── Right Column – Checkout ── */}
         <div className="col-span-12 lg:col-span-5 bg-stone-900 rounded-2xl flex flex-col gap-6 p-6 md:p-8 shadow-card glass-border">
-          <h3 className="text-white font-jakarta text-xl font-bold">Método de Pago</h3>
+          <h3 className="text-white font-jakarta text-xl font-bold">Medio de pago</h3>
 
-          <div className="grid grid-cols-2 gap-3">
-            {PAYMENT_METHODS.map((method) => (
+          <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Medio de pago">
+            {methods.map((method) => (
               <button
-                key={method.id}
-                onClick={() => setSelectedPayment(method.id)}
+                key={method}
+                role="radio"
+                aria-checked={selectedPayment === method}
+                onClick={() => setSelectedPayment(method)}
                 className={`flex flex-col items-center justify-center gap-2 py-6 px-4 rounded-2xl transition-all duration-150 cursor-pointer active:scale-[0.97] ${
-                  selectedPayment === method.id
+                  selectedPayment === method
                     ? "border border-lime-400 bg-zinc-800 shadow-[0_0_12px_rgba(149,253,0,0.1)]"
                     : "border border-white/[0.06] bg-neutral-900 hover:bg-zinc-800/60"
                 }`}
               >
-                <i className={`ti ${method.icon} text-2xl ${selectedPayment === method.id ? "text-lime-400" : "text-gray-500"}`} />
-                <span className={`text-sm ${selectedPayment === method.id ? "font-bold text-white" : "font-medium text-gray-400"}`}>
-                  {method.label}
+                <i className={`ti ${METHOD_ICONS[method]} text-2xl ${selectedPayment === method ? "text-lime-400" : "text-gray-400"}`} aria-hidden="true" />
+                <span className={`text-sm ${selectedPayment === method ? "font-bold text-white" : "font-medium text-gray-300"}`}>
+                  {PAYMENT_METHOD_LABELS[method]}
                 </span>
               </button>
             ))}
@@ -335,21 +262,23 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
           <div className="bg-neutral-900 border border-dashed border-zinc-800 rounded-xl p-4 flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="text-gray-400 text-sm">Subtotal</span>
-              <span className="text-white text-sm">${subtotal.toLocaleString()}</span>
+              <span className="text-white text-sm">{formatARS(subtotal)}</span>
             </div>
 
             {discountAmt > 0 && (
               <div className="flex items-center justify-between pb-1">
-                <span className="text-lime-400 text-sm">{discountLabel}</span>
-                <span className="text-lime-400 text-sm">-${discountAmt.toLocaleString()}</span>
+                <span className="text-lime-400 text-sm">{activePromo.label}</span>
+                <span className="text-lime-400 text-sm">-{formatARS(discountAmt)}</span>
               </div>
             )}
 
             <div className="h-px bg-zinc-800" />
 
             <div className="flex items-end justify-between pt-2">
-              <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">TOTAL A COBRAR</span>
-              <span className="text-white font-jakarta text-4xl font-extrabold">${total.toLocaleString()}</span>
+              <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">
+                {alumnoMode ? "Total a pagar" : "Total a cobrar"}
+              </span>
+              <span className="text-white font-jakarta text-4xl font-extrabold">{formatARS(total)}</span>
             </div>
           </div>
 
@@ -357,13 +286,13 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
             onClick={handlePay}
             className="w-full flex items-center justify-center gap-2 py-5 rounded-2xl bg-lime-400 hover:brightness-105 active:brightness-95 active:scale-[0.99] transition-all duration-150 cursor-pointer shadow-btn-lime"
           >
-            <i className="ti ti-circle-check text-lg text-squat-ink" />
+            <i className="ti ti-circle-check text-lg text-squat-ink" aria-hidden="true" />
             <span className="text-squat-ink font-jakarta text-lg font-extrabold tracking-wide">
               {alumnoMode ? "PAGAR CUOTA" : "CONFIRMAR Y COBRAR"}
             </span>
           </button>
 
-          <p className="text-gray-600 text-xs text-center">Al confirmar se emitirá el recibo correspondiente.</p>
+          <p className="text-gray-400 text-xs text-center">Al confirmar se emite el recibo correspondiente.</p>
         </div>
       </div>
 
@@ -375,7 +304,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
               <AlertDialogHeader>
                 <div className="flex items-center gap-3 mb-1">
                   <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex items-center justify-center shrink-0">
-                    <i className="ti ti-receipt text-lime-400 text-lg" />
+                    <i className="ti ti-receipt text-lime-400 text-lg" aria-hidden="true" />
                   </div>
                   <AlertDialogTitle className="text-white text-lg">
                     {alumnoMode ? "¿Confirmar pago?" : "¿Confirmar cobro?"}
@@ -383,26 +312,26 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                 </div>
                 <AlertDialogDescription asChild>
                   <div className="flex flex-col gap-3 text-gray-400 text-sm">
-                    <p>{alumnoMode ? "Estás por registrar el siguiente pago:" : "Estás por registrar el siguiente pago:"}</p>
+                    <p>Estás por registrar el siguiente pago:</p>
                     <div className="bg-neutral-800 rounded-xl p-4 flex flex-col gap-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Socio</span>
+                        <span className="text-gray-400">Alumno</span>
                         <span className="text-white font-semibold">{client.fullName}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Método</span>
-                        <span className="text-white font-semibold capitalize">{selectedPayment}</span>
+                        <span className="text-gray-400">Medio de pago</span>
+                        <span className="text-white font-semibold">{PAYMENT_METHOD_LABELS[selectedPayment]}</span>
                       </div>
                       {discountAmt > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-gray-500">Descuento</span>
-                          <span className="text-lime-400 font-semibold">-${discountAmt.toLocaleString()}</span>
+                          <span className="text-gray-400">Descuento</span>
+                          <span className="text-lime-400 font-semibold">-{formatARS(discountAmt)}</span>
                         </div>
                       )}
                       <div className="h-px bg-zinc-700" />
                       <div className="flex justify-between">
-                        <span className="text-gray-400 font-semibold">Total</span>
-                        <span className="text-white font-extrabold text-base">${total.toLocaleString()}</span>
+                        <span className="text-gray-300 font-semibold">Total</span>
+                        <span className="text-white font-extrabold text-base">{formatARS(total)}</span>
                       </div>
                     </div>
                   </div>
@@ -428,14 +357,14 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
               <AlertDialogHeader>
                 <div className="flex flex-col items-center gap-4 py-4 text-center">
                   <div className="w-16 h-16 rounded-2xl bg-lime-400/10 flex items-center justify-center">
-                    <i className="ti ti-circle-check text-lime-400 text-3xl" />
+                    <i className="ti ti-circle-check text-lime-400 text-3xl" aria-hidden="true" />
                   </div>
                   <AlertDialogTitle className="text-white text-xl">Pago registrado</AlertDialogTitle>
                   <AlertDialogDescription asChild>
                     <div className="flex flex-col items-center gap-1">
                       <p className="text-gray-400 text-sm">
                         El pago de{" "}
-                        <span className="text-white font-semibold">${total.toLocaleString()}</span>{" "}
+                        <span className="text-white font-semibold">{formatARS(total)}</span>{" "}
                         fue registrado correctamente.
                       </p>
                     </div>

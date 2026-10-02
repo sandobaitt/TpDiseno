@@ -85,7 +85,7 @@ export default function ProfesorHorasPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-neutral-900 glass-border rounded-2xl p-5 flex flex-col gap-2 shadow-card">
           <div className="w-9 h-9 rounded-xl bg-lime-400/10 flex items-center justify-center">
             <i className="ti ti-clock text-lime-400 text-base" />
@@ -114,7 +114,7 @@ export default function ProfesorHorasPage() {
       {/* Table */}
       <div className="bg-neutral-900 glass-border rounded-2xl overflow-hidden shadow-card">
         {/* Column headers */}
-        <div className="grid grid-cols-[1fr_120px_100px_100px] px-6 py-3 border-b border-white/[0.05]">
+        <div className="hidden sm:grid grid-cols-[1fr_120px_100px_100px] px-6 py-3 border-b border-white/[0.05]">
           <span className="text-[10px] font-bold tracking-widest text-gray-600">CLASE</span>
           <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">HORARIO</span>
           <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">DURACIÓN</span>
@@ -131,21 +131,24 @@ export default function ProfesorHorasPage() {
             {entries.map((entry) => (
               <div
                 key={entry.id}
-                className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors"
+                className="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_120px_100px_100px] gap-x-3 items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors"
               >
                 <div className="min-w-0">
                   <p className="text-white text-sm font-semibold truncate">{entry.classTitle}</p>
-                  <p className="text-gray-500 text-[11px]">{entry.dayName}, {entry.date}</p>
+                  <p className="text-gray-400 text-xs">
+                    {entry.dayName}, {entry.date}
+                    <span className="sm:hidden"> · {entry.startTime} · {entry.studentsPresent}/{entry.studentsTotal} alumnos</span>
+                  </p>
                 </div>
-                <div className="flex justify-center">
+                <div className="hidden sm:flex justify-center">
                   <span className="text-gray-300 text-xs font-medium">{entry.startTime}</span>
                 </div>
                 <div className="flex justify-center">
-                  <span className="px-2.5 py-1 rounded-lg bg-lime-400/10 text-lime-400 text-[10px] font-bold">
+                  <span className="px-2.5 py-1 rounded-lg bg-lime-400/10 text-lime-400 text-xs font-bold">
                     {fmtHours(entry.durationMin)}
                   </span>
                 </div>
-                <div className="flex justify-center">
+                <div className="hidden sm:flex justify-center">
                   <span className="text-gray-300 text-xs font-medium">
                     {entry.studentsPresent}
                     <span className="text-gray-600">/{entry.studentsTotal}</span>
@@ -155,18 +158,18 @@ export default function ProfesorHorasPage() {
             ))}
 
             {/* Total row */}
-            <div className="grid grid-cols-[1fr_120px_100px_100px] items-center px-6 py-4 border-t border-white/[0.08] bg-white/[0.02]">
+            <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_120px_100px_100px] gap-x-3 items-center px-4 sm:px-6 py-4 border-t border-white/[0.08] bg-white/[0.02]">
               <div>
                 <span className="text-white text-xs font-extrabold tracking-wider">TOTAL PERÍODO</span>
-                <span className="text-gray-600 text-[10px] ml-2">{totalClases} clases</span>
+                <span className="text-gray-400 text-xs ml-2">{totalClases} clases</span>
               </div>
-              <div />
+              <div className="hidden sm:block" />
               <div className="flex justify-center">
                 <span className="px-2.5 py-1 rounded-lg bg-lime-400/20 text-lime-400 text-[10px] font-extrabold">
                   {fmtHours(totalMins)}
                 </span>
               </div>
-              <div className="flex justify-center">
+              <div className="hidden sm:flex justify-center">
                 <span className="text-lime-400 text-xs font-bold">{totalAlumnos} total</span>
               </div>
             </div>

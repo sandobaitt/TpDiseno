@@ -1,14 +1,15 @@
-"use client";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { getMockSession, getPostLoginPath } from "@/data/users";
 import { ErrorBadge } from "./ErrorBadge";
 import { ActionButton } from "./ActionButton";
 
 export function ErrorContent() {
   const navigate = useNavigate();
 
-  const handleDashboardClick = () => {
-    navigate("/");
+  const handleHomeClick = () => {
+    const session = getMockSession();
+    navigate(session ? getPostLoginPath(session.role) : "/");
   };
 
   const handleRetryClick = () => {
@@ -32,17 +33,17 @@ export function ErrorContent() {
         </header>
 
         <p className="mb-12 text-base leading-relaxed text-center max-w-[480px] text-neutral-400 max-sm:text-sm">
-          Parece que te has salido del circuito. No te detengas, vuelve al
-          entrenamiento.
+          La página que buscás no existe o cambió de lugar. Volvé al inicio
+          para seguir.
         </p>
 
         <div className="flex flex-row gap-4 items-center max-sm:flex-col max-sm:w-full">
           <ActionButton
             variant="primary"
             icon="ti-home"
-            onClick={handleDashboardClick}
+            onClick={handleHomeClick}
           >
-            VOLVER AL DASHBOARD
+            VOLVER AL INICIO
           </ActionButton>
           <ActionButton
             variant="secondary"

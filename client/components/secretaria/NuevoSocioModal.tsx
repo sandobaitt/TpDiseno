@@ -1,8 +1,10 @@
-"use client";
 import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { plansMock } from "@/data/plans";
 import type { Client } from "@/data/clients";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { useDraft } from "@/hooks/use-draft";
+import { toLocalISODate, todayISO } from "@/lib/dates";
 
 const STEPS = [
   { id: 1, label: "Personal" },
@@ -32,8 +34,6 @@ interface FormData {
   fechaInicio: string;
 }
 
-const TODAY = new Date().toISOString().split("T")[0];
-
 const EMPTY_FORM: FormData = {
   nombre: "",
   apellido: "",
@@ -52,7 +52,7 @@ const EMPTY_FORM: FormData = {
   tratamientoMedico: false,
   aceptaDeclaracion: false,
   planId: "",
-  fechaInicio: TODAY,
+  fechaInicio: "",
 };
 
 const HEALTH_CONDITIONS: { key: keyof Pick<FormData, "enfermedadCardiaca" | "hipertension" | "diabetes" | "epilepsia" | "lesionFisica" | "tratamientoMedico">; label: string }[] = [
@@ -128,18 +128,34 @@ interface NuevoSocioModalProps {
 
 export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) {
   const [step, setStep] = React.useState(1);
-  const [form, setForm] = React.useState<FormData>(EMPTY_FORM);
+  // El formulario se guarda como borrador mientras tiene cambios (Wi-Fi inestable / cierre accidental).
+  const draft = useDraft<FormData>("inscripcion", { ...EMPTY_FORM, fechaInicio: todayISO() });
+  const form = draft.value;
+  const setForm = draft.setValue;
   const [submitted, setSubmitted] = React.useState(false);
+  const [registeredName, setRegisteredName] = React.useState("");
+  const [confirmCloseOpen, setConfirmCloseOpen] = React.useState(false);
 
   function reset() {
     setStep(1);
-    setForm({ ...EMPTY_FORM, fechaInicio: new Date().toISOString().split("T")[0] });
+    draft.clear();
     setSubmitted(false);
   }
 
-  function handleClose() {
-    reset();
+  function closeNow() {
+    setConfirmCloseOpen(false);
+    setStep(1);
+    setSubmitted(false);
     onClose();
+  }
+
+  function handleClose() {
+    // Si hay datos cargados sin registrar, se confirma antes de cerrar (el borrador queda guardado).
+    if (!submitted && draft.isDirty) {
+      setConfirmCloseOpen(true);
+      return;
+    }
+    closeNow();
   }
 
   function setField<K extends keyof FormData>(key: K, value: FormData[K]) {
@@ -147,8 +163,8 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
   }
 
   function handleSubmit() {
-    const endDate = new Date(form.fechaInicio);
-    endDate.setMonth(endDate.getMonth() + 1);
+    const [y, m, d] = form.fechaInicio.split("-").map(Number);
+    const endDate = new Date(y, m, d); // m es 1..12, así que esto es "un mes después"
 
     const newClient: Client = {
       id: `cl_new_${Date.now()}`,
@@ -162,7 +178,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
         ? {
             planId: form.planId,
             startDate: form.fechaInicio,
-            endDate: endDate.toISOString().split("T")[0],
+            endDate: toLocalISODate(endDate),
             status: "active",
           }
         : undefined,
@@ -170,12 +186,15 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
     };
 
     onAdd(newClient);
+    setRegisteredName(newClient.fullName);
+    draft.clear();
     setSubmitted(true);
   }
 
   const activePlans = plansMock.filter((p) => p.status === "active");
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent className="max-w-2xl bg-neutral-900 border border-white/[0.08] text-white max-h-[90vh] overflow-y-auto">
         {!submitted ? (
@@ -183,6 +202,22 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
             <DialogHeader className="pb-2">
               <DialogTitle className="text-white text-xl font-extrabold tracking-wider">AGREGAR SOCIO NUEVO</DialogTitle>
             </DialogHeader>
+
+            {draft.restored && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-2.5">
+                <p className="flex items-center gap-2 text-xs text-amber-300">
+                  <i className="ti ti-history text-sm" aria-hidden="true" />
+                  Recuperamos los datos de una inscripción que quedó sin terminar.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { draft.clear(); setStep(1); }}
+                  className="text-xs font-semibold text-amber-300 underline underline-offset-2 hover:text-amber-200"
+                >
+                  Empezar de cero
+                </button>
+              </div>
+            )}
 
             {/* Step indicator */}
             <div className="flex items-center gap-0 mb-4">
@@ -375,7 +410,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
             <div className="flex flex-col gap-2">
               <h3 className="text-white text-xl font-extrabold">¡Socio registrado!</h3>
               <p className="text-gray-400 text-sm">
-                <span className="text-white font-semibold">{form.nombre} {form.apellido}</span> fue agregado exitosamente al sistema.
+                <span className="text-white font-semibold">{registeredName}</span> fue agregado exitosamente al sistema.
               </p>
             </div>
             <div className="flex gap-3">
@@ -397,5 +432,17 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
         )}
       </DialogContent>
     </Dialog>
+
+    <ConfirmDialog
+      open={confirmCloseOpen}
+      onOpenChange={setConfirmCloseOpen}
+      title="¿Cerrar la inscripción?"
+      description="Lo que cargaste queda guardado como borrador en este equipo. La próxima vez que abras el formulario vas a poder seguir donde quedaste."
+      confirmLabel="Cerrar y guardar borrador"
+      cancelLabel="Seguir completando"
+      onConfirm={closeNow}
+      iconClassName="ti ti-device-floppy"
+    />
+    </>
   );
 }
