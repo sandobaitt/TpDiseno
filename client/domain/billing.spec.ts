@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { dueDateFor, getAccountSummary, proratedAmount } from "./billing";
+import {
+  dueDateFor,
+  getAccountSummary,
+  proratedAmount,
+  upcomingCharges,
+} from "./billing";
 import type { Client } from "@/data/clients";
 import type { Payment } from "@/data/payments";
 import type { Plan } from "@/data/plans";
@@ -183,5 +188,39 @@ describe("estado de cuenta", () => {
     );
     expect(s.status).toBe("inactivo");
     expect(s.charges.map((c) => c.period)).toEqual(["2026-01", "2026-02"]);
+  });
+});
+
+describe("cuotas por adelantado", () => {
+  it("siguen a la última cuota generada", () => {
+    const alumno = client("2026-01-01");
+    const account = getAccountSummary(
+      alumno,
+      paid("2026-01", "2026-02", "2026-03"),
+      plan,
+      "2026-03-10",
+    );
+    const next = upcomingCharges(alumno, plan, account, [], 2);
+    expect(next.map((c) => c.period)).toEqual(["2026-04", "2026-05"]);
+    expect(next[0]).toMatchObject({ amount: 30000, dueDate: "2026-04-05" });
+  });
+
+  it("saltean los meses que ya se pagaron por adelantado", () => {
+    const alumno = client("2026-01-01");
+    const payments = paid("2026-01", "2026-02", "2026-03", "2026-04");
+    const account = getAccountSummary(alumno, payments, plan, "2026-03-10");
+    expect(upcomingCharges(alumno, plan, account, payments, 1)[0].period).toBe(
+      "2026-05",
+    );
+    // y el próximo vencimiento también lo tiene en cuenta
+    expect(account.nextDueDate).toBe("2026-05-05");
+  });
+
+  it("si la inscripción empieza más adelante, la primera es proporcional", () => {
+    const alumno = client("2026-04-16");
+    const account = getAccountSummary(alumno, [], plan, "2026-03-20");
+    const [first] = upcomingCharges(alumno, plan, account, [], 1);
+    expect(first).toMatchObject({ period: "2026-04", prorated: true });
+    expect(first.amount).toBe(proratedAmount(30000, "2026-04-16"));
   });
 });

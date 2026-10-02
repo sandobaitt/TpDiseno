@@ -60,13 +60,20 @@ describe("coherencia entre permisos, inicio y menú", () => {
 });
 
 describe("permisos dentro de la ficha del alumno", () => {
-  it("secretaría edita, adjunta documentos y cobra, pero no da de baja", () => {
+  it("secretaría edita, adjunta documentos, cobra y restringe, pero no da de baja", () => {
     expect(studentCapabilities("secretario")).toEqual({
       editData: true,
       manageDocuments: true,
       collect: true,
+      restrict: true,
       deactivate: false,
     });
+  });
+
+  it("la restricción manual es de secretaría (CU 5)", () => {
+    expect(ROLES.filter((r) => studentCapabilities(r).restrict)).toEqual([
+      "secretario",
+    ]);
   });
 
   it("solo el administrador da de baja (CU 11)", () => {

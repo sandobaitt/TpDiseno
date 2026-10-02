@@ -128,6 +128,7 @@ export function getAccountSummary(
         });
 
   const unpaid = charges.filter((c) => !c.paid);
+  const paidPeriods = new Set(approved.flatMap((p) => p.periods));
   const overdue = unpaid.filter((c) => diffDays(c.dueDate, today) > 0);
   const overdueDays =
     overdue.length > 0 ? diffDays(overdue[0].dueDate, today) : 0;
@@ -148,11 +149,68 @@ export function getAccountSummary(
     overdueDays,
     nextDueDate:
       unpaid[0]?.dueDate ??
-      dateInPeriod(addMonths(currentPeriod, 1), PAYMENT_DUE_DAY),
+      nextUnpaidDueDate(client, currentPeriod, paidPeriods),
     blockDate: unpaid[0]
       ? addDays(unpaid[0].dueDate, DEBT_BLOCK_DAYS)
       : undefined,
   };
+}
+
+/** Vencimiento del primer mes futuro que todavía no está pagado (puede haber cuotas adelantadas). */
+function nextUnpaidDueDate(
+  client: Client,
+  currentPeriod: string,
+  paidPeriods: Set<string>,
+): string {
+  const firstPeriod = toPeriod(client.enrolledAt);
+  let period =
+    firstPeriod > currentPeriod ? firstPeriod : addMonths(currentPeriod, 1);
+  while (paidPeriods.has(period)) period = addMonths(period, 1);
+  return dueDateFor(period, client.enrolledAt);
+}
+
+/**
+ * Cuotas que se pueden cobrar por adelantado, después de las ya generadas
+ * (saltea los meses que ya están pagados por adelantado).
+ */
+export function upcomingCharges(
+  client: Client,
+  plan: Plan,
+  account: AccountSummary,
+  payments: Payment[],
+  count: number,
+): MonthlyCharge[] {
+  const firstPeriod = toPeriod(client.enrolledAt);
+  const paidPeriods = new Set(
+    payments
+      .filter(
+        (p) =>
+          p.clientId === client.id &&
+          p.status === "approved" &&
+          p.concept === "membership",
+      )
+      .flatMap((p) => p.periods),
+  );
+  const lastCharged = account.charges[account.charges.length - 1]?.period;
+  let period = lastCharged ? addMonths(lastCharged, 1) : firstPeriod;
+  const enrolledDay = Number(client.enrolledAt.slice(8, 10));
+  const result: MonthlyCharge[] = [];
+  while (result.length < count) {
+    if (!paidPeriods.has(period)) {
+      const prorated = period === firstPeriod && enrolledDay > 1;
+      result.push({
+        period,
+        amount: prorated
+          ? proratedAmount(plan.monthlyPriceArs, client.enrolledAt)
+          : plan.monthlyPriceArs,
+        prorated,
+        dueDate: dueDateFor(period, client.enrolledAt),
+        paid: false,
+      });
+    }
+    period = addMonths(period, 1);
+  }
+  return result;
 }
 
 /** Frase corta para mostrar junto al estado ("Debe $27.990 · 12 días de atraso"). */

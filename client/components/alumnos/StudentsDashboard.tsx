@@ -19,6 +19,12 @@ export function StudentsDashboard() {
         actions={
           <>
             <Button asChild variant="outline" className="rounded-xl">
+              <Link to="/secretaria/acceso">
+                <i className="ti ti-door-enter text-base" aria-hidden="true" />
+                Control de acceso
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-xl">
               <Link to="/secretaria/asistencia">
                 <i className="ti ti-user-check text-base" aria-hidden="true" />
                 Tomar asistencia

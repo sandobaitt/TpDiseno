@@ -135,6 +135,9 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `components/common/ConfirmDialog.tsx` | Confirmar acciones importantes o destructivas. |
 | `lib/format.ts` | `matchesPersonSearch` (busca por nombre sin tildes o por DNI con o sin puntos), `formatARS` (moneda), `formatDni`, `getInitials` y `cleanText`. |
 | `lib/files.ts` | `FileMeta`, `checkDocumentFile` y `formatFileSize`. |
+| `components/alumnos/payments/CheckoutDialog` | Cobrar cuotas desde cualquier pantalla: cuotas, medio, promoción y recibo. |
+| `components/alumnos/payments/ReceiptDialog` | Ver o imprimir un recibo (solo sale el recibo, gracias a la clase `print-area`). |
+| `data/promotions.ts` + `domain/promotions.ts` | Única fuente de promociones y sus condiciones (vigencia, cupón, efectivo, antigüedad, semestral, familiar). |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
@@ -234,6 +237,8 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - Con **15 días de atraso desde el vencimiento** el alumno queda bloqueado y no puede ingresar.
   - Ese umbral es una constante configurable y no se repite en el código.
 - **Medios de pago:** efectivo, tarjeta de débito, transferencia y QR. El recibo digital muestra fecha, monto y método.
+- **Promociones:** se aplica **una por cobro** (no se acumulan). Cada una tiene vigencia y condiciones, y la configuración es del módulo de Finanzas (otro grupo).
+- **Acceso:** se puede entrar si la cuota no está bloqueada, no hay restricción manual y, si es una clase, está incluida en el plan (`domain/access.ts`).
 - **Inscripción:**
   - Datos de contacto, peso, estatura, antecedentes de salud y DDJJ.
   - Se pueden adjuntar certificados.

@@ -4,6 +4,7 @@ import { DataTable, type DataTableColumn } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { SearchInput } from "@/components/common/SearchInput";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ interface StudentRow {
   branchId: string;
   branchCode: string;
   status: AccountStatus;
+  /** Restricción de acceso manual de secretaría (CU 5). */
+  restricted: boolean;
   lastAccess: string;
 }
 
@@ -78,6 +81,7 @@ export function StudentsTable({
           branchesMock.find((b) => b.id === client.branchId)?.code ?? "",
         // El estado se calcula a partir de los pagos (no se guarda a mano).
         status: selectAccount(state, client).status,
+        restricted: !!client.manualRestriction,
         lastAccess: formatLastAccess(selectLastAccess(state, client.id)),
       })),
     [state],
@@ -141,7 +145,16 @@ export function StudentsTable({
     {
       key: "status",
       header: "ESTADO",
-      render: (row) => <AccountStatusBadge status={row.status} />,
+      render: (row) => (
+        <div className="flex flex-col items-start gap-1">
+          <AccountStatusBadge status={row.status} />
+          {row.restricted && (
+            <StatusBadge tone="danger" icon="ti-lock">
+              Restringido
+            </StatusBadge>
+          )}
+        </div>
+      ),
     },
     { key: "lastAccess", header: "ÚLTIMO INGRESO", cellClassName: "truncate" },
   ];

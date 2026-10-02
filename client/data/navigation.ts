@@ -18,6 +18,12 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         end: false,
       },
       {
+        id: "access",
+        label: "Control de acceso",
+        iconClassName: "ti ti-door-enter",
+        to: "/secretaria/acceso",
+      },
+      {
         id: "checkins",
         label: "Control de asistencia",
         iconClassName: "ti ti-user-check",

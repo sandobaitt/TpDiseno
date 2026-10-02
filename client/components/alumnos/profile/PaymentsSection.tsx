@@ -1,15 +1,7 @@
 import * as React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/common/SectionCard";
-import { DetailList } from "@/components/common/DetailList";
+import { ReceiptDialog } from "@/components/alumnos/payments/ReceiptDialog";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge, type StatusTone } from "@/components/common/StatusBadge";
 import {
@@ -99,64 +91,11 @@ export function PaymentsSection({
         </ul>
       )}
 
-      <Dialog
-        open={!!receipt}
-        onOpenChange={(open) => !open && setReceipt(null)}
-      >
-        <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
-          {receipt && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-lg font-extrabold">
-                  Recibo {receipt.receiptNumber}
-                </DialogTitle>
-                <DialogDescription>
-                  Comprobante del pago de {clientName}.
-                </DialogDescription>
-              </DialogHeader>
-              <DetailList
-                items={[
-                  { label: "Período", value: periodsLabel(receipt) },
-                  ...(receipt.discountArs > 0
-                    ? [
-                        {
-                          label: "Subtotal",
-                          value: formatARS(receipt.subtotalArs),
-                        },
-                        {
-                          label: "Descuento",
-                          value: `− ${formatARS(receipt.discountArs)}`,
-                        },
-                      ]
-                    : []),
-                  {
-                    label: "Total pagado",
-                    value: formatARS(receipt.amountArs),
-                  },
-                  {
-                    label: "Medio de pago",
-                    value: PAYMENT_METHOD_LABELS[receipt.method],
-                  },
-                  { label: "Fecha", value: formatDateTime(receipt.createdAt) },
-                  {
-                    label: "Registrado por",
-                    value: getUserName(receipt.processedBy),
-                  },
-                ]}
-              />
-              <DialogFooter>
-                <Button
-                  type="button"
-                  onClick={() => setReceipt(null)}
-                  className="rounded-xl font-bold"
-                >
-                  Cerrar
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ReceiptDialog
+        payment={receipt}
+        clientName={clientName}
+        onClose={() => setReceipt(null)}
+      />
     </SectionCard>
   );
 }

@@ -86,6 +86,8 @@ export interface Client {
   health?: HealthDeclaration;
   attachments?: Attachment[];
   guardian?: Guardian;
+  /** Alumnos de la misma familia comparten este id (para el plan familiar). */
+  familyGroupId?: string;
   createdAt: string; // ISO con hora
   /** Id del usuario que registró la inscripción. */
   createdBy?: string;
@@ -129,6 +131,7 @@ const seedClients: Client[] = [
   },
   {
     id: "cl_002",
+    familyGroupId: "fam_gomez",
     branchId: "br_002",
     fullName: "Laura Gómez",
     email: "laura.g@email.com",
@@ -151,6 +154,7 @@ const seedClients: Client[] = [
   },
   {
     id: "cl_003",
+    familyGroupId: "fam_silva",
     branchId: "br_001",
     fullName: "Carlos Silva",
     email: "carlos.s@email.com",
@@ -251,6 +255,7 @@ const seedClients: Client[] = [
   },
   {
     id: "cl_007",
+    familyGroupId: "fam_silva",
     branchId: "br_002",
     fullName: "Mateo Silva",
     email: "mateo.silva@email.com",
@@ -321,6 +326,7 @@ const seedClients: Client[] = [
   },
   {
     id: "cl_010",
+    familyGroupId: "fam_gomez",
     branchId: "br_001",
     fullName: "Martina Gómez",
     email: "martina.gomez@email.com",

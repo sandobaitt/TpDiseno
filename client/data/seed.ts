@@ -22,6 +22,11 @@ export function daysAgo(days: number): string {
   return addDays(SEED_TODAY, -days);
 }
 
+/** Fecha dentro de `days` días. */
+export function daysAhead(days: number): string {
+  return addDays(SEED_TODAY, days);
+}
+
 /** Día `day` del mes de hace `months` meses (se ajusta si el mes es más corto). */
 export function monthsAgo(months: number, day: number): string {
   const period = addMonths(SEED_PERIOD, -months);

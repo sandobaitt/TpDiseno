@@ -11,7 +11,8 @@ import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import { SectionCard } from "@/components/common/SectionCard";
 import { DetailList } from "@/components/common/DetailList";
 import { EmptyState } from "@/components/common/EmptyState";
-import { CheckoutDialog } from "@/components/cobros/CheckoutDialog";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { CheckoutDialog } from "@/components/alumnos/payments/CheckoutDialog";
 import { getPlan } from "@/data/plans";
 import { getMockSession } from "@/data/users";
 import { getRecordChecklist } from "@/domain/enrollment";
@@ -35,6 +36,7 @@ import { HistorySection } from "./HistorySection";
 import { StudentEditDialog } from "./StudentEditDialog";
 import { HealthEditDialog } from "./HealthEditDialog";
 import { AttachmentDialog } from "./AttachmentDialog";
+import { RestrictDialog } from "./RestrictDialog";
 
 type TabId = "resumen" | "datos" | "salud" | "pagos" | "historial";
 
@@ -68,7 +70,13 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
   const location = useLocation();
   const [params, setParams] = useSearchParams();
   const [dialog, setDialog] = React.useState<
-    "datos" | "salud" | "documento" | "cobro" | null
+    | "datos"
+    | "salud"
+    | "documento"
+    | "cobro"
+    | "restringir"
+    | "quitarRestriccion"
+    | null
   >(null);
 
   const caps = studentCapabilities(getMockSession()?.role);
@@ -192,7 +200,17 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
               account={account}
               onCollect={canCollect ? collect : undefined}
             />
-            <AccessCard client={client} plan={plan} access={access} />
+            <AccessCard
+              client={client}
+              plan={plan}
+              access={access}
+              onRestrict={
+                caps.restrict ? () => setDialog("restringir") : undefined
+              }
+              onUnrestrict={
+                caps.restrict ? () => setDialog("quitarRestriccion") : undefined
+              }
+            />
             <RecordChecklistCard
               items={getRecordChecklist(client, today)}
               onOpenHealth={() => goToTab("salud")}
@@ -270,6 +288,29 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
           clientId={dialog === "cobro" ? client.id : null}
           onClose={() => setDialog(null)}
         />
+      )}
+      {caps.restrict && (
+        <>
+          <RestrictDialog
+            client={client}
+            open={dialog === "restringir"}
+            onOpenChange={(open) => setDialog(open ? "restringir" : null)}
+          />
+          <ConfirmDialog
+            open={dialog === "quitarRestriccion"}
+            onOpenChange={(open) =>
+              setDialog(open ? "quitarRestriccion" : null)
+            }
+            title="¿Quitar la restricción de acceso?"
+            description={`${client.fullName} va a poder volver a ingresar, salvo que tenga una deuda que bloquee el acceso.`}
+            confirmLabel="Quitar restricción"
+            iconClassName="ti ti-lock-open"
+            onConfirm={() => {
+              actions.unrestrictClient(client.id);
+              toast.success("Restricción quitada.");
+            }}
+          />
+        </>
       )}
       {caps.manageDocuments && (
         <AttachmentDialog

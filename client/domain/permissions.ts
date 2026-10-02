@@ -35,6 +35,8 @@ export interface StudentCapabilities {
   manageDocuments: boolean;
   /** Ir a cobrar la cuota (CU 4). */
   collect: boolean;
+  /** Aplicar o quitar una restricción de acceso manual (CU 5). */
+  restrict: boolean;
   /** Dar de baja o reactivar (CU 11: solo el Administrador). */
   deactivate: boolean;
 }
@@ -43,6 +45,7 @@ const NO_STUDENT_CAPABILITIES: StudentCapabilities = {
   editData: false,
   manageDocuments: false,
   collect: false,
+  restrict: false,
   deactivate: false,
 };
 
@@ -55,6 +58,7 @@ export function studentCapabilities(
         editData: true,
         manageDocuments: true,
         collect: true,
+        restrict: true,
         deactivate: false,
       };
     case "admin":
@@ -62,6 +66,7 @@ export function studentCapabilities(
         editData: true,
         manageDocuments: true,
         collect: false,
+        restrict: false,
         deactivate: true,
       };
     default:

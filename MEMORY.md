@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E6. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E7. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -18,12 +18,27 @@
 | Gestor de paquetes | npm. | Es el del lockfile y los scripts; pnpm no está instalado. |
 | Lo que no se toca | Deploy (`server/`, `api/`, `netlify/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
 | Documentación | Se borraron AGENTS.md, ARQUITECTURA_FRONTEND.md y `.builder/`. Se conserva `.agents/rules/frontend.md`, que es para otras herramientas. | Para tener una sola fuente de verdad. |
+| Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan: se eligió lo más simple de explicar. **Confirmar con el grupo.** |
+| Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
 | PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
 
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E6 terminadas**. Sigue **E7**: cobros, promociones, restricción manual y "Control de acceso" (CU 3, 4, 5, 9 y 13).
+- Fase 3: **E0 a E7 terminadas**. Sigue **E8**: asistencia por clase y sede, "Mi asistencia" y "Mi plan y cronograma" (CU 6, 7 y 8).
+- En E7 se resolvió lo siguiente:
+  - **Cobro nuevo** (`components/alumnos/payments/`), un solo componente para secretaría y para el pago online del alumno:
+    - se elige cuántas cuotas, de la más vieja a la más nueva, con hasta 6 por adelantado;
+    - medio de pago y promoción o cupón, con el motivo cuando no aplica;
+    - recibo para ver o imprimir.
+  - **Cobros:** lista ordenada por urgencia, KPIs (adeudado y cobrado hoy) y pestaña "Pagos de hoy" con recibos.
+  - **Promociones (CU 9):** `data/promotions.ts` y `domain/promotions.ts` con tests.
+  - **Restricción manual (CU 5):** desde la ficha, con motivo y registro de quién la aplicó. Se ve como "Restringido" en la lista.
+  - **Control de acceso (CU 13)** en `/secretaria/acceso`:
+    - busca por DNI completo (el resultado sale solo) o por nombre;
+    - permite elegir una clase de hoy para controlar el plan;
+    - el resultado se muestra en grande, con botones para cobrar, registrar asistencia y ver la ficha;
+    - muestra los últimos controles.
 - En E6 se resolvió lo siguiente:
   - **Carpeta `components/alumnos/`:** lista (`StudentsDashboard`, `StudentsTable`, `StudentStats`), inscripción (`enrollment/`), ficha (`profile/`) y DDJJ compartida (`health/`).
   - **Rutas de secretaría:** `/secretaria` redirige a `/secretaria/alumnos`; la inscripción es `/secretaria/alumnos/nuevo` y la ficha `/secretaria/alumnos/:id`.
@@ -95,7 +110,7 @@
   - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
   - El login usa una imagen local.
 - **Ya existen** `domain/` y `store/` (`state.ts`, `actions.ts`, `reducer.ts`, `selectors.ts` y `StoreProvider.tsx`). Todas las pantallas de nuestros módulos leen del store.
-- `components/alumnos/` ya existe. `components/personal/` todavía **no existe**. Las carpetas viejas que siguen en uso son `cobros/`, `cronograma/`, `novedades/` y `globales/`. `secretaria/` y `member-detail/` ya no existen.
+- `components/alumnos/` ya existe. `components/personal/` todavía **no existe**. Las carpetas viejas que siguen en uso son `cronograma/`, `novedades/` y `globales/`. `secretaria/`, `member-detail/` y `cobros/` ya no existen.
 - El diálogo de alumno de `AdminPersonalPage` sigue siendo el viejo. Se reemplaza por la ficha única en E10, con ruta `/admin/alumnos/:id` y `studentCapabilities("admin")`.
 - **Helpers disponibles:**
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
@@ -109,7 +124,9 @@
 
 - Etapas E1 a E15 de `docs/PLAN.md`.
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
-- Coordinar con el grupo de "configuración de promociones": hoy el cobro y Admin → Finanzas usan listas distintas.
+- Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
+- Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
+- En E8, la toma de asistencia por clase tiene que usar la misma verificación de acceso (CU 13).
 
 ## Problemas conocidos (los más graves)
 

@@ -139,3 +139,24 @@ html {
     border-radius: 2px;
   }
 }
+
+/* Al imprimir un recibo, solo sale el recibo (en blanco y negro). */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+    color: black !important;
+    border-color: lightgray !important;
+  }
+  .print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    background: white;
+  }
+}

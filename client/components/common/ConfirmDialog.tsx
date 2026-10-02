@@ -50,8 +50,8 @@ export function ConfirmDialog({
               className={cn(
                 "mb-1 flex h-12 w-12 items-center justify-center rounded-xl",
                 isDanger
-                  ? "bg-red-500/10 text-red-400"
-                  : "bg-lime-400/10 text-lime-400",
+                  ? "bg-danger/10 text-danger"
+                  : "bg-primary/10 text-primary",
               )}
             >
               <i className={cn(iconClassName, "text-2xl")} aria-hidden="true" />
@@ -74,9 +74,10 @@ export function ConfirmDialog({
             onClick={onConfirm}
             className={cn(
               "rounded-xl font-bold",
+              // Texto oscuro sobre rojo claro: contraste AA.
               isDanger
-                ? "bg-red-500 text-white hover:bg-red-600"
-                : "bg-lime-400 text-squat-ink hover:bg-lime-300",
+                ? "bg-danger text-neutral-950 hover:bg-danger/90"
+                : "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
           >
             {confirmLabel}

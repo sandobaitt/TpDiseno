@@ -8,6 +8,7 @@ import {
   daysInPeriod,
   diffDays,
   formatMinutes,
+  monthsBetween,
   parseISODate,
   periodRange,
   startOfWeek,
@@ -65,6 +66,14 @@ describe("meses", () => {
     expect(daysInPeriod("2026-02")).toBe(28);
     expect(daysInPeriod("2028-02")).toBe(29);
     expect(dateInPeriod("2026-05", 5)).toBe("2026-05-05");
+  });
+});
+
+describe("antigüedad", () => {
+  it("cuenta meses cumplidos", () => {
+    expect(monthsBetween("2025-10-12", "2026-10-11")).toBe(11);
+    expect(monthsBetween("2025-10-12", "2026-10-12")).toBe(12);
+    expect(monthsBetween("2026-10-12", "2026-10-01")).toBe(0);
   });
 });
 

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/common/SectionCard";
 import type { Client } from "@/data/clients";
 import type { Plan } from "@/data/plans";
@@ -12,12 +13,55 @@ interface AccessCardProps {
   client: Client;
   plan?: Plan;
   access: AccessCheck;
+  /** Si se pasan, secretaría puede aplicar o quitar una restricción manual (CU 5). */
+  onRestrict?: () => void;
+  onUnrestrict?: () => void;
 }
 
 /** ¿Puede ingresar? Se calcula solo con la deuda, el plan y las restricciones (CU 5 y 13). */
-export function AccessCard({ client, plan, access }: AccessCardProps) {
+export function AccessCard({
+  client,
+  plan,
+  access,
+  onRestrict,
+  onUnrestrict,
+}: AccessCardProps) {
+  const restricted = !!client.manualRestriction;
+  const canManage = client.status === "active";
+
   return (
-    <SectionCard title="Habilitación para ingresar" icon="ti-door-enter">
+    <SectionCard
+      title="Habilitación para ingresar"
+      icon="ti-door-enter"
+      actions={
+        canManage &&
+        (restricted
+          ? onUnrestrict && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onUnrestrict}
+                className="rounded-xl"
+              >
+                <i className="ti ti-lock-open text-sm" aria-hidden="true" />
+                Quitar restricción
+              </Button>
+            )
+          : onRestrict && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onRestrict}
+                className="rounded-xl border-danger/40 text-danger hover:bg-danger/10 hover:text-danger"
+              >
+                <i className="ti ti-lock text-sm" aria-hidden="true" />
+                Restringir acceso
+              </Button>
+            ))
+      }
+    >
       <div
         className={cn(
           "flex items-start gap-3 rounded-xl border p-4",

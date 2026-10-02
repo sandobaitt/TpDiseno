@@ -164,6 +164,15 @@ export function formatMinutes(minutes: number): string {
   return m === 0 ? `${sign}${h}h` : `${sign}${h}h ${m}m`;
 }
 
+/** Meses cumplidos entre dos fechas (antigüedad): del 12/10/2025 al 11/10/2026 son 11. */
+export function monthsBetween(from: string, to: string): number {
+  const [fy, fm, fd] = from.split("-").map(Number);
+  const [ty, tm, td] = to.split("-").map(Number);
+  let months = (ty - fy) * 12 + (tm - fm);
+  if (td < fd) months--;
+  return Math.max(0, months);
+}
+
 /** Edad en años cumplidos a la fecha `onDate`. */
 export function ageOn(birthDate: string, onDate: string): number {
   const [by, bm, bd] = birthDate.split("-").map(Number);

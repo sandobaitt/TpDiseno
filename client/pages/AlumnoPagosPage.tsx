@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
+import { CheckoutDialog } from "@/components/alumnos/payments/CheckoutDialog";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { getMockSession } from "@/data/users";
 import { getPlan } from "@/data/plans";
@@ -274,21 +274,11 @@ export default function AlumnoPagosPage() {
       </Dialog>
 
       {/* Pago online de lo adeudado */}
-      <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
-        <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
-          <DialogTitle className="sr-only">Pagar cuota</DialogTitle>
-          <DialogDescription className="sr-only">
-            Elegí el medio de pago y confirmá.
-          </DialogDescription>
-          <div className="p-3">
-            <PaymentCheckoutContent
-              clientId={client.id}
-              alumnoMode
-              onClose={() => setCheckoutOpen(false)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CheckoutDialog
+        clientId={checkoutOpen ? client.id : null}
+        mode="online"
+        onClose={() => setCheckoutOpen(false)}
+      />
     </>
   );
 }
