@@ -143,7 +143,7 @@ export function CheckoutPanel({
 
   return (
     <>
-      <div className="grid items-start gap-5 lg:grid-cols-[1.35fr_1fr]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1.35fr_1fr]">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border">
             <div

@@ -40,7 +40,7 @@ export function PersonalStep({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Nombre" required error={errors.firstName}>
           {(id, describedBy) => (
             <input
@@ -69,7 +69,7 @@ export function PersonalStep({
         </FormField>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField
           label="DNI"
           required
@@ -140,7 +140,7 @@ export function PersonalStep({
             Por ser menor de edad, necesita la autorización firmada de un adulto
             responsable.
           </p>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               label="Nombre y apellido"
               required

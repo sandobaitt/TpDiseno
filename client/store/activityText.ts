@@ -27,6 +27,8 @@ export const activityText = {
     `Adjuntó ${docWithArticle(doc.kind, false)} (${doc.fileName}) a la ficha de ${name}`,
   reviewAttachment: (doc: Attachment, name: string) =>
     `Revisó ${docWithArticle(doc.kind, true)} (${doc.fileName}) de ${name}`,
+  saveAttendance: (count: number, classLabel: string, correction: boolean) =>
+    `${correction ? "Corrigió" : "Registró"} la asistencia de ${count} ${count === 1 ? "alumno" : "alumnos"} en ${classLabel}`,
   payment: (payment: Payment, name: string) =>
     `${payment.status === "approved" ? "Registró el pago" : "Pago rechazado"} ${payment.receiptNumber} de ${name}: ${formatARS(payment.amountArs)} (${PAYMENT_METHOD_LABELS[payment.method]})`,
 };

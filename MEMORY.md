@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E7. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E8. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -25,7 +25,18 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E7 terminadas**. Sigue **E8**: asistencia por clase y sede, "Mi asistencia" y "Mi plan y cronograma" (CU 6, 7 y 8).
+- Fase 3: **E0 a E8 terminadas**. Sigue **E9**: DDJJ y certificados reales del alumno, alertas calculadas, centro de notificaciones y "Comunicaciones" de secretaría (CU 2, 3, 10 y 14).
+- En E8 se resolvió lo siguiente:
+  - **Asistencia por clase y sede (CU 6):**
+    - secretaría elige día, sede y clase; el profesor ve solo sus clases, incluidos los reemplazos;
+    - `ClassRoster`: presente, ausente o justificada, y "marcar presentes a los habilitados";
+    - los bloqueados no se pueden marcar presentes (misma verificación que el CU 13);
+    - se guarda en el store con "Último registro: quién y cuándo";
+    - se corrige hasta 30 días atrás, y el registro dice "Corrigió".
+  - **Mi asistencia (CU 7):** historial con ausencias justificadas y sin justificar, resumen por mes, exportar a CSV e imprimir.
+  - **Mi plan y cronograma (CU 8):** tarjeta del plan, clases incluidas resaltadas y las demás como "No incluida", filtro por sede y "Ver solo las clases de mi plan".
+  - **Limpieza:** se borró `data/classStudents.ts`. Las observaciones del profesor pasaron a `components/personal/ObservationsPanel.tsx` (se completan en E12).
+  - La pestaña "Personal" de Asistencia (`components/personal/StaffAttendanceToday.tsx`) es la pantalla vieja y se reemplaza en E11.
 - En E7 se resolvió lo siguiente:
   - **Cobro nuevo** (`components/alumnos/payments/`), un solo componente para secretaría y para el pago online del alumno:
     - se elige cuántas cuotas, de la más vieja a la más nueva, con hasta 6 por adelantado;
@@ -116,7 +127,6 @@
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
   - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
 - **Quedan con mocks viejos hasta su etapa:**
-  - `data/classStudents.ts` (asistencia del profesor, E8).
   - `data/adminAttendance.ts` (asistencia del admin/encargado, E11).
   - `horasMock` dentro de `ProfesorHorasPage` (E12).
 
@@ -126,14 +136,12 @@
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
 - Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
 - Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
-- En E8, la toma de asistencia por clase tiene que usar la misma verificación de acceso (CU 13).
 
 ## Problemas conocidos (los más graves)
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
 - **Diálogos sin título accesible** (Radix avisa en la consola). Se corrigen al rehacer cada pantalla:
-  - `ProfesorAsistenciaPage` (E8);
   - `AlumnoPanel` (E9);
   - `AdminAsistenciaPage` (E11).
 - **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).

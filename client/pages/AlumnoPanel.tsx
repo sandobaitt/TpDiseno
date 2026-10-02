@@ -1,37 +1,9 @@
 import * as React from "react";
-import { DataTable } from "@/components/common/DataTable";
 import { PageHeader } from "@/components/common/PageHeader";
-import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import type { StudentAttendance } from "@/data/attendance";
+import { MyAttendance } from "@/components/alumnos/student/MyAttendance";
 import { getMockSession } from "@/data/users";
-import { getSlot } from "@/data/schedule";
-import { getActivityName } from "@/data/activities";
-import { getTeacher } from "@/data/teachers";
-import { branchName } from "@/components/cronograma/weekView";
-import { formatDateShort } from "@/lib/dates";
-import { useAppState } from "@/store/StoreProvider";
-import type { AppState } from "@/store/state";
-import { selectClientAttendance } from "@/store/selectors";
-
-interface AttendanceRow extends StudentAttendance {
-  className: string;
-  trainer: string;
-}
-
-/** Historial del alumno logueado (cada alumno ve solo lo suyo). */
-function buildRows(state: AppState, clientId: string | undefined): AttendanceRow[] {
-  if (!clientId) return [];
-  return selectClientAttendance(state, clientId).map((record) => {
-    const slot = getSlot(record.slotId);
-    return {
-      ...record,
-      className: slot ? `${getActivityName(slot.activityId)} · ${branchName(record.branchId)}` : "Clase",
-      trainer: getTeacher(slot?.teacherId)?.fullName ?? "-",
-    };
-  });
-}
 
 const HEALTH_CONDITIONS = [
   "¿Tenés alguna lesión o cirugía reciente?",
@@ -44,15 +16,7 @@ const HEALTH_CONDITIONS = [
 
 const BLOOD_TYPES = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "No sé"];
 
-const ITEMS_PER_PAGE = 4;
-
 export default function AlumnoPanel() {
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const state = useAppState();
-  const rows = React.useMemo(() => buildRows(state, getMockSession()?.clientId), [state]);
-  const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
-  const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = rows.slice(start, start + ITEMS_PER_PAGE);
 
   // Certificado médico
   const [certUploaded, setCertUploaded] = React.useState(false);
@@ -76,53 +40,6 @@ export default function AlumnoPanel() {
     toast.success("DDJJ de Salud actualizada");
   }
 
-  const columns = [
-    {
-      key: "date",
-      header: "FECHA",
-      render: (row: AttendanceRow) => (
-        <span className="text-gray-300 text-sm">
-          {formatDateShort(row.date)}, {row.recordedAt.slice(11, 16)}
-        </span>
-      ),
-    },
-    {
-      key: "className",
-      header: "CLASE",
-      render: (row: AttendanceRow) => (
-        <span className="text-white text-sm font-semibold">{row.className}</span>
-      ),
-    },
-    {
-      key: "trainer",
-      header: "ENTRENADOR",
-      render: (row: AttendanceRow) => (
-        <span className="text-gray-300 text-sm">{row.trainer}</span>
-      ),
-    },
-    {
-      key: "status",
-      header: "ESTADO",
-      render: (row: AttendanceRow) =>
-        row.status === "present" ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-xs font-bold">
-            <i className="ti ti-check text-xs" aria-hidden="true" />
-            Asistió
-          </span>
-        ) : row.justified ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800 text-gray-300 text-xs font-bold">
-            <i className="ti ti-file-check text-xs" aria-hidden="true" />
-            Ausente (justificada)
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-900/40 text-red-400 text-xs font-bold">
-            <i className="ti ti-x text-xs" aria-hidden="true" />
-            Ausente sin justificar
-          </span>
-        ),
-    },
-  ];
-
   return (
     <div className="px-7 pb-7 max-sm:px-4">
       <PageHeader
@@ -132,31 +49,8 @@ export default function AlumnoPanel() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
-        {/* LEFT: Attendance Table */}
-        <div className="bg-black/60 rounded-2xl p-6 md:p-8 flex flex-col gap-5 shadow-card glass-border">
-          <div className="flex items-center justify-between">
-            <h2 className="text-white text-lg font-extrabold">Historial de Asistencias</h2>
-            <div className="flex gap-2">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-xs font-bold hover:brightness-110 transition-all cursor-pointer">
-                <i className="ti ti-file-text text-sm" />PDF
-              </button>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-xs font-bold hover:brightness-110 transition-all cursor-pointer">
-                <i className="ti ti-table text-sm" />CSV
-              </button>
-            </div>
-          </div>
-
-          <DataTable
-            columns={columns}
-            data={paginatedData}
-            getRowKey={(row) => row.id}
-            minWidthClass="min-w-[600px]"
-            gridTemplateClass="grid-cols-[1fr_1fr_1fr_1fr]"
-            rowClassName="hover:bg-neutral-800/30 transition-colors"
-          />
-
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-        </div>
+        {/* Historial de asistencia (CU 7) */}
+        <MyAttendance clientId={getMockSession()?.clientId} />
 
         {/* RIGHT: Cards */}
         <div className="flex flex-col gap-5">

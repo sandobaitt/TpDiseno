@@ -95,7 +95,7 @@ export function HealthDeclarationFields({
           Marcá todas las que correspondan. Si no tiene ninguna, dejalas sin
           marcar.
         </p>
-        <div className="grid gap-1 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
           {HEALTH_CONDITIONS.map((condition) => {
             const checkboxId = `${id}-${condition.id}`;
             const checked = value.conditions.includes(condition.id);

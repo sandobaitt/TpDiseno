@@ -21,7 +21,7 @@ export function HistorySection({ attendance, activity }: HistorySectionProps) {
   const recent = attendance.slice(0, RECENT_ATTENDANCE);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       <SectionCard title="Asistencia reciente" icon="ti-calendar-check">
         {recent.length === 0 ? (
           <EmptyState

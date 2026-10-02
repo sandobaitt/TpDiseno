@@ -138,6 +138,8 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `components/alumnos/payments/CheckoutDialog` | Cobrar cuotas desde cualquier pantalla: cuotas, medio, promoción y recibo. |
 | `components/alumnos/payments/ReceiptDialog` | Ver o imprimir un recibo (solo sale el recibo, gracias a la clase `print-area`). |
 | `data/promotions.ts` + `domain/promotions.ts` | Única fuente de promociones y sus condiciones (vigencia, cupón, efectivo, antigüedad, semestral, familiar). |
+| `components/alumnos/attendance/ClassRoster` | Lista de una clase (presente, ausente o justificada) con la verificación de acceso. La usan secretaría y profesor. |
+| `domain/attendance.ts` | Quiénes van en la lista de una clase, resumen de asistencia y `toCsv` (con `lib/download.ts` para descargar). |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
@@ -161,6 +163,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - Botones de 40 px o más en el celular.
   - **Un estado nunca se comunica solo con color**: siempre va con texto o ícono, por ejemplo "Deudor".
 - **Responsive:** primero el celular, sobre todo para alumno y profesor. En pantallas chicas, las tablas pasan a tarjetas.
+  - Las grillas llevan siempre `grid-cols-1` de base (por ejemplo, `grid grid-cols-1 lg:grid-cols-2`). Sin eso, un texto largo ensancha la columna y la pantalla se desborda en el celular.
 - **Feedback:**
   - Cada acción muestra un aviso (sonner).
   - Las acciones destructivas piden confirmación (una baja, por ejemplo).

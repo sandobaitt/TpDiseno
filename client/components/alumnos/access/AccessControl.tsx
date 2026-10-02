@@ -157,7 +157,7 @@ export function AccessControl() {
         subtitle={`Verificá si un alumno puede ingresar${branch ? ` a ${branch.name}` : ""}. Puede entrenar en cualquier sede.`}
       />
 
-      <div className="grid items-start gap-5 lg:grid-cols-[1.7fr_1fr]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1.7fr_1fr]">
         <div className="flex flex-col gap-5">
           <SectionCard title="Buscar alumno" icon="ti-search">
             <div className="flex flex-col gap-1.5">

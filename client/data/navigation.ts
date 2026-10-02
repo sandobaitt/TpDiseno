@@ -112,7 +112,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
     items: [
       {
         id: "schedule",
-        label: "Cronograma de clases",
+        label: "Mi plan y cronograma",
         iconClassName: "ti ti-calendar",
         to: "/alumno/cronograma",
       },

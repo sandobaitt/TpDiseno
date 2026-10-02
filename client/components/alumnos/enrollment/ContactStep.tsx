@@ -17,7 +17,7 @@ export function ContactStep({ draft, errors, set, clients }: ContactStepProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField
           label="Email"
           required
@@ -55,7 +55,7 @@ export function ContactStep({ draft, errors, set, clients }: ContactStepProps) {
         </FormField>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Dirección">
           {(id) => (
             <input

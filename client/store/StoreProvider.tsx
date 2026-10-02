@@ -264,11 +264,19 @@ export function useStoreActions() {
         slotId: string,
         date: string,
       ) {
+        // Si la clase ya tenía registros, es una corrección (queda dicho en el registro).
+        const correction = stateRef.current.attendance.some(
+          (a) => a.slotId === slotId && a.date === date,
+        );
         dispatch({
           type: "attendance/save",
           records,
           meta: meta(
-            `Registró la asistencia de ${records.length} alumnos en ${slotLabel(slotId, date)}`,
+            activityText.saveAttendance(
+              records.length,
+              slotLabel(slotId, date),
+              correction,
+            ),
             "asistencia",
             `${slotId}_${date}`,
           ),

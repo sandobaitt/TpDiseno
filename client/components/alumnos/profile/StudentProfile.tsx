@@ -195,7 +195,7 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
 
       <div role="tabpanel" aria-label={TABS.find((t) => t.id === tab)?.label}>
         {tab === "resumen" && (
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <AccountCard
               account={account}
               onCollect={canCollect ? collect : undefined}
