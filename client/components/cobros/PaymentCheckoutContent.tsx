@@ -1,9 +1,13 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { clientsMock } from "@/data/clients";
-import { plansMock } from "@/data/plans";
+import { getPlan } from "@/data/plans";
 import { PAYMENT_METHOD_LABELS, type PaymentMethod } from "@/data/payments";
 import { formatARS } from "@/lib/format";
+import { addMonths, formatDate, formatPeriod, toPeriod, todayISO } from "@/lib/dates";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { dueDateFor } from "@/domain/billing";
+import { seedState } from "@/store/state";
+import { selectAccount } from "@/store/selectors";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -73,14 +77,21 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [promoOpen]);
 
-  const client = clientsMock.find((c) => c.id === clientId);
-  const plan = plansMock.find((p) => p.id === client?.membership?.planId);
+  const client = seedState.clients.find((c) => c.id === clientId);
+  const plan = getPlan(client?.planId);
 
   if (!client) return null;
 
-  const isDebtor = client.status === "debtor";
-  // Regla de negocio: no hay intereses ni recargos por mora; se cobra la cuota del plan.
-  const subtotal = plan?.monthlyPriceArs ?? 0;
+  const account = selectAccount(seedState, client);
+  const isDebtor = account.status === "deudor" || account.status === "bloqueado";
+  // Se cobran todas las cuotas adeudadas. Si está al día, puede adelantar el mes siguiente.
+  // Regla de negocio: no hay intereses ni recargos por mora.
+  const nextPeriod = addMonths(toPeriod(todayISO()), 1);
+  const charges =
+    account.unpaid.length > 0
+      ? account.unpaid
+      : [{ period: nextPeriod, amount: plan?.monthlyPriceArs ?? 0, prorated: false, dueDate: dueDateFor(nextPeriod, client.enrolledAt), paid: false }];
+  const subtotal = charges.reduce((sum, c) => sum + c.amount, 0);
 
   const activePromo = PROMOS.find((p) => p.id === promoId) ?? PROMOS[0];
   const discountAmt = !alumnoMode && activePromo.rate > 0 ? Math.round(subtotal * activePromo.rate) : 0;
@@ -126,13 +137,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                 </div>
               </div>
 
-              {/* Badge solo para deudores reales */}
-              {isDebtor && (
-                <div className="flex items-center gap-2 px-4 py-1.5 rounded-xl border border-red-900 bg-zinc-800 self-start">
-                  <i className="ti ti-alert-triangle text-red-400 text-sm" aria-hidden="true" />
-                  <span className="text-red-400 text-xs font-bold tracking-widest uppercase">Deudor</span>
-                </div>
-              )}
+              <AccountStatusBadge status={account.status} className="self-start" />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 relative z-10">
@@ -141,18 +146,16 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                 <span className="text-white text-sm md:text-base font-medium">{plan?.name ?? "Sin plan"}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">Vencimiento</span>
+                <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">
+                  {isDebtor ? "Atraso" : "Fecha límite"}
+                </span>
                 <span className={`text-sm md:text-base font-medium ${isDebtor ? "text-red-400" : "text-white"}`}>
-                  {client.membership?.endDate
-                    ? new Date(client.membership.endDate).toLocaleDateString("es-AR", {
-                        day: "numeric", month: "long", year: "numeric",
-                      })
-                    : "Sin fecha"}
+                  {isDebtor ? `${account.overdueDays} días (desde el ${formatDate(account.unpaid[0].dueDate)})` : formatDate(charges[0].dueDate)}
                 </span>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-gray-400 text-xs uppercase tracking-widest font-semibold">
-                  {alumnoMode ? "A pagar" : "Cuota a cobrar"}
+                  {alumnoMode ? "A pagar" : "A cobrar"}
                 </span>
                 <span className="text-white font-jakarta text-xl md:text-2xl font-extrabold">
                   {formatARS(subtotal)}
@@ -166,21 +169,25 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
             <h3 className="text-white font-jakarta text-lg font-bold">Detalle</h3>
 
             <div className="border border-zinc-800 bg-neutral-900 rounded-xl p-2 flex flex-col">
-              <div className="flex items-center justify-between p-4 rounded-md">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-zinc-800 rounded-lg">
-                    <i className="ti ti-receipt text-lg text-gray-400" aria-hidden="true" />
+              {charges.map((charge) => (
+                <div key={charge.period} className="flex items-center justify-between p-4 rounded-md">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 shrink-0 flex items-center justify-center bg-zinc-800 rounded-lg">
+                      <i className="ti ti-receipt text-lg text-gray-400" aria-hidden="true" />
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-bold">
+                        Cuota de {formatPeriod(charge.period)}
+                        {charge.prorated && <span className="ml-2 text-xs font-medium text-gray-400">(proporcional)</span>}
+                      </p>
+                      <p className="text-gray-400 text-xs">
+                        {plan?.name} · vence el {formatDate(charge.dueDate)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white text-sm font-bold">
-                      Cuota mensual -{" "}
-                      {new Date().toLocaleDateString("es-AR", { month: "long", year: "numeric" })}
-                    </p>
-                    <p className="text-gray-400 text-xs">{plan?.name}</p>
-                  </div>
+                  <span className="text-white text-base font-bold shrink-0">{formatARS(charge.amount)}</span>
                 </div>
-                <span className="text-white text-base font-bold shrink-0">{formatARS(subtotal)}</span>
-              </div>
+              ))}
               <p className="px-4 pb-3 text-xs text-gray-400">Sin recargos por mora.</p>
             </div>
 

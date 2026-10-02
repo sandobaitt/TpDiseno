@@ -2,10 +2,14 @@ import * as React from "react";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
 import { FilterSelect } from "../common/FilterSelect";
-import { clientsMock, type Client } from "@/data/clients";
-import { plansMock } from "@/data/plans";
+import type { Client } from "@/data/clients";
+import { getPlan, plansMock } from "@/data/plans";
 import { MemberDetailModal } from "./MemberDetailModal";
 import { matchesPersonSearch } from "@/lib/format";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
+import { seedState } from "@/store/state";
+import { selectAccount, selectLastAccess } from "@/store/selectors";
 
 interface Member {
   id: string;
@@ -13,10 +17,7 @@ interface Member {
   email: string;
   dni: string;
   plan: string;
-  status: {
-    type: "enabled" | "debtor" | "inactive";
-    text: string;
-  };
+  status: AccountStatus;
   lastAccess: string;
   initials: string;
   initialsColor: string;
@@ -88,31 +89,18 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
     return `${day}, ${time}`;
   };
 
-  const getStatusText = (status: Member["status"]["type"]) => {
-    switch (status) {
-      case "enabled":  return "Habilitado";
-      case "debtor":   return "Deudor";
-      case "inactive": return "Inactivo";
-      default:         return "Inactivo";
-    }
-  };
-
-  const allMembers: Member[] = [...extraClients, ...clientsMock].map((client, index) => {
+  const allMembers: Member[] = [...extraClients, ...seedState.clients].map((client, index) => {
     const style = initialsStyles[index % initialsStyles.length];
-    const planName =
-      plansMock.find((p) => p.id === client.membership?.planId)?.name ?? "-";
 
     return {
       id: client.id,
       name: client.fullName,
       email: client.email,
       dni: client.dni,
-      plan: planName,
-      status: {
-        type: client.status,
-        text: getStatusText(client.status),
-      },
-      lastAccess: formatLastAccess(client.lastAccessAt),
+      plan: getPlan(client.planId)?.name ?? "-",
+      // El estado se calcula a partir de los pagos (no se guarda a mano).
+      status: selectAccount(seedState, client).status,
+      lastAccess: formatLastAccess(selectLastAccess(seedState, client.id)),
       initials: getInitials(client.fullName),
       ...style,
     };
@@ -132,26 +120,13 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
   const filteredMembers = React.useMemo(() => {
     return allMembers.filter((m) => {
       if (!matchesPersonSearch(search, { name: m.name, dni: m.dni, email: m.email })) return false;
-      if (filterStatus && m.status.type !== filterStatus) return false;
+      if (filterStatus && m.status !== filterStatus) return false;
       if (filterPlan && m.plan !== filterPlan) return false;
       return true;
     });
   }, [allMembers, search, filterStatus, filterPlan]);
 
   React.useEffect(() => { setCurrentPage(1); }, [search, filterStatus, filterPlan]);
-
-  const getStatusStyles = (status: Member["status"]["type"]) => {
-    switch (status) {
-      case "enabled":
-        return { container: "bg-green-900", dot: "bg-green-500", text: "text-green-500" };
-      case "debtor":
-        return { container: "bg-orange-950", dot: "bg-red-500", text: "text-red-500" };
-      case "inactive":
-        return { container: "bg-stone-900 border border-gray-700", dot: "bg-gray-500", text: "text-gray-400" };
-      default:
-        return { container: "bg-stone-900", dot: "bg-gray-500", text: "text-gray-400" };
-    }
-  };
 
   const columns = [
     {
@@ -179,15 +154,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
     {
       key: "status",
       header: "ESTADO",
-      render: (member: Member) => {
-        const s = getStatusStyles(member.status.type);
-        return (
-          <div className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full whitespace-nowrap ${s.container}`}>
-            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${s.dot}`} />
-            <span className={`text-[11px] font-semibold ${s.text}`}>{member.status.text}</span>
-          </div>
-        );
-      },
+      render: (member: Member) => <AccountStatusBadge status={member.status} />,
     },
     { key: "lastAccess", header: "ÚLTIMO ACCESO", cellClassName: "truncate" },
   ];
@@ -225,11 +192,10 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
           value={filterStatus}
           onChange={setFilterStatus}
           placeholder="Estado"
-          options={[
-            { value: "enabled", label: "Habilitado" },
-            { value: "debtor", label: "Deudor" },
-            { value: "inactive", label: "Inactivo" },
-          ]}
+          options={(Object.keys(ACCOUNT_STATUS_LABELS) as AccountStatus[]).map((value) => ({
+            value,
+            label: ACCOUNT_STATUS_LABELS[value],
+          }))}
         />
 
         <FilterSelect
@@ -248,7 +214,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
           </button>
         )}
 
-        <span className="text-xs text-gray-600 ml-auto">{filteredMembers.length} socios</span>
+        <span className="text-xs text-gray-400 ml-auto">{filteredMembers.length} alumnos</span>
 
         {onAddClick && (
           <button
@@ -256,7 +222,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-lime-400 text-squat-ink text-xs font-extrabold tracking-wider hover:brightness-105 active:scale-[0.98] transition-all duration-150 cursor-pointer shadow-btn-lime shrink-0"
           >
             <i className="ti ti-user-plus text-sm" />
-            AGREGAR SOCIO
+            INSCRIBIR ALUMNO
           </button>
         )}
       </div>

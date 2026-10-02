@@ -3,7 +3,10 @@ import { toast } from "sonner";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { classStudentsMock, type ClassStudent } from "@/data/classStudents";
-import { bitacorasMock, type Bitacora } from "@/data/bitacoras";
+import type { Bitacora } from "@/data/bitacoras";
+import { getMockSession } from "@/data/users";
+import { getTeacher } from "@/data/teachers";
+import { seedState } from "@/store/state";
 
 type AttendanceStatus = "present" | "absent" | null;
 
@@ -20,7 +23,11 @@ export default function ProfesorAsistenciaPage() {
   const [attendance, setAttendance] = React.useState<
     Record<string, AttendanceStatus>
   >({});
-  const [bitacoras, setBitacoras] = React.useState<Bitacora[]>(bitacorasMock);
+  const teacherId = getMockSession()?.teacherId;
+  // Cada profesor ve sus propias observaciones.
+  const [bitacoras, setBitacoras] = React.useState<Bitacora[]>(() =>
+    seedState.bitacoras.filter((b) => b.teacherId === teacherId),
+  );
   const [selectedBitacora, setSelectedBitacora] =
     React.useState<Bitacora | null>(null);
   const [showForm, setShowForm] = React.useState(false);
@@ -53,6 +60,8 @@ export default function ProfesorAsistenciaPage() {
     if (!formTitle.trim() || !formContent.trim()) return;
     const newBitacora: Bitacora = {
       id: `bit_${Date.now()}`,
+      teacherId: teacherId ?? "",
+      branchId: getTeacher(teacherId)?.branchIds[0] ?? "br_001",
       title: formTitle.trim(),
       content: formContent.trim(),
       studentName: formStudent || undefined,

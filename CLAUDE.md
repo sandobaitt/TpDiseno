@@ -220,10 +220,21 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 - **Registro de actividad:** las operaciones importantes (pagos, asistencias, modificaciones) registran quién, qué y cuándo, aunque sea en un log mock.
 - **Wi-Fi inestable:** se muestra el estado de conexión y nunca se pierde lo que el usuario ya cargó en un formulario.
 
-## Datos mock
+## Datos, reglas y estado
 
-- Todo vive en `client/data/`, con las entidades relacionadas por `id`. Por ejemplo, `client.membership.planId` apunta a `plans.ts`.
-- Se puede importar por archivo o desde el barrel: `import { clientsMock, plansMock } from "@/data";`.
+- **Mocks:** todo vive en `client/data/`, con las entidades relacionadas por `id`.
+  - Catálogos fijos: sedes, actividades, planes (con las actividades que habilitan), profesores y cronograma semanal.
+  - Datos que cambian: alumnos, pagos, asistencias de alumnos y profesores, reemplazos, novedades y observaciones.
+- **Fechas relativas a "hoy":** los mocks usan `data/seed.ts`, así la demo siempre muestra alumnos al día, por vencer, deudores y bloqueados. Para fijar el día de la presentación, se completa `DEMO_TODAY` en `data/rules.ts`.
+- **Reglas configurables** en `data/rules.ts`: vencimiento el día 5, 5 días para pagar el alta y bloqueo a los 15 días de atraso. No se repiten esos números en el código.
+- **Reglas de negocio** en `client/domain/`, como funciones puras con tests:
+  - `billing.ts`: estado de cuenta, prorrateo y vencimientos.
+  - `access.ts`: habilitación.
+  - `schedule.ts`: semana con reemplazos.
+  - `hours.ts`: horas contra cronograma.
+  - `permissions.ts`: rol → ruta.
+- **El estado de cuenta nunca se guarda:** se calcula desde los pagos (`selectAccount`).
+- **Lectura del estado:** `client/store/state.ts` arma el estado inicial y `client/store/selectors.ts` tiene los selectores (`selectAccount`, `selectAccess`, `selectClientPayments`…). Ver MEMORY.md sobre la migración al store.
 
 ## Reglas de trabajo
 

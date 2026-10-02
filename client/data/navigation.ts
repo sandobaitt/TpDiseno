@@ -12,7 +12,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
     items: [
       {
         id: "members",
-        label: "Gestión de socios",
+        label: "Gestión de alumnos",
         iconClassName: "ti ti-users",
         to: "/secretaria",
       },

@@ -1,8 +1,11 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
 import { FilterSelect } from "@/components/common/FilterSelect";
-import { clientsMock } from "@/data/clients";
-import { plansMock } from "@/data/plans";
+import { getPlan } from "@/data/plans";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
+import { seedState } from "@/store/state";
+import { selectAccount } from "@/store/selectors";
 import { employeesMock } from "@/data/employees";
 import { branchesMock } from "@/data/branches";
 import { matchesPersonSearch } from "@/lib/format";
@@ -41,16 +44,15 @@ function getInitials(fullName: string) {
   return `${first}${second}`.toUpperCase();
 }
 
-const studentsData = clientsMock.map((c, i) => {
-  const planName =
-    plansMock.find((p) => p.id === c.membership?.planId)?.name ?? "Sin plan";
+const studentsData = seedState.clients.filter((c) => c.status === "active").map((c, i) => {
+  const planName = getPlan(c.planId)?.name ?? "Sin plan";
   const style = avatarStyles[i % avatarStyles.length];
   return {
     id: c.id,
     name: c.fullName,
     dni: c.dni,
     plan: planName,
-    financialStatus: c.status,
+    financialStatus: selectAccount(seedState, c).status as AccountStatus,
     initials: getInitials(c.fullName),
     initialsBg: style.bg,
     initialsText: style.text,
@@ -74,29 +76,6 @@ const employeesData = employeesMock.map((e, i) => {
     initialsText: style.text,
   };
 });
-
-function getFinancialStyle(status: string) {
-  if (status === "enabled")
-    return {
-      container: "bg-green-500/10 border border-green-500/20",
-      dot: "bg-green-500",
-      text: "text-green-400",
-      label: "Habilitado",
-    };
-  if (status === "debtor")
-    return {
-      container: "bg-red-500/10 border border-red-500/20",
-      dot: "bg-red-500",
-      text: "text-red-400",
-      label: "Deudor",
-    };
-  return {
-    container: "bg-zinc-800/60 border border-zinc-700/40",
-    dot: "bg-gray-500",
-    text: "text-gray-400",
-    label: "Inactivo",
-  };
-}
 
 const todayRaw = new Date().toLocaleDateString("es-AR", {
   weekday: "long",
@@ -357,11 +336,9 @@ export default function AttendancePage() {
                   value={filterFinancial}
                   onChange={setFilterFinancial}
                   placeholder="Todos los estados"
-                  options={[
-                    { value: "enabled",  label: "Habilitado" },
-                    { value: "debtor",   label: "Deudor"     },
-                    { value: "inactive", label: "Inactivo"   },
-                  ]}
+                  options={(Object.keys(ACCOUNT_STATUS_LABELS) as AccountStatus[])
+                    .filter((value) => value !== "inactivo")
+                    .map((value) => ({ value, label: ACCOUNT_STATUS_LABELS[value] }))}
                 />
                 <FilterSelect
                   value={filterPlan}
@@ -423,7 +400,6 @@ export default function AttendancePage() {
                   ) : null}
                   {paginatedStudents.map((row) => {
                     const present = studentCheckins[row.id] ?? false;
-                    const fin = getFinancialStyle(row.financialStatus);
                     return (
                       <div
                         key={row.id}
@@ -442,10 +418,7 @@ export default function AttendancePage() {
 
                         {/* Financial status */}
                         <div className="flex sm:justify-center">
-                          <div className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full ${fin.container}`}>
-                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${fin.dot}`} />
-                            <span className={`text-[10px] font-semibold ${fin.text}`}>{fin.label}</span>
-                          </div>
+<AccountStatusBadge status={row.financialStatus} />
                         </div>
 
                         {/* Check-in dual button */}

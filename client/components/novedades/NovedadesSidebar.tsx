@@ -1,8 +1,11 @@
 import * as React from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { teachersMock } from "@/data/teachers";
-import { weekMock } from "@/data/schedule";
+import { teachersMock, getTeacher } from "@/data/teachers";
+import { scheduleMock } from "@/data/schedule";
+import { getActivityName } from "@/data/activities";
+import { getMockSession } from "@/data/users";
+import { branchName } from "@/components/cronograma/weekView";
 import type { Novedad } from "@/data/novedades";
 
 /* ── helpers ── */
@@ -278,24 +281,30 @@ interface Suggestion {
   label: string;
   sublabel: string;
   entityType: "profesor" | "clase";
+  branchId: string;
 }
 
+const WEEKDAY_NAMES = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
+/** Profesores activos y clases del cronograma (con su sede), para vincular la novedad. */
 const ALL_SUGGESTIONS: Suggestion[] = [
   ...teachersMock
     .filter((t) => t.status === "active")
-    .map((t) => ({
-      id: t.id,
-      label: t.fullName,
-      sublabel: t.specialties.slice(0, 2).join(" · "),
-      entityType: "profesor" as const,
-    })),
-  ...Array.from(
-    new Map(weekMock.flatMap((d) => d.classes).map((c) => [c.title, c])).values(),
-  ).map((c) => ({
-    id: c.id,
-    label: c.title,
-    sublabel: c.coach,
+    .flatMap((t) =>
+      t.branchIds.map((branchId) => ({
+        id: t.id,
+        label: t.fullName,
+        sublabel: `${t.activityIds.slice(0, 2).map(getActivityName).join(" · ")} · ${branchName(branchId)}`,
+        entityType: "profesor" as const,
+        branchId,
+      })),
+    ),
+  ...scheduleMock.map((slot) => ({
+    id: slot.id,
+    label: `${getActivityName(slot.activityId)} · ${branchName(slot.branchId)}`,
+    sublabel: `${WEEKDAY_NAMES[slot.weekday]} ${slot.start} · ${getTeacher(slot.teacherId)?.fullName ?? ""}`,
     entityType: "clase" as const,
+    branchId: slot.branchId,
   })),
 ];
 
@@ -337,13 +346,20 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
     return () => document.removeEventListener("mousedown", h);
   }, [assignFocused]);
 
+  const session = getMockSession();
+  // Secretaría y encargado ven solo lo de su sede; el admin ve todo.
+  const suggestions = React.useMemo(
+    () => (session?.branchId ? ALL_SUGGESTIONS.filter((s) => s.branchId === session.branchId) : ALL_SUGGESTIONS),
+    [session?.branchId],
+  );
+
   const filteredSuggestions = React.useMemo(() => {
     const q = assignQuery.toLowerCase().trim();
-    if (!q) return ALL_SUGGESTIONS;
-    return ALL_SUGGESTIONS.filter(
+    if (!q) return suggestions;
+    return suggestions.filter(
       (s) => s.label.toLowerCase().includes(q) || s.sublabel.toLowerCase().includes(q),
     );
-  }, [assignQuery]);
+  }, [assignQuery, suggestions]);
 
   const profesores = filteredSuggestions.filter((s) => s.entityType === "profesor");
   const clases     = filteredSuggestions.filter((s) => s.entityType === "clase");
@@ -359,10 +375,13 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
       id: `nov_${Date.now()}`,
       type: eventType as Novedad["type"],
       entityType: assignSelected?.entityType ?? "profesor",
+      entityId: assignSelected?.id,
       entityName,
-      timestamp: new Date(`${dateVal}T${timeVal}`).toISOString(),
+      branchId: assignSelected?.branchId ?? session?.branchId ?? "br_001",
+      timestamp: `${dateVal}T${timeVal}:00`,
       detail: detail.trim(),
       status: "in_progress",
+      createdBy: session?.id ?? "desconocido",
     };
     onAdd?.(novedad);
     toast.success("Novedad registrada con éxito.");
@@ -484,7 +503,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                         <>
                           <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20">PROFESORES</div>
                           {profesores.map((s) => (
-                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                            <button key={`${s.id}_${s.branchId}`} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
                               <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0"><i className="ti ti-user text-[10px] text-lime-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>
@@ -498,7 +517,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                         <>
                           <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20 border-t border-white/[0.04]">CLASES</div>
                           {clases.map((s) => (
-                            <button key={s.id} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
+                            <button key={`${s.id}_${s.branchId}`} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
                               <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0"><i className="ti ti-barbell text-[10px] text-blue-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>

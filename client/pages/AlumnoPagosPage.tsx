@@ -1,98 +1,30 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { getMockSession } from "@/data/users";
-import { clientsMock, type Client } from "@/data/clients";
-import { plansMock } from "@/data/plans";
-import { paymentsMock, PAYMENT_METHOD_LABELS, type Payment } from "@/data/payments";
+import { getPlan } from "@/data/plans";
+import { PAYMENT_METHOD_LABELS, type Payment } from "@/data/payments";
+import { describeAccount, type MonthlyCharge } from "@/domain/billing";
+import {
+  diffDays,
+  formatDate,
+  formatDateTime,
+  formatPeriod,
+  todayISO,
+} from "@/lib/dates";
+import { formatARS } from "@/lib/format";
+import { seedState } from "@/store/state";
+import { selectAccount } from "@/store/selectors";
 
-interface MonthRecord {
-  key: string;
-  label: string;
-  from: Date;
-  to: Date;
-  payment?: Payment;
-  status: "paid" | "unpaid";
-}
-
-function getClientFromSession(): Client | undefined {
-  const session = getMockSession();
-  if (!session) return;
-  // El alumno se identifica por el id vinculado a su usuario (antes era por nombre).
-  return clientsMock.find((c) => c.id === session.clientId);
-}
-
-function buildMonthHistory(client: Client, planPrice: number): MonthRecord[] {
-  const now = new Date();
-  const months: MonthRecord[] = [];
-
-  const clientPayments = paymentsMock.filter(
-    (p) => p.clientId === client.id && p.concept === "membership",
-  );
-
-  for (let i = 0; i <= 5; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("es-AR", {
-      month: "long",
-      year: "numeric",
-    });
-    const from = d;
-    const to = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-    const isCurrentMonth =
-      d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-
-    const payment = clientPayments.find((p) => {
-      if (!p.period) return false;
-      const pFrom = new Date(p.period.from);
-      return (
-        pFrom.getMonth() === d.getMonth() &&
-        pFrom.getFullYear() === d.getFullYear() &&
-        p.status === "approved"
-      );
-    });
-
-    months.push({
-      key,
-      label,
-      from,
-      to,
-      payment:
-        payment ||
-        (isCurrentMonth
-          ? undefined
-          : {
-              id: `synth_${key}`,
-              clientId: client.id,
-              branchId: client.branchId,
-              processedByEmployeeId: "",
-              createdAt: to.toISOString(),
-              amountArs: planPrice,
-              method: "debit" as const,
-              status: "approved" as const,
-              concept: "membership" as const,
-              reference: `MENSUAL-${key}`,
-            }),
-      status: isCurrentMonth && !payment ? "unpaid" : "paid",
-    });
-  }
-
-  return months;
-}
-
-function getMethodLabel(method: Payment["method"]) {
-  return PAYMENT_METHOD_LABELS[method];
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-AR", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function capitalize(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 interface ReceiptPopupProps {
@@ -101,176 +33,218 @@ interface ReceiptPopupProps {
   onClose: () => void;
 }
 
+/** Recibo digital: fecha, monto y medio de pago (regla de negocio). */
 function ReceiptPopup({ payment, planName, onClose }: ReceiptPopupProps) {
+  const rows: [string, string][] = [
+    [
+      "Período",
+      payment.periods.map((p) => capitalize(formatPeriod(p))).join(", "),
+    ],
+    ["Plan", planName],
+    ["Monto", formatARS(payment.amountArs)],
+    ["Medio de pago", PAYMENT_METHOD_LABELS[payment.method]],
+    ["Fecha de pago", formatDateTime(payment.createdAt)],
+    [
+      "Registrado",
+      payment.processedBy === "online" ? "Pago online" : "En recepción",
+    ],
+  ];
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-xl bg-lime-400/10 flex items-center justify-center">
-          <i className="ti ti-receipt text-2xl text-lime-400" />
+          <i
+            className="ti ti-receipt text-2xl text-lime-400"
+            aria-hidden="true"
+          />
         </div>
         <div>
-          <h2 className="text-white text-lg font-extrabold">Comprobante</h2>
-          <p className="text-gray-500 text-xs">{payment.reference}</p>
+          <DialogTitle className="text-white text-lg font-extrabold">
+            Recibo {payment.receiptNumber}
+          </DialogTitle>
+          <DialogDescription className="text-gray-400 text-xs">
+            Comprobante de pago de tu cuota.
+          </DialogDescription>
         </div>
       </div>
 
-      <div className="bg-black/40 rounded-xl p-5 flex flex-col gap-4">
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            PERIODO
-          </span>
-          <span className="text-white text-sm font-bold">
-            {payment.period
-              ? `${new Date(payment.period.from).toLocaleDateString("es-AR", { day: "numeric", month: "short" })} - ${new Date(payment.period.to).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })}`
-              : "-"}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            PLAN
-          </span>
-          <span className="text-white text-sm font-bold">{planName}</span>
-        </div>
-
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            MONTO
-          </span>
-          <span className="text-lime-400 text-base font-extrabold">
-            ${payment.amountArs.toLocaleString()}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            MÉTODO DE PAGO
-          </span>
-          <span className="text-white text-sm font-bold">
-            {getMethodLabel(payment.method)}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800/40">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            FECHA DE PAGO
-          </span>
-          <span className="text-white text-sm font-bold">
-            {formatDate(payment.createdAt)}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-gray-500 text-xs font-semibold tracking-wider">
-            ESTADO
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-xs font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
-            Aprobado
-          </span>
-        </div>
-      </div>
+      <dl className="bg-black/40 rounded-xl p-5 flex flex-col gap-3">
+        {rows.map(([label, value]) => (
+          <div
+            key={label}
+            className="flex items-center justify-between gap-4 pb-3 border-b border-zinc-800/40 last:border-0 last:pb-0"
+          >
+            <dt className="text-gray-400 text-xs font-semibold tracking-wider uppercase">
+              {label}
+            </dt>
+            <dd className="text-white text-sm font-bold text-right">{value}</dd>
+          </div>
+        ))}
+      </dl>
 
       <button
         onClick={onClose}
-        className="w-full py-3 rounded-xl bg-neutral-900 text-white text-xs font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
+        className="w-full py-3 rounded-xl bg-neutral-900 text-white text-sm font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
       >
-        CERRAR
+        Cerrar
       </button>
     </div>
   );
 }
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 4;
 
 export default function AlumnoPagosPage() {
-  const [selectedMonthKey, setSelectedMonthKey] = React.useState<string | null>(
+  const [selectedPeriod, setSelectedPeriod] = React.useState<string | null>(
     null,
   );
+  const [checkoutOpen, setCheckoutOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  const client = React.useMemo(() => getClientFromSession(), []);
-  const plan = React.useMemo(
-    () =>
-      client
-        ? plansMock.find((p) => p.id === client.membership?.planId)
-        : undefined,
-    [client],
-  );
-  const months = React.useMemo(() => {
-    if (!client) return [];
-    return buildMonthHistory(client, plan?.monthlyPriceArs ?? 0);
-  }, [client, plan]);
+  // El alumno se identifica por el id vinculado a su usuario.
+  const session = getMockSession();
+  const client = seedState.clients.find((c) => c.id === session?.clientId);
+  const plan = getPlan(client?.planId);
+  const account = client ? selectAccount(seedState, client) : undefined;
+  const today = todayISO();
 
-  const selectedMonth = months.find((m) => m.key === selectedMonthKey);
+  if (!client || !account) {
+    return (
+      <div className="px-7 pb-7 max-sm:px-4">
+        <p className="text-gray-400 text-sm">
+          No encontramos tu ficha de alumno. Consultá en recepción.
+        </p>
+      </div>
+    );
+  }
+
+  const months = [...account.charges].reverse();
+  const selectedCharge = months.find((m) => m.period === selectedPeriod);
+  const selectedPayment = selectedCharge?.paymentId
+    ? seedState.payments.find((p) => p.id === selectedCharge.paymentId)
+    : undefined;
   const totalPages = Math.ceil(months.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedMonths = months.slice(start, start + ITEMS_PER_PAGE);
+
+  function dueLabel(charge: MonthlyCharge) {
+    const days = diffDays(charge.dueDate, today);
+    if (days > 0)
+      return `Venció hace ${days} ${days === 1 ? "día" : "días"} (${formatDate(charge.dueDate)})`;
+    return `Vence el ${formatDate(charge.dueDate)}`;
+  }
 
   return (
     <>
       <div className="px-7 pb-7 max-sm:px-4">
         <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
-          HISTORIAL DE PAGOS
+          MI CUENTA
         </h1>
-        <p className="text-gray-600 text-sm mt-2 max-w-xl leading-relaxed">
-          Revisá el estado de tus cuotas mensuales y realizá el pago de las
-          pendientes.
+        <p className="text-gray-400 text-sm mt-2 max-w-xl leading-relaxed">
+          Revisá el estado de tus cuotas y pagá las pendientes. No hay recargos
+          por pagar fuera de término.
         </p>
 
-        <div className="mt-8 flex flex-col gap-3">
-          {paginatedMonths.map((m) => {
-            const isPaid = m.status === "paid";
-            const isUnpaid = m.status === "unpaid";
+        {/* Resumen del estado de cuenta */}
+        <section
+          aria-label="Resumen de tu cuenta"
+          className="mt-6 grid gap-4 rounded-2xl bg-black/60 p-5 shadow-card glass-border sm:grid-cols-[1fr_auto] sm:items-center"
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <AccountStatusBadge status={account.status} />
+              {plan && (
+                <span className="text-sm text-gray-300">Plan {plan.name}</span>
+              )}
+            </div>
+            <p className="text-sm text-gray-300">{describeAccount(account)}</p>
+            <div className="flex flex-wrap gap-6 pt-1">
+              <div>
+                <p className="text-xs uppercase tracking-wider text-gray-400">
+                  Monto adeudado
+                </p>
+                <p
+                  className={`text-2xl font-extrabold ${account.owedAmount > 0 ? "text-red-400" : "text-white"}`}
+                >
+                  {formatARS(account.owedAmount)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wider text-gray-400">
+                  Fecha límite
+                </p>
+                <p className="text-2xl font-extrabold text-white">
+                  {formatDate(account.nextDueDate)}
+                </p>
+              </div>
+            </div>
+          </div>
+          {account.owedAmount > 0 && (
+            <button
+              onClick={() => setCheckoutOpen(true)}
+              className="flex items-center justify-center gap-2 rounded-xl bg-lime-400 px-6 py-3.5 text-sm font-extrabold text-squat-ink shadow-btn-lime hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              <i className="ti ti-credit-card text-base" aria-hidden="true" />
+              Pagar {formatARS(account.owedAmount)}
+            </button>
+          )}
+        </section>
 
+        <h2 className="mt-8 text-white text-lg font-extrabold">Cuotas</h2>
+        <div className="mt-3 flex flex-col gap-3">
+          {paginatedMonths.map((m) => {
+            const payment = m.paymentId
+              ? seedState.payments.find((p) => p.id === m.paymentId)
+              : undefined;
             return (
               <button
-                key={m.key}
-                onClick={() => setSelectedMonthKey(m.key)}
-                className="w-full flex items-center justify-between bg-black/60 rounded-2xl p-5 hover:bg-black/70 transition-all duration-150 text-left cursor-pointer group shadow-card glass-border hover:border-white/[0.08]"
+                key={m.period}
+                onClick={() =>
+                  m.paid ? setSelectedPeriod(m.period) : setCheckoutOpen(true)
+                }
+                className="w-full flex items-center justify-between gap-3 bg-black/60 rounded-2xl p-5 hover:bg-black/70 transition-all duration-150 text-left cursor-pointer group shadow-card glass-border hover:border-white/[0.08]"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 min-w-0">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                      isPaid ? "bg-lime-400/10" : "bg-red-900/20"
-                    }`}
+                    className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${m.paid ? "bg-lime-400/10" : "bg-red-900/20"}`}
                   >
-                    {isPaid ? (
-                      <i className="ti ti-circle-check text-lg text-lime-400" />
-                    ) : (
-                      <i className="ti ti-alert-triangle text-lg text-red-400" />
-                    )}
+                    <i
+                      className={`ti ${m.paid ? "ti-circle-check text-lime-400" : "ti-alert-triangle text-red-400"} text-lg`}
+                      aria-hidden="true"
+                    />
                   </div>
-
-                  <div>
-                    <p className="text-white text-sm font-bold capitalize">
-                      {m.label}
+                  <div className="min-w-0">
+                    <p className="text-white text-sm font-bold">
+                      {capitalize(formatPeriod(m.period))}
+                      {m.prorated && (
+                        <span className="ml-2 text-xs font-medium text-gray-400">
+                          (proporcional)
+                        </span>
+                      )}
                     </p>
-                    {isPaid && m.payment && (
-                      <p className="text-gray-500 text-xs mt-0.5">
-                        {getMethodLabel(m.payment.method)} · $
-                        {m.payment.amountArs.toLocaleString()}
+                    {m.paid && payment ? (
+                      <p className="text-gray-400 text-xs mt-0.5">
+                        {PAYMENT_METHOD_LABELS[payment.method]} ·{" "}
+                        {formatARS(payment.amountArs)}
                       </p>
-                    )}
-                    {isUnpaid && (
+                    ) : (
                       <p className="text-red-400 text-xs mt-0.5 font-medium">
-                        Pendiente de pago
+                        {formatARS(m.amount)} · {dueLabel(m)}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  {isPaid ? (
-                    <span className="px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-[10px] font-bold">
-                      Pagado
-                    </span>
-                  ) : (
-                    <span className="px-3 py-1 rounded-full bg-red-900/40 text-red-400 text-[10px] font-bold">
-                      Adeuda
-                    </span>
-                  )}
-                  <i className="ti ti-chevron-right text-gray-600 text-sm group-hover:text-gray-400 transition-colors" />
+                <div className="flex items-center gap-3 shrink-0">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${m.paid ? "bg-green-900/40 text-lime-400" : "bg-red-900/40 text-red-400"}`}
+                  >
+                    {m.paid ? "Pagada · ver recibo" : "Pagar"}
+                  </span>
+                  <i
+                    className="ti ti-chevron-right text-gray-400 text-sm"
+                    aria-hidden="true"
+                  />
                 </div>
               </button>
             );
@@ -284,36 +258,35 @@ export default function AlumnoPagosPage() {
         />
       </div>
 
-      {/* Dialog: Paid → receipt */}
+      {/* Recibo de una cuota pagada */}
       <Dialog
-        open={!!selectedMonth && selectedMonth.status === "paid"}
-        onOpenChange={(open) => !open && setSelectedMonthKey(null)}
+        open={!!selectedPayment}
+        onOpenChange={(open) => !open && setSelectedPeriod(null)}
       >
         <DialogContent className="max-w-lg bg-stone-950 border-zinc-800 text-white">
-          {selectedMonth?.payment && (
+          {selectedPayment && (
             <ReceiptPopup
-              payment={selectedMonth.payment}
+              payment={selectedPayment}
               planName={plan?.name ?? "Sin plan"}
-              onClose={() => setSelectedMonthKey(null)}
+              onClose={() => setSelectedPeriod(null)}
             />
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Dialog: Unpaid → checkout */}
-      <Dialog
-        open={!!selectedMonth && selectedMonth.status === "unpaid"}
-        onOpenChange={(open) => !open && setSelectedMonthKey(null)}
-      >
+      {/* Pago online de lo adeudado */}
+      <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
         <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
+          <DialogTitle className="sr-only">Pagar cuota</DialogTitle>
+          <DialogDescription className="sr-only">
+            Elegí el medio de pago y confirmá.
+          </DialogDescription>
           <div className="p-3">
-            {client && (
-              <PaymentCheckoutContent
-                clientId={client.id}
-                alumnoMode
-                onClose={() => setSelectedMonthKey(null)}
-              />
-            )}
+            <PaymentCheckoutContent
+              clientId={client.id}
+              alumnoMode
+              onClose={() => setCheckoutOpen(false)}
+            />
           </div>
         </DialogContent>
       </Dialog>

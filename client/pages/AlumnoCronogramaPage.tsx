@@ -1,75 +1,76 @@
 import * as React from "react";
 import { UnifiedCalendar } from "@/components/cronograma/UnifiedCalendar";
 import { ClassCard } from "@/components/cronograma/ClassCard";
-import { weekMock } from "@/data/schedule";
-
-const MONTHS = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
-const BASE_MONDAY = new Date(2025, 4, 12); // May 12, 2025
-
-function buildWeek(offset: number) {
-  return weekMock.map((day, i) => {
-    const d = new Date(BASE_MONDAY);
-    d.setDate(BASE_MONDAY.getDate() + offset * 7 + i);
-    return { ...day, date: d.getDate(), month: MONTHS[d.getMonth()] };
-  });
-}
-
-function weekLabel(offset: number) {
-  const first = new Date(BASE_MONDAY);
-  first.setDate(BASE_MONDAY.getDate() + offset * 7);
-  const last = new Date(first);
-  last.setDate(first.getDate() + 6);
-  return `${MONTHS[first.getMonth()]} ${first.getDate()} - ${MONTHS[last.getMonth()]} ${last.getDate()}`;
-}
+import {
+  buildWeekDays,
+  toClassCard,
+  weekLabel,
+} from "@/components/cronograma/weekView";
+import { scheduleMock } from "@/data/schedule";
+import { sessionsBetween } from "@/domain/schedule";
+import { addDays, startOfWeek, todayISO } from "@/lib/dates";
+import { seedState } from "@/store/state";
 
 export default function AlumnoCronogramaPage() {
-  const [weekOffset, setWeekOffset] = React.useState(0);
-  const [activeDay, setActiveDay] = React.useState(weekMock.find((d) => d.isActive)?.dayAbbr ?? "");
+  const today = todayISO();
+  const [weekStart, setWeekStart] = React.useState(() => startOfWeek(today));
+  const [activeDate, setActiveDate] = React.useState(today);
 
-  const week = React.useMemo(() => {
-    const w = buildWeek(weekOffset);
-    return w.map((d) => ({ ...d, isActive: d.dayAbbr === activeDay }));
-  }, [weekOffset, activeDay]);
-
-  const handleSelectDay = (dayAbbr: string) => setActiveDay(dayAbbr);
+  const sessions = React.useMemo(
+    () =>
+      sessionsBetween(
+        weekStart,
+        addDays(weekStart, 6),
+        scheduleMock,
+        seedState.replacements,
+      ),
+    [weekStart],
+  );
+  const days = buildWeekDays(weekStart, activeDate);
 
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
-              CRONOGRAMA DE CLASES
-            </h1>
-            <p className="text-gray-600 text-sm mt-1">
-              Consulta tus sesiones de entrenamiento.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 bg-neutral-800/80 rounded-xl px-4 py-2.5 border border-zinc-800/50">
-            <button
-              onClick={() => setWeekOffset((o) => o - 1)}
-              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
-            >
-              <i className="ti ti-chevron-left text-sm" />
-            </button>
-            <span className="text-white text-xs font-bold tracking-wider px-3">
-              {weekLabel(weekOffset)}
-            </span>
-            <button
-              onClick={() => setWeekOffset((o) => o + 1)}
-              className="text-gray-500 hover:text-white transition-colors cursor-pointer"
-            >
-              <i className="ti ti-chevron-right text-sm" />
-            </button>
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
+            CRONOGRAMA DE CLASES
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Clases de todas las sedes para la semana.
+          </p>
         </div>
 
-        <UnifiedCalendar
-          days={week}
-          getItemsForDay={(day) => day.classes}
-          renderItem={(cls) => <ClassCard key={cls.id} classItem={cls} />}
-          onSelectDay={(abbr) => setActiveDay(abbr)}
-        />
+        <div className="flex items-center gap-2 bg-neutral-800/80 rounded-xl px-2 py-1.5 border border-zinc-800/50">
+          <button
+            onClick={() => setWeekStart((w) => addDays(w, -7))}
+            aria-label="Semana anterior"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+          >
+            <i className="ti ti-chevron-left text-sm" aria-hidden="true" />
+          </button>
+          <span className="text-white text-xs font-bold tracking-wider px-2 whitespace-nowrap">
+            {weekLabel(weekStart)}
+          </span>
+          <button
+            onClick={() => setWeekStart((w) => addDays(w, 7))}
+            aria-label="Semana siguiente"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+          >
+            <i className="ti ti-chevron-right text-sm" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <UnifiedCalendar
+        days={days}
+        getItemsForDay={(day) =>
+          sessions.filter((s) => s.date === day.iso).map(toClassCard)
+        }
+        renderItem={(card) => <ClassCard key={card.id} classItem={card} />}
+        onSelectDay={(abbr) =>
+          setActiveDate(days.find((d) => d.dayAbbr === abbr)?.iso ?? activeDate)
+        }
+      />
     </div>
   );
 }

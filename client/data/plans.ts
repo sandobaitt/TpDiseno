@@ -5,10 +5,10 @@ export interface Plan {
   name: string;
   status: PlanStatus;
   description?: string;
-  /** Precio mensual en ARS (para mocks) */
+  /** Precio mensual en ARS. */
   monthlyPriceArs: number;
-  /** Cantidad de días de gracia antes de marcar deudor (mocks) */
-  graceDays: number;
+  /** Actividades que habilita el plan (no todos los alumnos acceden a todas las clases). */
+  activityIds: string[];
 }
 
 export const plansMock: Plan[] = [
@@ -16,25 +16,35 @@ export const plansMock: Plan[] = [
     id: "pl_001",
     name: "Pase Libre",
     status: "active",
-    description: "Acceso ilimitado a musculación y clases.",
+    description:
+      "Acceso ilimitado a musculación y a todas las clases, en cualquier sede.",
     monthlyPriceArs: 34990,
-    graceDays: 5,
+    activityIds: [
+      "ac_musc",
+      "ac_cross",
+      "ac_func",
+      "ac_hiit",
+      "ac_spin",
+      "ac_zumba",
+      "ac_kick",
+      "ac_yoga",
+    ],
   },
   {
     id: "pl_002",
     name: "Musculación",
     status: "active",
-    description: "Acceso a sala de musculación.",
+    description: "Acceso a la sala de musculación.",
     monthlyPriceArs: 27990,
-    graceDays: 5,
+    activityIds: ["ac_musc"],
   },
   {
     id: "pl_003",
     name: "Crossfit",
     status: "active",
-    description: "Acceso a clases de Crossfit (cupos limitados).",
+    description: "Clases de Crossfit, Funcional y HIIT (cupos limitados).",
     monthlyPriceArs: 39990,
-    graceDays: 3,
+    activityIds: ["ac_cross", "ac_func", "ac_hiit"],
   },
   {
     id: "pl_004",
@@ -42,7 +52,10 @@ export const plansMock: Plan[] = [
     status: "archived",
     description: "Plan promocional (no se vende actualmente).",
     monthlyPriceArs: 0,
-    graceDays: 0,
+    activityIds: ["ac_musc"],
   },
 ];
 
+export function getPlan(planId?: string): Plan | undefined {
+  return plansMock.find((p) => p.id === planId);
+}

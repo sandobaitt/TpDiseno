@@ -3,13 +3,32 @@ import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { attendanceMock, type AttendanceRecord } from "@/data/attendance";
+import type { StudentAttendance } from "@/data/attendance";
+import { getMockSession } from "@/data/users";
+import { getSlot } from "@/data/schedule";
+import { getActivityName } from "@/data/activities";
+import { getTeacher } from "@/data/teachers";
+import { branchName } from "@/components/cronograma/weekView";
+import { formatDateShort } from "@/lib/dates";
+import { seedState } from "@/store/state";
+import { selectClientAttendance } from "@/store/selectors";
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  const dateStr = d.toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
-  const timeStr = d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", hour12: false });
-  return `${dateStr}, ${timeStr}`;
+interface AttendanceRow extends StudentAttendance {
+  className: string;
+  trainer: string;
+}
+
+/** Historial del alumno logueado (cada alumno ve solo lo suyo). */
+function buildRows(clientId: string | undefined): AttendanceRow[] {
+  if (!clientId) return [];
+  return selectClientAttendance(seedState, clientId).map((record) => {
+    const slot = getSlot(record.slotId);
+    return {
+      ...record,
+      className: slot ? `${getActivityName(slot.activityId)} · ${branchName(record.branchId)}` : "Clase",
+      trainer: getTeacher(slot?.teacherId)?.fullName ?? "-",
+    };
+  });
 }
 
 const HEALTH_CONDITIONS = [
@@ -27,9 +46,10 @@ const ITEMS_PER_PAGE = 4;
 
 export default function AlumnoPanel() {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const totalPages = Math.ceil(attendanceMock.length / ITEMS_PER_PAGE);
+  const rows = React.useMemo(() => buildRows(getMockSession()?.clientId), []);
+  const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = attendanceMock.slice(start, start + ITEMS_PER_PAGE);
+  const paginatedData = rows.slice(start, start + ITEMS_PER_PAGE);
 
   // Certificado médico
   const [certUploaded, setCertUploaded] = React.useState(false);
@@ -57,37 +77,44 @@ export default function AlumnoPanel() {
     {
       key: "date",
       header: "FECHA",
-      render: (row: AttendanceRecord) => (
-        <span className="text-gray-400 text-sm">{formatDate(row.date)}</span>
+      render: (row: AttendanceRow) => (
+        <span className="text-gray-300 text-sm">
+          {formatDateShort(row.date)}, {row.recordedAt.slice(11, 16)}
+        </span>
       ),
     },
     {
       key: "className",
       header: "CLASE",
-      render: (row: AttendanceRecord) => (
+      render: (row: AttendanceRow) => (
         <span className="text-white text-sm font-semibold">{row.className}</span>
       ),
     },
     {
       key: "trainer",
       header: "ENTRENADOR",
-      render: (row: AttendanceRecord) => (
-        <span className="text-gray-400 text-sm">{row.trainer}</span>
+      render: (row: AttendanceRow) => (
+        <span className="text-gray-300 text-sm">{row.trainer}</span>
       ),
     },
     {
       key: "status",
       header: "ESTADO",
-      render: (row: AttendanceRecord) =>
+      render: (row: AttendanceRow) =>
         row.status === "present" ? (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-900/40 text-lime-400 text-xs font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-lime-400" />
+            <i className="ti ti-check text-xs" aria-hidden="true" />
             Asistió
+          </span>
+        ) : row.justified ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-800 text-gray-300 text-xs font-bold">
+            <i className="ti ti-file-check text-xs" aria-hidden="true" />
+            Ausente (justificada)
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-900/40 text-red-400 text-xs font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-            Ausente
+            <i className="ti ti-x text-xs" aria-hidden="true" />
+            Ausente sin justificar
           </span>
         ),
     },

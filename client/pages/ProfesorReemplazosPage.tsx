@@ -1,20 +1,50 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
-import { replacementsMock, type ReplacementRequest } from "@/data/replacements";
+import { isUrgent } from "@/data/replacements";
+import { getSlot } from "@/data/schedule";
+import { getActivityName } from "@/data/activities";
+import { getTeacher } from "@/data/teachers";
+import { getMockSession } from "@/data/users";
+import { branchName } from "@/components/cronograma/weekView";
+import { addMinutesToTime, parseISODate } from "@/lib/dates";
+import { seedState } from "@/store/state";
 
 type TabId = "solicitudes" | "novedades";
 
-const categoryBadge: Record<string, string> = {
-  CROSSFIT: "bg-zinc-700/60 text-white",
-  HALTEROFILIA: "bg-zinc-700/60 text-white",
-};
+interface ReplacementRequest {
+  id: string;
+  category: string;
+  isUrgent: boolean;
+  title: string;
+  professorToReplace: string;
+  dateLabel: string;
+  timeLabel: string;
+}
+
+/** Pedidos pendientes en los que el profesor logueado es el candidato. */
+function buildRequests(teacherId: string | undefined): ReplacementRequest[] {
+  return seedState.replacements
+    .filter((r) => r.status === "pending" && r.candidateTeacherId === teacherId)
+    .map((r) => {
+      const slot = getSlot(r.slotId);
+      return {
+        id: r.id,
+        category: slot ? getActivityName(slot.activityId).toUpperCase() : "CLASE",
+        isUrgent: isUrgent(r),
+        title: slot ? `Sede ${branchName(slot.branchId)}` : "Sede",
+        professorToReplace: getTeacher(r.originalTeacherId)?.fullName ?? "-",
+        dateLabel: parseISODate(r.date).toLocaleDateString("es-AR", { weekday: "short", day: "numeric", month: "short" }),
+        timeLabel: slot ? `${slot.start} – ${addMinutesToTime(slot.start, slot.durationMin)}` : "",
+      };
+    });
+}
 
 const ITEMS_PER_PAGE = 2;
 
 export default function ProfesorReemplazosPage() {
   const [activeTab, setActiveTab] = React.useState<TabId>("solicitudes");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [requests, setRequests] = React.useState(replacementsMock);
+  const [requests, setRequests] = React.useState(() => buildRequests(getMockSession()?.teacherId));
 
   const totalPages = Math.ceil(requests.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -119,7 +149,7 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
         <div className="flex items-center gap-2 flex-wrap">
           <span
             className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${
-              categoryBadge[r.category] ?? "bg-zinc-700/60 text-white"
+              "bg-zinc-700/60 text-white"
             }`}
           >
             {r.category}

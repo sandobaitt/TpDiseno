@@ -7,6 +7,10 @@ export type EmployeeRole =
 
 export type EmployeeStatus = "active" | "inactive";
 
+/**
+ * Personal administrativo de las sedes (secretaría y encargados). Los
+ * profesores están en `teachers.ts`. Coincide con los usuarios de `users.ts`.
+ */
 export interface Employee {
   id: string;
   branchId: string;
@@ -22,18 +26,18 @@ export const employeesMock: Employee[] = [
   {
     id: "em_001",
     branchId: "br_001",
-    fullName: "Sofía López",
-    email: "sofia.lopez@squatgym.com",
-    dni: "29.876.543",
+    fullName: "Adrián López",
+    email: "encargado1@squatgym.com",
+    dni: "28.400.001",
     role: "manager",
     status: "active",
-    createdAt: "2025-08-10T09:00:00.000Z",
+    createdAt: "2025-08-01T09:00:00.000Z",
   },
   {
     id: "em_002",
     branchId: "br_001",
     fullName: "Nicolás Ferreyra",
-    email: "nicolas.ferreyra@squatgym.com",
+    email: "secre1@squatgym.com",
     dni: "33.210.987",
     role: "reception",
     status: "active",
@@ -43,7 +47,7 @@ export const employeesMock: Employee[] = [
     id: "em_003",
     branchId: "br_002",
     fullName: "Camila Suárez",
-    email: "camila.suarez@squatgym.com",
+    email: "secre2@squatgym.com",
     dni: "31.222.111",
     role: "reception",
     status: "active",
@@ -52,11 +56,11 @@ export const employeesMock: Employee[] = [
   {
     id: "em_004",
     branchId: "br_002",
-    fullName: "Tomás Ibáñez",
-    email: "tomas.ibanez@squatgym.com",
-    role: "trainer",
-    status: "inactive",
-    createdAt: "2025-05-01T10:00:00.000Z",
+    fullName: "Susana García",
+    email: "encargado2@squatgym.com",
+    dni: "28.400.002",
+    role: "manager",
+    status: "active",
+    createdAt: "2025-08-01T09:00:00.000Z",
   },
 ];
-

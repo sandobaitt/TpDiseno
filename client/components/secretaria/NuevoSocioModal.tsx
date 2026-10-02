@@ -4,7 +4,9 @@ import { plansMock } from "@/data/plans";
 import type { Client } from "@/data/clients";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { useDraft } from "@/hooks/use-draft";
-import { toLocalISODate, todayISO } from "@/lib/dates";
+import { todayISO } from "@/lib/dates";
+import { getMockSession } from "@/data/users";
+import type { HealthConditionId } from "@/data/health";
 
 const STEPS = [
   { id: 1, label: "Personal" },
@@ -163,26 +165,35 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
   }
 
   function handleSubmit() {
-    const [y, m, d] = form.fechaInicio.split("-").map(Number);
-    const endDate = new Date(y, m, d); // m es 1..12, así que esto es "un mes después"
-
+    // Las casillas del formulario se guardan con los ids de la lista única de condiciones.
+    const conditionMap: [keyof FormData, HealthConditionId][] = [
+      ["enfermedadCardiaca", "cardiaca"],
+      ["hipertension", "presion"],
+      ["diabetes", "diabetes"],
+      ["epilepsia", "epilepsia"],
+      ["lesionFisica", "lesion"],
+      ["tratamientoMedico", "medicacion"],
+    ];
+    const fullName = `${form.nombre.trim()} ${form.apellido.trim()}`;
     const newClient: Client = {
       id: `cl_new_${Date.now()}`,
-      branchId: "br_001",
-      fullName: `${form.nombre.trim()} ${form.apellido.trim()}`,
+      // La sede es la de la secretaria que inscribe (no un valor fijo).
+      branchId: getMockSession()?.branchId ?? "br_001",
+      fullName,
       email: form.email.trim(),
       dni: form.dni.trim(),
       phone: form.telefono.trim() || undefined,
-      status: "enabled",
-      membership: form.planId
-        ? {
-            planId: form.planId,
-            startDate: form.fechaInicio,
-            endDate: toLocalISODate(endDate),
-            status: "active",
-          }
-        : undefined,
-      createdAt: new Date().toISOString(),
+      birthDate: form.fechaNacimiento || undefined,
+      address: [form.direccion.trim(), form.ciudad.trim()].filter(Boolean).join(", ") || undefined,
+      planId: form.planId || undefined,
+      enrolledAt: form.fechaInicio,
+      status: "active",
+      health: {
+        conditions: conditionMap.filter(([key]) => form[key]).map(([, id]) => id),
+        signedAt: todayISO(),
+        signedBy: fullName,
+      },
+      createdAt: `${todayISO()}T${new Date().toTimeString().slice(0, 8)}`,
     };
 
     onAdd(newClient);

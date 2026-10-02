@@ -1,6 +1,8 @@
 import * as React from "react";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import type { AccountStatus } from "@/domain/billing";
 
-export type MemberStatus = "enabled" | "debtor" | "inactive";
+export type MemberStatus = AccountStatus;
 
 interface MemberHeaderProps {
   id?: string;
@@ -13,40 +15,13 @@ interface MemberHeaderProps {
   onEditProfile?: () => void;
 }
 
-const statusConfig: Record<
-  MemberStatus,
-  { label: string; container: string; dot: string; text: string; icon: string }
-> = {
-  enabled: {
-    label: "HABILITADO",
-    container: "bg-green-900",
-    dot: "bg-green-500",
-    text: "text-green-500",
-    icon: "ti ti-circle-check",
-  },
-  debtor: {
-    label: "DEUDOR",
-    container: "bg-orange-950",
-    dot: "bg-red-500",
-    text: "text-red-500",
-    icon: "ti ti-alert-triangle",
-  },
-  inactive: {
-    label: "INACTIVO",
-    container: "bg-stone-900 border border-gray-700",
-    dot: "bg-gray-500",
-    text: "text-gray-400",
-    icon: "ti ti-circle-minus",
-  },
-};
-
 export function MemberHeader({
   id = "#----",
   fullName = "Nombre del Socio",
   email = "socio@email.com",
   dni = "--.---.---",
   planName = "Sin plan",
-  status = "inactive",
+  status = "inactivo",
   avatarUrl,
   onEditProfile,
 }: MemberHeaderProps) {
@@ -57,8 +32,6 @@ export function MemberHeader({
     .join("")
     .slice(0, 2)
     .toUpperCase();
-
-  const cfg = statusConfig[status];
 
   return (
     <section className="flex gap-6 items-center max-sm:flex-col max-sm:items-start">
@@ -79,12 +52,7 @@ export function MemberHeader({
           <div className="px-3 py-1 text-xs font-medium rounded-md bg-zinc-800 text-neutral-400">
             ID {id}
           </div>
-          <div
-            className={`flex gap-1.5 items-center px-3 py-1 text-xs font-semibold rounded-md ${cfg.container} ${cfg.text}`}
-          >
-            <i className={`${cfg.icon} text-sm`} />
-            {cfg.label}
-          </div>
+          <AccountStatusBadge status={status} />
           {dni && (
             <div className="px-3 py-1 text-xs font-medium rounded-md bg-zinc-800 text-neutral-400">
               DNI: {dni}

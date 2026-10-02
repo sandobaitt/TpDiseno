@@ -6,10 +6,12 @@ import { FilterSelect } from "@/components/common/FilterSelect";
 import HeaderPage from "@/components/common/HeaderPage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
-import { clientsMock } from "@/data/clients";
-import { plansMock } from "@/data/plans";
-import { paymentsMock } from "@/data/payments";
+import { getPlan } from "@/data/plans";
 import { formatARS, matchesPersonSearch } from "@/lib/format";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import type { AccountStatus } from "@/domain/billing";
+import { seedState } from "@/store/state";
+import { selectAccount } from "@/store/selectors";
 
 type TabId = "debtors" | "paid";
 
@@ -33,33 +35,29 @@ interface RowData {
   dni: string;
   plan: string;
   amount: number;
+  /** "debtor" = tiene cuotas sin pagar (por vencer, vencidas o bloqueado). */
   status: "paid" | "debtor";
+  accountStatus: AccountStatus;
   initials: string;
   initialsBg: string;
   initialsText: string;
 }
 
-// Solo alumnos con plan y no dados de baja: los inactivos no tienen cuota que cobrar.
-const allRows: RowData[] = clientsMock
-  .filter((c) => c.status !== "inactive" && c.membership)
+// Solo alumnos activos con plan: los dados de baja no tienen cuota que cobrar.
+const allRows: RowData[] = seedState.clients
+  .filter((c) => c.status === "active" && c.planId)
   .map((c, i) => {
-    const plan = plansMock.find((p) => p.id === c.membership?.planId);
-    const planName = plan?.name ?? "Sin plan";
-    const membershipPayment = paymentsMock.find(
-      (p) => p.clientId === c.id && p.concept === "membership",
-    );
+    const account = selectAccount(seedState, c);
     const style = avatarStyles[i % avatarStyles.length];
-
-    const isPaid =
-      c.status === "enabled" && membershipPayment?.status === "approved";
-
     return {
       id: c.id,
       name: c.fullName,
       dni: c.dni,
-      plan: planName,
-      amount: membershipPayment?.amountArs ?? plan?.monthlyPriceArs ?? 0,
-      status: isPaid ? "paid" : "debtor",
+      plan: getPlan(c.planId)?.name ?? "Sin plan",
+      // Lo que debe (todas las cuotas sin pagar), o la próxima cuota si está al día.
+      amount: account.owedAmount > 0 ? account.owedAmount : (getPlan(c.planId)?.monthlyPriceArs ?? 0),
+      status: account.owedAmount > 0 ? "debtor" : "paid",
+      accountStatus: account.status,
       initials: getInitials(c.fullName),
       initialsBg: style.bg,
       initialsText: style.text,
@@ -142,25 +140,7 @@ export default function PaymentsPage() {
     {
       key: "status",
       header: "ESTADO",
-      render: (row: RowData) => {
-        const isPaidRow = row.status === "paid";
-        return (
-          <div
-            className={`inline-flex gap-1.5 items-center px-3 py-1 rounded-full ${
-              isPaidRow ? "bg-green-900" : "bg-orange-950"
-            }`}
-          >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${isPaidRow ? "bg-green-500" : "bg-red-500"}`}
-            />
-            <span
-              className={`text-xs font-semibold ${isPaidRow ? "text-green-500" : "text-red-500"}`}
-            >
-              {isPaidRow ? "Pagado" : "Deudor"}
-            </span>
-          </div>
-        );
-      },
+      render: (row: RowData) => <AccountStatusBadge status={row.accountStatus} />,
     },
   ];
 
@@ -183,7 +163,7 @@ export default function PaymentsPage() {
             }`}
           >
             <i className="ti ti-alert-triangle text-base" />
-            Deudores
+            A cobrar
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "debtors" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
               {debtorCount}
             </span>
@@ -197,7 +177,7 @@ export default function PaymentsPage() {
             }`}
           >
             <i className="ti ti-circle-check text-base" />
-            Pagados
+            Al día
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "paid" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
               {paidCount}
             </span>

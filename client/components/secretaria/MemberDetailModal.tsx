@@ -1,27 +1,21 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { MemberDetail } from "@/components/member-detail/MemberDetail";
-import { clientsMock, type Client, type ClientStatus } from "@/data/clients";
-import { plansMock } from "@/data/plans";
-import { paymentsMock, PAYMENT_METHOD_LABELS } from "@/data/payments";
+import type { Client } from "@/data/clients";
+import { getPlan } from "@/data/plans";
+import { PAYMENT_METHOD_LABELS } from "@/data/payments";
 import { branchesMock } from "@/data/branches";
 import { toast } from "sonner";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { formatDateShort, parseISODate } from "@/lib/dates";
+import { seedState } from "@/store/state";
+import { selectAccount, selectClientPayments } from "@/store/selectors";
 
 interface MemberDetailModalProps {
   clientId: string | null;
   extraClients?: Client[];
   onClose: () => void;
-}
-
-const statusLabels: Record<ClientStatus, string> = {
-  enabled: "Habilitado",
-  debtor: "Deudor",
-  inactive: "Inactivo",
-};
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function getInitials(name: string) {
@@ -61,39 +55,25 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
   const [editEmail, setEditEmail] = React.useState("");
   const [editDni, setEditDni] = React.useState("");
   const [editPhone, setEditPhone] = React.useState("");
-  const [editStatus, setEditStatus] = React.useState<ClientStatus>("enabled");
   const [editBranchId, setEditBranchId] = React.useState("");
 
-  const allClients = [...extraClients, ...clientsMock];
+  const allClients = [...extraClients, ...seedState.clients];
   const client = clientId ? allClients.find((c) => c.id === clientId) : undefined;
+  const clientPlan = getPlan(client?.planId);
+  // Estado de cuenta calculado con las reglas de cobro (deuda real, sin montos inventados).
+  const account = client ? selectAccount(seedState, client) : undefined;
 
-  const planName = client
-    ? plansMock.find((p) => p.id === client.membership?.planId)?.name
+  const transactions = client
+    ? selectClientPayments(seedState, client.id).map((p) => ({
+        id: p.id,
+        type: (p.status === "approved" ? "payment" : "unpaid") as "payment" | "unpaid",
+        title: p.description || p.concept,
+        date: parseISODate(p.createdAt).toLocaleDateString("es-AR"),
+        amount: p.amountArs,
+        status: p.status === "approved" ? "Aprobado" : p.status === "rejected" ? "Rechazado" : "Reintegrado",
+        paymentMethod: PAYMENT_METHOD_LABELS[p.method],
+      }))
     : undefined;
-
-  const memberPayments = client
-    ? paymentsMock.filter((p) => p.clientId === client.id)
-    : [];
-
-  const transactions =
-    memberPayments.length > 0
-      ? memberPayments.map((p) => ({
-          id: p.id,
-          type: (p.status === "rejected" || p.status === "pending" ? "unpaid" : "payment") as "payment" | "unpaid",
-          title: p.description || p.concept,
-          date: new Date(p.createdAt).toLocaleDateString("es-AR"),
-          amount: p.amountArs,
-          status:
-            p.status === "approved" ? "Aprobado" :
-            p.status === "rejected" ? "Rechazado" :
-            p.status === "pending"  ? "Pendiente" : "Reintegrado",
-          paymentMethod: PAYMENT_METHOD_LABELS[p.method],
-        }))
-      : undefined;
-
-  const pendingAmount = memberPayments
-    .filter((p) => p.status === "rejected" || p.status === "pending")
-    .reduce((sum, p) => sum + p.amountArs, 0);
 
   function openEdit() {
     if (!client) return;
@@ -101,7 +81,6 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
     setEditEmail(client.email);
     setEditDni(client.dni);
     setEditPhone(client.phone ?? "");
-    setEditStatus(client.status);
     setEditBranchId(client.branchId);
     setEditing(false);
     setEditOpen(true);
@@ -118,35 +97,30 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
     navigate("/secretaria/cobros", { state: { clientId: client?.id } });
   }
 
-  const stStyle = client?.status === "enabled"
-    ? { dot: "bg-lime-400", text: "text-lime-400" }
-    : client?.status === "debtor"
-      ? { dot: "bg-orange-400", text: "text-orange-400" }
-      : { dot: "bg-gray-600", text: "text-gray-500" };
-
-  const clientPlan = client?.membership
-    ? plansMock.find((p) => p.id === client.membership!.planId)
-    : undefined;
 
   return (
     <>
       <Dialog open={!!client} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-5xl bg-neutral-900 border-zinc-800 text-white max-h-[90vh] overflow-y-auto [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
-          {client && (
+          {client && account && (
             <div className="p-2">
+              <DialogTitle className="sr-only">Ficha de {client.fullName}</DialogTitle>
+              <DialogDescription className="sr-only">Datos, estado de cuenta y pagos del alumno.</DialogDescription>
               <MemberDetail
                 member={{
                   id: client.id,
                   fullName: client.fullName,
                   email: client.email,
                   dni: client.dni,
-                  status: client.status,
-                  planName,
+                  status: account.status,
+                  planName: clientPlan?.name,
                 }}
                 pendingPayment={{
-                  amount: client.status === "debtor" ? pendingAmount || 28500 : 0,
-                  overdueDays: client.status === "debtor" ? 14 : 0,
+                  amount: account.owedAmount,
+                  overdueDays: account.overdueDays,
                 }}
+                isAccessBlocked={!!client.manualRestriction || account.status === "bloqueado"}
+                blockReason={client.manualRestriction?.reason ?? (account.status === "bloqueado" ? "Bloqueado por deuda" : undefined)}
                 transactions={transactions}
                 onEditProfile={openEdit}
                 onCollectPayment={handleCollect}
@@ -181,10 +155,7 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
                                 {clientPlan.name}
                               </span>
                             )}
-                            <span className={`flex items-center gap-1.5 text-[10px] font-semibold ${stStyle.text}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${stStyle.dot}`} />
-                              {statusLabels[client.status]}
-                            </span>
+                            {account && <AccountStatusBadge status={account.status} />}
                           </div>
                         )}
                       </div>
@@ -208,18 +179,6 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
                     <Field label="DNI" value={editDni} onChange={setEditDni} />
                     <Field label="TELÉFONO" value={editPhone} onChange={setEditPhone} />
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">ESTADO</span>
-                      <select
-                        value={editStatus}
-                        onChange={(e) => setEditStatus(e.target.value as ClientStatus)}
-                        className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer glass-border"
-                      >
-                        <option value="enabled">Habilitado</option>
-                        <option value="debtor">Deudor</option>
-                        <option value="inactive">Inactivo</option>
-                      </select>
-                    </div>
-                    <div className="flex flex-col gap-1.5">
                       <span className="text-gray-500 text-[10px] font-semibold tracking-widest">SUCURSAL</span>
                       <select
                         value={editBranchId}
@@ -239,8 +198,8 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
                     {client.phone && <InfoRow icon="ti-phone" label="TELÉFONO" value={client.phone} />}
                     <InfoRow icon="ti-building" label="SUCURSAL" value={branchesMock.find((b) => b.id === client.branchId)?.name ?? "—"} />
                     {clientPlan && <InfoRow icon="ti-crown" label="PLAN" value={clientPlan.name} />}
-                    {client.membership && (
-                      <InfoRow icon="ti-calendar-check" label="MEMBRESÍA" value={`Desde ${formatDate(client.membership.startDate)}`} />
+                    {client.enrolledAt && (
+                      <InfoRow icon="ti-calendar-check" label="ALTA" value={formatDateShort(client.enrolledAt)} />
                     )}
                   </div>
                 )}
@@ -248,7 +207,7 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
                 {editing ? (
                   <div className="flex gap-2.5">
                     <button
-                      onClick={() => { setEditing(false); setEditName(client.fullName); setEditEmail(client.email); setEditDni(client.dni); setEditPhone(client.phone ?? ""); setEditStatus(client.status); setEditBranchId(client.branchId); }}
+                      onClick={() => { setEditing(false); setEditName(client.fullName); setEditEmail(client.email); setEditDni(client.dni); setEditPhone(client.phone ?? ""); setEditBranchId(client.branchId); }}
                       className="flex-1 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-gray-400 text-xs font-bold hover:bg-white/[0.07] transition-all cursor-pointer"
                     >
                       Cancelar

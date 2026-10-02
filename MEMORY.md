@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **01/10/2026**, al terminar la etapa E2. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **01/10/2026**, al terminar la etapa E3. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,7 +23,17 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0, E1 y E2 terminadas**. Sigue **E3**: datos coherentes, reglas y dominio.
+- Fase 3: **E0 a E3 terminadas**. Sigue **E4**: store central en memoria.
+- En E3 se resolvió lo siguiente:
+  - **Mocks coherentes:** 18 alumnos, 7 profesores (empleados y contratados) y 22 clases semanales con sede y profesor reales. Pagos, asistencias y reemplazos se generan relativos a hoy.
+  - **Reglas en `domain/`, con tests:** `billing`, `access`, `schedule` y `hours`.
+  - **Estados calculados:** las pantallas muestran el estado de cuenta calculado, con `AccountStatusBadge`.
+  - **Mi cuenta del alumno real:** sin pagos inventados, con monto adeudado, fecha límite y recibos.
+  - **Cobro:** junta todas las cuotas adeudadas.
+  - **Cronogramas:** semana real; el profesor ve solo sus clases.
+  - **Fechas:** se corrigieron las corridas un día.
+  - **KPIs de secretaría:** se calculan desde los datos.
+  - **Novedades:** guardan sede y autor.
 - En E2 se resolvió lo siguiente:
   - Rol `encargado`: Adrián López en Centro y Susana García en Norte. Por ahora usa la asistencia del admin y Novedades; el filtro por sede llega en E11.
   - Sede (`branchId`) en los usuarios de secretaría y encargado.
@@ -44,8 +54,15 @@
   - Un solo cierre de sesión, con confirmación.
   - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
   - El login usa una imagen local.
-- La estructura nueva (`components/alumnos/`, `components/personal/`, `domain/`, `store/`) todavía **no existe**. Las carpetas viejas siguen en uso: `secretaria/`, `member-detail/`, `cobros/`, `cronograma/`, `novedades/` y `globales/`.
-- Ya existen `lib/dates.ts` (solo `todayISO` y `toLocalISODate`), `lib/format.ts`, `hooks/use-draft.ts` y `common/ConfirmDialog.tsx`. En E3 se suman a `lib/dates.ts` los helpers para leer fechas.
+- **Ya existen** `domain/` y `store/` (`state.ts` + `selectors.ts`). Por ahora las pantallas leen `seedState`, que es de solo lectura; en E4 pasan a leer el store.
+- `components/alumnos/` y `components/personal/` todavía **no existen**. Las carpetas viejas siguen en uso: `secretaria/`, `member-detail/`, `cobros/`, `cronograma/`, `novedades/` y `globales/`.
+- **Helpers disponibles:**
+  - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
+  - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
+- **Quedan con mocks viejos hasta su etapa:**
+  - `data/classStudents.ts` (asistencia del profesor, E8).
+  - `data/adminAttendance.ts` (asistencia del admin/encargado, E11).
+  - `horasMock` dentro de `ProfesorHorasPage` (E12).
 
 ## Pendientes
 
@@ -58,8 +75,7 @@
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
 - El cobro todavía no registra el pago ni emite recibo (C3). El recargo ya se quitó.
-- El estado de cuenta del alumno muestra pagos inventados (C4).
-- Las fechas de solo día se muestran corridas un día (A1).
+- En las columnas angostas del cronograma, las palabras largas se parten ("Musculació n") por la regla global `overflow-wrap: anywhere` de `global.css`. Se revisa en E5.
 - Los avisos (toasts) y algunos diálogos se ven en tema claro hasta que se apliquen los tokens oscuros (E5).
 - Radix avisa que varios diálogos no tienen título accesible. Se corrige al rehacer cada pantalla.
 

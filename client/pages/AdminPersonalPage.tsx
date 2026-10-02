@@ -8,9 +8,14 @@ import {
   type EmployeeRole,
   type EmployeeStatus,
 } from "@/data/employees";
-import { clientsMock, type Client, type ClientStatus } from "@/data/clients";
+import type { Client, ClientStatus } from "@/data/clients";
 import { branchesMock } from "@/data/branches";
-import { plansMock } from "@/data/plans";
+import { getPlan, plansMock } from "@/data/plans";
+import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
+import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
+import { formatDateShort, todayISO } from "@/lib/dates";
+import { seedState } from "@/store/state";
+import { selectAccount } from "@/store/selectors";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { matchesPersonSearch } from "@/lib/format";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
@@ -53,7 +58,7 @@ export default function AdminPersonalPage() {
   const [studentPage, setStudentPage] = React.useState(1);
 
   const [staffList, setStaffList] = React.useState<Employee[]>(employeesMock);
-  const [studentList, setStudentList] = React.useState<Client[]>(clientsMock);
+  const [studentList, setStudentList] = React.useState<Client[]>(seedState.clients);
 
   // Search & filters
   const [search, setSearch] = React.useState("");
@@ -81,8 +86,6 @@ export default function AdminPersonalPage() {
   const [editClientEmail, setEditClientEmail] = React.useState("");
   const [editClientDni, setEditClientDni] = React.useState("");
   const [editClientPhone, setEditClientPhone] = React.useState("");
-  const [editClientStatus, setEditClientStatus] =
-    React.useState<ClientStatus>("enabled");
   const [editClientBranchId, setEditClientBranchId] = React.useState("");
 
   // Filtered data
@@ -97,8 +100,8 @@ export default function AdminPersonalPage() {
   const filteredStudents = React.useMemo(() => {
     return studentList.filter((cli) => {
       const matchesSearch = matchesPersonSearch(search, { name: cli.fullName, dni: cli.dni, email: cli.email });
-      const matchesPlan = !filterPlan || (cli.membership != null && cli.membership.planId === filterPlan);
-      const matchesStatus = !filterStatus || cli.status === filterStatus;
+      const matchesPlan = !filterPlan || cli.planId === filterPlan;
+      const matchesStatus = !filterStatus || selectAccount(seedState, cli).status === filterStatus;
       return matchesSearch && matchesPlan && matchesStatus;
     });
   }, [studentList, search, filterPlan, filterStatus]);
@@ -134,7 +137,6 @@ export default function AdminPersonalPage() {
     setEditClientEmail(cli.email);
     setEditClientDni(cli.dni);
     setEditClientPhone(cli.phone ?? "");
-    setEditClientStatus(cli.status);
     setEditClientBranchId(cli.branchId);
   }
 
@@ -198,7 +200,6 @@ export default function AdminPersonalPage() {
               email: editClientEmail,
               dni: editClientDni,
               phone: editClientPhone || undefined,
-              status: editClientStatus,
               branchId: editClientBranchId,
             }
           : c,
@@ -212,7 +213,6 @@ export default function AdminPersonalPage() {
             email: editClientEmail,
             dni: editClientDni,
             phone: editClientPhone || undefined,
-            status: editClientStatus,
             branchId: editClientBranchId,
           }
         : null,
@@ -224,9 +224,12 @@ export default function AdminPersonalPage() {
   /** Baja lógica: el alumno queda inactivo y conserva su historial de pagos y asistencias. */
   function setClientStatus(status: ClientStatus) {
     if (!selectedClient) return;
-    setStudentList((prev) => prev.map((c) => (c.id === selectedClient.id ? { ...c, status } : c)));
-    setSelectedClient((prev) => (prev ? { ...prev, status } : null));
-    setEditClientStatus(status);
+    const changes: Partial<Client> =
+      status === "inactive"
+        ? { status, deactivatedAt: todayISO(), deactivationReason: "Baja registrada por administración." }
+        : { status, deactivatedAt: undefined, deactivationReason: undefined };
+    setStudentList((prev) => prev.map((c) => (c.id === selectedClient.id ? { ...c, ...changes } : c)));
+    setSelectedClient((prev) => (prev ? { ...prev, ...changes } : null));
     toast.success(status === "inactive" ? "Alumno dado de baja" : "Alumno reactivado");
   }
 
@@ -325,11 +328,10 @@ export default function AdminPersonalPage() {
                   value={filterStatus}
                   onChange={setFilterStatus}
                   placeholder="Estado"
-                  options={[
-                    { value: "enabled", label: "Habilitado" },
-                    { value: "debtor", label: "Deudor" },
-                    { value: "inactive", label: "Inactivo" },
-                  ]}
+                  options={(Object.keys(ACCOUNT_STATUS_LABELS) as AccountStatus[]).map((value) => ({
+                    value,
+                    label: ACCOUNT_STATUS_LABELS[value],
+                  }))}
                 />
                 <FilterSelect
                   value={filterPlan}
@@ -416,9 +418,7 @@ export default function AdminPersonalPage() {
             ) : null}
             {paginatedStudents.map((cli) => {
               const branch = branchesMock.find((b) => b.id === cli.branchId);
-              const plan = cli.membership
-                ? plansMock.find((p) => p.id === cli.membership.planId)
-                : undefined;
+              const plan = getPlan(cli.planId);
               return (
                 <button
                   key={cli.id}
@@ -441,17 +441,7 @@ export default function AdminPersonalPage() {
                   <span className="text-gray-500 text-[10px] hidden md:block">
                     {plan?.name ?? "Sin plan"}
                   </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider ${
-                      cli.status === "enabled"
-                        ? "bg-green-900/60 text-green-400"
-                        : cli.status === "debtor"
-                          ? "bg-orange-950/60 text-orange-400"
-                          : "bg-zinc-800 text-gray-400"
-                    }`}
-                  >
-                    {statusLabels[cli.status] ?? cli.status}
-                  </span>
+                  <AccountStatusBadge status={selectAccount(seedState, cli).status} />
                   <i className="ti ti-chevron-right text-gray-600 text-sm group-hover:text-gray-400 transition-colors" />
                 </button>
               );
@@ -578,15 +568,7 @@ export default function AdminPersonalPage() {
               <div className="h-px bg-gradient-to-r from-transparent via-lime-400/50 to-transparent" />
               <div className="p-6 pt-8 flex flex-col gap-5">
                 {(() => {
-                  const clientPlan = selectedClient.membership
-                    ? plansMock.find((p) => p.id === selectedClient.membership!.planId)
-                    : undefined;
-                  const st = selectedClient.status;
-                  const stStyle = st === "enabled"
-                    ? { dot: "bg-lime-400 shadow-[0_0_5px_rgba(163,230,53,0.7)]", text: "text-lime-400" }
-                    : st === "debtor"
-                    ? { dot: "bg-orange-400", text: "text-orange-400" }
-                    : { dot: "bg-gray-600", text: "text-gray-500" };
+                  const clientPlan = getPlan(selectedClient.planId);
                   return (
                     <>
                       <div className="flex items-start gap-4">
@@ -607,10 +589,7 @@ export default function AdminPersonalPage() {
                                       {clientPlan.name}
                                     </span>
                                   )}
-                                  <span className={`flex items-center gap-1.5 text-[10px] font-semibold ${stStyle.text}`}>
-                                    <span className={`w-1.5 h-1.5 rounded-full ${stStyle.dot}`} />
-                                    {statusLabels[st]}
-                                  </span>
+                                  <AccountStatusBadge status={selectAccount(seedState, selectedClient).status} />
                                 </div>
                               )}
                             </div>
@@ -631,14 +610,6 @@ export default function AdminPersonalPage() {
                           <Field label="DNI" value={editClientDni} onChange={setEditClientDni} />
                           <Field label="TELÉFONO" value={editClientPhone} onChange={setEditClientPhone} />
                           <div className="flex flex-col gap-1.5">
-                            <span className="text-gray-500 text-[10px] font-semibold tracking-widest">ESTADO</span>
-                            <select value={editClientStatus} onChange={(e) => setEditClientStatus(e.target.value as ClientStatus)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
-                              <option value="enabled">Habilitado</option>
-                              <option value="debtor">Deudor</option>
-                              <option value="inactive">Inactivo</option>
-                            </select>
-                          </div>
-                          <div className="flex flex-col gap-1.5">
                             <span className="text-gray-500 text-[10px] font-semibold tracking-widest">SUCURSAL</span>
                             <select value={editClientBranchId} onChange={(e) => setEditClientBranchId(e.target.value)} className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white appearance-none outline-none focus:ring-1 focus:ring-lime-400/20 transition-all cursor-pointer">
                               {branchesMock.map((b) => <option key={b.id} value={b.id}>{b.code} – {b.name}</option>)}
@@ -652,14 +623,14 @@ export default function AdminPersonalPage() {
                           {selectedClient.phone && <InfoIconRow icon="ti-phone" label="TELÉFONO" value={selectedClient.phone} />}
                           <InfoIconRow icon="ti-building" label="SUCURSAL" value={branchesMock.find((b) => b.id === selectedClient.branchId)?.name ?? "—"} />
                           {clientPlan && <InfoIconRow icon="ti-crown" label="PLAN" value={clientPlan.name} />}
-                          {selectedClient.membership && <InfoIconRow icon="ti-calendar-check" label="MEMBRESÍA" value={`Desde ${formatDate(selectedClient.membership.startDate)}`} />}
+                          <InfoIconRow icon="ti-calendar-check" label="ALTA" value={formatDateShort(selectedClient.enrolledAt)} />
                         </div>
                       )}
 
                       {editing ? (
                         <div className="flex gap-2.5">
                           <button
-                            onClick={() => { setEditing(false); setEditClientName(selectedClient.fullName); setEditClientEmail(selectedClient.email); setEditClientDni(selectedClient.dni); setEditClientPhone(selectedClient.phone ?? ""); setEditClientStatus(selectedClient.status); setEditClientBranchId(selectedClient.branchId); }}
+                            onClick={() => { setEditing(false); setEditClientName(selectedClient.fullName); setEditClientEmail(selectedClient.email); setEditClientDni(selectedClient.dni); setEditClientPhone(selectedClient.phone ?? ""); setEditClientBranchId(selectedClient.branchId); }}
                             className="flex-1 py-3 rounded-xl bg-white/[0.04] border border-white/[0.07] text-gray-400 text-xs font-bold hover:bg-white/[0.07] transition-all cursor-pointer"
                           >
                             Cancelar
@@ -670,7 +641,7 @@ export default function AdminPersonalPage() {
                         </div>
                       ) : (
                         selectedClient.status === "inactive" ? (
-                          <button onClick={() => setClientStatus("enabled")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-lime-400/20 text-lime-400 text-xs font-bold hover:bg-lime-400/[0.06] transition-all cursor-pointer">
+                          <button onClick={() => setClientStatus("active")} className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-lime-400/20 text-lime-400 text-xs font-bold hover:bg-lime-400/[0.06] transition-all cursor-pointer">
                             <i className="ti ti-user-check text-sm" aria-hidden="true" />
                             Reactivar
                           </button>
