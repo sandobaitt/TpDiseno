@@ -1,159 +1,226 @@
-# CLAUDE.md
+# CLAUDE.md — SquatGym
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Este archivo es la fuente de verdad sobre cómo se trabaja en este repo. El estado del proyecto, las decisiones tomadas y lo que está pendiente están en MEMORY.md:
 
-## Commands
+@MEMORY.md
+
+## Proyecto
+
+Es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4, prof. Gaona).
+
+**SquatGym** es una cadena de gimnasios con 2 sedes y unos 800 alumnos. El repo es un prototipo **solo front-end**:
+- No hay backend real; todo funciona con datos simulados (mock).
+- Tiene que funcionar bien en PC, notebook y celular.
+
+**Alcance del grupo:** **Gestión de Alumnos** y **Gestión de Personal**.
+- Los demás módulos son de otros grupos: kiosco y stock, reportes, auditoría, configuración de promociones y la landing.
+- No los construimos ni los ampliamos. Si hay que tocarlos, se consulta antes.
+- La fuente de verdad son los casos de uso de abajo y `docs/Escenario completo SQUATGYM.pdf`.
+
+**Documentación de trabajo:**
+- [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md): estado y problemas detectados.
+- [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md): cobertura de cada CU.
+- [`docs/PLAN.md`](docs/PLAN.md): etapas y decisiones.
+
+## Comandos (npm)
 
 ```bash
-pnpm dev        # Start dev server on port 8080 (client + server, hot-reload)
-pnpm build      # Production build (client + server)
-pnpm typecheck  # TypeScript validation
-pnpm test       # Run Vitest tests
-pnpm format.fix # Auto-format with Prettier
+npm install
+npm run dev         # http://localhost:3000 (Vite + Express de la plantilla, con recarga en caliente)
+npm run build       # build de producción (cliente + servidor)
+npm test            # Vitest
+npm run typecheck   # TypeScript
+npm run format.fix  # Prettier
 ```
+
+El gestor es **npm**: hay `package-lock.json` y los scripts usan `npm run`. No se usa pnpm.
 
 ## Stack
 
-React 18 + React Router 6 SPA · TypeScript · Vite · TailwindCSS 3 · Radix UI · Express 5 (single port, integrated with Vite dev server).
+| Parte | Qué se usa |
+|---|---|
+| Base | React 18 + React Router 6 (SPA), TypeScript, Vite y TailwindCSS 3 |
+| Componentes | Radix/shadcn (`components/ui`), framer-motion y sonner para los avisos (toasts) |
+| Íconos | Tabler Icons, como webfont: `className="ti ti-<nombre>"` |
+| Servidor | Express 5 que viene con la plantilla. No se usa: no agregar endpoints ni backend sin consultar. |
+| Deploy | Vercel (`vercel.json`, `api/`). No tocar. |
 
-Path aliases: `@/*` → `client/` · `@shared/*` → `shared/`
+Alias de imports: `@/*` → `client/` y `@shared/*` → `shared/`.
 
----
-
-## Reglas de oro para componentes
-
-1. `client/components/ui/` — **solo primitivos "tontos"** (Button, Input, Card…). No conocen el negocio, solo reciben props.
-2. `client/components/<feature>/` — componentes con lógica de negocio. Cada módulo/sección tiene su propia carpeta (ej. `secretaria/`, `admin/`, `alumno/`).
-3. Nunca crear un botón/input nuevo en una carpeta de feature: importar desde `@/components/ui/`.
-
----
-
-## Cómo agregar una nueva pantalla
+## Estructura
 
 ```
-1. client/pages/MiPantalla.tsx          ← thin wrapper, solo importa el componente principal
-2. client/components/<feature>/         ← carpeta con toda la lógica y sub-componentes
-3. client/App.tsx                       ← registrar la ruta
+client/
+├── App.tsx            Rutas. Las privadas van dentro de <RequireAuth><DashboardLayout/></RequireAuth>
+├── pages/             Una página por ruta: envoltorio fino, en PascalCase
+├── components/
+│   ├── ui/            Primitivos "tontos" (shadcn/Radix). Solo reciben props, sin lógica de negocio.
+│   ├── common/        Layout y piezas compartidas (DashboardLayout, SidebarNav, HeaderNav, DataTable…)
+│   ├── alumnos/       Gestión de Alumnos   ← destino de las pantallas de ese módulo
+│   └── personal/      Gestión de Personal  ← destino de las pantallas de ese módulo
+├── data/              Mocks (datos semilla) y reglas configurables
+├── domain/            Reglas de negocio como funciones puras, con tests
+├── store/             Store central en memoria + registro de actividad
+├── lib/, hooks/       Utilidades (cn, fechas, formatos) y hooks
+docs/                  Diagnóstico, cobertura de CU, plan y escenario
 ```
 
-**`client/pages/MiPantalla.tsx`** (siempre así de delgado):
-```tsx
-import MiDashboard from "@/components/<feature>/MiDashboard";
-export default function MiPantalla() {
-  return <MiDashboard />;
-}
-```
+La estructura está en migración. Qué carpetas existen y cuáles todavía son viejas figura en MEMORY.md.
 
-**`client/App.tsx`** — todas las rutas protegidas usan `RequireAuth`:
-```tsx
-import MiPantalla from "./pages/MiPantalla";
-// ...
-<Route path="/mi-ruta" element={<RequireAuth><MiPantalla /></RequireAuth>} />
-```
+## Convenciones de código
 
-Los archivos `.tsx` van en **PascalCase** siempre.
+**Reglas de oro para componentes:**
+1. `components/ui/` tiene **solo primitivos "tontos"** (Button, Input, Dialog…). No conocen el negocio.
+2. `components/<módulo>/` tiene los componentes con lógica de negocio.
+3. **Nunca** se crea un botón, input, toggle o checkbox nuevo dentro de una feature: se importa de `@/components/ui/`.
 
----
+**Cómo agregar una pantalla:**
+1. El componente principal va en `client/components/<módulo>/`.
+2. La página `client/pages/MiPantalla.tsx` solo importa y renderiza ese componente.
+3. Se registra la ruta en `client/App.tsx`, dentro del grupo protegido. Si va en el menú, se agrega el ítem en `client/data/navigation.ts`.
 
-## Diseño (Premium)
+**DashboardLayout** (`components/common/DashboardLayout.tsx`):
+- Es un **layout de ruta**: no recibe props.
+- Lee el rol de la sesión, arma el menú con `data/navigation.ts` y muestra sidebar + header + `<Outlet/>`.
+- Las páginas solo renderizan su contenido; el título del header sale del ítem de menú activo.
 
-- **Solo clases TailwindCSS** — prohibido `style={{ }}`.
-- Colores nuevos: agregarlos en `tailwind.config.ts` o como variables CSS en `client/global.css`. No usar hex sueltos en el código.
-- Clases condicionales: usar `cn()` de `@/lib/utils`.
+**DataTable** (`components/common/DataTable.tsx`):
+- Es una tabla genérica hecha con CSS Grid.
+- Recibe `columns` (`key`, `header` y `render` opcional), `data`, `gridTemplateClass` y `getRowKey`.
+- Para celdas largas: `min-w-0` en el contenedor y `truncate` en el texto.
 
-```ts
-import { cn } from "@/lib/utils";
-className={cn("base", { "conditional": condition }, props.className)}
-```
+**SidebarNav:** se arma solo con props. Cada ítem tiene una de estas acciones:
+- `to`: link interno; marca el activo solo.
+- `href`: link externo.
+- `onClick`: una acción.
+- `disabled`: se muestra deshabilitado.
 
----
+**Código en general:**
+- TypeScript con componentes funcionales y hooks. Evitar `any`.
+- Archivos `.tsx` en PascalCase.
+- Identificadores en **inglés**, como el código existente. Textos de la interfaz en **español**.
+- Comentarios solo donde aporten, y en español.
+- Sin `console.log` sueltos.
+- Fechas: `new Date("AAAA-MM-DD")` se interpreta en UTC y en Argentina muestra el día anterior. Hay que usar los helpers de fechas (ver MEMORY.md).
+- Los datos de negocio (alumnos, clases, pagos) salen de `client/data/` o del store. **Nunca** se escriben a mano en el JSX.
 
-## DashboardLayout
+## Diseño
 
-Todas las pantallas autenticadas usan `DashboardLayout` (`client/components/common/DashboardLayout.tsx`). Lee el rol de la sesión, resuelve los nav items desde `client/data/navigation.ts` y renderiza sidebar + header automáticamente.
+- **Estilos:** solo clases de Tailwind. **Está prohibido `style={{ }}`.**
+- **Colores:** siempre desde tokens (`tailwind.config.ts` o variables de `client/global.css`). Nada de hex sueltos.
+- **Clases condicionales:** con `cn()` de `@/lib/utils`.
+- **Tema oscuro:** bordes redondeados `rounded-xl`/`rounded-2xl` y sombras suaves. Un solo verde de marca.
+- **Accesibilidad:**
+  - Cada label va asociado a su campo.
+  - Los botones de solo ícono llevan `aria-label`.
+  - El foco tiene que verse.
+  - Contraste de 4,5:1 o más (AA).
+  - Texto de 12 px o más.
+  - Botones de 40 px o más en el celular.
+  - **Un estado nunca se comunica solo con color**: siempre va con texto o ícono, por ejemplo "Deudor".
+- **Responsive:** primero el celular, sobre todo para alumno y profesor. En pantallas chicas, las tablas pasan a tarjetas.
+- **Feedback:**
+  - Cada acción muestra un aviso (sonner).
+  - Las acciones destructivas piden confirmación (una baja, por ejemplo).
+  - Las listas tienen estados vacíos claros.
+- **Alertas:** resumidas y **no intrusivas**. Se usan badges, el centro de notificaciones o avisos discretos. No se usan modales que bloqueen el trabajo.
 
-```tsx
-import { DashboardLayout } from "@/components/common/DashboardLayout";
+## Textos de la interfaz
 
-export default function MiDashboard() {
-  return (
-    <DashboardLayout headerNav="Mi Sección" headerTitle="SQUATGYM">
-      {/* contenido */}
-    </DashboardLayout>
-  );
-}
-```
+- Español rioplatense neutro, **con voseo**: "Ingresá", "Guardá", "Elegí".
+- Se dice **"alumno"**, no socio, cliente ni miembro.
+- Lenguaje simple, sin jerga de marketing ni palabras en inglés ("Inicio", no "Dashboard").
+- Pensar en usuarios con poca práctica digital, como secretarias y profesores.
 
-Icons: Tabler Icons webfont, cargado dentro de `DashboardLayout`. Usar `className="ti ti-<nombre>"`.
+## Roles
 
----
+| Rol | Qué ve |
+|---|---|
+| `admin` | Todo, con filtro por sede. |
+| `encargado` | Solo **su** sede. |
+| `secretario` | Gestión diaria de alumnos y asistencia. |
+| `profesor` | Sus clases, sus horas y sus reemplazos. |
+| `alumno` | Solo **sus** datos. |
 
-## DataTable
+**Sesión mock:**
+- Vive en `localStorage`. Los helpers están en `client/data/users.ts`: `getMockSession()`, `saveMockSession()`, `clearMockSession()` y `getPostLoginPath(role)`.
+- Haciendo triple clic en "Ingresar" aparece el acceso rápido por rol.
+- El rol `encargado` todavía se está agregando (ver MEMORY.md).
 
-Componente genérico basado en CSS Grid para cualquier listado. Referencia: `client/components/secretaria/MembersTable.tsx`.
+## Casos de uso
 
-```tsx
-import { DataTable } from "@/components/common/DataTable";
+**Gestión de Alumnos**
 
-const columns = [
-  { key: "name", header: "Nombre", render: (row) => <span>{row.name}</span> },
-  { key: "status", header: "Estado" }, // sin render → usa row["status"] directamente
-];
+| # | Caso de uso | Actor |
+|---|---|---|
+| 1 | Registrar inscripción: datos personales, contacto y DDJJ de salud | Secretaria |
+| 2 | Completar la declaración jurada de salud (puede adjuntar certificados) | Alumno |
+| 3 | Consultar estado de cuenta: pagos, monto adeudado y fecha límite | Alumno / Secretaria |
+| 4 | Registrar pago de cuota con recibo digital | Secretaria |
+| 5 | Aplicar restricción de acceso por deuda | Sistema / Secretaria |
+| 6 | Gestionar asistencia diaria por clase y sede | Secretaria / Profesor |
+| 7 | Consultar historial de asistencia, incluidas las ausencias sin justificar | Alumno |
+| 8 | Consultar cronograma y plan contratado | Alumno |
+| 9 | Aplicar promoción o descuento: cupones, planes familiares, promos vigentes | Secretaria / Administrador |
+| 10 | Enviar alerta de vencimiento de cuota | Sistema |
+| 11 | Gestionar alta, baja y modificación de alumno | Administrador |
+| 12 | Consultar inscripciones por sede | Encargado |
+| 13 | Verificar habilitación para ingresar a clase: cuota al día y plan | Sistema / Secretaria |
+| 14 | Enviar notificación a alumnos, masiva o personalizada | Secretaria |
 
-<DataTable
-  columns={columns}
-  data={data}
-  gridTemplateClass="grid-cols-[minmax(160px,_1fr)_120px_60px]"
-  getRowKey={(row) => row.id}
-/>
-```
+**Gestión de Personal**
 
-- `gridTemplateClass` controla cantidad y ancho de columnas.
-- Para celdas largas (nombre + email): `min-w-0` en el contenedor, `truncate` en los textos.
+| # | Caso de uso | Actor |
+|---|---|---|
+| 1 | Registrar asistencia de profesor en su turno | Secretaria / Encargado |
+| 2 | Consultar asistencia de profesores: cronograma e historial de la sede | Encargado |
+| 3 | Confirmar o modificar asistencia de profesor | Encargado |
+| 4 | Registrar novedad interna: ausencia, incidente o cambio de turno | Encargado / Secretaria |
+| 5 | Consultar historial de novedades de la sede | Encargado / Administrador |
+| 6 | Consultar horas trabajadas: clases, duración y totales | Profesor |
+| 7 | Notificar cambio de horario o reemplazo | Sistema |
+| 8 | Confirmar o rechazar reemplazo | Profesor |
+| 9 | Registrar observaciones de jornada, visibles para el encargado | Profesor |
+| 10 | Detectar diferencias entre horas registradas y cronograma | Sistema |
 
----
+## Reglas de negocio clave
 
-## SidebarNav
+- **Sedes:** son un **dato** y nunca se escriben a mano, para poder sumar sedes sin rediseñar. Los alumnos pueden ir a cualquier sede.
+- **Planes:** cada plan habilita ciertas actividades. Por eso la asistencia se toma **por clase**.
+- **Cobro:**
+  - Si el alumno se inscribe a mitad de mes, se le cobra la parte proporcional.
+  - La cuota **vence el día 5**.
+  - **No hay intereses ni recargos por mora.**
+  - Con **15 días de atraso desde el vencimiento** el alumno queda bloqueado y no puede ingresar.
+  - Ese umbral es una constante configurable y no se repite en el código.
+- **Medios de pago:** efectivo, tarjeta de débito, transferencia y QR. El recibo digital muestra fecha, monto y método.
+- **Inscripción:**
+  - Datos de contacto, peso, estatura, antecedentes de salud y DDJJ.
+  - Se pueden adjuntar certificados.
+  - Un menor necesita la autorización firmada de un adulto responsable.
+  - Se valida que el alumno no esté duplicado.
+- **Personal:**
+  - Todos son profesores, empleados o contratados. Hay un profesor por turno y sede que controla a los contratados.
+  - Se manejan reemplazos y se comparan las horas registradas con el cronograma.
+- **Bajas:** son **lógicas**. El alumno queda inactivo y conserva su historial. Las hace solo el Administrador, con confirmación.
+- **Registro de actividad:** las operaciones importantes (pagos, asistencias, modificaciones) registran quién, qué y cuándo, aunque sea en un log mock.
+- **Wi-Fi inestable:** se muestra el estado de conexión y nunca se pierde lo que el usuario ya cargó en un formulario.
 
-`client/components/common/SidebarNav.tsx` — driven entirely by props. Los items por rol están en `client/data/navigation.ts`.
+## Datos mock
 
-```ts
-// SidebarNavItem
-{ id: "members", label: "Socios", iconClassName: "ti ti-users", to: "/secretaria" }
-// to     → NavLink interno (marca activo automáticamente)
-// href   → link externo
-// onClick → acción custom (logout, modal…)
-// disabled: true → mostrar deshabilitado
-```
+- Todo vive en `client/data/`, con las entidades relacionadas por `id`. Por ejemplo, `client.membership.planId` apunta a `plans.ts`.
+- Se puede importar por archivo o desde el barrel: `import { clientsMock, plansMock } from "@/data";`.
 
-Para agregar un item a un rol: editar `client/data/navigation.ts`.
+## Reglas de trabajo
 
----
+1. Se trabaja **por etapas chicas**, con **un commit por etapa** y mensajes claros en español.
+2. Después de cada etapa se corren `npm run typecheck`, `npm test` y `npm run build`, y se verifica que nada se rompió.
+3. No se agrega backend ni dependencias pesadas sin consultar. Tampoco se borran archivos sin avisar.
+4. No se cambia lo que ya cumple un caso de uso. Si algo es ambiguo, se pregunta.
+5. Si el código contradice un CU o una regla de negocio, **se marca** y no se decide por cuenta propia.
+6. No se tocan los módulos de otros grupos: la landing (`pages/Index.tsx`), el dashboard, finanzas y kiosco de `pages/AdminPanel.tsx`, y el servidor y deploy de la plantilla.
+7. La prioridad es que todo funcione y se vea prolijo para la presentación.
+8. Los cambios se explican en español simple y breve, como para defenderlos oralmente ante el profesor.
+9. Al final de cada sesión de trabajo se actualiza MEMORY.md.
 
-## Auth (mock)
-
-- Sesión en `localStorage`. Helpers en `client/data/users.ts`: `getMockSession()`, `saveMockSession()`, `clearMockSession()`.
-- Roles: `admin` · `alumno` · `profesor` · `secretario`.
-- Redirección post-login: `getPostLoginPath(role)` en `client/data/users.ts`.
-
----
-
-## Mock data
-
-Todo en `client/data/`. Importar por archivo o desde el barrel:
-
-```ts
-import { clientsMock, plansMock, paymentsMock } from "@/data";
-```
-
-Entidades: `clients`, `plans`, `branches`, `employees`, `payments`, `checkins`, `teachers`, `schedule`, `novedades`, `replacements`.
-
-Relaciones por `id` (ej. `client.membership.planId` → `plans.ts`).
-
----
-
-## API Express
-
-Crear endpoints **solo cuando la lógica debe vivir en el servidor** (claves privadas, operaciones de DB sensibles). En el resto de casos, usar los mocks del cliente directamente.
-
-Estructura: handler en `server/routes/mi-ruta.ts` → registrar en `server/index.ts` con prefijo `/api/`.
+`.agents/rules/frontend.md` replica las reglas de frontend para otras herramientas. Si hay diferencias, manda este archivo.
