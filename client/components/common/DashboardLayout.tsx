@@ -27,7 +27,9 @@ export function DashboardLayout() {
       const next = !prev;
       try {
         localStorage.setItem("sidebar-collapsed", String(next));
-      } catch {}
+      } catch {
+        // Sin acceso al almacenamiento (modo privado): la preferencia vale solo en esta visita.
+      }
       return next;
     });
   };

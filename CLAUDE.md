@@ -31,6 +31,7 @@ npm run dev         # http://localhost:3000 (Vite + Express de la plantilla, con
 npm run build       # build de producción (cliente + servidor)
 npm test            # Vitest
 npm run typecheck   # TypeScript
+npm run lint        # ESLint: errores comunes (variables sin usar, hooks, any, console.log)
 npm run format.fix  # Prettier
 ```
 
@@ -292,7 +293,7 @@ La migración por módulo terminó en E14: ya no quedan carpetas viejas.
 ## Reglas de trabajo
 
 1. Se trabaja **por etapas chicas**, con **un commit por etapa** y mensajes claros en español.
-2. Después de cada etapa se corren `npm run typecheck`, `npm test` y `npm run build`, y se verifica que nada se rompió.
+2. Después de cada etapa se corren `npm run typecheck`, `npm run lint`, `npm test` y `npm run build`, y se verifica que nada se rompió.
 3. No se agrega backend ni dependencias pesadas sin consultar. Tampoco se borran archivos sin avisar.
 4. No se cambia lo que ya cumple un caso de uso. Si algo es ambiguo, se pregunta.
 5. Si el código contradice un CU o una regla de negocio, **se marca** y no se decide por cuenta propia.

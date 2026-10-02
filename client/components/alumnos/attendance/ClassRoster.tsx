@@ -15,7 +15,6 @@ import { classRoster, markOf, type AttendanceMark } from "@/domain/attendance";
 import type { Session } from "@/domain/schedule";
 import { formatDateTime, nowISO } from "@/lib/dates";
 import { getInitials, matchesPersonSearch } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import { useAppState, useStoreActions } from "@/store/StoreProvider";
 import { selectAccess, selectAccount } from "@/store/selectors";
 

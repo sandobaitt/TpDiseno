@@ -22,6 +22,7 @@ Después abrí http://localhost:3000.
 | `npm run build` | Arma la versión de producción. |
 | `npm test` | Corre los tests de las reglas de negocio (Vitest). |
 | `npm run typecheck` | Revisa los tipos. |
+| `npm run lint` | Busca errores comunes en el código (ESLint). |
 | `npm run format.fix` | Da formato al código (Prettier). |
 
 ## Usuarios de prueba
