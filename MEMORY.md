@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E15 (cierre de la Fase 3). Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E16. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -18,8 +18,10 @@
 | Gestor de paquetes | npm. | Es el del lockfile y los scripts; pnpm no está instalado. |
 | Lo que no se toca | Deploy (`server/`, `api/`, `netlify/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
 | Documentación | Se borraron AGENTS.md, ARQUITECTURA_FRONTEND.md y `.builder/`. Se conserva `.agents/rules/frontend.md`, que es para otras herramientas. | Para tener una sola fuente de verdad. |
-| Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan: se eligió lo más simple de explicar. **Confirmar con el grupo.** |
-| Reactivación | Al reactivar, los meses de baja no se cobran y el mes de regreso es proporcional (como un alta). | El escenario no lo dice. Sin esta regla, un alumno reactivado quedaba con deuda por los meses en que no vino. **Confirmar con el grupo.** |
+| Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan. **Confirmado por el grupo el 02/10/2026:** no se acumulan. |
+| Reactivación | Al reactivar, los meses de baja no se cobran y el mes de regreso es proporcional (como un alta). | El escenario no lo dice. Sin esta regla, un alumno reactivado quedaba con deuda por los meses en que no vino. **Confirmado por el grupo el 02/10/2026.** |
+| Íconos y fuentes | Tabler Icons (`public/vendor/tabler-icons/`) e Inter y Plus Jakarta Sans (`public/fonts/`) se sirven desde el repo, sin CDN. | Con la red lenta los íconos tardaban o no aparecían. Así la app se ve igual sin internet (regla de Wi-Fi inestable). Aprobado el 02/10/2026. |
+| Otros grupos | No se coordina por ahora con Finanzas ni con el panel del admin: se deja como está. | Decisión del grupo, 02/10/2026. Lo que habría que ajustar figura en `docs/COBERTURA_CU.md` (limitaciones). |
 | Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
 | PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
 
@@ -27,6 +29,8 @@
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
 - Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
+- Después del cierre, con las respuestas del grupo:
+  - **E16:** promociones sin acumular y reactivación sin cobrar los meses de baja quedan confirmadas. Íconos y fuentes se sirven desde el repo: probado con internet bloqueado, todas nuestras pantallas se ven completas.
 - En E15 se resolvió lo siguiente:
   - **Cobertura final** (`docs/COBERTURA_CU.md`): los 24 CU con su ruta, cómo se cumplen y en qué etapa, más las limitaciones del prototipo. La línea base del 01/10 quedó en el commit de E0 (`9a3d900`).
   - **Guion de la defensa** (`docs/GUION_DEFENSA.md`): de 10 a 12 minutos, con un recorrido por rol y las decisiones que conviene explicar.
@@ -207,20 +211,15 @@
 ## Pendientes
 
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
-- Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
-- Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
-- Confirmar con el grupo la regla de reactivación (hoy los meses de baja no se cobran).
-- Decidir si los íconos y las fuentes se sirven desde el repo (ver "Problemas conocidos").
-- Avisar al grupo del panel del admin (`AdminPanel`, otro grupo): lee la semilla de novedades y solo conoce los tipos incidente, cambio y general. Las ausencias y las anulaciones que se hacen en la app no aparecen ahí. Si quieren mostrarlas, tienen que sumar `absence` a su `TYPE_CONFIG`.
 
 ## Problemas conocidos (los más graves)
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).
-  - Con la red lenta, la página tarda en cargar y los íconos pueden no aparecer. Pasó el 02/10/2026: el CDN tardaba más de 10 s.
-  - Propuesta: servirlos desde el repo (E13, Wi-Fi). Está pendiente de que el grupo decida.
-  - Las pruebas de navegador del scratchpad ya usan una copia local.
+- **Fuera de nuestro alcance (se deja como está):**
+  - `AdminPanel` (otro grupo) usa su propia lista de promociones, distinta de `data/promotions.ts`.
+  - `AdminPanel` solo conoce los tipos de novedad incidente, cambio y general: no muestra ausencias ni anulaciones.
+  - La landing (`pages/Index.tsx`) carga imágenes de `api.builder.io`: sin internet no se ven.
 
 ## Lo que no hay que romper
 

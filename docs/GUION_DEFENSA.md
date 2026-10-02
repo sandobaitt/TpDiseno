@@ -47,7 +47,8 @@ Un flujo por rol. Entre uno y otro se cierra la sesión **sin recargar**, así s
 - **Mora:** se tomó 15 días desde el vencimiento (el escenario dice "15 a 20"). Es una constante configurable.
 - **Bajas lógicas:** nunca se borra un alumno ni una novedad; se marcan con motivo y se conserva el historial.
 - **Alertas no intrusivas:** campana con contador, sin ventanas que corten el trabajo.
-- **Wi-Fi inestable:** aviso de conexión y borradores en todos los formularios largos.
+- **Wi-Fi inestable:** aviso de conexión y borradores en todos los formularios largos. Además, íconos y fuentes están en el repo: la app se ve bien aunque no haya internet.
+- **Promociones:** una por cobro, no se acumulan. **Reactivación:** no se cobran los meses de baja.
 - **Accesibilidad:**
   - contraste AA y foco visible;
   - estados con texto e ícono, no solo con color;
@@ -57,7 +58,4 @@ Un flujo por rol. Entre uno y otro se cierra la sesión **sin recargar**, así s
 ## 5. Límites y qué seguiría (1 minuto)
 
 - Persistencia real (backend y base de datos), envío real de emails y subida real de archivos.
-- Para coordinar con otros grupos:
-  - que la configuración de promociones (Finanzas) use la misma lista que el cobro;
-  - que el panel del admin muestre las ausencias.
-- Para confirmar con el profesor o el grupo: si las promociones se acumulan y cómo cobrar una reactivación.
+- Integración con otros grupos: que Finanzas use la misma lista de promociones que el cobro y que el panel del admin muestre las ausencias.

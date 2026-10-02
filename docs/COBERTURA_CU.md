@@ -66,5 +66,7 @@ El detalle de lo que faltaba en cada CU al empezar está en la versión de este 
 - **Emails simulados:** las comunicaciones llegan a la campana de la app; el email figura como opción, pero no se envía.
 - **Promociones (CU 9):**
   - La configuración es del grupo de Finanzas: el cobro lee `data/promotions.ts`, con los mismos ids que su lista.
-  - Hay que confirmar con el grupo si las promociones se acumulan.
-- **Reactivación:** los meses de baja no se cobran. Es una decisión propia, porque el escenario no lo dice. Está para confirmar.
+  - Se aplica una por cobro: no se acumulan (lo confirmó el grupo).
+  - El panel del admin (otro grupo) todavía usa su propia lista. Se deja así por decisión del grupo.
+- **Reactivación:** los meses de baja no se cobran y el mes de regreso es proporcional. El escenario no lo dice; lo confirmó el grupo.
+- **Ausencias en el panel del admin:** ese panel es de otro grupo y no conoce el tipo "Ausencia", así que no las muestra. Se deja así.

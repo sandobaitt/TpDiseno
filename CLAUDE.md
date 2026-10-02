@@ -42,7 +42,7 @@ El gestor es **npm**: hay `package-lock.json` y los scripts usan `npm run`. No s
 |---|---|
 | Base | React 18 + React Router 6 (SPA), TypeScript, Vite y TailwindCSS 3 |
 | Componentes | Radix/shadcn (`components/ui`), framer-motion y sonner para los avisos (toasts) |
-| Íconos | Tabler Icons, como webfont: `className="ti ti-<nombre>"`. Se cargan una sola vez, con versión fija, en `index.html`. |
+| Íconos | Tabler Icons, como webfont: `className="ti ti-<nombre>"`. Se sirven desde el repo (`public/vendor/tabler-icons/`, versión 3.48.0) y se cargan una sola vez en `index.html`. Las fuentes Inter y Plus Jakarta Sans también están en el repo (`public/fonts/`): la app no depende de ningún CDN. |
 | Servidor | Express 5 que viene con la plantilla. No se usa: no agregar endpoints ni backend sin consultar. |
 | Deploy | Vercel (`vercel.json`, `api/`). No tocar. |
 
