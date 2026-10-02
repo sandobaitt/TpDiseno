@@ -2,12 +2,9 @@ import * as React from "react";
 import { createSeedState, type AppState } from "./state";
 import { storeReducer } from "./reducer";
 import type { ActionMeta, StoreAction } from "./actions";
+import { activityText } from "./activityText";
 import type { Attachment, Client, HealthDeclaration } from "@/data/clients";
-import {
-  PAYMENT_METHOD_LABELS,
-  type Payment,
-  type PaymentMethod,
-} from "@/data/payments";
+import type { Payment, PaymentMethod } from "@/data/payments";
 import type { StudentAttendance } from "@/data/attendance";
 import {
   TEACHER_ATTENDANCE_LABELS,
@@ -20,8 +17,7 @@ import { getMockSession } from "@/data/users";
 import { getSlot } from "@/data/schedule";
 import { getActivityName } from "@/data/activities";
 import { getTeacher } from "@/data/teachers";
-import { formatDate, todayISO } from "@/lib/dates";
-import { formatARS } from "@/lib/format";
+import { formatDate, nowISO } from "@/lib/dates";
 
 interface StoreContextValue {
   state: AppState;
@@ -68,10 +64,6 @@ function useStoreContext(): StoreContextValue {
 /** Datos actuales (alumnos, pagos, asistencias…). */
 export function useAppState(): AppState {
   return useStoreContext().state;
-}
-
-function nowISO(): string {
-  return `${todayISO()}T${new Date().toTimeString().slice(0, 8)}`;
 }
 
 let idCounter = 0;
@@ -128,7 +120,11 @@ export function useStoreActions() {
         dispatch({
           type: "client/register",
           client,
-          meta: meta(`Inscribió a ${client.fullName}`, "alumno", client.id),
+          meta: meta(
+            activityText.registerClient(client.fullName),
+            "alumno",
+            client.id,
+          ),
         });
         return client;
       },
@@ -138,7 +134,7 @@ export function useStoreActions() {
           clientId,
           changes,
           meta: meta(
-            `Modificó los datos de ${clientName(clientId)}`,
+            activityText.updateClient(clientName(clientId)),
             "alumno",
             clientId,
           ),
@@ -150,7 +146,7 @@ export function useStoreActions() {
           clientId,
           reason,
           meta: meta(
-            `Dio de baja a ${clientName(clientId)}: ${reason}`,
+            activityText.deactivateClient(clientName(clientId), reason),
             "alumno",
             clientId,
           ),
@@ -160,7 +156,11 @@ export function useStoreActions() {
         dispatch({
           type: "client/reactivate",
           clientId,
-          meta: meta(`Reactivó a ${clientName(clientId)}`, "alumno", clientId),
+          meta: meta(
+            activityText.reactivateClient(clientName(clientId)),
+            "alumno",
+            clientId,
+          ),
         });
       },
       restrictClient(clientId: string, reason: string) {
@@ -169,7 +169,7 @@ export function useStoreActions() {
           clientId,
           reason,
           meta: meta(
-            `Restringió el acceso de ${clientName(clientId)}: ${reason}`,
+            activityText.restrictClient(clientName(clientId), reason),
             "alumno",
             clientId,
           ),
@@ -180,7 +180,7 @@ export function useStoreActions() {
           type: "client/unrestrict",
           clientId,
           meta: meta(
-            `Quitó la restricción de acceso de ${clientName(clientId)}`,
+            activityText.unrestrictClient(clientName(clientId)),
             "alumno",
             clientId,
           ),
@@ -192,23 +192,35 @@ export function useStoreActions() {
           clientId,
           health,
           meta: meta(
-            `Actualizó la declaración jurada de salud de ${clientName(clientId)}`,
+            activityText.saveHealth(clientName(clientId)),
             "alumno",
             clientId,
           ),
         });
       },
       addAttachment(clientId: string, attachment: Attachment) {
-        const kind =
-          attachment.kind === "certificado"
-            ? "un certificado médico"
-            : "una autorización";
         dispatch({
           type: "client/addAttachment",
           clientId,
           attachment,
           meta: meta(
-            `Adjuntó ${kind} (${attachment.fileName}) a la ficha de ${clientName(clientId)}`,
+            activityText.addAttachment(attachment, clientName(clientId)),
+            "alumno",
+            clientId,
+          ),
+        });
+      },
+      reviewAttachment(clientId: string, attachmentId: string) {
+        const doc = stateRef.current.clients
+          .find((c) => c.id === clientId)
+          ?.attachments?.find((d) => d.id === attachmentId);
+        if (!doc) return;
+        dispatch({
+          type: "client/reviewAttachment",
+          clientId,
+          attachmentId,
+          meta: meta(
+            activityText.reviewAttachment(doc, clientName(clientId)),
             "alumno",
             clientId,
           ),
@@ -240,7 +252,7 @@ export function useStoreActions() {
           type: "payment/register",
           payment,
           meta: meta(
-            `Registró el pago ${payment.receiptNumber} de ${client?.fullName ?? "alumno"}: ${formatARS(payment.amountArs)} (${PAYMENT_METHOD_LABELS[payment.method]})`,
+            activityText.payment(payment, client?.fullName ?? "alumno"),
             "pago",
             payment.id,
           ),

@@ -56,7 +56,7 @@ client/
 ├── components/
 │   ├── ui/            Primitivos "tontos" (shadcn/Radix). Solo reciben props, sin lógica de negocio.
 │   ├── common/        Layout y piezas compartidas (DashboardLayout, SidebarNav, HeaderNav, DataTable…)
-│   ├── alumnos/       Gestión de Alumnos   ← destino de las pantallas de ese módulo
+│   ├── alumnos/       Gestión de Alumnos (lista, inscripción, ficha, legajo de salud)
 │   └── personal/      Gestión de Personal  ← destino de las pantallas de ese módulo
 ├── data/              Mocks (datos semilla) y reglas configurables
 ├── domain/            Reglas de negocio como funciones puras, con tests
@@ -81,6 +81,8 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
    - Los permisos de cada prefijo están en `client/domain/permissions.ts` y los aplica `RequireAuth`.
    - Si dos roles usan la misma pantalla, se registra una ruta en cada prefijo.
 4. Si va en el menú, se agrega el ítem en `client/data/navigation.ts`. Un test controla que cada ítem del menú sea accesible para su rol.
+   - Si la sección tiene subpantallas (por ejemplo, la ficha `/secretaria/alumnos/:id`), el ítem lleva `end: false` para que siga marcado.
+5. Lo que puede hacer cada rol **dentro** de una pantalla también sale de `domain/permissions.ts` (por ejemplo, `studentCapabilities(rol)` en la ficha del alumno).
 
 **DashboardLayout** (`components/common/DashboardLayout.tsx`):
 - Es un **layout de ruta**: no recibe props.
@@ -112,7 +114,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | Componente | Para qué |
 |---|---|
 | `PageHeader` | Título, subtítulo y acciones de cada pantalla. |
-| `StatCard` | Indicadores. |
+| `StatCard` | Indicadores. Con `onClick` + `pressed` funciona como filtro rápido. |
 | `StatusBadge` y `AccountStatusBadge` | Estados con ícono y texto. |
 | `SearchInput` | Buscador. |
 | `FilterSelect` | Filtro accesible, basado en el Select de Radix. |
@@ -121,6 +123,9 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `FormField` + `inputClasses` | Campo con label asociado y error en línea. |
 | `WeekNavigator` | Navegador de semana. |
 | `ConfirmDialog` | Confirmaciones. |
+| `SectionCard` | Tarjeta con título y acciones para agrupar una sección. |
+| `DetailList` | Lista de datos "Rótulo: valor" (fichas, recibos, resúmenes). |
+| `FileUpload` | Adjuntar PDF, JPG o PNG (con botón o arrastrando). Controla formato y tamaño. |
 | `DataTable` | Tabla en escritorio y tarjetas por debajo de 1024 px. Para filas clickeables: `onRowClick` + `rowActionLabel`. |
 
 **Piezas que ya existen y hay que reusar:**
@@ -128,8 +133,10 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | Pieza | Para qué |
 |---|---|
 | `components/common/ConfirmDialog.tsx` | Confirmar acciones importantes o destructivas. |
-| `lib/format.ts` | `matchesPersonSearch` (busca por nombre sin tildes o por DNI con o sin puntos) y `formatARS` (moneda). |
-| `lib/dates.ts` | `toLocalISODate` y `todayISO`. No usar `toISOString()` para fechas sin hora. |
+| `lib/format.ts` | `matchesPersonSearch` (busca por nombre sin tildes o por DNI con o sin puntos), `formatARS` (moneda), `formatDni`, `getInitials` y `cleanText`. |
+| `lib/files.ts` | `FileMeta`, `checkDocumentFile` y `formatFileSize`. |
+| `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
+| `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
 | `data/payments.ts` | `PAYMENT_METHOD_LABELS`, las etiquetas de los 4 medios de pago aceptados. |
 
@@ -259,6 +266,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - **Nunca** se copian los mocks a un `useState` local: así los flujos quedan conectados.
   - No se guarda nada entre recargas: recargar reinicia la demo.
 - **Registro de actividad:** cada acción del store agrega a `state.activity` quién, qué y cuándo. Para mostrar quién registró algo se usa `getUserName(userId)`.
+  - Los textos están en `store/activityText.ts`. La semilla arma la historia inicial con esos mismos textos (inscripciones, documentos, pagos), así cada ficha tiene su historial.
 
 ## Reglas de trabajo
 

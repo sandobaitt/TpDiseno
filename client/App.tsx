@@ -13,7 +13,9 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import NotFound from "./pages/NotFound";
-import Secretaria from "./pages/Secretaria";
+import SecretariaAlumnosPage from "./pages/SecretariaAlumnosPage";
+import SecretariaAlumnoPage from "./pages/SecretariaAlumnoPage";
+import SecretariaInscripcionPage from "./pages/SecretariaInscripcionPage";
 import AdminPanel from "./pages/AdminPanel";
 import AlumnoPanel from "./pages/AlumnoPanel";
 import AttendancePage from "./pages/AttendancePage";
@@ -60,7 +62,10 @@ const App = () => (
             <Route path="/profesor/reemplazos" element={<ProfesorReemplazosPage />} />
             <Route path="/profesor/cronograma" element={<ProfesorCronogramaPage />} />
             <Route path="/profesor/horas" element={<ProfesorHorasPage />} />
-            <Route path="/secretaria" element={<Secretaria />} />
+            <Route path="/secretaria" element={<Navigate to="/secretaria/alumnos" replace />} />
+            <Route path="/secretaria/alumnos" element={<SecretariaAlumnosPage />} />
+            <Route path="/secretaria/alumnos/nuevo" element={<SecretariaInscripcionPage />} />
+            <Route path="/secretaria/alumnos/:clientId" element={<SecretariaAlumnoPage />} />
             <Route path="/secretaria/asistencia" element={<AttendancePage />} />
             <Route path="/secretaria/cobros" element={<PaymentsPage />} />
             <Route path="/secretaria/novedades" element={<NovedadesPage />} />

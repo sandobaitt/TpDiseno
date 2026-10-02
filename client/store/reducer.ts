@@ -29,7 +29,16 @@ function updateClient(
 function applyAction(state: AppState, action: StoreAction): AppState {
   switch (action.type) {
     case "client/register":
-      return { ...state, clients: [action.client, ...state.clients] };
+      return {
+        ...state,
+        clients: [
+          {
+            ...action.client,
+            createdBy: action.client.createdBy ?? action.meta.userId,
+          },
+          ...state.clients,
+        ],
+      };
     case "client/update":
       return updateClient(state, action.clientId, action.changes);
     case "client/deactivate":
@@ -37,12 +46,14 @@ function applyAction(state: AppState, action: StoreAction): AppState {
         status: "inactive",
         deactivatedAt: action.meta.at.slice(0, 10),
         deactivationReason: action.reason,
+        deactivatedBy: action.meta.userId,
       });
     case "client/reactivate":
       return updateClient(state, action.clientId, {
         status: "active",
         deactivatedAt: undefined,
         deactivationReason: undefined,
+        deactivatedBy: undefined,
       });
     case "client/restrict":
       return updateClient(state, action.clientId, {
@@ -60,8 +71,27 @@ function applyAction(state: AppState, action: StoreAction): AppState {
       return updateClient(state, action.clientId, { health: action.health });
     case "client/addAttachment": {
       const client = state.clients.find((c) => c.id === action.clientId);
+      const attachment = {
+        ...action.attachment,
+        uploadedBy: action.attachment.uploadedBy ?? action.meta.userId,
+      };
       return updateClient(state, action.clientId, {
-        attachments: [action.attachment, ...(client?.attachments ?? [])],
+        attachments: [attachment, ...(client?.attachments ?? [])],
+      });
+    }
+    case "client/reviewAttachment": {
+      const client = state.clients.find((c) => c.id === action.clientId);
+      return updateClient(state, action.clientId, {
+        attachments: client?.attachments?.map((doc) =>
+          doc.id === action.attachmentId
+            ? {
+                ...doc,
+                status: "approved",
+                reviewedBy: action.meta.userId,
+                reviewedAt: action.meta.at.slice(0, 10),
+              }
+            : doc,
+        ),
       });
     }
     case "payment/register":

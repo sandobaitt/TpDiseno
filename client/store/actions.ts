@@ -46,6 +46,7 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "client/unrestrict"; clientId: string }
   | { type: "client/saveHealth"; clientId: string; health: HealthDeclaration }
   | { type: "client/addAttachment"; clientId: string; attachment: Attachment }
+  | { type: "client/reviewAttachment"; clientId: string; attachmentId: string }
   | { type: "payment/register"; payment: Payment }
   | { type: "attendance/save"; records: StudentAttendance[] }
   | { type: "teacherAttendance/save"; records: TeacherAttendance[] }

@@ -46,3 +46,23 @@ const arsFormatter = new Intl.NumberFormat("es-AR", {
 export function formatARS(amount: number): string {
   return `$${arsFormatter.format(amount)}`;
 }
+
+/** Iniciales para el avatar: "Martín Rodríguez" → "MR". */
+export function getInitials(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? "";
+  const second = parts[1]?.[0] ?? parts[0]?.[1] ?? "";
+  return `${first}${second}`.toUpperCase();
+}
+
+/** DNI con puntos: "34567890" → "34.567.890". Si no tiene 7 u 8 números, lo deja como está. */
+export function formatDni(value: string): string {
+  const digits = onlyDigits(value);
+  if (digits.length < 7 || digits.length > 8) return value.trim();
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/** Saca espacios de más: "  Ana   María " → "Ana María". */
+export function cleanText(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}

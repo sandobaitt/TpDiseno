@@ -140,8 +140,53 @@ describe("otras acciones del store", () => {
 
   it("cada acción agrega una línea al registro de actividad", () => {
     let state = createSeedState();
+    const before = state.activity.length;
     state = dispatch(state, { type: "novedad/resolve", id: "nov_001" });
     state = dispatch(state, { type: "novedad/remove", id: "nov_002" });
-    expect(state.activity).toHaveLength(2);
+    expect(state.activity).toHaveLength(before + 2);
+  });
+
+  it("la semilla ya trae la historia de cada alumno (inscripción y pagos)", () => {
+    const state = createSeedState();
+    const deMartin = state.activity.filter(
+      (a) =>
+        a.entityId === "cl_001" ||
+        state.payments.some(
+          (p) => p.id === a.entityId && p.clientId === "cl_001",
+        ),
+    );
+    expect(deMartin.some((a) => a.summary.startsWith("Inscribió"))).toBe(true);
+    expect(deMartin.some((a) => a.summary.startsWith("Registró el pago"))).toBe(
+      true,
+    );
+  });
+
+  it("la inscripción guarda quién la registró", () => {
+    let state = createSeedState();
+    const nuevo = { ...state.clients[0], id: "cl_nuevo", createdBy: undefined };
+    state = dispatch(state, { type: "client/register", client: nuevo });
+    expect(state.clients[0]).toMatchObject({
+      id: "cl_nuevo",
+      createdBy: "us_se_001",
+    });
+  });
+
+  it("revisar un certificado pendiente lo marca como revisado", () => {
+    let state = createSeedState();
+    const malena = state.clients.find((c) => c.id === "cl_012")!;
+    const doc = malena.attachments!.find((d) => d.status === "pending")!;
+    state = dispatch(state, {
+      type: "client/reviewAttachment",
+      clientId: malena.id,
+      attachmentId: doc.id,
+    });
+    const reviewed = state.clients
+      .find((c) => c.id === malena.id)!
+      .attachments!.find((d) => d.id === doc.id)!;
+    expect(reviewed).toMatchObject({
+      status: "approved",
+      reviewedBy: "us_se_001",
+      reviewedAt: SEED_TODAY,
+    });
   });
 });

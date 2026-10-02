@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canAccess } from "./permissions";
+import { canAccess, studentCapabilities } from "./permissions";
 import { getPostLoginPath, type AppUserRole } from "@/data/users";
 import { getNavigationByRole } from "@/data/navigation";
 
@@ -19,6 +19,8 @@ describe("canAccess: cada rol entra solo a su sección", () => {
     ["profesor", "/profesor/horas", true],
     ["profesor", "/alumno", false],
     ["secretario", "/secretaria/asistencia", true],
+    ["secretario", "/secretaria/alumnos/cl_001", true],
+    ["profesor", "/secretaria/alumnos/cl_001", false],
     ["secretario", "/admin", false],
     ["encargado", "/encargado/novedades", true],
     ["encargado", "/admin/asistencia", false],
@@ -55,4 +57,24 @@ describe("coherencia entre permisos, inicio y menú", () => {
       for (const to of links) expect(canAccess(role, to)).toBe(true);
     },
   );
+});
+
+describe("permisos dentro de la ficha del alumno", () => {
+  it("secretaría edita, adjunta documentos y cobra, pero no da de baja", () => {
+    expect(studentCapabilities("secretario")).toEqual({
+      editData: true,
+      manageDocuments: true,
+      collect: true,
+      deactivate: false,
+    });
+  });
+
+  it("solo el administrador da de baja (CU 11)", () => {
+    const quienes = ROLES.filter((r) => studentCapabilities(r).deactivate);
+    expect(quienes).toEqual(["admin"]);
+  });
+
+  it("el encargado solo consulta", () => {
+    expect(Object.values(studentCapabilities("encargado"))).not.toContain(true);
+  });
 });

@@ -7,13 +7,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import { SearchInput } from "@/components/common/SearchInput";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
+import { CheckoutDialog } from "@/components/cobros/CheckoutDialog";
 import { getPlan } from "@/data/plans";
 import { formatARS, matchesPersonSearch } from "@/lib/format";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
@@ -281,25 +275,10 @@ export default function PaymentsPage() {
         )}
       </section>
 
-      <Dialog
-        open={!!selectedClientId}
-        onOpenChange={(open) => !open && setSelectedClientId(null)}
-      >
-        <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
-          <DialogTitle className="sr-only">Cobrar cuota</DialogTitle>
-          <DialogDescription className="sr-only">
-            Detalle de lo adeudado, medio de pago y confirmación.
-          </DialogDescription>
-          <div className="p-3">
-            {selectedClientId && (
-              <PaymentCheckoutContent
-                clientId={selectedClientId}
-                onClose={() => setSelectedClientId(null)}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CheckoutDialog
+        clientId={selectedClientId}
+        onClose={() => setSelectedClientId(null)}
+      />
     </>
   );
 }

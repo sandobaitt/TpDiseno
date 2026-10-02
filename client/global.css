@@ -7,6 +7,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Controles nativos (calendario, desplegables, barras de scroll) en tema oscuro. */
+  color-scheme: dark;
 }
 
 @layer base {

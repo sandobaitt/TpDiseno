@@ -11,6 +11,8 @@ export interface SidebarNavItem {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
+  /** false: el ítem también queda marcado en sus subpantallas (ej. la ficha de un alumno). */
+  end?: boolean;
 }
 
 interface SidebarNavProps {
@@ -173,7 +175,7 @@ export function SidebarNav({
               <NavLink
                 key={item.id}
                 to={item.to}
-                end
+                end={item.end ?? true}
                 className={({ isActive }) =>
                   `${itemBase} ${isActive ? (isCollapsed ? "" : "pl-[10px]") : itemHover} ${disabledClass}`
                 }

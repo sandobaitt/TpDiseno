@@ -5,8 +5,8 @@ interface FormFieldProps {
   label: string;
   /** Recibe el id que hay que poner en el control (así el label queda asociado). */
   children: (id: string, describedBy?: string) => React.ReactNode;
-  hint?: string;
-  error?: string;
+  hint?: React.ReactNode;
+  error?: React.ReactNode;
   required?: boolean;
   className?: string;
 }

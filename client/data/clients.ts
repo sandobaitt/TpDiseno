@@ -1,5 +1,5 @@
 import type { HealthConditionId } from "./health";
-import { SEED_TODAY, daysAgo, monthsAgo } from "./seed";
+import { BRANCH_SECRETARY, SEED_TODAY, daysAgo, monthsAgo } from "./seed";
 
 /**
  * "active" o "inactive" (baja lógica). El estado de cuenta (al día, por vencer,
@@ -23,13 +23,30 @@ export interface HealthDeclaration {
 
 export type AttachmentKind = "certificado" | "autorizacion";
 
+export const ATTACHMENT_KIND_LABELS: Record<AttachmentKind, string> = {
+  certificado: "Certificado médico",
+  autorizacion: "Autorización del adulto responsable",
+};
+
+export type AttachmentStatus = "pending" | "approved";
+
+export const ATTACHMENT_STATUS_LABELS: Record<AttachmentStatus, string> = {
+  pending: "Pendiente de revisión",
+  approved: "Revisado",
+};
+
+/** Lo sube el alumno desde la app (queda pendiente) o secretaría al inscribir (queda revisado). */
 export interface Attachment {
   id: string;
   kind: AttachmentKind;
   fileName: string;
   sizeKb: number;
   uploadedAt: string; // AAAA-MM-DD
-  status: "pending" | "approved";
+  status: AttachmentStatus;
+  /** Id del usuario que lo subió, o "alumno" si lo subió desde la app sin cuenta vinculada. */
+  uploadedBy?: string;
+  reviewedBy?: string;
+  reviewedAt?: string; // AAAA-MM-DD
 }
 
 /** Adulto responsable (obligatorio para menores de edad). */
@@ -62,17 +79,21 @@ export interface Client {
   status: ClientStatus;
   deactivatedAt?: string;
   deactivationReason?: string;
+  /** Id del administrador que hizo la baja. */
+  deactivatedBy?: string;
   /** Restricción de acceso aplicada a mano por secretaría (además de la automática por deuda). */
   manualRestriction?: ManualRestriction;
   health?: HealthDeclaration;
   attachments?: Attachment[];
   guardian?: Guardian;
   createdAt: string; // ISO con hora
+  /** Id del usuario que registró la inscripción. */
+  createdBy?: string;
 }
 
 const MINOR_BIRTH_YEAR = Number(SEED_TODAY.slice(0, 4)) - 15;
 
-export const clientsMock: Client[] = [
+const seedClients: Client[] = [
   {
     id: "cl_001",
     branchId: "br_001",
@@ -174,6 +195,7 @@ export const clientsMock: Client[] = [
     status: "inactive",
     deactivatedAt: monthsAgo(2, 28),
     deactivationReason: "Se mudó a otra ciudad.",
+    deactivatedBy: "us_ad_001",
     createdAt: `${monthsAgo(14, 8)}T10:30:00`,
   },
   {
@@ -364,6 +386,7 @@ export const clientsMock: Client[] = [
         sizeKb: 520,
         uploadedAt: daysAgo(9),
         status: "pending",
+        uploadedBy: "alumno",
       },
     ],
     createdAt: `${daysAgo(9)}T16:30:00`,
@@ -518,6 +541,28 @@ export const clientsMock: Client[] = [
     createdAt: `${monthsAgo(2, 16)}T08:15:00`,
   },
 ];
+
+/**
+ * Completa quién cargó cada dato de la semilla: la inscripción y los documentos
+ * revisados los registró la secretaría de la sede.
+ */
+export const clientsMock: Client[] = seedClients.map((client) => {
+  const secretary = BRANCH_SECRETARY[client.branchId];
+  return {
+    ...client,
+    createdBy: client.createdBy ?? secretary,
+    attachments: client.attachments?.map((doc) =>
+      doc.status === "approved"
+        ? {
+            ...doc,
+            uploadedBy: doc.uploadedBy ?? secretary,
+            reviewedBy: doc.reviewedBy ?? secretary,
+            reviewedAt: doc.reviewedAt ?? doc.uploadedAt,
+          }
+        : doc,
+    ),
+  };
+});
 
 export function getClient(clientId?: string): Client | undefined {
   return clientsMock.find((c) => c.id === clientId);

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   employeesMock,
@@ -397,6 +397,8 @@ export default function AdminPersonalPage() {
       {/* Dialog: Employee CRUD */}
       <Dialog open={!!selectedEmployee} onOpenChange={(o) => !o && closeDialog()}>
         <DialogContent className="max-w-md bg-[#111111] border-zinc-800/60 text-white p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Ficha de {selectedEmployee?.fullName ?? "personal"}</DialogTitle>
+          <DialogDescription className="sr-only">Datos, rol y estado de la persona.</DialogDescription>
           {selectedEmployee && (
             <div className="flex flex-col">
               <div className="h-px bg-gradient-to-r from-transparent via-lime-400/50 to-transparent" />
@@ -502,6 +504,8 @@ export default function AdminPersonalPage() {
       {/* Dialog: Client CRUD */}
       <Dialog open={!!selectedClient} onOpenChange={(o) => !o && closeDialog()}>
         <DialogContent className="max-w-md bg-[#111111] border-zinc-800/60 text-white p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Ficha de {selectedClient?.fullName ?? "alumno"}</DialogTitle>
+          <DialogDescription className="sr-only">Datos, plan y estado del alumno.</DialogDescription>
           {selectedClient && (
             <div className="flex flex-col">
               <div className="h-px bg-gradient-to-r from-transparent via-lime-400/50 to-transparent" />

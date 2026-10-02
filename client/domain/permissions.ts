@@ -26,3 +26,46 @@ export function canAccess(
   const rule = ROUTE_ROLES.find((r) => matchesPrefix(pathname, r.prefix));
   return !!rule && rule.roles.includes(role);
 }
+
+/** Qué puede hacer cada rol en la ficha de un alumno. */
+export interface StudentCapabilities {
+  /** Modificar datos personales y la declaración jurada. */
+  editData: boolean;
+  /** Adjuntar y revisar certificados o autorizaciones. */
+  manageDocuments: boolean;
+  /** Ir a cobrar la cuota (CU 4). */
+  collect: boolean;
+  /** Dar de baja o reactivar (CU 11: solo el Administrador). */
+  deactivate: boolean;
+}
+
+const NO_STUDENT_CAPABILITIES: StudentCapabilities = {
+  editData: false,
+  manageDocuments: false,
+  collect: false,
+  deactivate: false,
+};
+
+export function studentCapabilities(
+  role: AppUserRole | undefined,
+): StudentCapabilities {
+  switch (role) {
+    case "secretario":
+      return {
+        editData: true,
+        manageDocuments: true,
+        collect: true,
+        deactivate: false,
+      };
+    case "admin":
+      return {
+        editData: true,
+        manageDocuments: true,
+        collect: false,
+        deactivate: true,
+      };
+    default:
+      // El encargado consulta (CU 12) y el resto no ve fichas de otros alumnos.
+      return NO_STUDENT_CAPABILITIES;
+  }
+}

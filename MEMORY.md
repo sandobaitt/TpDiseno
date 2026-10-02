@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E5. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E6. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,7 +23,27 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E5 terminadas**. Sigue **E6**: gestión de alumnos de secretaría (ficha unificada e inscripción completa).
+- Fase 3: **E0 a E6 terminadas**. Sigue **E7**: cobros, promociones, restricción manual y "Control de acceso" (CU 3, 4, 5, 9 y 13).
+- En E6 se resolvió lo siguiente:
+  - **Carpeta `components/alumnos/`:** lista (`StudentsDashboard`, `StudentsTable`, `StudentStats`), inscripción (`enrollment/`), ficha (`profile/`) y DDJJ compartida (`health/`).
+  - **Rutas de secretaría:** `/secretaria` redirige a `/secretaria/alumnos`; la inscripción es `/secretaria/alumnos/nuevo` y la ficha `/secretaria/alumnos/:id`.
+  - **Inscripción en 5 pasos (CU 1):**
+    - DNI y email sin duplicados (avisa apenas se escriben);
+    - menor con adulto responsable y autorización adjunta;
+    - peso, estatura, condiciones y antecedentes;
+    - certificado opcional;
+    - plan, sede y fecha de inicio con la cuota proporcional;
+    - "Registrar e ir a cobrar" abre la ficha con el cobro listo;
+    - borrador guardado.
+  - **Ficha única:** reemplaza a `MemberDetailModal` y `member-detail/`. Tiene estas pestañas:
+    - Resumen: cuenta, habilitación, legajo y contacto;
+    - Datos (edición validada);
+    - Salud y documentos: DDJJ, adjuntar y "Marcar como revisado";
+    - Pagos, con recibo;
+    - Historial: asistencia y registro de actividad.
+  - **Permisos dentro de la ficha:** `studentCapabilities(rol)`. Secretaría edita y cobra, solo el admin da de baja y el encargado solo consulta.
+  - **Inicio de secretaría:** accesos rápidos (Tomar asistencia, Cobrar cuota, Inscribir alumno) y KPIs que filtran la lista.
+  - **Registro de actividad desde la semilla:** cada ficha muestra quién la inscribió, cobró o adjuntó documentos.
 - En E5 se resolvió lo siguiente:
   - **Tokens de tema oscuro** (los primitivos de `ui/` ya salen oscuros), estados semánticos e Inter por defecto.
   - **Accesibilidad global:** foco visible y respeto de "reducir movimiento".
@@ -75,7 +95,8 @@
   - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
   - El login usa una imagen local.
 - **Ya existen** `domain/` y `store/` (`state.ts`, `actions.ts`, `reducer.ts`, `selectors.ts` y `StoreProvider.tsx`). Todas las pantallas de nuestros módulos leen del store.
-- `components/alumnos/` y `components/personal/` todavía **no existen**. Las carpetas viejas siguen en uso: `secretaria/`, `member-detail/`, `cobros/`, `cronograma/`, `novedades/` y `globales/`.
+- `components/alumnos/` ya existe. `components/personal/` todavía **no existe**. Las carpetas viejas que siguen en uso son `cobros/`, `cronograma/`, `novedades/` y `globales/`. `secretaria/` y `member-detail/` ya no existen.
+- El diálogo de alumno de `AdminPersonalPage` sigue siendo el viejo. Se reemplaza por la ficha única en E10, con ruta `/admin/alumnos/:id` y `studentCapabilities("admin")`.
 - **Helpers disponibles:**
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
   - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
@@ -94,7 +115,14 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- Radix avisa que varios diálogos no tienen título accesible. Se corrige al rehacer cada pantalla.
+- **Diálogos sin título accesible** (Radix avisa en la consola). Se corrigen al rehacer cada pantalla:
+  - `ProfesorAsistenciaPage` (E8);
+  - `AlumnoPanel` (E9);
+  - `AdminAsistenciaPage` (E11).
+- **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).
+  - Con la red lenta, la página tarda en cargar y los íconos pueden no aparecer. Pasó el 02/10/2026: el CDN tardaba más de 10 s.
+  - Propuesta: servirlos desde el repo (E13, Wi-Fi). Está pendiente de que el grupo decida.
+  - Las pruebas de navegador del scratchpad ya usan una copia local.
 
 ## Lo que no hay que romper
 

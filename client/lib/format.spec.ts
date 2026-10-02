@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  cleanText,
   formatARS,
+  formatDni,
+  getInitials,
   matchesPersonSearch,
   normalizeText,
   onlyDigits,
@@ -51,5 +54,30 @@ describe("matchesPersonSearch", () => {
 describe("formatARS", () => {
   it("usa el separador de miles argentino", () => {
     expect(formatARS(34990)).toBe("$34.990");
+  });
+});
+
+describe("getInitials", () => {
+  it("toma la inicial del nombre y del apellido", () => {
+    expect(getInitials("Martín Rodríguez")).toBe("MR");
+    expect(getInitials("  zoe ")).toBe("ZO");
+  });
+});
+
+describe("formatDni", () => {
+  it("agrega los puntos de miles", () => {
+    expect(formatDni("34567890")).toBe("34.567.890");
+    expect(formatDni("1234567")).toBe("1.234.567");
+    expect(formatDni("34.567.890")).toBe("34.567.890");
+  });
+
+  it("deja igual lo que no es un DNI completo", () => {
+    expect(formatDni(" 123 ")).toBe("123");
+  });
+});
+
+describe("cleanText", () => {
+  it("saca los espacios de más", () => {
+    expect(cleanText("  Ana   María ")).toBe("Ana María");
   });
 });

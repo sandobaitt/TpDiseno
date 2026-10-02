@@ -29,6 +29,11 @@ export function todayISO(): string {
   return DEMO_TODAY ?? toLocalISODate(new Date());
 }
 
+/** Fecha y hora local actual en formato ISO sin zona: "2026-10-02T18:30:05". */
+export function nowISO(): string {
+  return `${todayISO()}T${new Date().toTimeString().slice(0, 8)}`;
+}
+
 export function addDays(iso: string, days: number): string {
   const date = parseISODate(iso);
   date.setDate(date.getDate() + days);
