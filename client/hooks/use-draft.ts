@@ -53,3 +53,29 @@ export function useDraft<T extends object>(key: string, initial: T) {
 
   return { value, setValue, isDirty, restored, clear };
 }
+
+/** Borradores de diálogos (se abren y cierran): leer, guardar y descartar a mano. */
+export const dialogDraft = {
+  load<T>(key: string): T | null {
+    try {
+      const raw = localStorage.getItem(PREFIX + key);
+      return raw ? (JSON.parse(raw) as T) : null;
+    } catch {
+      return null;
+    }
+  },
+  save<T>(key: string, value: T): void {
+    try {
+      localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    } catch {
+      // Sin acceso a localStorage: el formulario sigue funcionando.
+    }
+  },
+  clear(key: string): void {
+    try {
+      localStorage.removeItem(PREFIX + key);
+    } catch {
+      // ignorado a propósito
+    }
+  },
+};

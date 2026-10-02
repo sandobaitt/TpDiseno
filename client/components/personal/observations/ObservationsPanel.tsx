@@ -20,6 +20,7 @@ import { addDays, formatDateTime, nowISO, todayISO } from "@/lib/dates";
 import { observationClassLabel } from "./classLabel";
 import { cleanText } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { dialogDraft } from "@/hooks/use-draft";
 import { useAppState, useStoreActions } from "@/store/StoreProvider";
 
 interface ObservationsPanelProps {
@@ -59,18 +60,37 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
     content?: string;
   }>({});
 
+  // Borrador (Wi-Fi inestable): si se cierra sin guardar, se recupera al volver a abrir.
+  const draftKey = `observacion_${teacherId ?? "sin_profesor"}`;
+  const [restored, setRestored] = React.useState(false);
+  type Draft = {
+    title: string;
+    content: string;
+    clientId: string;
+    classKey: string;
+  };
+
   function openForm() {
-    setTitle("");
-    setContent("");
-    setClientId("");
+    const saved = dialogDraft.load<Draft>(draftKey);
+    setTitle(saved?.title ?? "");
+    setContent(saved?.content ?? "");
+    setClientId(saved?.clientId ?? "");
     setClassKey(
-      recentClasses[0]
-        ? `${recentClasses[0].slotId}|${recentClasses[0].date}`
-        : "",
+      saved?.classKey ??
+        (recentClasses[0]
+          ? `${recentClasses[0].slotId}|${recentClasses[0].date}`
+          : ""),
     );
+    setRestored(!!saved);
     setErrors({});
     setFormOpen(true);
   }
+
+  React.useEffect(() => {
+    if (!formOpen) return;
+    if (title.trim() || content.trim())
+      dialogDraft.save<Draft>(draftKey, { title, content, clientId, classKey });
+  }, [formOpen, title, content, clientId, classKey, draftKey]);
 
   function save(event: React.FormEvent) {
     event.preventDefault();
@@ -100,6 +120,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
       studentName: student?.fullName,
       createdAt: nowISO(),
     });
+    dialogDraft.clear(draftKey);
     setFormOpen(false);
     toast.success("Observación guardada.");
   }
@@ -193,6 +214,12 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={save} noValidate className="flex flex-col gap-4">
+            {restored && (
+              <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+                <i className="ti ti-history text-warning" aria-hidden="true" />
+                Recuperamos una observación que no se guardó.
+              </p>
+            )}
             <FormField label="Título" required error={errors.title}>
               {(id, describedBy) => (
                 <input
@@ -259,7 +286,10 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setFormOpen(false)}
+                onClick={() => {
+                  dialogDraft.clear(draftKey);
+                  setFormOpen(false);
+                }}
                 className="rounded-xl"
               >
                 Cancelar

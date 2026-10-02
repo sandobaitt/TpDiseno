@@ -2,6 +2,7 @@ import * as React from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { ConnectionStatus } from "./ConnectionStatus";
 import { SidebarNav, type SidebarNavItem } from "./SidebarNav";
 import { Header as HeaderNav } from "./HeaderNav";
 import { getMockSession, clearMockSession } from "@/data/users";
@@ -89,6 +90,7 @@ export function DashboardLayout() {
             onMenuClick={() => setSidebarOpen(true)}
             onLogoutClick={() => setShowLogoutDialog(true)}
           />
+          <ConnectionStatus />
           <AnimatePresence mode="popLayout">
             <motion.div
               key={location.pathname}

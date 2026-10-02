@@ -148,7 +148,8 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `components/personal/` | Novedades (`novedades/`), horas del profesor (`hours/MyHours`), observaciones (`observations/`) y asistencia de profesores (`attendance/`). |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
-| `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
+| `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador: `useDraft` para pantallas y `dialogDraft` para diálogos que se abren y cierran. |
+| `common/ConnectionStatus` + `hooks/use-online-status.ts` | Aviso de "sin conexión" (ya está en `DashboardLayout`). |
 | `data/payments.ts` | `PAYMENT_METHOD_LABELS`, las etiquetas de los 4 medios de pago aceptados. |
 
 ## Diseño

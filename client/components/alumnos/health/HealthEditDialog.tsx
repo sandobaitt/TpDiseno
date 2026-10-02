@@ -20,6 +20,7 @@ import {
 } from "@/domain/enrollment";
 import { todayISO } from "@/lib/dates";
 import { cleanText } from "@/lib/format";
+import { dialogDraft } from "@/hooks/use-draft";
 import { useStoreActions } from "@/store/StoreProvider";
 
 function toForm(client: Client): HealthFormValue {
@@ -52,13 +53,33 @@ export function HealthEditDialog({
   const [errors, setErrors] = React.useState<FieldErrors<HealthFormValue>>({});
   const formRef = React.useRef<HTMLFormElement>(null);
 
+  // Borrador (Wi-Fi inestable): si se cierra sin guardar, lo cargado no se pierde.
+  const draftKey = `ddjj_${client.id}`;
+  const initial = React.useRef<HealthFormValue>(toForm(client));
+  const [restored, setRestored] = React.useState(false);
+
   React.useEffect(() => {
     if (open) {
-      setForm(toForm(client));
+      initial.current = toForm(client);
+      const saved = dialogDraft.load<HealthFormValue>(draftKey);
+      setForm(saved ?? initial.current);
+      setRestored(!!saved);
       setErrors({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, client.id]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (JSON.stringify(form) !== JSON.stringify(initial.current))
+      dialogDraft.save(draftKey, form);
+  }, [open, form, draftKey]);
+
+  function discardDraft() {
+    dialogDraft.clear(draftKey);
+    setForm(initial.current);
+    setRestored(false);
+  }
 
   React.useEffect(() => {
     if (Object.keys(errors).length === 0) return;
@@ -88,6 +109,7 @@ export function HealthEditDialog({
       signedAt: todayISO(),
       signedBy,
     });
+    dialogDraft.clear(draftKey);
     toast.success("Declaración jurada actualizada.");
     onOpenChange(false);
   }
@@ -109,6 +131,21 @@ export function HealthEditDialog({
           noValidate
           className="flex flex-col gap-5"
         >
+          {restored && (
+            <p className="flex flex-wrap items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+              <i className="ti ti-history text-warning" aria-hidden="true" />
+              Recuperamos lo que habías cargado y no se guardó.
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                onClick={discardDraft}
+                className="ml-auto h-auto px-0 text-warning"
+              >
+                Descartar
+              </Button>
+            </p>
+          )}
           <HealthDeclarationFields
             value={form}
             onChange={(key, value) => setForm((f) => ({ ...f, [key]: value }))}
@@ -119,7 +156,10 @@ export function HealthEditDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                dialogDraft.clear(draftKey);
+                onOpenChange(false);
+              }}
               className="rounded-xl"
             >
               Cancelar

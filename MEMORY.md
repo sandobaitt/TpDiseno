@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E12. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E13. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -26,7 +26,16 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E12 terminadas**. Sigue **E13**: indicador de conexión (Wi-Fi inestable) y borradores en los formularios que faltan.
+- Fase 3: **E0 a E13 terminadas**. Sigue **E14**, la limpieza final:
+  - código muerto y dependencias sin uso;
+  - carga diferida por rol;
+  - textos con voseo;
+  - `style={{}}` y hex restantes;
+  - revisión de accesibilidad;
+  - consultar ESLint.
+- En E13 se resolvió lo siguiente:
+  - **Wi-Fi inestable:** aviso discreto "Sin conexión. Podés seguir: lo que cargues queda guardado en este equipo" y "Volvió la conexión".
+  - **Borradores:** tienen borrador la inscripción, la DDJJ (también en diálogo), la novedad, la observación y la comunicación. Al volver a abrir avisan "Recuperamos…" y sobreviven a una recarga.
 - En E12 se resolvió lo siguiente:
   - **Novedades (CU 4 y 5):**
     - tipos Ausencia, Incidente, Cambio de turno y General, vinculados a un profesor o una clase de la sede;
