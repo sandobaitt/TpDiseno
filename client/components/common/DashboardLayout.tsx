@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { ConnectionStatus } from "./ConnectionStatus";
+import { PageLoading } from "./PageLoading";
 import { SidebarNav, type SidebarNavItem } from "./SidebarNav";
 import { Header as HeaderNav } from "./HeaderNav";
 import { getMockSession, clearMockSession } from "@/data/users";
@@ -100,7 +101,9 @@ export function DashboardLayout() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
             >
-              <Outlet />
+              <React.Suspense fallback={<PageLoading />}>
+                <Outlet />
+              </React.Suspense>
             </motion.div>
           </AnimatePresence>
         </main>

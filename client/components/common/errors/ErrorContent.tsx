@@ -24,17 +24,17 @@ export function ErrorContent() {
         </h1>
 
         <div className="mt-6 mb-8">
-          <ErrorBadge>ERROR DE SISTEMA</ErrorBadge>
+          <ErrorBadge>PÁGINA NO ENCONTRADA</ErrorBadge>
         </div>
 
         <header className="mb-5 text-5xl font-black tracking-normal leading-none text-center text-white uppercase max-md:text-4xl max-sm:text-3xl">
-          <h2 className="italic font-black text-white">RUTA FUERA DE</h2>
-          <h2 className="italic font-black text-lime-400">LÍMITES</h2>
+          <h2 className="italic font-black text-white">ESTA PÁGINA</h2>
+          <h2 className="italic font-black text-primary">NO EXISTE</h2>
         </header>
 
         <p className="mb-12 text-base leading-relaxed text-center max-w-[480px] text-neutral-400 max-sm:text-sm">
-          La página que buscás no existe o cambió de lugar. Volvé al inicio
-          para seguir.
+          La página que buscás no existe o cambió de lugar. Volvé al inicio para
+          seguir.
         </p>
 
         <div className="flex flex-row gap-4 items-center max-sm:flex-col max-sm:w-full">
@@ -50,7 +50,7 @@ export function ErrorContent() {
             icon="ti-refresh"
             onClick={handleRetryClick}
           >
-            REINTENTAR CARGA
+            VOLVER A CARGAR
           </ActionButton>
         </div>
       </div>

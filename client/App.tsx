@@ -1,53 +1,68 @@
 import "./global.css";
 
-import { Toaster } from "@/components/ui/toaster";
+import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { RequireAuth } from "@/components/common/RequireAuth";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
+import { PageLoading } from "@/components/common/PageLoading";
 import { StoreProvider } from "@/store/StoreProvider";
-import Index from "./pages/Index";
 import Login from "./pages/Login";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import NotFound from "./pages/NotFound";
-import SecretariaAlumnosPage from "./pages/SecretariaAlumnosPage";
-import SecretariaAlumnoPage from "./pages/SecretariaAlumnoPage";
-import SecretariaInscripcionPage from "./pages/SecretariaInscripcionPage";
-import SecretariaAccesoPage from "./pages/SecretariaAccesoPage";
-import SecretariaComunicacionesPage from "./pages/SecretariaComunicacionesPage";
-import AdminPanel from "./pages/AdminPanel";
-import AlumnoPanel from "./pages/AlumnoPanel";
-import AttendancePage from "./pages/AttendancePage";
-import PaymentsPage from "./pages/PaymentsPage";
-import NovedadesPage from "./pages/NovedadesPage";
-import AlumnoCronogramaPage from "./pages/AlumnoCronogramaPage";
-import AlumnoAjustesPage from "./pages/AlumnoAjustesPage";
-import AlumnoPagosPage from "./pages/AlumnoPagosPage";
-import ProfesorAsistenciaPage from "./pages/ProfesorAsistenciaPage";
-import ProfesorReemplazosPage from "./pages/ProfesorReemplazosPage";
-import ProfesorCronogramaPage from "./pages/ProfesorCronogramaPage";
-import ProfesorHorasPage from "./pages/ProfesorHorasPage";
-import AdminAsistenciaPage from "./pages/AdminAsistenciaPage";
-import AdminPersonalPage from "./pages/AdminPersonalPage";
-import AdminAlumnosPage from "./pages/AdminAlumnosPage";
-import AdminAlumnoPage from "./pages/AdminAlumnoPage";
-import AdminInscripcionPage from "./pages/AdminInscripcionPage";
-import EncargadoInscripcionesPage from "./pages/EncargadoInscripcionesPage";
-import EncargadoAsistenciaPage from "./pages/EncargadoAsistenciaPage";
-import ObservacionesPage from "./pages/ObservacionesPage";
 
-const queryClient = new QueryClient();
+// Las pantallas se cargan cuando se usan: cada rol descarga solo lo suyo.
+const Index = lazy(() => import("./pages/Index"));
+const SecretariaAlumnosPage = lazy(
+  () => import("./pages/SecretariaAlumnosPage"),
+);
+const SecretariaAlumnoPage = lazy(() => import("./pages/SecretariaAlumnoPage"));
+const SecretariaInscripcionPage = lazy(
+  () => import("./pages/SecretariaInscripcionPage"),
+);
+const SecretariaAccesoPage = lazy(() => import("./pages/SecretariaAccesoPage"));
+const SecretariaComunicacionesPage = lazy(
+  () => import("./pages/SecretariaComunicacionesPage"),
+);
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const AlumnoPanel = lazy(() => import("./pages/AlumnoPanel"));
+const AttendancePage = lazy(() => import("./pages/AttendancePage"));
+const PaymentsPage = lazy(() => import("./pages/PaymentsPage"));
+const NovedadesPage = lazy(() => import("./pages/NovedadesPage"));
+const AlumnoCronogramaPage = lazy(() => import("./pages/AlumnoCronogramaPage"));
+const AlumnoAjustesPage = lazy(() => import("./pages/AlumnoAjustesPage"));
+const AlumnoPagosPage = lazy(() => import("./pages/AlumnoPagosPage"));
+const ProfesorAsistenciaPage = lazy(
+  () => import("./pages/ProfesorAsistenciaPage"),
+);
+const ProfesorReemplazosPage = lazy(
+  () => import("./pages/ProfesorReemplazosPage"),
+);
+const ProfesorCronogramaPage = lazy(
+  () => import("./pages/ProfesorCronogramaPage"),
+);
+const ProfesorHorasPage = lazy(() => import("./pages/ProfesorHorasPage"));
+const AdminAsistenciaPage = lazy(() => import("./pages/AdminAsistenciaPage"));
+const AdminPersonalPage = lazy(() => import("./pages/AdminPersonalPage"));
+const AdminAlumnosPage = lazy(() => import("./pages/AdminAlumnosPage"));
+const AdminAlumnoPage = lazy(() => import("./pages/AdminAlumnoPage"));
+const AdminInscripcionPage = lazy(() => import("./pages/AdminInscripcionPage"));
+const EncargadoInscripcionesPage = lazy(
+  () => import("./pages/EncargadoInscripcionesPage"),
+);
+const EncargadoAsistenciaPage = lazy(
+  () => import("./pages/EncargadoAsistenciaPage"),
+);
+const ObservacionesPage = lazy(() => import("./pages/ObservacionesPage"));
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <StoreProvider>
-        <BrowserRouter>
+  <TooltipProvider>
+    <Sonner />
+    <StoreProvider>
+      <BrowserRouter>
+        <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -151,10 +166,10 @@ const App = () => (
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </StoreProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+        </Suspense>
+      </BrowserRouter>
+    </StoreProvider>
+  </TooltipProvider>
 );
 
 createRoot(document.getElementById("root")!).render(<App />);

@@ -194,7 +194,7 @@ export default function Login() {
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
                   <div className="flex items-center gap-2">
                     <i className="ti ti-bug text-xs text-gray-400" />
-                    <span className="text-gray-400 text-[11px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
+                    <span className="text-gray-400 text-[11px] font-bold tracking-widest">ACCESO RÁPIDO (DEMO)</span>
                   </div>
                   <button
                     type="button"

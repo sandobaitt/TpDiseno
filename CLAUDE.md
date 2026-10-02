@@ -55,9 +55,10 @@ client/
 ├── pages/             Una página por ruta: envoltorio fino, en PascalCase
 ├── components/
 │   ├── ui/            Primitivos "tontos" (shadcn/Radix). Solo reciben props, sin lógica de negocio.
-│   ├── common/        Layout y piezas compartidas (DashboardLayout, SidebarNav, HeaderNav, DataTable…)
-│   ├── alumnos/       Gestión de Alumnos (lista, inscripción, ficha, legajo de salud)
-│   └── personal/      Gestión de Personal  ← destino de las pantallas de ese módulo
+│   ├── common/        Layout y piezas compartidas (DashboardLayout, SidebarNav, HeaderNav, DataTable…) y errors/ (404)
+│   ├── cronograma/    Calendario semanal compartido (ClassCard, DayColumn, weekView)
+│   ├── alumnos/       Gestión de Alumnos (lista, inscripción, ficha, cobros, acceso, asistencia, comunicaciones y vistas del alumno)
+│   └── personal/      Gestión de Personal (personal, asistencia docente, novedades, horas y observaciones)
 ├── data/              Mocks (datos semilla) y reglas configurables
 ├── domain/            Reglas de negocio como funciones puras, con tests
 ├── store/             Store central en memoria + registro de actividad
@@ -65,7 +66,7 @@ client/
 docs/                  Diagnóstico, cobertura de CU, plan y escenario
 ```
 
-La estructura está en migración. Qué carpetas existen y cuáles todavía son viejas figura en MEMORY.md.
+La migración por módulo terminó en E14: ya no quedan carpetas viejas.
 
 ## Convenciones de código
 
@@ -78,6 +79,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 1. El componente principal va en `client/components/<módulo>/`.
 2. La página `client/pages/MiPantalla.tsx` solo importa y renderiza ese componente.
 3. Se registra la ruta en `client/App.tsx`, dentro del grupo protegido y **bajo el prefijo del rol**: `/admin`, `/encargado`, `/secretaria`, `/profesor` o `/alumno`.
+   - La página se importa con `lazy(() => import("./pages/MiPantalla"))`: así cada rol descarga solo sus pantallas. `DashboardLayout` muestra "Cargando…" mientras tanto.
    - Los permisos de cada prefijo están en `client/domain/permissions.ts` y los aplica `RequireAuth`.
    - Si dos roles usan la misma pantalla, se registra una ruta en cada prefijo.
 4. Si va en el menú, se agrega el ítem en `client/data/navigation.ts`. Un test controla que cada ítem del menú sea accesible para su rol.

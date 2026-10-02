@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E13. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E14. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -26,13 +26,13 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E13 terminadas**. Sigue **E14**, la limpieza final:
-  - código muerto y dependencias sin uso;
-  - carga diferida por rol;
-  - textos con voseo;
-  - `style={{}}` y hex restantes;
-  - revisión de accesibilidad;
-  - consultar ESLint.
+- Fase 3: **E0 a E14 terminadas**. Sigue **E15**, el cierre: actualizar `docs/COBERTURA_CU.md`, el README y un guion breve para la defensa.
+- En E14 se resolvió lo siguiente:
+  - **Carga diferida (`React.lazy`):** el bloque principal bajó de 736 KB a 520 KB (166 KB gzip). Cada pantalla se descarga cuando se usa.
+  - **Dependencias quitadas** (66 paquetes): `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three` y `@tanstack/react-query`. También se sacaron `QueryClientProvider` y el Toaster de Radix, porque se usa sonner.
+  - **Código muerto:** se borró `SystemFooter`. `globales/` pasó a `common/errors/`.
+  - **Textos:** la 404 dice "Esta página no existe" en lugar de jerga, y el acceso rápido del login dice "(DEMO)".
+  - **Revisión final en nuestros módulos:** no quedan `style={{}}`, colores hex, `"use client"`, tuteo ni textos de menos de 11 px. Lo que queda está en pantallas de otros grupos (`Index`, `AdminPanel`).
 - En E13 se resolvió lo siguiente:
   - **Wi-Fi inestable:** aviso discreto "Sin conexión. Podés seguir: lo que cargues queda guardado en este equipo" y "Volvió la conexión".
   - **Borradores:** tienen borrador la inscripción, la DDJJ (también en diálogo), la novedad, la observación y la comunicación. Al volver a abrir avisan "Recuperamos…" y sobreviven a una recarga.
@@ -193,8 +193,7 @@
   - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
   - El login usa una imagen local.
 - **Ya existen** `domain/` y `store/` (`state.ts`, `actions.ts`, `reducer.ts`, `selectors.ts` y `StoreProvider.tsx`). Todas las pantallas de nuestros módulos leen del store.
-- `components/alumnos/` ya existe. `components/personal/` todavía **no existe**. Las carpetas viejas que siguen en uso son `cronograma/`, `novedades/` y `globales/`. `secretaria/`, `member-detail/` y `cobros/` ya no existen.
-- El diálogo de alumno de `AdminPersonalPage` sigue siendo el viejo. Se reemplaza por la ficha única en E10, con ruta `/admin/alumnos/:id` y `studentCapabilities("admin")`.
+- La estructura por módulo quedó completa: `alumnos/`, `personal/`, `common/` (con `errors/`) y `cronograma/` (calendario compartido). Ya no existen `secretaria/`, `member-detail/`, `cobros/`, `novedades/` ni `globales/`.
 - **Helpers disponibles:**
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
   - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
@@ -202,7 +201,7 @@
 
 ## Pendientes
 
-- Etapas E1 a E15 de `docs/PLAN.md`.
+- Etapa E15 de `docs/PLAN.md` (cierre).
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
 - Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
 - Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
@@ -212,7 +211,6 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- Los diálogos sin título accesible quedaron resueltos en E11: no queda ninguno sin título.
 - **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).
   - Con la red lenta, la página tarda en cargar y los íconos pueden no aparecer. Pasó el 02/10/2026: el CDN tardaba más de 10 s.
   - Propuesta: servirlos desde el repo (E13, Wi-Fi). Está pendiente de que el grupo decida.
