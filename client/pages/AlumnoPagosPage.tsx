@@ -22,6 +22,7 @@ import {
 import { formatARS } from "@/lib/format";
 import { useAppState } from "@/store/StoreProvider";
 import { selectAccount } from "@/store/selectors";
+import { PageHeader } from "@/components/common/PageHeader";
 
 function capitalize(text: string) {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -138,13 +139,10 @@ export default function AlumnoPagosPage() {
   return (
     <>
       <div className="px-7 pb-7 max-sm:px-4">
-        <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
-          MI CUENTA
-        </h1>
-        <p className="text-gray-400 text-sm mt-2 max-w-xl leading-relaxed">
-          Revisá el estado de tus cuotas y pagá las pendientes. No hay recargos
-          por pagar fuera de término.
-        </p>
+        <PageHeader
+          title="Mi cuenta"
+          subtitle="Revisá el estado de tus cuotas y pagá las pendientes. No hay recargos por pagar fuera de término."
+        />
 
         {/* Resumen del estado de cuenta */}
         <section

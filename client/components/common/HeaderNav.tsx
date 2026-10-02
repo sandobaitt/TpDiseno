@@ -2,7 +2,12 @@ import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { Novedad } from "@/data/novedades";
 import { useAppState } from "@/store/StoreProvider";
-import { getMockSession, clearMockSession, ROLE_LABELS, type AppUserRole } from "@/data/users";
+import {
+  getMockSession,
+  clearMockSession,
+  ROLE_LABELS,
+  type AppUserRole,
+} from "@/data/users";
 
 function getInitials(fullName: string): string {
   const parts = fullName.trim().split(/\s+/);
@@ -20,27 +25,30 @@ function timeAgo(iso: string): string {
 
 const TYPE_DOT: Record<Novedad["type"], string> = {
   incident: "bg-red-400",
-  change:   "bg-amber-400",
-  normal:   "bg-blue-400",
+  change: "bg-amber-400",
+  normal: "bg-blue-400",
 };
 
-const STATUS_STYLE: Record<Novedad["status"], { label: string; color: string }> = {
-  in_progress: { label: "En curso",  color: "text-amber-400" },
-  resolved:    { label: "Resuelto",  color: "text-green-400" },
-  closed:      { label: "Cerrado",   color: "text-gray-500"  },
+const STATUS_STYLE: Record<
+  Novedad["status"],
+  { label: string; color: string }
+> = {
+  in_progress: { label: "En curso", color: "text-amber-400" },
+  resolved: { label: "Resuelto", color: "text-green-400" },
+  closed: { label: "Cerrado", color: "text-gray-400" },
 };
 
 const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
-  admin:      { bg: "bg-lime-400/10",   text: "text-lime-400"   },
-  encargado:  { bg: "bg-amber-400/10",  text: "text-amber-400"  },
+  admin: { bg: "bg-lime-400/10", text: "text-lime-400" },
+  encargado: { bg: "bg-amber-400/10", text: "text-amber-400" },
   secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
-  profesor:   { bg: "bg-blue-400/10",   text: "text-blue-400"   },
-  alumno:     { bg: "bg-gray-400/10",   text: "text-gray-300"   },
+  profesor: { bg: "bg-blue-400/10", text: "text-blue-400" },
+  alumno: { bg: "bg-gray-400/10", text: "text-gray-300" },
 };
 
 const NOVEDADES_ROUTE: Partial<Record<AppUserRole, string>> = {
-  admin:      "/admin/novedades",
-  encargado:  "/encargado/novedades",
+  admin: "/admin/novedades",
+  encargado: "/encargado/novedades",
   secretario: "/secretaria/novedades",
 };
 
@@ -53,7 +61,13 @@ interface HeaderProps {
   onLogoutClick?: () => void;
 }
 
-export function Header({ nav, title, className = "", onMenuClick, onLogoutClick }: HeaderProps) {
+export function Header({
+  nav,
+  title,
+  className = "",
+  onMenuClick,
+  onLogoutClick,
+}: HeaderProps) {
   const navigate = useNavigate();
   const session = getMockSession();
   const role: AppUserRole = session?.role ?? "alumno";
@@ -62,7 +76,9 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
   const hasNovedades = role in NOVEDADES_ROUTE;
   // Novedades del store: las nuevas aparecen enseguida. Encargado y secretaría ven solo las de su sede.
   const { novedades } = useAppState();
-  const visibleNovedades = session?.branchId ? novedades.filter((n) => n.branchId === session.branchId) : novedades;
+  const visibleNovedades = session?.branchId
+    ? novedades.filter((n) => n.branchId === session.branchId)
+    : novedades;
   const recentNovedades = [...visibleNovedades]
     .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
     .slice(0, 4);
@@ -78,7 +94,8 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
   React.useEffect(() => {
     if (!bellOpen) return;
     const handler = (e: MouseEvent) => {
-      if (bellRef.current && !bellRef.current.contains(e.target as Node)) setBellOpen(false);
+      if (bellRef.current && !bellRef.current.contains(e.target as Node))
+        setBellOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -87,7 +104,8 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
   React.useEffect(() => {
     if (!userOpen) return;
     const handler = (e: MouseEvent) => {
-      if (userRef.current && !userRef.current.contains(e.target as Node)) setUserOpen(false);
+      if (userRef.current && !userRef.current.contains(e.target as Node))
+        setUserOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -104,21 +122,27 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
   }
 
   return (
-    <header className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-3.5 border-b bg-neutral-900 border-white/[0.05] ${className}`}>
+    <header
+      className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-3.5 border-b bg-neutral-900 border-white/[0.05] ${className}`}
+    >
       <nav className="flex gap-2 items-center max-md:hidden">
-        <span className="text-sm text-gray-500">{nav}</span>
+        <span className="text-sm text-gray-400">{nav}</span>
       </nav>
 
       <div className="hidden gap-2 items-center max-md:flex">
-        <h1 className="text-lg font-extrabold tracking-tight text-lime-400">{title}</h1>
+        <h1 className="text-lg font-extrabold tracking-tight text-lime-400">
+          {title}
+        </h1>
       </div>
 
       <div className="flex gap-1 items-center">
-
         {/* Bell */}
         <div ref={bellRef} className="relative">
           <button
-            onClick={() => { setBellOpen((o) => !o); setUserOpen(false); }}
+            onClick={() => {
+              setBellOpen((o) => !o);
+              setUserOpen(false);
+            }}
             aria-label="Notificaciones"
             aria-expanded={bellOpen}
             className="relative flex items-center justify-center w-9 h-9 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
@@ -132,9 +156,11 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
           {bellOpen && (
             <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-neutral-900 border border-white/[0.07] shadow-[0_16px_48px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
               <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
-                <span className="text-white text-xs font-extrabold tracking-wider">NOTIFICACIONES</span>
+                <span className="text-white text-xs font-extrabold tracking-wider">
+                  NOTIFICACIONES
+                </span>
                 {inProgressCount > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 text-[10px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 text-[11px] font-bold">
                     {inProgressCount} en curso
                   </span>
                 )}
@@ -146,13 +172,26 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
                     {recentNovedades.map((nov) => {
                       const s = STATUS_STYLE[nov.status];
                       return (
-                        <div key={nov.id} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors">
-                          <span className={`w-2 h-2 rounded-full shrink-0 ${TYPE_DOT[nov.type]}`} />
+                        <div
+                          key={nov.id}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors"
+                        >
+                          <span
+                            className={`w-2 h-2 rounded-full shrink-0 ${TYPE_DOT[nov.type]}`}
+                          />
                           <div className="flex-1 min-w-0">
-                            <p className="text-white text-xs font-semibold truncate">{nov.entityName}</p>
-                            <p className="text-gray-600 text-[10px]">{timeAgo(nov.timestamp)}</p>
+                            <p className="text-white text-xs font-semibold truncate">
+                              {nov.entityName}
+                            </p>
+                            <p className="text-gray-400 text-[11px]">
+                              {timeAgo(nov.timestamp)}
+                            </p>
                           </div>
-                          <span className={`text-[10px] font-bold shrink-0 ${s.color}`}>{s.label}</span>
+                          <span
+                            className={`text-[11px] font-bold shrink-0 ${s.color}`}
+                          >
+                            {s.label}
+                          </span>
                         </div>
                       );
                     })}
@@ -171,9 +210,11 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
               ) : (
                 <div className="flex flex-col items-center gap-3 py-8 px-4">
                   <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                    <i className="ti ti-bell-off text-gray-600 text-lg" />
+                    <i className="ti ti-bell-off text-gray-400 text-lg" />
                   </div>
-                  <p className="text-gray-600 text-xs text-center">Sin notificaciones por ahora</p>
+                  <p className="text-gray-400 text-xs text-center">
+                    Sin notificaciones por ahora
+                  </p>
                 </div>
               )}
             </div>
@@ -183,23 +224,34 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
         {/* User */}
         <div ref={userRef} className="relative ml-1">
           <button
-            onClick={() => { setUserOpen((o) => !o); setBellOpen(false); }}
+            onClick={() => {
+              setUserOpen((o) => !o);
+              setBellOpen(false);
+            }}
             aria-label="Menú de usuario"
             aria-expanded={userOpen}
             className="flex justify-center items-center w-9 h-9 rounded-xl cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-all duration-150 glass-border"
           >
-            <span className="text-white text-[11px] font-extrabold">{initials}</span>
+            <span className="text-white text-[11px] font-extrabold">
+              {initials}
+            </span>
           </button>
 
           {userOpen && (
             <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-neutral-900 border border-white/[0.07] shadow-[0_16px_48px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
               <div className="flex items-center gap-3 px-4 py-4 border-b border-white/[0.05]">
                 <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-white/[0.07] flex items-center justify-center shrink-0">
-                  <span className="text-white text-sm font-extrabold">{initials}</span>
+                  <span className="text-white text-sm font-extrabold">
+                    {initials}
+                  </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-white text-sm font-bold truncate">{session?.fullName ?? "Usuario"}</p>
-                  <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${roleStyle.bg} ${roleStyle.text}`}>
+                  <p className="text-white text-sm font-bold truncate">
+                    {session?.fullName ?? "Usuario"}
+                  </p>
+                  <span
+                    className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-bold ${roleStyle.bg} ${roleStyle.text}`}
+                  >
                     {ROLE_LABELS[role]}
                   </span>
                 </div>
@@ -227,7 +279,6 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
             <i className="ti ti-menu-2 text-xl" />
           </button>
         </div>
-
       </div>
     </header>
   );

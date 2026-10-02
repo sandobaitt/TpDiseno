@@ -1,16 +1,14 @@
 import * as React from "react";
 import { UnifiedCalendar } from "@/components/cronograma/UnifiedCalendar";
 import { ClassCard } from "@/components/cronograma/ClassCard";
-import {
-  buildWeekDays,
-  toClassCard,
-  weekLabel,
-} from "@/components/cronograma/weekView";
+import { buildWeekDays, toClassCard } from "@/components/cronograma/weekView";
 import { scheduleMock } from "@/data/schedule";
 import { getMockSession } from "@/data/users";
 import { sessionsBetween } from "@/domain/schedule";
 import { addDays, formatMinutes, startOfWeek, todayISO } from "@/lib/dates";
 import { useAppState } from "@/store/StoreProvider";
+import { PageHeader } from "@/components/common/PageHeader";
+import { WeekNavigator } from "@/components/common/WeekNavigator";
 
 export default function ProfesorCronogramaPage() {
   const teacherId = getMockSession()?.teacherId;
@@ -50,40 +48,11 @@ export default function ProfesorCronogramaPage() {
 
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-      <div className="flex items-start justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight mt-1">
-            MI CRONOGRAMA
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Tus clases de la semana, con los reemplazos que aceptaste.
-          </p>
-        </div>
-
-        <div className="flex items-center bg-neutral-900 glass-border rounded-xl shadow-card overflow-hidden">
-          <button
-            onClick={() => setWeekStart((w) => addDays(w, -7))}
-            aria-label="Semana anterior"
-            className="px-3 py-2.5 text-gray-400 hover:text-white hover:bg-white/[0.04] transition-all cursor-pointer"
-          >
-            <i className="ti ti-chevron-left text-sm" aria-hidden="true" />
-          </button>
-          <span className="flex items-center gap-2 px-3 text-white text-xs font-bold tracking-wider border-x border-white/[0.05] whitespace-nowrap">
-            <i
-              className="ti ti-calendar text-lime-400 text-sm"
-              aria-hidden="true"
-            />
-            {weekLabel(weekStart)}
-          </span>
-          <button
-            onClick={() => setWeekStart((w) => addDays(w, 7))}
-            aria-label="Semana siguiente"
-            className="px-3 py-2.5 text-gray-400 hover:text-white hover:bg-white/[0.04] transition-all cursor-pointer"
-          >
-            <i className="ti ti-chevron-right text-sm" aria-hidden="true" />
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Mi cronograma"
+        subtitle="Tus clases de la semana, con los reemplazos que aceptaste."
+        actions={<WeekNavigator weekStart={weekStart} onChange={setWeekStart} />}
+      />
 
       <div className="grid grid-cols-3 gap-3">
         {stats.map((stat) => (

@@ -66,7 +66,7 @@ export function MemberHeader({
               part
             ) : (
               <React.Fragment key={i}>
-                <span className="text-neutral-700">{part}</span>{" "}
+                <span className="text-gray-400">{part}</span>{" "}
               </React.Fragment>
             ),
           )}
@@ -74,14 +74,14 @@ export function MemberHeader({
 
         <div className="flex gap-4 items-center">
           <div className="flex gap-2 items-center">
-            <i className="ti ti-run text-base text-zinc-500" />
-            <span className="text-sm text-zinc-500">
+            <i className="ti ti-run text-base text-gray-400" />
+            <span className="text-sm text-gray-400">
               Plan: <span className="font-semibold text-white">{planName}</span>
             </span>
           </div>
           <div className="flex gap-2 items-center">
-            <i className="ti ti-mail text-base text-zinc-500" />
-            <span className="text-sm text-zinc-500">{email}</span>
+            <i className="ti ti-mail text-base text-gray-400" />
+            <span className="text-sm text-gray-400">{email}</span>
           </div>
         </div>
       </div>

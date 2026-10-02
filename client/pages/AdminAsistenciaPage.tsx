@@ -80,23 +80,20 @@ export default function AdminAsistenciaPage() {
         {/* Header */}
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <span className="text-lime-400 text-[10px] font-bold tracking-widest">
-              ASISTENCIA
-            </span>
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight tracking-tight mt-1">
-              Control de Asistencias
+            <h1 className="text-white text-3xl md:text-4xl font-black uppercase leading-none tracking-tight">
+              Asistencia de profesores
             </h1>
             <div className="h-px bg-white/[0.06] mt-4" />
           </div>
           <div className="flex items-center bg-neutral-900 glass-border rounded-xl shadow-card overflow-hidden">
-            <button onClick={() => setWeekOffset((o) => o - 1)} className="px-3 py-2.5 text-gray-500 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+            <button onClick={() => setWeekOffset((o) => o - 1)} className="px-3 py-2.5 text-gray-400 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
               <i className="ti ti-chevron-left text-sm" />
             </button>
             <span className="flex items-center gap-2 px-2 text-gray-300 text-xs font-bold whitespace-nowrap">
               <i className="ti ti-calendar text-sm text-lime-400" />
               {weekLabel(weekOffset)}
             </span>
-            <button onClick={() => setWeekOffset((o) => o + 1)} className="px-3 py-2.5 text-gray-500 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+            <button onClick={() => setWeekOffset((o) => o + 1)} className="px-3 py-2.5 text-gray-400 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
               <i className="ti ti-chevron-right text-sm" />
             </button>
           </div>
@@ -110,7 +107,7 @@ export default function AdminAsistenciaPage() {
               <i className="ti ti-clock text-lime-400 text-base" />
             </div>
             <div>
-              <p className="text-gray-500 text-[10px] font-semibold tracking-widest">HORAS PROGRAMADAS</p>
+              <p className="text-gray-400 text-[11px] font-semibold tracking-widest">HORAS PROGRAMADAS</p>
               <div className="flex items-baseline gap-1 mt-0.5">
                 <span className="text-2xl font-extrabold text-lime-400">342</span>
                 <span className="text-xs font-bold text-lime-400/70">hrs</span>
@@ -120,7 +117,7 @@ export default function AdminAsistenciaPage() {
 
           {/* Staff Activo */}
           <div className="rounded-2xl bg-neutral-900 p-5 shadow-card glass-border flex flex-col gap-3">
-            <p className="text-gray-500 text-[10px] font-semibold tracking-widest">STAFF ACTIVO</p>
+            <p className="text-gray-400 text-[11px] font-semibold tracking-widest">STAFF ACTIVO</p>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
                 {["A", "D", "F"].map((letter, i) => (
@@ -128,14 +125,14 @@ export default function AdminAsistenciaPage() {
                     key={i}
                     className="w-8 h-8 rounded-full bg-zinc-700 border-2 border-neutral-900 flex items-center justify-center"
                   >
-                    <span className="text-white text-[10px] font-bold">{letter}</span>
+                    <span className="text-white text-[11px] font-bold">{letter}</span>
                   </div>
                 ))}
               </div>
               <div className="w-8 h-8 rounded-full bg-lime-400/10 border-2 border-neutral-900 flex items-center justify-center">
-                <span className="text-lime-400 text-[10px] font-bold">+12</span>
+                <span className="text-lime-400 text-[11px] font-bold">+12</span>
               </div>
-              <span className="text-gray-500 text-[10px] font-medium ml-1">15 miembros</span>
+              <span className="text-gray-400 text-[11px] font-medium ml-1">15 miembros</span>
             </div>
           </div>
 
@@ -145,9 +142,9 @@ export default function AdminAsistenciaPage() {
               <i className="ti ti-alert-triangle text-red-400 text-base" />
             </div>
             <div>
-              <p className="text-red-400/60 text-[10px] font-semibold tracking-widest">CONFLICTOS</p>
+              <p className="text-red-400/60 text-[11px] font-semibold tracking-widest">CONFLICTOS</p>
               <p className="text-2xl font-extrabold text-red-400 mt-0.5">2</p>
-              <p className="text-red-400/50 text-[10px]">Solapamientos detectados</p>
+              <p className="text-red-400/50 text-[11px]">Solapamientos detectados</p>
             </div>
           </div>
 
@@ -157,9 +154,9 @@ export default function AdminAsistenciaPage() {
               <i className="ti ti-replace text-amber-400 text-base" />
             </div>
             <div>
-              <p className="text-gray-500 text-[10px] font-semibold tracking-widest">REEMPLAZOS</p>
+              <p className="text-gray-400 text-[11px] font-semibold tracking-widest">REEMPLAZOS</p>
               <p className="text-2xl font-extrabold text-amber-400 mt-0.5">1</p>
-              <p className="text-gray-600 text-[10px]">Turno descubierto (Jue)</p>
+              <p className="text-gray-400 text-[11px]">Turno descubierto (Jue)</p>
             </div>
           </div>
         </div>
@@ -207,7 +204,7 @@ export default function AdminAsistenciaPage() {
                   <h2 className="text-white text-base font-extrabold">
                     {weekDays[selectedSlot.day].abbr} {weekDays[selectedSlot.day].number} · {selectedSlot.time} – {slotEnd}
                   </h2>
-                  <p className="text-gray-500 text-[10px]">
+                  <p className="text-gray-400 text-[11px]">
                     Profesores asignados a este horario
                   </p>
                 </div>
@@ -216,7 +213,7 @@ export default function AdminAsistenciaPage() {
               {/* Trainer rows */}
               <div className="flex flex-col gap-2">
                 {slotAttendance.length === 0 && (
-                  <p className="text-gray-500 text-sm text-center py-6">
+                  <p className="text-gray-400 text-sm text-center py-6">
                     Sin profesores asignados
                   </p>
                 )}
@@ -227,13 +224,13 @@ export default function AdminAsistenciaPage() {
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center shrink-0">
-                        <span className="text-white text-[10px] font-bold">
+                        <span className="text-white text-[11px] font-bold">
                           {sa.trainer.split(" ").map((s) => s[0]).join("").slice(0, 2)}
                         </span>
                       </div>
                       <div>
                         <p className="text-white text-sm font-bold">{sa.trainer}</p>
-                        <p className="text-gray-500 text-[10px]">{sa.type}</p>
+                        <p className="text-gray-400 text-[11px]">{sa.type}</p>
                       </div>
                     </div>
                     <StatusBadge status={sa.status} />
@@ -243,15 +240,15 @@ export default function AdminAsistenciaPage() {
 
               {/* Legend */}
               <div className="flex items-center gap-4 px-1 border-t border-white/[0.05] pt-3">
-                <span className="flex items-center gap-1.5 text-green-400 text-[10px] font-medium">
+                <span className="flex items-center gap-1.5 text-green-400 text-[11px] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                   Presente
                 </span>
-                <span className="flex items-center gap-1.5 text-red-400 text-[10px] font-medium">
+                <span className="flex items-center gap-1.5 text-red-400 text-[11px] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
                   Ausente
                 </span>
-                <span className="flex items-center gap-1.5 text-gray-500 text-[10px] font-medium">
+                <span className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium">
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
                   Pendiente
                 </span>
@@ -274,7 +271,7 @@ function StatusBadge({ status }: { status: AttendanceStatus }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${c.bg}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
-      <span className={`text-[10px] font-bold ${c.text}`}>{c.label}</span>
+      <span className={`text-[11px] font-bold ${c.text}`}>{c.label}</span>
     </span>
   );
 }

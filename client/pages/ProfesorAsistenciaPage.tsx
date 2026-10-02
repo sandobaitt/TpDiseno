@@ -113,30 +113,30 @@ export default function ProfesorAsistenciaPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-white text-sm font-extrabold tracking-wider">
                 LISTA DE ALUMNOS
-                <span className="ml-2 text-[10px] font-bold text-gray-600">
+                <span className="ml-2 text-[11px] font-bold text-gray-400">
                   {filteredStudents.length}/{classStudentsMock.length}
                 </span>
               </h2>
               <button
                 onClick={() => markAll("present")}
-                className="px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-[10px] font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-neutral-900 text-lime-400 text-[11px] font-bold hover:bg-neutral-800 transition-colors cursor-pointer"
               >
                 Marcar Todos
               </button>
             </div>
 
             <div className="relative">
-              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar alumno..."
-                className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-black/60 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-black/60 glass-border text-sm text-white placeholder-gray-500 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 cursor-pointer"
                 >
                   <i className="ti ti-x text-xs" />
                 </button>
@@ -145,8 +145,8 @@ export default function ProfesorAsistenciaPage() {
 
             {filteredStudents.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 gap-2">
-                <i className="ti ti-search-off text-3xl text-gray-700" />
-                <p className="text-sm text-gray-600 font-medium">Sin resultados para "{search}"</p>
+                <i className="ti ti-search-off text-3xl text-gray-500" />
+                <p className="text-sm text-gray-400 font-medium">Sin resultados para "{search}"</p>
               </div>
             )}
 
@@ -180,7 +180,7 @@ export default function ProfesorAsistenciaPage() {
                   <h2 className="text-white text-sm font-extrabold">
                     Observaciones
                   </h2>
-                  <p className="text-gray-600 text-[10px]">Notas de la Clase</p>
+                  <p className="text-gray-400 text-[11px]">Notas de la Clase</p>
                 </div>
               </div>
               <button
@@ -202,12 +202,12 @@ export default function ProfesorAsistenciaPage() {
                     <span className="text-white text-xs font-bold leading-tight line-clamp-1">
                       {b.title}
                     </span>
-                    <i className="ti ti-chevron-right text-gray-600 text-[10px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <i className="ti ti-chevron-right text-gray-400 text-[11px] shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <p className="text-gray-500 text-[10px] leading-relaxed line-clamp-2">
+                  <p className="text-gray-400 text-[11px] leading-relaxed line-clamp-2">
                     {b.content}
                   </p>
-                  <span className="text-gray-600 text-[9px]">
+                  <span className="text-gray-400 text-[11px]">
                     {formatDate(b.createdAt)}
                   </span>
                 </button>
@@ -233,7 +233,7 @@ export default function ProfesorAsistenciaPage() {
                   <h2 className="text-white text-base font-extrabold">
                     {selectedBitacora.title}
                   </h2>
-                  <p className="text-gray-600 text-[10px]">
+                  <p className="text-gray-400 text-[11px]">
                     {formatDate(selectedBitacora.createdAt)}
                   </p>
                 </div>
@@ -264,19 +264,19 @@ export default function ProfesorAsistenciaPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-gray-400 text-[11px] font-semibold tracking-widest">
                 TÍTULO
               </label>
               <input
                 value={formTitle}
                 onChange={(e) => setFormTitle(e.target.value)}
                 placeholder="Título de la observación..."
-                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
+                className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-400 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-gray-400 text-[11px] font-semibold tracking-widest">
                 ALUMNO (OPCIONAL)
               </label>
               <select
@@ -294,7 +294,7 @@ export default function ProfesorAsistenciaPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-gray-500 text-[10px] font-semibold tracking-widest">
+              <label className="text-gray-400 text-[11px] font-semibold tracking-widest">
                 CONTENIDO
               </label>
               <textarea
@@ -302,7 +302,7 @@ export default function ProfesorAsistenciaPage() {
                 onChange={(e) => setFormContent(e.target.value)}
                 placeholder="Describí la novedad o anotación..."
                 rows={5}
-                className="w-full bg-neutral-900 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
+                className="w-full bg-neutral-900 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-400 outline-none resize-none focus:ring-1 focus:ring-lime-400/20 transition-all"
               />
             </div>
 
@@ -357,7 +357,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
           <p className="text-white text-sm font-bold truncate">
             {student.name}
           </p>
-          <p className="text-gray-500 text-[10px] truncate">
+          <p className="text-gray-400 text-[11px] truncate">
             {student.plan} · {student.weekSession}
           </p>
         </div>
@@ -365,7 +365,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
       <div className="flex items-center gap-2 shrink-0 max-sm:w-full max-sm:justify-between">
         <button
           onClick={() => onSetStatus("absent")}
-          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-[11px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "absent"
               ? "bg-red-500/20 text-red-400 border border-red-500/40"
               : "bg-black text-gray-400 border border-zinc-800 hover:border-red-500/30 hover:text-red-400"
@@ -377,7 +377,7 @@ function StudentCard({ student, status, onSetStatus }: StudentCardProps) {
         </button>
         <button
           onClick={() => onSetStatus("present")}
-          className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+          className={`px-4 py-2 rounded-xl text-[11px] font-bold tracking-wider transition-all duration-150 active:scale-[0.97] cursor-pointer ${
             status === "present"
               ? "bg-lime-400 text-black shadow-btn-lime"
               : "bg-black text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400"

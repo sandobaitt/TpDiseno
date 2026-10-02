@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 export default {
   darkMode: ["class"],
@@ -14,6 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
         jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
@@ -26,6 +28,11 @@ export default {
         'squat-muted': '#BFCBAE',
         'squat-ink': '#0E2000',
         'squat-testimonial': '#353534',
+        /* Estados semánticos (ver tokens en client/global.css) */
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        danger: "hsl(var(--danger))",
+        info: "hsl(var(--info))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

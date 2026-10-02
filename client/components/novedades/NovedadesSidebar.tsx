@@ -78,24 +78,24 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
           open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
         )}
       >
-        <i className="ti ti-calendar text-gray-600 text-sm shrink-0" />
-        <span className={cn("flex-1 text-left", displayValue ? "text-white" : "text-gray-600")}>
+        <i className="ti ti-calendar text-gray-400 text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", displayValue ? "text-white" : "text-gray-400")}>
           {displayValue ?? "dd/mm/aaaa"}
         </span>
-        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+        <i className={cn("ti ti-chevron-down text-gray-400 text-xs transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (
         <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.7)] p-4 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
           {/* nav */}
           <div className="flex items-center justify-between mb-3">
-            <button type="button" onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button type="button" onClick={prevMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-white transition-colors cursor-pointer">
               <i className="ti ti-chevron-left text-xs" />
             </button>
             <span className="text-white text-xs font-bold tracking-wider">
               {MONTHS_ES[viewMonth]} {viewYear}
             </span>
-            <button type="button" onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-500 hover:text-white transition-colors cursor-pointer">
+            <button type="button" onClick={nextMonth} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.06] text-gray-400 hover:text-white transition-colors cursor-pointer">
               <i className="ti ti-chevron-right text-xs" />
             </button>
           </div>
@@ -103,7 +103,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
           {/* day headers */}
           <div className="grid grid-cols-7 mb-1">
             {DAYS_ES.map(d => (
-              <span key={d} className="text-center text-[9px] font-bold tracking-wider text-gray-600 py-1">{d}</span>
+              <span key={d} className="text-center text-[11px] font-bold tracking-wider text-gray-400 py-1">{d}</span>
             ))}
           </div>
 
@@ -133,10 +133,10 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
 
           {/* footer */}
           <div className="flex justify-between mt-3 pt-3 border-t border-white/[0.05]">
-            <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+            <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[11px] text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">
               Borrar
             </button>
-            <button type="button" onClick={goToday} className="text-[10px] text-lime-400 hover:text-lime-300 transition-colors cursor-pointer font-bold">
+            <button type="button" onClick={goToday} className="text-[11px] text-lime-400 hover:text-lime-300 transition-colors cursor-pointer font-bold">
               Hoy
             </button>
           </div>
@@ -199,11 +199,11 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
           open ? "border-lime-400/30" : "border-zinc-800 hover:border-zinc-700",
         )}
       >
-        <i className="ti ti-clock text-gray-600 text-sm shrink-0" />
-        <span className={cn("flex-1 text-left", value ? "text-white" : "text-gray-600")}>
+        <i className="ti ti-clock text-gray-400 text-sm shrink-0" />
+        <span className={cn("flex-1 text-left", value ? "text-white" : "text-gray-400")}>
           {value || "--:--"}
         </span>
-        <i className={cn("ti ti-chevron-down text-gray-600 text-xs transition-transform duration-150", open && "rotate-180")} />
+        <i className={cn("ti ti-chevron-down text-gray-400 text-xs transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (
@@ -211,7 +211,7 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
           <div className="flex gap-2">
             {/* hours */}
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">HORA</span>
+              <span className="text-[11px] font-bold tracking-wider text-gray-400 text-center">HORA</span>
               <div ref={hourRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
                 {HOURS.map(h => (
                   <button
@@ -234,7 +234,7 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
 
             {/* minutes */}
             <div className="flex-1 flex flex-col gap-1">
-              <span className="text-[9px] font-bold tracking-wider text-gray-600 text-center">MIN</span>
+              <span className="text-[11px] font-bold tracking-wider text-gray-400 text-center">MIN</span>
               <div ref={minRef} className="max-h-44 overflow-y-auto flex flex-col gap-0.5 scrollbar-thin pr-0.5">
                 {MINUTES.map(m => (
                   <button
@@ -256,7 +256,7 @@ function TimePicker({ value, onChange }: { value: string; onChange: (v: string) 
 
           {value && (
             <div className="mt-2 pt-2 border-t border-white/[0.05] text-center">
-              <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[10px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer">
+              <button type="button" onClick={() => { onChange(""); setOpen(false); }} className="text-[11px] text-gray-400 hover:text-gray-300 transition-colors cursor-pointer">
                 Borrar
               </button>
             </div>
@@ -415,7 +415,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Tipo de evento */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">TIPO DE EVENTO</label>
+            <label className="text-gray-400 text-xs font-semibold tracking-widest">TIPO DE EVENTO</label>
             <div ref={eventTypeRef} className="relative">
               <button
                 type="button"
@@ -433,9 +433,9 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                     <span className="flex-1 text-white text-left">{selectedEventType.label}</span>
                   </>
                 ) : (
-                  <span className="flex-1 text-gray-500 text-left">Seleccionar categoría...</span>
+                  <span className="flex-1 text-gray-400 text-left">Seleccionar categoría...</span>
                 )}
-                <i className={cn("ti ti-chevron-down text-gray-500 text-xs transition-transform duration-150 shrink-0", eventTypeOpen && "rotate-180")} />
+                <i className={cn("ti ti-chevron-down text-gray-400 text-xs transition-transform duration-150 shrink-0", eventTypeOpen && "rotate-180")} />
               </button>
 
               {eventTypeOpen && (
@@ -464,7 +464,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Asignado a */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">ASIGNADO A</label>
+            <label className="text-gray-400 text-xs font-semibold tracking-widest">ASIGNADO A</label>
             <div ref={assignRef} className="relative">
               {assignSelected ? (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-neutral-900 border border-lime-400/25">
@@ -473,22 +473,22 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-semibold truncate">{assignSelected.label}</p>
-                    <p className="text-gray-500 text-[10px] truncate">{assignSelected.sublabel}</p>
+                    <p className="text-gray-400 text-[11px] truncate">{assignSelected.sublabel}</p>
                   </div>
-                  <button type="button" onClick={() => { setAssignSelected(null); setAssignQuery(""); }} className="text-gray-600 hover:text-gray-300 transition-colors cursor-pointer shrink-0">
+                  <button type="button" onClick={() => { setAssignSelected(null); setAssignQuery(""); }} className="text-gray-400 hover:text-gray-300 transition-colors cursor-pointer shrink-0">
                     <i className="ti ti-x text-xs" />
                   </button>
                 </div>
               ) : (
                 <div className={cn("relative flex items-center rounded-xl border bg-neutral-900 transition-all", assignFocused ? "border-lime-400/30" : "border-zinc-800")}>
-                  <i className="ti ti-search absolute left-3 text-gray-600 text-sm pointer-events-none" />
+                  <i className="ti ti-search absolute left-3 text-gray-400 text-sm pointer-events-none" />
                   <input
                     type="text"
                     value={assignQuery}
                     onChange={(e) => setAssignQuery(e.target.value)}
                     onFocus={() => setAssignFocused(true)}
                     placeholder="Buscar profesor o clase..."
-                    className="w-full bg-transparent pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none"
+                    className="w-full bg-transparent pl-9 pr-4 py-3 text-sm text-white placeholder:text-gray-400 outline-none"
                   />
                 </div>
               )}
@@ -496,18 +496,18 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
               {assignFocused && !assignSelected && (
                 <div className="absolute top-full mt-1.5 left-0 right-0 z-50 rounded-xl bg-neutral-900 border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-hidden max-h-[220px] overflow-y-auto animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
                   {filteredSuggestions.length === 0 ? (
-                    <div className="px-4 py-4 text-xs text-gray-600 text-center">Sin resultados</div>
+                    <div className="px-4 py-4 text-xs text-gray-400 text-center">Sin resultados</div>
                   ) : (
                     <>
                       {profesores.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20">PROFESORES</div>
+                          <div className="px-4 py-2 text-[11px] font-bold tracking-widest text-gray-400 bg-black/20">PROFESORES</div>
                           {profesores.map((s) => (
                             <button key={`${s.id}_${s.branchId}`} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
-                              <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0"><i className="ti ti-user text-[10px] text-lime-400" /></span>
+                              <span className="w-6 h-6 rounded-lg bg-lime-400/10 flex items-center justify-center shrink-0"><i className="ti ti-user text-[11px] text-lime-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>
-                                <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
+                                <p className="text-gray-400 text-[11px] truncate">{s.sublabel}</p>
                               </div>
                             </button>
                           ))}
@@ -515,13 +515,13 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
                       )}
                       {clases.length > 0 && (
                         <>
-                          <div className="px-4 py-2 text-[9px] font-bold tracking-widest text-gray-600 bg-black/20 border-t border-white/[0.04]">CLASES</div>
+                          <div className="px-4 py-2 text-[11px] font-bold tracking-widest text-gray-400 bg-black/20 border-t border-white/[0.04]">CLASES</div>
                           {clases.map((s) => (
                             <button key={`${s.id}_${s.branchId}`} type="button" onMouseDown={(e) => { e.preventDefault(); selectAssign(s); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors">
-                              <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0"><i className="ti ti-barbell text-[10px] text-blue-400" /></span>
+                              <span className="w-6 h-6 rounded-lg bg-blue-400/10 flex items-center justify-center shrink-0"><i className="ti ti-barbell text-[11px] text-blue-400" /></span>
                               <div className="min-w-0">
                                 <p className="text-white text-xs font-semibold truncate">{s.label}</p>
-                                <p className="text-gray-500 text-[10px] truncate">{s.sublabel}</p>
+                                <p className="text-gray-400 text-[11px] truncate">{s.sublabel}</p>
                               </div>
                             </button>
                           ))}
@@ -536,7 +536,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Fecha y hora */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">FECHA Y HORA</label>
+            <label className="text-gray-400 text-xs font-semibold tracking-widest">FECHA Y HORA</label>
             <div className="grid grid-cols-2 gap-2">
               <DatePicker value={dateVal} onChange={setDateVal} />
               <TimePicker value={timeVal} onChange={setTimeVal} />
@@ -545,13 +545,13 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
 
           {/* Detalle operativo */}
           <div className="flex flex-col gap-2">
-            <label className="text-gray-500 text-xs font-semibold tracking-widest">DETALLE OPERATIVO</label>
+            <label className="text-gray-400 text-xs font-semibold tracking-widest">DETALLE OPERATIVO</label>
             <textarea
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
               placeholder="Describa el incidente o motivo de la novedad..."
               rows={4}
-              className="w-full bg-neutral-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 outline-none focus:border-lime-400/40 transition-colors resize-none"
+              className="w-full bg-neutral-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-400 outline-none focus:border-lime-400/40 transition-colors resize-none"
             />
           </div>
         </div>
@@ -564,7 +564,7 @@ export function NovedadesSidebar({ onAdd }: NovedadesSidebarProps) {
             "w-full py-4 rounded-xl font-extrabold text-sm tracking-wider transition-all",
             canSubmit
               ? "bg-lime-400 text-black hover:brightness-110 active:brightness-95 shadow-[0_0_20px_rgba(163,230,53,0.25)] cursor-pointer"
-              : "bg-neutral-800 text-gray-600 cursor-not-allowed",
+              : "bg-neutral-800 text-gray-400 cursor-not-allowed",
           )}
         >
           <span className="flex items-center justify-center gap-2">

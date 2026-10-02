@@ -25,7 +25,7 @@ function getInitials(name: string) {
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">{label}</span>
+      <span className="text-gray-400 text-[11px] font-semibold tracking-widest">{label}</span>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -38,8 +38,8 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
 function InfoRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.05] last:border-0">
-      <i className={`ti ${icon} text-sm text-gray-600 w-4 shrink-0`} />
-      <span className="text-gray-600 text-[10px] font-semibold tracking-widest w-20 shrink-0">{label}</span>
+      <i className={`ti ${icon} text-sm text-gray-400 w-4 shrink-0`} />
+      <span className="text-gray-400 text-[11px] font-semibold tracking-widest w-20 shrink-0">{label}</span>
       <span className="text-white text-sm font-medium truncate">{value}</span>
     </div>
   );
@@ -158,14 +158,14 @@ export function MemberDetailModal({ clientId, onClose }: MemberDetailModalProps)
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        {editing && <p className="text-lime-400/60 text-[10px] font-bold tracking-widest mb-1">EDITANDO</p>}
+                        {editing && <p className="text-lime-400/60 text-[11px] font-bold tracking-widest mb-1">EDITANDO</p>}
                         <h2 className="text-white font-extrabold text-base leading-tight">
                           {editing ? (editName || client.fullName) : client.fullName}
                         </h2>
                         {!editing && (
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {clientPlan && (
-                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-zinc-800/80 text-gray-300 border border-white/[0.06]">
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wider bg-zinc-800/80 text-gray-300 border border-white/[0.06]">
                                 {clientPlan.name}
                               </span>
                             )}
@@ -176,7 +176,7 @@ export function MemberDetailModal({ clientId, onClose }: MemberDetailModalProps)
                       {!editing && (
                         <button
                           onClick={() => setEditing(true)}
-                          className="shrink-0 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-gray-400 text-[10px] font-bold hover:bg-white/[0.08] hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
+                          className="shrink-0 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.07] text-gray-400 text-[11px] font-bold hover:bg-white/[0.08] hover:text-white transition-all cursor-pointer flex items-center gap-1.5"
                         >
                           <i className="ti ti-pencil text-xs" />
                           Editar
@@ -193,7 +193,7 @@ export function MemberDetailModal({ clientId, onClose }: MemberDetailModalProps)
                     <Field label="DNI" value={editDni} onChange={setEditDni} />
                     <Field label="TELÉFONO" value={editPhone} onChange={setEditPhone} />
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-gray-500 text-[10px] font-semibold tracking-widest">SUCURSAL</span>
+                      <span className="text-gray-400 text-[11px] font-semibold tracking-widest">SUCURSAL</span>
                       <select
                         value={editBranchId}
                         onChange={(e) => setEditBranchId(e.target.value)}

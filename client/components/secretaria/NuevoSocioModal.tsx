@@ -97,13 +97,13 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{label}</label>
+      <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-white text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 focus:border-lime-400/40 transition-all"
+        className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-white text-sm placeholder-gray-500 outline-none focus:ring-1 focus:ring-lime-400/30 focus:border-lime-400/40 transition-all"
       />
     </div>
   );
@@ -238,12 +238,12 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all duration-200 ${
                       s.id < step  ? "bg-lime-400 text-squat-ink" :
                       s.id === step ? "bg-lime-400/15 border border-lime-400 text-lime-400" :
-                                      "bg-zinc-800 border border-zinc-700 text-gray-600"
+                                      "bg-zinc-800 border border-zinc-700 text-gray-400"
                     }`}>
                       {s.id < step ? <i className="ti ti-check text-[11px]" /> : s.id}
                     </div>
                     <span className={`text-xs font-semibold hidden sm:block transition-colors ${
-                      s.id === step ? "text-lime-400" : s.id < step ? "text-gray-400" : "text-gray-600"
+                      s.id === step ? "text-lime-400" : s.id < step ? "text-gray-400" : "text-gray-400"
                     }`}>
                       {s.label}
                     </span>
@@ -261,7 +261,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
               {/* Step 1 — Datos personales */}
               {step === 1 && (
                 <>
-                  <p className="text-gray-500 text-sm">Datos personales del nuevo socio.</p>
+                  <p className="text-gray-400 text-sm">Datos personales del nuevo socio.</p>
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Nombre *" value={form.nombre} onChange={(v) => setField("nombre", v)} placeholder="Martín" />
                     <Field label="Apellido *" value={form.apellido} onChange={(v) => setField("apellido", v)} placeholder="Rodríguez" />
@@ -269,7 +269,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
                   <Field label="DNI *" value={form.dni} onChange={(v) => setField("dni", v)} placeholder="34.567.890" />
                   <Field label="Fecha de nacimiento" type="date" value={form.fechaNacimiento} onChange={(v) => setField("fechaNacimiento", v)} />
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Género</label>
+                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Género</label>
                     <div className="flex gap-2 flex-wrap">
                       {GENERO_OPTIONS.map((opt) => (
                         <button
@@ -279,7 +279,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
                           className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                             form.genero === opt.value
                               ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                              : "bg-zinc-800 border-zinc-700 text-gray-500 hover:text-gray-300 hover:border-zinc-600"
+                              : "bg-zinc-800 border-zinc-700 text-gray-400 hover:text-gray-300 hover:border-zinc-600"
                           }`}
                         >
                           {opt.label}
@@ -293,7 +293,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
               {/* Step 2 — Contacto */}
               {step === 2 && (
                 <>
-                  <p className="text-gray-500 text-sm">Información de contacto del socio.</p>
+                  <p className="text-gray-400 text-sm">Información de contacto del socio.</p>
                   <Field label="Email *" type="email" value={form.email} onChange={(v) => setField("email", v)} placeholder="ejemplo@correo.com" />
                   <Field label="Teléfono" value={form.telefono} onChange={(v) => setField("telefono", v)} placeholder="+54 11 5555-0000" />
                   <Field label="Ciudad" value={form.ciudad} onChange={(v) => setField("ciudad", v)} placeholder="Buenos Aires" />
@@ -304,9 +304,9 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
               {/* Step 3 — Declaración de salud */}
               {step === 3 && (
                 <>
-                  <p className="text-gray-500 text-sm">El socio declara bajo juramento su estado de salud para la práctica de actividad física.</p>
+                  <p className="text-gray-400 text-sm">El socio declara bajo juramento su estado de salud para la práctica de actividad física.</p>
                   <div className="bg-neutral-800 rounded-xl p-4 flex flex-col gap-3">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">¿Presenta o presentó alguna de las siguientes condiciones?</p>
+                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">¿Presenta o presentó alguna de las siguientes condiciones?</p>
                     {HEALTH_CONDITIONS.map((c) => (
                       <Checkbox
                         key={c.key}
@@ -338,7 +338,7 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
               {/* Step 4 — Plan */}
               {step === 4 && (
                 <>
-                  <p className="text-gray-500 text-sm">Seleccioná el plan de membresía del nuevo socio.</p>
+                  <p className="text-gray-400 text-sm">Seleccioná el plan de membresía del nuevo socio.</p>
                   <div className="flex flex-col gap-2.5">
                     {activePlans.map((plan) => {
                       const selected = form.planId === plan.id;
@@ -361,14 +361,14 @@ export function NuevoSocioModal({ open, onClose, onAdd }: NuevoSocioModalProps) 
                             </div>
                             <div>
                               <p className={`font-bold text-sm ${selected ? "text-lime-400" : "text-white"}`}>{plan.name}</p>
-                              {plan.description && <p className="text-gray-500 text-xs mt-0.5">{plan.description}</p>}
+                              {plan.description && <p className="text-gray-400 text-xs mt-0.5">{plan.description}</p>}
                             </div>
                           </div>
                           <div className="text-right shrink-0 ml-4">
                             <p className={`font-extrabold text-base ${selected ? "text-lime-400" : "text-white"}`}>
                               ${plan.monthlyPriceArs.toLocaleString()}
                             </p>
-                            <p className="text-gray-600 text-[10px]">/ mes</p>
+                            <p className="text-gray-400 text-[11px]">/ mes</p>
                           </div>
                         </button>
                       );

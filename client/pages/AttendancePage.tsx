@@ -10,6 +10,11 @@ import { selectAccount } from "@/store/selectors";
 import { employeesMock } from "@/data/employees";
 import { branchesMock } from "@/data/branches";
 import { matchesPersonSearch } from "@/lib/format";
+import { PageHeader } from "@/components/common/PageHeader";
+import { StatCard } from "@/components/common/StatCard";
+import { SegmentedTabs } from "@/components/common/SegmentedTabs";
+import { SearchInput } from "@/components/common/SearchInput";
+import { EmptyState } from "@/components/common/EmptyState";
 
 type TabId = "students" | "teachers";
 
@@ -90,42 +95,6 @@ const todayRaw = new Date().toLocaleDateString("es-AR", {
   month: "long",
 });
 const todayLabel = todayRaw.charAt(0).toUpperCase() + todayRaw.slice(1);
-
-interface StatCardProps {
-  icon: string;
-  label: string;
-  value: string | number;
-  iconBg: string;
-  iconColor: string;
-  valueColor?: string;
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  iconBg,
-  iconColor,
-  valueColor,
-}: StatCardProps) {
-  return (
-    <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
-      <div
-        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}
-      >
-        <i className={`ti ${icon} text-base ${iconColor}`} />
-      </div>
-      <div>
-        <p
-          className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-white"}`}
-        >
-          {value}
-        </p>
-        <p className="text-[11px] text-gray-500 font-medium">{label}</p>
-      </div>
-    </div>
-  );
-}
 
 type PresenceFilter = "all" | "present" | "absent";
 
@@ -258,148 +227,92 @@ export default function AttendancePage() {
 
   return (
     <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-      {/* Header */}
-      <div className="flex items-start justify-between flex-wrap gap-3 pt-1">
-        <div>
-          <h1 className="text-white text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-            CONTROL DE ASISTENCIA
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Registro de presencia diario del gimnasio.
-          </p>
-          <div className="h-px bg-white/[0.06] mt-4" />
-        </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 glass-border">
-          <i className="ti ti-calendar text-lime-400 text-sm" />
-          <span className="text-xs font-semibold text-gray-300">
+      <PageHeader
+        title="Control de asistencia"
+        subtitle="Registro de presencia del día."
+        actions={
+          <span className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-neutral-900 px-4 py-2 text-xs font-semibold text-gray-300">
+            <i
+              className="ti ti-calendar text-sm text-primary"
+              aria-hidden="true"
+            />
             {todayLabel}
           </span>
-        </div>
-      </div>
+        }
+      />
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard
           icon="ti-users"
-          label="Total registros"
+          label="Total en la lista"
           value={total}
-          iconBg="bg-zinc-800"
-          iconColor="text-gray-400"
+          tone="neutral"
         />
         <StatCard
           icon="ti-circle-check"
           label="Presentes hoy"
           value={present}
-          iconBg="bg-lime-400/10"
-          iconColor="text-lime-400"
-          valueColor="text-lime-400"
+          tone="success"
         />
         <StatCard
           icon="ti-circle-x"
           label="Ausentes hoy"
           value={absent}
-          iconBg="bg-red-500/10"
-          iconColor="text-red-400"
-          valueColor="text-red-400"
+          tone="danger"
         />
-        <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-lime-400/10">
-            <i className="ti ti-chart-bar text-base text-lime-400" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-2xl font-extrabold leading-tight text-white">
-              {rate}%
-            </p>
-            <p className="text-[11px] text-gray-500 font-medium">
-              Tasa de asistencia
-            </p>
-            <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-lime-400 transition-all duration-500"
-                style={{ width: `${rate}%` }}
-              />
-            </div>
-          </div>
-        </div>
+        <StatCard
+          icon="ti-chart-bar"
+          label="Tasa de asistencia"
+          value={`${rate}%`}
+        />
       </div>
 
       {/* Tabs + Table */}
       <div className="flex flex-col gap-4">
-        {/* Tab bar */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => {
-              setActiveTab("students");
-              setStudentPage(1);
-              clearFilters();
-            }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
-              activeTab === "students"
-                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-            }`}
-          >
-            <i className="ti ti-users text-base" />
-            Alumnos
-            <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "students" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
-            >
-              {studentsData.length}
-            </span>
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("teachers");
-              setTeacherPage(1);
-              clearFilters();
-            }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
-              activeTab === "teachers"
-                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-            }`}
-          >
-            <i className="ti ti-user-star text-base" />
-            Profesores / Staff
-            <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "teachers" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
-            >
-              {employeesData.length}
-            </span>
-          </button>
-        </div>
+        <SegmentedTabs
+          label="Lista de asistencia"
+          value={activeTab}
+          onChange={(tab) => {
+            setActiveTab(tab);
+            if (tab === "students") setStudentPage(1);
+            else setTeacherPage(1);
+            clearFilters();
+          }}
+          items={[
+            {
+              id: "students",
+              label: "Alumnos",
+              icon: "ti-users",
+              count: studentsData.length,
+            },
+            {
+              id: "teachers",
+              label: "Profesores / Staff",
+              icon: "ti-user-star",
+              count: employeesData.length,
+            },
+          ]}
+        />
 
         {/* Search + Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-            <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nombre o DNI..."
-              aria-label="Buscar por nombre o DNI"
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                aria-label="Limpiar búsqueda"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
-              >
-                <i className="ti ti-x text-xs" />
-              </button>
-            )}
-          </div>
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Nombre o DNI…"
+            label="Buscar por nombre o DNI"
+          />
 
           {/* Presence filter */}
           {(["all", "present", "absent"] as PresenceFilter[]).map((f) => (
             <button
               key={f}
+              aria-pressed={presenceFilter === f}
               onClick={() => setPresenceFilter(f)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
                 presenceFilter === f
                   ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                  : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
+                  : "bg-neutral-900 border-white/[0.06] text-gray-400 hover:border-white/[0.12] hover:text-gray-300"
               }`}
             >
               {f === "all"
@@ -462,17 +375,17 @@ export default function AttendancePage() {
             filterBranch) && (
             <button
               onClick={clearFilters}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+              className="text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer ml-1"
             >
               Limpiar
             </button>
           )}
 
-          <span className="text-xs text-gray-600 ml-auto">
+          <span className="text-xs text-gray-400 ml-auto">
             {activeTab === "students"
               ? filteredStudents.length
               : filteredTeachers.length}{" "}
-            registros
+            en la lista
           </span>
         </div>
 
@@ -482,24 +395,22 @@ export default function AttendancePage() {
           {activeTab === "students" ? (
             <>
               <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
-                <span className="text-[10px] font-bold tracking-widest text-gray-600">
+                <span className="text-[11px] font-bold tracking-widest text-gray-400">
                   ALUMNO
                 </span>
-                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                <span className="text-[11px] font-bold tracking-widest text-gray-400 text-center">
                   ESTADO FINANCIERO
                 </span>
-                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
-                  CHECK-IN
+                <span className="text-[11px] font-bold tracking-widest text-gray-400 text-center">
+                  ASISTENCIA
                 </span>
               </div>
               <div>
                 {filteredStudents.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-14 gap-2">
-                    <i className="ti ti-search-off text-3xl text-gray-700" />
-                    <p className="text-sm text-gray-600 font-medium">
-                      Sin resultados
-                    </p>
-                  </div>
+                  <EmptyState
+                    icon="ti-search-off"
+                    title="No hay resultados con esos filtros"
+                  />
                 ) : null}
                 {paginatedStudents.map((row) => {
                   const present = studentCheckins[row.id] ?? false;
@@ -523,7 +434,7 @@ export default function AttendancePage() {
                           <p className="text-sm font-semibold text-white truncate">
                             {row.name}
                           </p>
-                          <p className="text-[11px] text-gray-500 truncate">
+                          <p className="text-[11px] text-gray-400 truncate">
                             {row.plan}
                           </p>
                         </div>
@@ -546,10 +457,10 @@ export default function AttendancePage() {
                           className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                             !present
                               ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                              : "bg-transparent text-gray-400 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
                           }`}
                         >
-                          <i className="ti ti-x text-[10px] shrink-0" />
+                          <i className="ti ti-x text-[11px] shrink-0" />
                           Ausente
                         </button>
                         <button
@@ -562,10 +473,10 @@ export default function AttendancePage() {
                           className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                             present
                               ? "bg-lime-400 text-black shadow-btn-lime"
-                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                              : "bg-transparent text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
                           }`}
                         >
-                          <i className="ti ti-check text-[10px] shrink-0" />
+                          <i className="ti ti-check text-[11px] shrink-0" />
                           Presente
                         </button>
                       </div>
@@ -577,24 +488,22 @@ export default function AttendancePage() {
           ) : (
             <>
               <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
-                <span className="text-[10px] font-bold tracking-widest text-gray-600">
+                <span className="text-[11px] font-bold tracking-widest text-gray-400">
                   EMPLEADO
                 </span>
-                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                <span className="text-[11px] font-bold tracking-widest text-gray-400 text-center">
                   SUCURSAL
                 </span>
-                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
-                  CHECK-IN
+                <span className="text-[11px] font-bold tracking-widest text-gray-400 text-center">
+                  ASISTENCIA
                 </span>
               </div>
               <div>
                 {filteredTeachers.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-14 gap-2">
-                    <i className="ti ti-search-off text-3xl text-gray-700" />
-                    <p className="text-sm text-gray-600 font-medium">
-                      Sin resultados
-                    </p>
-                  </div>
+                  <EmptyState
+                    icon="ti-search-off"
+                    title="No hay resultados con esos filtros"
+                  />
                 ) : null}
                 {paginatedTeachers.map((row) => {
                   const present = teacherCheckins[row.id] ?? false;
@@ -619,7 +528,7 @@ export default function AttendancePage() {
                             {row.name}
                           </p>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${row.roleBadge}`}
+                            className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${row.roleBadge}`}
                           >
                             {row.roleLabel}
                           </span>
@@ -645,10 +554,10 @@ export default function AttendancePage() {
                           className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                             !present
                               ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                              : "bg-transparent text-gray-400 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
                           }`}
                         >
-                          <i className="ti ti-x text-[10px] shrink-0" />
+                          <i className="ti ti-x text-[11px] shrink-0" />
                           Ausente
                         </button>
                         <button
@@ -661,10 +570,10 @@ export default function AttendancePage() {
                           className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
                             present
                               ? "bg-lime-400 text-black shadow-btn-lime"
-                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                              : "bg-transparent text-gray-400 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
                           }`}
                         >
-                          <i className="ti ti-check text-[10px] shrink-0" />
+                          <i className="ti ti-check text-[11px] shrink-0" />
                           Presente
                         </button>
                       </div>

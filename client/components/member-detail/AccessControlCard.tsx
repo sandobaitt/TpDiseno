@@ -38,7 +38,7 @@ export function AccessControlCard({
         </button>
       </header>
 
-      <p className="text-xs leading-normal text-zinc-500">
+      <p className="text-xs leading-normal text-gray-400">
         {blocked
           ? "Acceso bloqueado para este usuario."
           : "Permitir acceso para este usuario."}

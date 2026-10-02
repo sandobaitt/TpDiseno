@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,9 +120,9 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
   return (
     <section className="flex-1 min-w-0">
       <div className="bg-neutral-900 rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-card glass-border">
-        <h1 className="text-white font-extrabold text-2xl md:text-3xl tracking-wider">
-          HISTORIAL DE NOVEDADES
-        </h1>
+        <h2 className="text-white font-extrabold text-xl md:text-2xl tracking-wide">
+          Historial
+        </h2>
 
         <div className="flex gap-2 flex-wrap">
           {filterOptions.map((opt) => (
@@ -134,7 +135,7 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
               className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-all cursor-pointer ${
                 activeFilter === opt.key
                   ? "bg-neutral-800 text-lime-400 border border-lime-400/40 shadow-[0_0_12px_rgba(163,230,53,0.12)]"
-                  : "bg-neutral-800/50 text-gray-500 hover:text-gray-300"
+                  : "bg-neutral-800/50 text-gray-400 hover:text-gray-300"
               }`}
             >
               {opt.label}
@@ -143,6 +144,9 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
         </div>
 
         <div className="flex flex-col gap-4">
+          {paginated.length === 0 && (
+            <EmptyState icon="ti-speakerphone" title="No hay novedades para mostrar" description="Las novedades que registres van a aparecer acá." />
+          )}
           {paginated.map((nov) => {
             const cfg = typeConfig[nov.type];
             const badge = typeBadgeBg[nov.type];
@@ -161,7 +165,7 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
                   <div className="flex flex-col gap-1.5 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className={`px-3 py-0.5 rounded-full text-[10px] font-bold tracking-wider ${badge}`}
+                        className={`px-3 py-0.5 rounded-full text-[11px] font-bold tracking-wider ${badge}`}
                       >
                         {cfg.label}
                       </span>
@@ -170,48 +174,43 @@ export function NovedadesHistory({ novedades, onResolve, onDelete }: NovedadesHi
                       {nov.entityType === "profesor" ? "Profesor" : "Clase"}:{" "}
                       {nov.entityName}
                     </p>
-                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                    <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
                       {nov.detail}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex md:flex-col items-end gap-2 shrink-0 md:ml-4">
-                  <span className="text-gray-600 text-xs whitespace-nowrap">
+                  <span className="text-gray-400 text-xs whitespace-nowrap">
                     {formatTimestamp(nov.timestamp)}
                   </span>
 
                   <div className="flex items-center gap-2">
-                    {nov.status === "in_progress" && onResolve ? (
+                    <span className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wider whitespace-nowrap ${st.className}`}>
+                      {st.label}
+                    </span>
+                    {nov.status === "in_progress" && onResolve && (
                       <button
+                        type="button"
                         onClick={() => onResolve(nov.id)}
-                        className="group relative px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap bg-blue-900/60 text-blue-400 border border-blue-500/20 hover:bg-green-900/60 hover:text-green-400 hover:border-green-500/30 transition-all duration-200 cursor-pointer overflow-hidden"
+                        className="flex items-center gap-1 rounded-full border border-success/30 px-3 py-1 text-[11px] font-bold text-success transition-colors hover:bg-success/10"
                       >
-                        <span className="flex items-center gap-1 group-hover:opacity-0 transition-opacity duration-150">
-                          En Proceso
-                        </span>
-                        <span className="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                          <i className="ti ti-circle-check text-xs" />
-                          Resolver
-                        </span>
+                        <i className="ti ti-circle-check text-xs" aria-hidden="true" />
+                        Marcar resuelta
                       </button>
-                    ) : (
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wider whitespace-nowrap ${st.className}`}>
-                        {st.label}
-                      </span>
                     )}
 
                     {onDelete && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <button className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
+                          <button aria-label={`Eliminar novedad sobre ${nov.entityName}`} className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer">
                             <i className="ti ti-trash text-sm" />
                           </button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="bg-neutral-900 border border-white/[0.08] text-white">
                           <AlertDialogHeader>
                             <AlertDialogTitle className="text-white">¿Eliminar novedad?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-gray-500">
+                            <AlertDialogDescription className="text-gray-400">
                               Vas a eliminar <span className="text-white font-semibold">{nov.entityName}</span>. Esta acción no se puede deshacer.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

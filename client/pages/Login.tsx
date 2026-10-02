@@ -193,14 +193,14 @@ export default function Login() {
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
                   <div className="flex items-center gap-2">
-                    <i className="ti ti-bug text-xs text-gray-500" />
-                    <span className="text-gray-500 text-[10px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
+                    <i className="ti ti-bug text-xs text-gray-400" />
+                    <span className="text-gray-400 text-[11px] font-bold tracking-widest">ACCESO RÁPIDO · DEBUG</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowDebug(false)}
                     aria-label="Cerrar acceso rápido"
-                    className="text-gray-600 hover:text-gray-400 transition-colors cursor-pointer"
+                    className="text-gray-400 hover:text-gray-400 transition-colors cursor-pointer"
                   >
                     <i className="ti ti-x text-xs" />
                   </button>

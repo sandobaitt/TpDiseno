@@ -107,6 +107,22 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 - Fechas: `new Date("AAAA-MM-DD")` se interpreta en UTC y en Argentina muestra el día anterior. Hay que usar los helpers de fechas (ver MEMORY.md).
 - Los datos de negocio (alumnos, clases, pagos) salen de `client/data/` o del store. **Nunca** se escriben a mano en el JSX.
 
+**Componentes compartidos** (`components/common/`), que se usan en vez de armar cada pieza a mano:
+
+| Componente | Para qué |
+|---|---|
+| `PageHeader` | Título, subtítulo y acciones de cada pantalla. |
+| `StatCard` | Indicadores. |
+| `StatusBadge` y `AccountStatusBadge` | Estados con ícono y texto. |
+| `SearchInput` | Buscador. |
+| `FilterSelect` | Filtro accesible, basado en el Select de Radix. |
+| `SegmentedTabs` | Pestañas. |
+| `EmptyState` | Mensaje de lista vacía. |
+| `FormField` + `inputClasses` | Campo con label asociado y error en línea. |
+| `WeekNavigator` | Navegador de semana. |
+| `ConfirmDialog` | Confirmaciones. |
+| `DataTable` | Tabla en escritorio y tarjetas por debajo de 1024 px. Para filas clickeables: `onRowClick` + `rowActionLabel`. |
+
 **Piezas que ya existen y hay que reusar:**
 
 | Pieza | Para qué |
@@ -120,15 +136,18 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 ## Diseño
 
 - **Estilos:** solo clases de Tailwind. **Está prohibido `style={{ }}`.**
-- **Colores:** siempre desde tokens (`tailwind.config.ts` o variables de `client/global.css`). Nada de hex sueltos.
+- **Colores:** siempre desde tokens. Nada de hex sueltos.
+  - Los tokens viven en `client/global.css` y `tailwind.config.ts`.
+  - Clases semánticas: `bg-background`, `bg-card`, `text-muted-foreground`, `text-primary` (verde de la app), `text-success`, `text-warning`, `text-danger`, `text-info`.
+  - La landing usa sus propios colores `squat-*`.
 - **Clases condicionales:** con `cn()` de `@/lib/utils`.
 - **Tema oscuro:** bordes redondeados `rounded-xl`/`rounded-2xl` y sombras suaves. Un solo verde de marca.
 - **Accesibilidad:**
   - Cada label va asociado a su campo.
   - Los botones de solo ícono llevan `aria-label`.
-  - El foco tiene que verse.
+  - El foco tiene que verse: ya hay un estilo global `:focus-visible`, así que no hay que sacarlo con `outline-none` sin dar otro indicador.
   - Contraste de 4,5:1 o más (AA).
-  - Texto de 12 px o más.
+  - Texto de 12 px o más; 11 px solo para rótulos en mayúsculas.
   - Botones de 40 px o más en el celular.
   - **Un estado nunca se comunica solo con color**: siempre va con texto o ícono, por ejemplo "Deudor".
 - **Responsive:** primero el celular, sobre todo para alumno y profesor. En pantallas chicas, las tablas pasan a tarjetas.

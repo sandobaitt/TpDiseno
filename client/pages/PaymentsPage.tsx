@@ -3,8 +3,16 @@ import { useLocation } from "react-router-dom";
 import { DataTable } from "@/components/common/DataTable";
 import { Pagination } from "@/components/common/Pagination";
 import { FilterSelect } from "@/components/common/FilterSelect";
-import HeaderPage from "@/components/common/HeaderPage";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PageHeader } from "@/components/common/PageHeader";
+import { SegmentedTabs } from "@/components/common/SegmentedTabs";
+import { SearchInput } from "@/components/common/SearchInput";
+import { EmptyState } from "@/components/common/EmptyState";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { PaymentCheckoutContent } from "@/components/cobros/PaymentCheckoutContent";
 import { getPlan } from "@/data/plans";
 import { formatARS, matchesPersonSearch } from "@/lib/format";
@@ -168,78 +176,45 @@ export default function PaymentsPage() {
 
   return (
     <>
-      <HeaderPage
-        title="COBROS Y FACTURACIÓN"
-        subtitle="Control de pagos y cuotas mensuales."
-      />
-
       <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-4">
-        {/* Tabs */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setActiveTab("debtors");
-              setCurrentPage(1);
-              setSearch("");
-              setFilterPlan("");
-            }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
-              activeTab === "debtors"
-                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-            }`}
-          >
-            <i className="ti ti-alert-triangle text-base" />A cobrar
-            <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "debtors" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
-            >
-              {debtorCount}
-            </span>
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("paid");
-              setCurrentPage(1);
-              setSearch("");
-              setFilterPlan("");
-            }}
-            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl cursor-pointer transition-all duration-150 ${
-              activeTab === "paid"
-                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-            }`}
-          >
-            <i className="ti ti-circle-check text-base" />
-            Al día
-            <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "paid" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
-            >
-              {paidCount}
-            </span>
-          </button>
-        </div>
+        <PageHeader
+          title="Cobros y facturación"
+          subtitle="Cuotas a cobrar y alumnos al día. Hacé clic en un alumno para cobrarle."
+        />
+
+        <SegmentedTabs
+          label="Estado de las cuotas"
+          value={activeTab}
+          onChange={(tab) => {
+            setActiveTab(tab);
+            setCurrentPage(1);
+            setSearch("");
+            setFilterPlan("");
+          }}
+          items={[
+            {
+              id: "debtors",
+              label: "A cobrar",
+              icon: "ti-alert-triangle",
+              count: debtorCount,
+            },
+            {
+              id: "paid",
+              label: "Al día",
+              icon: "ti-circle-check",
+              count: paidCount,
+            },
+          ]}
+        />
 
         {/* Search + Filters */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-            <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Nombre o DNI..."
-              aria-label="Buscar alumno por nombre o DNI"
-              className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                aria-label="Limpiar búsqueda"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
-              >
-                <i className="ti ti-x text-xs" />
-              </button>
-            )}
-          </div>
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Nombre o DNI…"
+            label="Buscar alumno por nombre o DNI"
+          />
 
           <FilterSelect
             value={filterPlan}
@@ -254,35 +229,35 @@ export default function PaymentsPage() {
                 setSearch("");
                 setFilterPlan("");
               }}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+              className="text-xs text-gray-400 hover:text-gray-300 transition-colors cursor-pointer ml-1"
             >
               Limpiar
             </button>
           )}
 
-          <span className="text-xs text-gray-600 ml-auto">
-            {filteredData.length} registros
+          <span className="text-xs text-gray-400 ml-auto">
+            {filteredData.length} alumnos
           </span>
         </div>
 
         {/* Table */}
         <div className="p-5 rounded-2xl bg-neutral-900 glass-border shadow-card">
           {filteredData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 gap-3">
-              <i className="ti ti-search-off text-3xl text-gray-700" />
-              <p className="text-sm text-gray-600 font-medium">
-                Sin resultados para los filtros aplicados
-              </p>
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setFilterPlan("");
-                }}
-                className="text-xs text-lime-400 hover:text-lime-300 transition-colors cursor-pointer"
-              >
-                Limpiar filtros
-              </button>
-            </div>
+            <EmptyState
+              icon="ti-search-off"
+              title="No hay alumnos con esos filtros"
+              action={
+                <button
+                  onClick={() => {
+                    setSearch("");
+                    setFilterPlan("");
+                  }}
+                  className="text-sm font-semibold text-primary hover:underline"
+                >
+                  Limpiar filtros
+                </button>
+              }
+            />
           ) : (
             <DataTable
               columns={columns}
@@ -291,6 +266,8 @@ export default function PaymentsPage() {
               minWidthClass="min-w-[700px] lg:min-w-0"
               gridTemplateClass="grid-cols-[minmax(220px,_1fr)_1fr_1fr_1fr] lg:grid-cols-[2fr_1fr_1fr_1fr]"
               onRowClick={(row) => setSelectedClientId(row.id)}
+              rowActionLabel={(row) => `Cobrar a ${row.name}`}
+              label="Alumnos y cuotas"
             />
           )}
         </div>
@@ -309,6 +286,10 @@ export default function PaymentsPage() {
         onOpenChange={(open) => !open && setSelectedClientId(null)}
       >
         <DialogContent className="max-w-6xl bg-stone-950 border-zinc-800 max-h-[90vh] overflow-y-auto text-white [&_.lucide-x]:h-6 [&_.lucide-x]:w-6">
+          <DialogTitle className="sr-only">Cobrar cuota</DialogTitle>
+          <DialogDescription className="sr-only">
+            Detalle de lo adeudado, medio de pago y confirmación.
+          </DialogDescription>
           <div className="p-3">
             {selectedClientId && (
               <PaymentCheckoutContent

@@ -10,7 +10,11 @@ import { getNavigationByRole } from "@/data/navigation";
 export function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(() => {
-    try { return localStorage.getItem("sidebar-collapsed") === "true"; } catch { return false; }
+    try {
+      return localStorage.getItem("sidebar-collapsed") === "true";
+    } catch {
+      return false;
+    }
   });
   const [showLogoutDialog, setShowLogoutDialog] = React.useState(false);
   const navigate = useNavigate();
@@ -19,7 +23,9 @@ export function DashboardLayout() {
   const toggleSidebarCollapse = () => {
     setSidebarCollapsed((prev) => {
       const next = !prev;
-      try { localStorage.setItem("sidebar-collapsed", String(next)); } catch {}
+      try {
+        localStorage.setItem("sidebar-collapsed", String(next));
+      } catch {}
       return next;
     });
   };
@@ -74,7 +80,9 @@ export function DashboardLayout() {
           />
         )}
 
-        <main className={`flex flex-col flex-1 w-full min-w-0 transition-[margin-left] [transition-duration:280ms] ease-in-out ${sidebarCollapsed ? "md:ml-[68px]" : "md:ml-[248px]"}`}>
+        <main
+          className={`flex flex-col flex-1 w-full min-w-0 transition-[margin-left] [transition-duration:280ms] ease-in-out ${sidebarCollapsed ? "md:ml-[68px]" : "md:ml-[248px]"}`}
+        >
           <HeaderNav
             nav={headerNav}
             title="SQUATGYM"

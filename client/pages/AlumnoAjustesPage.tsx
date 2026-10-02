@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { PageHeader } from "@/components/common/PageHeader";
 
 interface ToggleProps {
   checked: boolean;
@@ -36,12 +37,10 @@ export default function AlumnoAjustesPage() {
   return (
     <div className="px-7 pb-7 max-sm:px-4">
 
-        <h1 className="text-white text-3xl md:text-4xl font-extrabold leading-tight">
-          AJUSTES Y ALERTAS
-        </h1>
-        <p className="text-gray-600 text-sm mt-2 max-w-xl leading-relaxed">
-          Revisá los avisos de tu cuenta y elegí por dónde querés recibirlos.
-        </p>
+        <PageHeader
+          title="Alertas y preferencias"
+          subtitle="Revisá los avisos de tu cuenta y elegí por dónde querés recibirlos."
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-6 mt-8 items-start">
           {/* ── LEFT: Bandeja de Alertas ── */}
@@ -53,7 +52,7 @@ export default function AlumnoAjustesPage() {
                   Bandeja de Alertas
                 </h2>
               </div>
-              <button className="text-lime-400 text-[10px] font-bold tracking-widest hover:brightness-110 transition-all cursor-pointer">
+              <button className="text-lime-400 text-[11px] font-bold tracking-widest hover:brightness-110 transition-all cursor-pointer">
                 MARCAR TODO COMO LEÍDO
               </button>
             </div>
@@ -68,18 +67,18 @@ export default function AlumnoAjustesPage() {
                     Vencimiento de Membresía
                   </h3>
                 </div>
-                <span className="text-gray-600 text-[10px] whitespace-nowrap">
+                <span className="text-gray-400 text-[11px] whitespace-nowrap">
                   Hace 2 horas
                 </span>
               </div>
-              <p className="text-gray-500 text-xs leading-relaxed">
+              <p className="text-gray-400 text-xs leading-relaxed">
                 Tu plan &ldquo;Pase Libre&rdquo; expira en 3 días. Renovalo ahora
                 para no perder el acceso al gimnasio.
               </p>
               <div>
                 <Link
                   to="/alumno/pagos"
-                  className="inline-block px-4 py-2 rounded-xl bg-black border border-zinc-800 text-white text-[10px] font-bold tracking-wider hover:border-red-500/40 hover:text-red-400 transition-all cursor-pointer"
+                  className="inline-block px-4 py-2 rounded-xl bg-black border border-zinc-800 text-white text-[11px] font-bold tracking-wider hover:border-red-500/40 hover:text-red-400 transition-all cursor-pointer"
                 >
                   RENOVAR AHORA
                 </Link>
@@ -96,18 +95,18 @@ export default function AlumnoAjustesPage() {
                     Desbloqueá: Clínica de Fuerza
                   </h3>
                 </div>
-                <span className="text-gray-600 text-[10px] whitespace-nowrap">
+                <span className="text-gray-400 text-[11px] whitespace-nowrap">
                   Ayer
                 </span>
               </div>
-              <p className="text-gray-500 text-xs leading-relaxed">
+              <p className="text-gray-400 text-xs leading-relaxed">
                 Nueva clase magistral disponible este sábado. Plazas limitadas
                 para miembros avanzados.
               </p>
               <div>
                 <Link
                   to="/alumno/cronograma"
-                  className="inline-block px-4 py-2 rounded-xl bg-lime-400 text-black text-[10px] font-extrabold tracking-wider hover:brightness-110 transition-all cursor-pointer shadow-[0_0_12px_rgba(163,230,53,0.2)]"
+                  className="inline-block px-4 py-2 rounded-xl bg-lime-400 text-black text-[11px] font-extrabold tracking-wider hover:brightness-110 transition-all cursor-pointer shadow-[0_0_12px_rgba(163,230,53,0.2)]"
                 >
                   VER DETALLES
                 </Link>
@@ -119,16 +118,16 @@ export default function AlumnoAjustesPage() {
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-600/40 rounded-l-2xl" />
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
-                  <i className="ti ti-circle-check text-gray-500 text-base" />
+                  <i className="ti ti-circle-check text-gray-400 text-base" />
                   <h3 className="text-white text-sm font-bold">
                     Último Pago Procesado
                   </h3>
                 </div>
-                <span className="text-gray-600 text-[10px] whitespace-nowrap">
+                <span className="text-gray-400 text-[11px] whitespace-nowrap">
                   12 Oct, 2023
                 </span>
               </div>
-              <p className="text-gray-500 text-xs leading-relaxed">
+              <p className="text-gray-400 text-xs leading-relaxed">
                 Tu mensualidad ha sido procesada con éxito. Recibo #4928 enviado
                 a tu correo.
               </p>
@@ -144,11 +143,11 @@ export default function AlumnoAjustesPage() {
                     Actualización de Horarios
                   </h3>
                 </div>
-                <span className="text-gray-600 text-[10px] whitespace-nowrap">
+                <span className="text-gray-400 text-[11px] whitespace-nowrap">
                   05 Oct, 2023
                 </span>
               </div>
-              <p className="text-gray-500 text-xs leading-relaxed">
+              <p className="text-gray-400 text-xs leading-relaxed">
                 Los horarios de las clases de movilidad de los martes han
                 cambiado a las 19:00 hrs.
               </p>
@@ -166,7 +165,7 @@ export default function AlumnoAjustesPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="text-gray-600 text-[10px] tracking-wider font-semibold uppercase mb-2">
+                <p className="text-gray-400 text-[11px] tracking-wider font-semibold uppercase mb-2">
                   Canales de entrega
                 </p>
 
@@ -178,7 +177,7 @@ export default function AlumnoAjustesPage() {
                     </div>
                     <div>
                       <p className="text-white text-xs font-bold">Push Mobile</p>
-                      <p className="text-gray-600 text-[10px]">Alertas instantáneas en la app</p>
+                      <p className="text-gray-400 text-[11px]">Alertas instantáneas en la app</p>
                     </div>
                   </div>
                   <Toggle checked={pushMobile} onChange={setPushMobile} label="Avisos en el celular" />
@@ -192,7 +191,7 @@ export default function AlumnoAjustesPage() {
                     </div>
                     <div>
                       <p className="text-white text-xs font-bold">Notificaciones Web</p>
-                      <p className="text-gray-600 text-[10px]">Alertas mientras navegas</p>
+                      <p className="text-gray-400 text-[11px]">Alertas mientras navegas</p>
                     </div>
                   </div>
                   <Toggle checked={webNotif} onChange={setWebNotif} label="Avisos en la web" />
@@ -206,7 +205,7 @@ export default function AlumnoAjustesPage() {
                     </div>
                     <div>
                       <p className="text-white text-xs font-bold">Correo Electrónico</p>
-                      <p className="text-gray-600 text-[10px]">Resúmenes y recibos</p>
+                      <p className="text-gray-400 text-[11px]">Resúmenes y recibos</p>
                     </div>
                   </div>
                   <Toggle checked={email} onChange={setEmail} label="Avisos por correo electrónico" />

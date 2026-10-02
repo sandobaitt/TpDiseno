@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DataTable } from "@/components/common/DataTable";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Pagination } from "@/components/common/Pagination";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -124,12 +125,11 @@ export default function AlumnoPanel() {
 
   return (
     <div className="px-7 pb-7 max-sm:px-4">
-      <div className="flex items-center gap-2 mb-6">
-        <i className="ti ti-arrow-left text-gray-500 text-lg" />
-        <span className="text-lime-400 text-xs font-bold tracking-widest">
-          MI PERFIL Y ASISTENCIA
-        </span>
-      </div>
+      <PageHeader
+        title="Mi perfil y asistencia"
+        subtitle="Tu historial de clases, tu declaración jurada de salud y tu certificado médico."
+        className="mb-6"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
         {/* LEFT: Attendance Table */}
@@ -176,11 +176,11 @@ export default function AlumnoPanel() {
                 </div>
                 <div>
                   <p className="text-lime-400 text-xs font-bold">Confirmado</p>
-                  <p className="text-gray-600 text-[10px] mt-0.5">certificado_medico.pdf</p>
+                  <p className="text-gray-400 text-[11px] mt-0.5">certificado_medico.pdf</p>
                 </div>
                 <button
                   onClick={() => setCertUploaded(false)}
-                  className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors cursor-pointer underline underline-offset-2"
+                  className="text-[11px] text-gray-400 hover:text-gray-400 transition-colors cursor-pointer underline underline-offset-2"
                 >
                   Reemplazar archivo
                 </button>
@@ -190,10 +190,10 @@ export default function AlumnoPanel() {
                 onClick={() => setCertUploaded(true)}
                 className="border-2 border-dashed border-lime-400/20 rounded-xl p-6 flex flex-col items-center justify-center gap-3 text-center hover:border-lime-400/40 transition-all duration-150 cursor-pointer"
               >
-                <i className="ti ti-file-upload text-2xl text-gray-600" />
+                <i className="ti ti-file-upload text-2xl text-gray-400" />
                 <div>
                   <p className="text-white text-xs font-semibold">Subir PDF o JPG</p>
-                  <p className="text-gray-600 text-[10px] mt-0.5">Máx 5MB. Apto físico obligatorio.</p>
+                  <p className="text-gray-400 text-[11px] mt-0.5">Máx 5MB. Apto físico obligatorio.</p>
                 </div>
               </div>
             )}
@@ -211,7 +211,7 @@ export default function AlumnoPanel() {
               </div>
               <h3 className="text-white text-sm font-extrabold">DDJJ de Salud</h3>
             </div>
-            <p className="text-gray-500 text-xs leading-relaxed">
+            <p className="text-gray-400 text-xs leading-relaxed">
               Declaración Jurada actualizada de estado físico y lesiones previas.
             </p>
             <button
@@ -225,12 +225,12 @@ export default function AlumnoPanel() {
               {ddjjSaved ? (
                 <>
                   <span className="w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_6px_rgba(163,230,53,0.5)]" />
-                  <span className="text-gray-600 text-[10px]">Declaración enviada</span>
+                  <span className="text-gray-400 text-[11px]">Declaración enviada</span>
                 </>
               ) : (
                 <>
                   <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <span className="text-amber-400/70 text-[10px]">Pendiente de completar</span>
+                  <span className="text-amber-400/70 text-[11px]">Pendiente de completar</span>
                 </>
               )}
             </div>
@@ -249,13 +249,13 @@ export default function AlumnoPanel() {
               </div>
               <div>
                 <h2 className="text-white text-base font-extrabold">Declaración Jurada de Salud</h2>
-                <p className="text-gray-500 text-xs mt-0.5">Completá con información veraz y actualizada.</p>
+                <p className="text-gray-400 text-xs mt-0.5">Completá con información veraz y actualizada.</p>
               </div>
             </div>
 
             {/* Datos básicos */}
             <div className="flex flex-col gap-3">
-              <p className="text-gray-500 text-[10px] font-bold tracking-widest uppercase">Datos Básicos</p>
+              <p className="text-gray-400 text-[11px] font-bold tracking-widest uppercase">Datos Básicos</p>
               <div className="flex flex-col gap-1.5">
                 <label className="text-gray-400 text-xs font-semibold">Grupo Sanguíneo</label>
                 <select
@@ -273,14 +273,14 @@ export default function AlumnoPanel() {
                   value={emergency}
                   onChange={(e) => setEmergency(e.target.value)}
                   placeholder="Nombre y teléfono"
-                  className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all glass-border"
+                  className="w-full bg-neutral-900 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none focus:ring-1 focus:ring-lime-400/20 transition-all glass-border"
                 />
               </div>
             </div>
 
             {/* Condiciones de salud */}
             <div className="flex flex-col gap-3">
-              <p className="text-gray-500 text-[10px] font-bold tracking-widest uppercase">Condiciones de Salud</p>
+              <p className="text-gray-400 text-[11px] font-bold tracking-widest uppercase">Condiciones de Salud</p>
               <div className="flex flex-col gap-2">
                 {HEALTH_CONDITIONS.map((cond, i) => (
                   <button
@@ -298,12 +298,12 @@ export default function AlumnoPanel() {
                         ? "border-amber-400 bg-amber-400/20"
                         : "border-zinc-600"
                     }`}>
-                      {conditions[i] && <i className="ti ti-check text-amber-400 text-[10px]" />}
+                      {conditions[i] && <i className="ti ti-check text-amber-400 text-[11px]" />}
                     </span>
                   </button>
                 ))}
               </div>
-              <p className="text-gray-600 text-[10px]">
+              <p className="text-gray-400 text-[11px]">
                 Seleccioná las condiciones que apliquen. Sin selección se interpreta como "No".
               </p>
             </div>
@@ -325,7 +325,7 @@ export default function AlumnoPanel() {
               <span className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
                 accepted ? "border-lime-400 bg-lime-400/20" : "border-zinc-600 group-hover:border-zinc-400"
               }`}>
-                {accepted && <i className="ti ti-check text-lime-400 text-[10px]" />}
+                {accepted && <i className="ti ti-check text-lime-400 text-[11px]" />}
               </span>
               <span className="text-gray-400 text-xs leading-relaxed">
                 Declaro que la información consignada es verdadera y me comprometo a actualizar
@@ -340,7 +340,7 @@ export default function AlumnoPanel() {
               className={`w-full py-3.5 rounded-xl text-sm font-extrabold tracking-wider transition-all ${
                 accepted
                   ? "bg-lime-400 text-squat-ink hover:brightness-105 active:scale-[0.98] cursor-pointer"
-                  : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                  : "bg-zinc-800 text-gray-400 cursor-not-allowed"
               }`}
             >
               ENVIAR DECLARACIÓN

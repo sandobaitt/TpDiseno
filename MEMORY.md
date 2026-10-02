@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **01/10/2026**, al terminar la etapa E4. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E5. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,7 +23,18 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E4 terminadas**. Sigue **E5**: base visual (tokens, primitivos y componentes compartidos).
+- Fase 3: **E0 a E5 terminadas**. Sigue **E6**: gestión de alumnos de secretaría (ficha unificada e inscripción completa).
+- En E5 se resolvió lo siguiente:
+  - **Tokens de tema oscuro** (los primitivos de `ui/` ya salen oscuros), estados semánticos e Inter por defecto.
+  - **Accesibilidad global:** foco visible y respeto de "reducir movimiento".
+  - **Contraste AA:** los grises pasan a `gray-400` en nuestros módulos.
+  - **Textos legibles:** 11 px como mínimo.
+  - **Componentes compartidos:** `PageHeader`, `StatCard`, `StatusBadge`, `SearchInput`, `SegmentedTabs`, `EmptyState`, `FormField` y `WeekNavigator`.
+  - **Filtros:** `FilterSelect` pasa a ser accesible (Radix).
+  - **Tablas:** `DataTable` se ve como tarjetas por debajo de 1024 px y tiene filas operables con teclado.
+  - **Avisos** en tema oscuro.
+  - **Novedades:** botón visible "Marcar resuelta" (antes solo aparecía con el mouse).
+  - **Reemplazos:** tiene un historial real.
 - En E4 se resolvió lo siguiente:
   - **Store central en memoria** (`StoreProvider` + `useAppState` + `useStoreActions`), con registro de actividad.
   - **Flujos conectados**, probados en el navegador:
@@ -83,8 +94,6 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- En las columnas angostas del cronograma, las palabras largas se parten ("Musculació n") por la regla global `overflow-wrap: anywhere` de `global.css`. Se revisa en E5.
-- Los avisos (toasts) y algunos diálogos se ven en tema claro hasta que se apliquen los tokens oscuros (E5).
 - Radix avisa que varios diálogos no tienen título accesible. Se corrige al rehacer cada pantalla.
 
 ## Lo que no hay que romper

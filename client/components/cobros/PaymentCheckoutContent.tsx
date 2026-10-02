@@ -223,7 +223,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium">{activePromo.label}</span>
                       {activePromo.badge && activePromo.id !== "none" && (
-                        <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[10px] font-bold tracking-wider">
+                        <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[11px] font-bold tracking-wider">
                           {activePromo.badge}
                         </span>
                       )}
@@ -247,7 +247,7 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                           </span>
                         </div>
                         {p.badge && p.id !== "none" && (
-                          <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[10px] font-bold tracking-wider shrink-0">
+                          <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[11px] font-bold tracking-wider shrink-0">
                             {p.badge}
                           </span>
                         )}

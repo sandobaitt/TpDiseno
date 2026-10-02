@@ -51,7 +51,7 @@ function FileUpload() {
           <p className="mb-1 text-sm font-medium text-lime-400">
             {uploadedFile.name}
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-400">
             {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
           </p>
         </div>
@@ -60,7 +60,7 @@ function FileUpload() {
           <p className="mb-1 text-sm font-medium text-white">
             Arrastrar documento o hacer clic
           </p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-400">
             Formatos: PDF, JPG, PNG (Max 5MB)
           </p>
         </div>
