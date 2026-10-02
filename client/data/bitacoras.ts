@@ -1,34 +1,53 @@
+import { lastWeekday } from "./seed";
+
+/** Observación de jornada de un profesor sobre su clase o un alumno (la ve el encargado). */
 export interface Bitacora {
   id: string;
+  teacherId: string;
+  branchId: string;
+  slotId?: string;
+  /** Fecha de la clase a la que se refiere (AAAA-MM-DD). */
+  date?: string;
   title: string;
   content: string;
+  clientId?: string;
   studentName?: string;
-  createdAt: string;
+  createdAt: string; // ISO con hora local
 }
 
 export const bitacorasMock: Bitacora[] = [
   {
     id: "bit_001",
-    title: "WOD movilidad de hombros",
+    teacherId: "tc_001",
+    branchId: "br_001",
+    slotId: "sl_c06",
+    title: "Progresión en sentadilla",
     content:
-      "WOD enfocado en movilidad de hombros y activación de core. La mayoría del grupo respondió bien, solo Martina mostró limitación en flexión. Se recomendaron ejercicios correctivos.",
-    studentName: "Martina Gómez",
-    createdAt: "2026-05-14T18:30:00",
+      "Martín ya hace la sentadilla con buena técnica. Se le subió la carga. Hay que revisar la movilidad de tobillo de dos alumnos nuevos.",
+    clientId: "cl_001",
+    studentName: "Martín Rodríguez",
+    createdAt: `${lastWeekday(3)}T10:05:00`,
   },
   {
     id: "bit_002",
-    title: "Progresión en sentadilla",
+    teacherId: "tc_002",
+    branchId: "br_001",
+    slotId: "sl_c07",
+    title: "Molestia en la rodilla",
     content:
-      "Se trabajó progresión en sentadilla frontal con barra. Lucas y Valentina completaron las 4 series sin inconvenientes. Mateo requiere asistencia en profundidad.",
-    studentName: "Mateo Silva",
-    createdAt: "2026-05-12T18:30:00",
+      "Carlos comentó molestias en la rodilla operada. Se reemplazaron los saltos por bicicleta y se le recomendó consultar a su médico.",
+    clientId: "cl_003",
+    studentName: "Carlos Silva",
+    createdAt: `${lastWeekday(3)}T19:10:00`,
   },
   {
     id: "bit_003",
-    title: "Lesión de muñeca reportada",
+    teacherId: "tc_002",
+    branchId: "br_001",
+    slotId: "sl_c04",
+    title: "Clase completa",
     content:
-      "Sofía reportó dolor en muñeca derecha durante el WOD de dominadas. Se le asignó variante con agarre neutro y se derivó a kinesiología para evaluación.",
-    studentName: "Sofía Rodríguez",
-    createdAt: "2026-05-10T19:00:00",
+      "La clase de Funcional de las 7:00 se llenó (15/15). Conviene evaluar abrir otro horario temprano.",
+    createdAt: `${lastWeekday(2)}T08:10:00`,
   },
 ];

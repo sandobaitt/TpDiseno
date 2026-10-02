@@ -1,4 +1,4 @@
-import * as React from "react";
+import { cn } from "@/lib/utils";
 
 interface PaginationProps {
   currentPage: number;
@@ -14,11 +14,11 @@ const visiblePages = (current: number, total: number): number[] => {
   const end = Math.min(total, current + 1);
 
   if (start > 2) pages.push(1);
-  if (start > 3) pages.push(-1); // ellipsis
+  if (start > 3) pages.push(-1); // puntos suspensivos
 
   for (let i = start; i <= end; i++) pages.push(i);
 
-  if (end < total - 1) pages.push(-1); // ellipsis
+  if (end < total - 1) pages.push(-1);
   if (end < total - 1) pages.push(total);
   if (end === total - 1) pages.push(total);
 
@@ -33,11 +33,15 @@ export function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between pt-2">
+    <nav
+      aria-label="Paginación"
+      className="flex items-center justify-between pt-3"
+    >
       {currentPage > 1 ? (
         <button
+          type="button"
           onClick={() => onPageChange(currentPage - 1)}
-          className="text-gray-500 text-xs font-semibold hover:text-gray-300 transition-colors cursor-pointer"
+          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 transition-colors hover:bg-white/[0.04] hover:text-gray-200"
         >
           ← Anterior
         </button>
@@ -45,21 +49,29 @@ export function Pagination({
         <div />
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         {visiblePages(currentPage, totalPages).map((p, i) =>
           p === -1 ? (
-            <span key={`e-${i}`} className="text-gray-600 text-xs px-1">
-              ...
+            <span
+              key={`e-${i}`}
+              className="px-1 text-xs text-gray-400"
+              aria-hidden="true"
+            >
+              …
             </span>
           ) : (
             <button
               key={p}
+              type="button"
               onClick={() => onPageChange(p)}
-              className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-colors ${
+              aria-label={`Página ${p}`}
+              aria-current={p === currentPage ? "page" : undefined}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-colors",
                 p === currentPage
-                  ? "bg-lime-400/10 text-lime-400"
-                  : "text-gray-600 hover:text-gray-400"
-              }`}
+                  ? "bg-primary/10 text-primary"
+                  : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200",
+              )}
             >
               {p}
             </button>
@@ -69,14 +81,15 @@ export function Pagination({
 
       {currentPage < totalPages ? (
         <button
+          type="button"
           onClick={() => onPageChange(currentPage + 1)}
-          className="text-gray-500 text-xs font-semibold hover:text-gray-300 transition-colors cursor-pointer"
+          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 transition-colors hover:bg-white/[0.04] hover:text-gray-200"
         >
           Siguiente →
         </button>
       ) : (
         <div />
       )}
-    </div>
+    </nav>
   );
 }

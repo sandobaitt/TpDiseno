@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 export default {
   darkMode: ["class"],
@@ -14,6 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
         jakarta: ['"Plus Jakarta Sans"', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
@@ -26,21 +28,11 @@ export default {
         'squat-muted': '#BFCBAE',
         'squat-ink': '#0E2000',
         'squat-testimonial': '#353534',
-        /* App semantic tokens — driven by CSS variables */
-        'app-bg':           'rgb(var(--app-bg) / <alpha-value>)',
-        'app-bg-page':      'rgb(var(--app-bg-page) / <alpha-value>)',
-        'app-card':         'rgb(var(--app-card) / <alpha-value>)',
-        'app-card-deep':    'rgb(var(--app-card-deep) / <alpha-value>)',
-        'app-surface':      'rgb(var(--app-surface) / <alpha-value>)',
-        'app-elevated':     'rgb(var(--app-elevated) / <alpha-value>)',
-        'app-text':         'rgb(var(--app-text) / <alpha-value>)',
-        'app-muted':        'rgb(var(--app-muted) / <alpha-value>)',
-        'app-subtle':       'rgb(var(--app-subtle) / <alpha-value>)',
-        'app-faint':        'rgb(var(--app-faint) / <alpha-value>)',
-        'app-border':       'rgb(var(--app-border) / <alpha-value>)',
-        'app-hover':        'rgb(var(--app-hover) / <alpha-value>)',
-        'app-input':        'rgb(var(--app-input) / <alpha-value>)',
-        'app-input-border': 'rgb(var(--app-input-border) / <alpha-value>)',
+        /* Estados semánticos (ver tokens en client/global.css) */
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        danger: "hsl(var(--danger))",
+        info: "hsl(var(--info))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

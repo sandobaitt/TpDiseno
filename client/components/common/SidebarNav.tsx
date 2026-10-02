@@ -1,7 +1,7 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { getMockSession } from "@/data/users";
+import { getMockSession, ROLE_LABELS } from "@/data/users";
 
 export interface SidebarNavItem {
   id: string;
@@ -11,6 +11,8 @@ export interface SidebarNavItem {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
+  /** false: el ítem también queda marcado en sus subpantallas (ej. la ficha de un alumno). */
+  end?: boolean;
 }
 
 interface SidebarNavProps {
@@ -24,17 +26,6 @@ interface SidebarNavProps {
   closeOnItemClick?: boolean;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
-}
-
-function getRoleLabel(role: string) {
-  switch (role) {
-    case "admin":      return "administrador";
-    case "alumno":     return "alumno";
-    case "profesor":   return "profesor";
-    case "secretario": return "secretario";
-    case "secretaria": return "secretario";
-    default:           return role;
-  }
 }
 
 export function SidebarNav({
@@ -53,7 +44,7 @@ export function SidebarNav({
     if (brandSubtitle) return brandSubtitle;
     const session = getMockSession();
     if (!session?.role) return "PANEL";
-    return `PANEL DE ${getRoleLabel(session.role).toUpperCase()}`;
+    return `PANEL DE ${ROLE_LABELS[session.role].toUpperCase()}`;
   }, [brandSubtitle]);
 
   const handleItemClick = (item: SidebarNavItem) => {
@@ -64,11 +55,11 @@ export function SidebarNav({
 
   const itemBase =
     "relative flex items-center py-2.5 rounded-xl w-full text-left transition-colors duration-150";
-  const itemHover = "hover:bg-app-hover/[0.04] cursor-pointer";
+  const itemHover = "hover:bg-white/[0.04] cursor-pointer";
 
   const renderItemInner = (item: SidebarNavItem, isActive: boolean) => {
-    const iconColor = isActive ? "text-lime-400" : "text-app-subtle";
-    const textColor = isActive ? "text-lime-400" : "text-app-subtle";
+    const iconColor = isActive ? "text-lime-400" : "text-gray-400";
+    const textColor = isActive ? "text-lime-400" : "text-gray-400";
     const textWeight = isActive ? "font-bold" : "font-semibold";
 
     return (
@@ -76,7 +67,7 @@ export function SidebarNav({
         {isActive && (
           <motion.div
             layoutId="nav-active"
-            className={`absolute inset-0 rounded-xl bg-app-hover/[0.06] ${!isCollapsed ? "border-l-2 border-lime-400" : "border border-lime-400/30"}`}
+            className={`absolute inset-0 rounded-xl bg-white/[0.06] ${!isCollapsed ? "border-l-2 border-lime-400" : "border border-lime-400/30"}`}
             transition={{ duration: 0.22, ease: "easeOut" }}
           />
         )}
@@ -87,10 +78,14 @@ export function SidebarNav({
           title={isCollapsed ? item.label : undefined}
         >
           {item.iconClassName && (
-            <i className={`${item.iconClassName} text-lg ${iconColor} shrink-0`} />
+            <i
+              className={`${item.iconClassName} text-lg ${iconColor} shrink-0`}
+            />
           )}
           {!isCollapsed && (
-            <span className={`text-xs ${textWeight} tracking-wide uppercase ${textColor} whitespace-nowrap overflow-hidden`}>
+            <span
+              className={`text-xs ${textWeight} tracking-wide uppercase ${textColor} whitespace-nowrap overflow-hidden`}
+            >
               {item.label}
             </span>
           )}
@@ -103,14 +98,16 @@ export function SidebarNav({
     <motion.aside
       animate={{ width: isCollapsed ? 68 : 248 }}
       transition={{ duration: 0.28, ease: "easeInOut" }}
-      className={`flex fixed inset-y-0 left-0 z-20 flex-col bg-app-bg min-h-screen overflow-hidden border-r border-app-border/[0.04] transition-transform duration-300 ease-in-out md:translate-x-0 ${
+      className={`flex fixed inset-y-0 left-0 z-20 flex-col bg-neutral-900 min-h-screen overflow-hidden border-r border-white/[0.04] transition-transform duration-300 ease-in-out md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } ${className}`}
     >
       {/* Header */}
       <header
-        className={`pt-7 pb-5 flex items-center border-b border-app-border/[0.05] ${
-          isCollapsed ? "px-3 justify-center flex-col gap-3" : "px-6 justify-between"
+        className={`pt-7 pb-5 flex items-center border-b border-white/[0.05] ${
+          isCollapsed
+            ? "px-3 justify-center flex-col gap-3"
+            : "px-6 justify-between"
         }`}
       >
         {isCollapsed ? (
@@ -121,7 +118,7 @@ export function SidebarNav({
             {onToggleCollapse && (
               <button
                 onClick={onToggleCollapse}
-                className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-app-subtle hover:text-lime-400 hover:bg-app-hover/[0.06] transition-all duration-150 cursor-pointer"
+                className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-lime-400 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
                 aria-label="Expandir sidebar"
               >
                 <i className="ti ti-chevron-right text-sm" />
@@ -135,7 +132,7 @@ export function SidebarNav({
                 {brandTitle}
               </h1>
               {effectiveSubtitle && (
-                <p className="mt-1.5 text-[10px] font-semibold tracking-widest text-app-subtle uppercase whitespace-nowrap">
+                <p className="mt-1.5 text-[11px] font-semibold tracking-widest text-gray-400 uppercase whitespace-nowrap">
                   {effectiveSubtitle}
                 </p>
               )}
@@ -144,7 +141,7 @@ export function SidebarNav({
               {onToggleCollapse && (
                 <button
                   onClick={onToggleCollapse}
-                  className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-app-subtle hover:text-app-muted hover:bg-app-hover/[0.06] transition-all duration-150 cursor-pointer"
+                  className="hidden md:flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
                   aria-label="Contraer sidebar"
                 >
                   <i className="ti ti-chevron-left text-sm" />
@@ -153,7 +150,7 @@ export function SidebarNav({
               {onClose && (
                 <button
                   onClick={onClose}
-                  className="md:hidden text-app-muted hover:text-app-text"
+                  className="md:hidden text-gray-400 hover:text-white"
                   aria-label="Cerrar menú"
                 >
                   <i className="ti ti-x text-2xl" />
@@ -165,16 +162,20 @@ export function SidebarNav({
       </header>
 
       {/* Nav */}
-      <nav className={`flex flex-col flex-1 gap-0.5 mt-4 ${isCollapsed ? "px-2" : "px-3"}`}>
+      <nav
+        className={`flex flex-col flex-1 gap-0.5 mt-4 ${isCollapsed ? "px-2" : "px-3"}`}
+      >
         {items.map((item) => {
-          const disabledClass = item.disabled ? "opacity-50 pointer-events-none" : "";
+          const disabledClass = item.disabled
+            ? "opacity-50 pointer-events-none"
+            : "";
 
           if (item.to) {
             return (
               <NavLink
                 key={item.id}
                 to={item.to}
-                end
+                end={item.end ?? true}
                 className={({ isActive }) =>
                   `${itemBase} ${isActive ? (isCollapsed ? "" : "pl-[10px]") : itemHover} ${disabledClass}`
                 }
@@ -217,7 +218,9 @@ export function SidebarNav({
 
       {/* Footer */}
       {footerItems.length > 0 && (
-        <footer className={`pb-7 border-t border-app-border/[0.05] pt-3 ${isCollapsed ? "px-2" : "px-3"}`}>
+        <footer
+          className={`pb-7 border-t border-white/[0.05] pt-3 ${isCollapsed ? "px-2" : "px-3"}`}
+        >
           <div className="flex flex-col gap-0.5">
             {footerItems.map((item) => (
               <button

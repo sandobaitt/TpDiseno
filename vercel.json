@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build:client && npx esbuild api/index.ts --bundle --platform=node --format=esm --outfile=api/server.js --external:express --external:cors --external:dotenv",
+  "outputDirectory": "dist/spa",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/server.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

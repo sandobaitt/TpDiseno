@@ -1,21 +1,21 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, type AppUser } from "@/data/users";
+import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, ROLE_LABELS, type AppUser, type AppUserRole } from "@/data/users";
+import loginBg from "@/assets/login-bg.jpg";
 
-const DEBUG_USERS: AppUser[] = [
-  appUsersMock.find((u) => u.role === "admin")!,
-  appUsersMock.find((u) => u.role === "secretario")!,
-  appUsersMock.find((u) => u.role === "profesor")!,
-  appUsersMock.find((u) => u.role === "alumno")!,
-];
+const DEBUG_ROLES: AppUserRole[] = ["admin", "encargado", "secretario", "profesor", "alumno"];
+const DEBUG_USERS: AppUser[] = DEBUG_ROLES.map(
+  (role) => appUsersMock.find((u) => u.role === role)!,
+);
 
-const ROLE_STYLE: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  admin:      { label: "Admin",       bg: "bg-lime-400/10",   text: "text-lime-400",   dot: "bg-lime-400"   },
-  secretario: { label: "Secretario",  bg: "bg-violet-400/10", text: "text-violet-400", dot: "bg-violet-400" },
-  profesor:   { label: "Profesor",    bg: "bg-blue-400/10",   text: "text-blue-400",   dot: "bg-blue-400"   },
-  alumno:     { label: "Alumno",      bg: "bg-gray-400/10",   text: "text-gray-400",   dot: "bg-gray-500"   },
+const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
+  admin:      { bg: "bg-lime-400/10",   text: "text-lime-400"   },
+  encargado:  { bg: "bg-amber-400/10",  text: "text-amber-400"  },
+  secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
+  profesor:   { bg: "bg-blue-400/10",   text: "text-blue-400"   },
+  alumno:     { bg: "bg-gray-400/10",   text: "text-gray-300"   },
 };
 
 function getInitials(name: string) {
@@ -28,7 +28,9 @@ export default function Login() {
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [quickOpen, setQuickOpen] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+
+  const clickRef = useRef({ count: 0, lastTime: 0 });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -50,6 +52,22 @@ export default function Login() {
     navigate(getPostLoginPath(user.role), { replace: true });
   };
 
+  const handleIngreseClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const now = Date.now();
+    if (now - clickRef.current.lastTime < 600) {
+      clickRef.current.count += 1;
+    } else {
+      clickRef.current.count = 1;
+    }
+    clickRef.current.lastTime = now;
+
+    if (clickRef.current.count >= 3) {
+      e.preventDefault();
+      clickRef.current.count = 0;
+      setShowDebug(true);
+    }
+  };
+
   const handleQuickLogin = (user: AppUser) => {
     saveMockSession(user);
     toast.success(`Hola, ${user.fullName}`);
@@ -60,18 +78,12 @@ export default function Login() {
     <div className="relative min-h-screen flex items-center justify-center bg-squat-dark overflow-hidden">
       {/* Background gym image */}
       <img
-        src="https://api.builder.io/api/v1/image/assets/TEMP/519575f6c6683379114a1a76e5d989bd581451a6?width=2560"
+        src={loginBg}
         alt=""
         className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay"
       />
       {/* Radial gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(80.04% 64.03% at 50% 50%, rgba(19,19,19,0.40) 0%, #131313 80%)",
-        }}
-      />
+      <div className="absolute inset-0 bg-[radial-gradient(80%_64%_at_50%_50%,rgba(19,19,19,0.4)_0%,rgba(19,19,19,1)_80%)]" />
 
       {/* Floating panel */}
       <motion.div
@@ -96,7 +108,7 @@ export default function Login() {
             Bienvenido a SquatGym
           </h1>
           <p className="font-inter text-sm text-squat-muted text-center leading-5">
-            Ingresa tus credenciales para acceder
+            Ingresá con tu correo o DNI y tu contraseña
           </p>
         </div>
 
@@ -104,8 +116,8 @@ export default function Login() {
         <form className="w-full flex flex-col gap-6 pb-4" onSubmit={handleSubmit} noValidate>
           {/* Email / DNI field */}
           <div className="flex flex-col gap-2">
-            <label className="font-inter font-medium text-sm text-[#E5E2E1] leading-5">
-              Correo Electrónico o DNI
+            <label htmlFor="login-identity" className="font-inter font-medium text-sm text-gray-200 leading-5">
+              Correo electrónico o DNI
             </label>
             <div className="relative flex items-center">
               <span className="absolute left-4 pointer-events-none">
@@ -114,6 +126,7 @@ export default function Login() {
                 </svg>
               </span>
               <input
+                id="login-identity"
                 type="text"
                 name="identity"
                 autoComplete="username"
@@ -128,12 +141,16 @@ export default function Login() {
           {/* Password field */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="font-inter font-medium text-sm text-[#E5E2E1] leading-5">
+              <label htmlFor="login-password" className="font-inter font-medium text-sm text-gray-200 leading-5">
                 Contraseña
               </label>
-              <a href="#" className="font-inter text-xs text-squat-green hover:opacity-80 transition-opacity leading-4">
+              <button
+                type="button"
+                onClick={() => toast.info("Para recuperar tu contraseña, pedíselo a la secretaría de tu sede.")}
+                className="font-inter text-xs text-squat-green hover:opacity-80 transition-opacity leading-4"
+              >
                 ¿Olvidaste tu contraseña?
-              </a>
+              </button>
             </div>
             <div className="relative flex items-center">
               <span className="absolute left-4 pointer-events-none">
@@ -142,6 +159,7 @@ export default function Login() {
                 </svg>
               </span>
               <input
+                id="login-password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 autoComplete="current-password"
@@ -153,7 +171,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 text-squat-muted hover:text-app-text transition-colors"
+                className="absolute right-4 text-squat-muted hover:text-white transition-colors"
                 aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 <svg width="22" height="15" viewBox="0 0 22 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -163,57 +181,64 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Debug quick-login panel */}
+          <AnimatePresence>
+            {showDebug && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="rounded-2xl border border-white/[0.07] bg-black/40 backdrop-blur-sm overflow-hidden"
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <i className="ti ti-bug text-xs text-gray-400" />
+                    <span className="text-gray-400 text-[11px] font-bold tracking-widest">ACCESO RÁPIDO (DEMO)</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowDebug(false)}
+                    aria-label="Cerrar acceso rápido"
+                    className="text-gray-400 hover:text-gray-400 transition-colors cursor-pointer"
+                  >
+                    <i className="ti ti-x text-xs" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2 p-3">
+                  {DEBUG_USERS.map((user) => {
+                    const s = ROLE_STYLE[user.role];
+                    return (
+                      <button
+                        key={user.id}
+                        type="button"
+                        onClick={() => handleQuickLogin(user)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.05] hover:border-white/[0.10] transition-all cursor-pointer text-left group"
+                      >
+                        <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
+                          <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
+                          <span className={`text-[11px] font-bold ${s.text}`}>{ROLE_LABELS[user.role]}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+              onClick={handleIngreseClick}
+              className="w-full py-4 rounded-xl bg-squat-green shadow-btn-lime font-jakarta font-bold text-lg text-squat-ink text-center hover:brightness-105 active:scale-[0.98] transition-all duration-150"
             >
               Ingresar
             </button>
-          </div>
-
-          {/* Quick login dropdown */}
-          <div className="border-t border-white/[0.07] pt-4 mt-2">
-            <button
-              type="button"
-              onClick={() => setQuickOpen((v) => !v)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/[0.12] transition-all cursor-pointer text-left group"
-            >
-              <div className="flex items-center gap-2">
-                <i className="ti ti-bolt text-xs text-white/40" />
-                <span className="text-white/50 text-[10px] font-bold tracking-widest">INICIO DE SESIÓN RÁPIDO</span>
-              </div>
-              <i className={`ti ti-chevron-down text-white/30 text-xs transition-transform duration-200 ${quickOpen ? "rotate-180" : ""}`} />
-            </button>
-            {quickOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.15, ease: "easeOut" }}
-                className="grid grid-cols-2 gap-2 mt-2"
-              >
-                {DEBUG_USERS.map((user) => {
-                  const s = ROLE_STYLE[user.role];
-                  return (
-                    <button
-                      key={user.id}
-                      type="button"
-                      onClick={() => handleQuickLogin(user)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] hover:border-white/[0.14] transition-all cursor-pointer text-left group"
-                    >
-                      <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
-                        <span className={`text-[11px] font-extrabold ${s.text}`}>{getInitials(user.fullName)}</span>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
-                        <span className={`text-[9px] font-bold ${s.text}`}>{s.label}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </motion.div>
-            )}
           </div>
         </form>
 

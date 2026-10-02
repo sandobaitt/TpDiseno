@@ -15,7 +15,6 @@ const featuredPlanId = "pl_001";
 export default function Index() {
   return (
     <div className="flex flex-col min-h-screen bg-squat-dark font-inter">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-squat-dark/90 backdrop-blur-md border-b border-white/[0.05]">
         <div className="max-w-[1280px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -247,13 +246,13 @@ export default function Index() {
 
                     <div className="flex flex-col gap-3">
                       <div className="flex items-start gap-2.5">
-                        <i className="ti ti-map-pin text-sm text-app-faint mt-0.5 shrink-0" />
+                        <i className="ti ti-map-pin text-sm text-gray-600 mt-0.5 shrink-0" />
                         <span className="text-sm text-squat-muted">
                           {branch.address.street}, {branch.address.city}
                         </span>
                       </div>
                       <div className="flex items-start gap-2.5">
-                        <i className="ti ti-clock text-sm text-app-faint mt-0.5 shrink-0" />
+                        <i className="ti ti-clock text-sm text-gray-600 mt-0.5 shrink-0" />
                         <div className="flex flex-col gap-0.5">
                           <span className="text-sm text-squat-muted">
                             Lun–Vie: {branch.openingHours.monToFri}
@@ -272,7 +271,7 @@ export default function Index() {
                       </div>
                       {branch.contact?.phone && (
                         <div className="flex items-center gap-2.5">
-                          <i className="ti ti-phone text-sm text-app-faint shrink-0" />
+                          <i className="ti ti-phone text-sm text-gray-600 shrink-0" />
                           <span className="text-sm text-squat-muted">{branch.contact.phone}</span>
                         </div>
                       )}
@@ -307,7 +306,7 @@ export default function Index() {
             ))}
           </nav>
           <p className="font-inter text-xs text-white/40 tracking-[1.2px] uppercase text-center sm:text-right">
-            © 2026 SQUATGYM. TODOS LOS DERECHOS RESERVADOS.
+            © 2024 SQUATGYM. TODOS LOS DERECHOS RESERVADOS.
           </p>
         </div>
       </footer>

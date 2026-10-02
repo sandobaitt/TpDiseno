@@ -1,49 +1,89 @@
-import type { GymClass } from "@/data/schedule";
+import { cn } from "@/lib/utils";
 
-interface ClassCardProps {
-  classItem: GymClass;
+export interface ClassCardData {
+  id: string;
+  start: string;
+  end: string;
+  durationMin: number;
+  title: string;
+  teacherName: string;
+  branchName: string;
+  capacity: number;
+  /** Si ese día la dicta un reemplazante. */
+  replacementNote?: string;
+  /** Para el alumno: si la clase está incluida en su plan (CU 8). */
+  inPlan?: boolean;
 }
 
-export function ClassCard({ classItem }: ClassCardProps) {
-  const c = classItem;
+interface ClassCardProps {
+  classItem: ClassCardData;
+}
+
+/** Tarjeta informativa de una clase del cronograma. */
+export function ClassCard({ classItem: c }: ClassCardProps) {
+  const excluded = c.inPlan === false;
   return (
-    <div className="bg-app-bg rounded-2xl p-4 flex flex-col gap-2 shadow-card glass-border hover:border-app-border/[0.10] transition-all duration-150">
-      <div className="flex items-center justify-between">
-        <span className="text-app-text text-sm font-bold">{c.time}</span>
-        <span className="text-lime-400 text-[10px] font-bold tracking-wider">
+    <div
+      className={cn(
+        "rounded-2xl p-4 flex flex-col gap-2 bg-neutral-900 shadow-card glass-border",
+        c.inPlan && "ring-1 ring-primary/50",
+        excluded && "opacity-60",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-white text-sm font-bold">
+          {c.start}–{c.end}
+        </span>
+        <span className="text-lime-400 text-[11px] font-bold tracking-wider">
           {c.durationMin} MIN
         </span>
       </div>
 
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-col">
-          {c.isPro && (
-            <span className="text-[10px] font-bold tracking-wider text-lime-400 bg-lime-400/10 px-2 py-0.5 rounded-md w-fit mb-1">
-              PRO
-            </span>
+      <h4 className="text-white text-base font-extrabold leading-tight">
+        {c.title}
+      </h4>
+
+      <div className="flex flex-col gap-1 text-gray-400 text-xs">
+        <span className="flex items-center gap-1.5">
+          <i className="ti ti-user-circle text-sm" aria-hidden="true" />
+          {c.teacherName}
+        </span>
+        <span className="flex items-center gap-1.5">
+          <i className="ti ti-map-pin text-sm" aria-hidden="true" />
+          {c.branchName}
+        </span>
+      </div>
+
+      {c.inPlan !== undefined && (
+        <span
+          className={cn(
+            "flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold",
+            c.inPlan
+              ? "bg-primary/10 text-primary"
+              : "bg-white/[0.06] text-gray-300",
           )}
-          <h4 className="text-app-text text-base font-extrabold leading-tight">
-            {c.title}
-          </h4>
-        </div>
-      </div>
+        >
+          <i
+            className={cn(
+              "ti text-sm",
+              c.inPlan ? "ti-circle-check" : "ti-lock",
+            )}
+            aria-hidden="true"
+          />
+          {c.inPlan ? "En tu plan" : "No incluida en tu plan"}
+        </span>
+      )}
 
-      <div className="flex items-center gap-2 text-app-subtle text-xs">
-        <i className="ti ti-user-circle text-sm" />
-        {c.coach}
-      </div>
+      {c.replacementNote && (
+        <span className="w-fit rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+          {c.replacementNote}
+        </span>
+      )}
 
-      <div className="flex items-center justify-between pt-1 border-t border-app-border/[0.08]">
-        {c.isFull ? (
-          <span className="text-red-400 text-[10px] font-bold tracking-wider flex items-center gap-1">
-            <i className="ti ti-alert-circle text-xs" />
-            Lleno
-          </span>
-        ) : (
-          <span className="text-app-subtle text-[10px] font-medium">
-            {c.booked}/{c.capacity} Lugares
-          </span>
-        )}
+      <div className="flex items-center pt-2 border-t border-zinc-800/50 mt-auto">
+        <span className="text-gray-400 text-[11px] font-medium">
+          Cupo: {c.capacity} personas
+        </span>
       </div>
     </div>
   );

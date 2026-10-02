@@ -1,136 +1,67 @@
-/** @import must precede all other statements */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap");
-
+/* Las fuentes (Inter y Plus Jakarta Sans) se cargan desde public/fonts/fonts.css, en index.html. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html {
   scroll-behavior: smooth;
+  /* Controles nativos (calendario, desplegables, barras de scroll) en tema oscuro. */
+  color-scheme: dark;
 }
 
 @layer base {
   /**
-   * Tailwind CSS theme
-   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
+   * Tokens de diseño (tema oscuro). Los usan los primitivos de components/ui
+   * y las clases semánticas de Tailwind (bg-background, text-muted-foreground,
+   * text-success…). Formato: valores HSL sin "hsl()".
+   */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 9%; /* #171717 */
+    --foreground: 0 0% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Verde de marca de la app (lime-400) */
+    --primary: 83 78% 55%;
+    --primary-foreground: 94 100% 6%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Texto secundario: gris con contraste AA sobre el fondo (≈7:1) */
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 0 0% 16%;
+    --accent-foreground: 0 0% 96%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Estados (siempre acompañados de texto o ícono) */
+    --success: 142 69% 58%;
+    --warning: 46 97% 65%;
+    --danger: 0 91% 71%;
+    --info: 213 94% 68%;
 
-    --radius: 0.5rem;
+    --border: 0 0% 18%;
+    --input: 0 0% 20%;
+    --ring: 83 78% 55%;
 
-    --sidebar-background: 0 0% 98%;
+    --radius: 0.75rem;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* App semantic tokens — light mode */
-    --app-bg:           244 245 251;
-    --app-bg-page:      234 236 246;
-    --app-card:         255 255 255;
-    --app-card-deep:    247 248 253;
-    --app-surface:      238 240 249;
-    --app-elevated:     228 231 244;
-    --app-text:         9 11 22;
-    --app-muted:        38 46 80;
-    --app-subtle:       68 78 115;
-    --app-faint:        112 123 160;
-    --app-border:       0 0 0;
-    --app-hover:        0 0 0;
-    --app-input:        255 255 255;
-    --app-input-border: 182 187 212;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    /* App semantic tokens — dark mode */
-    --app-bg:           17 17 17;
-    --app-bg-page:      23 23 23;
-    --app-card:         39 39 42;
-    --app-card-deep:    11 11 11;
-    --app-surface:      26 26 26;
-    --app-elevated:     21 21 21;
-    --app-text:         255 255 255;
-    --app-muted:        156 163 175;
-    --app-subtle:       107 114 128;
-    --app-faint:        75 85 99;
-    --app-border:       255 255 255;
-    --app-hover:        255 255 255;
-    --app-input:        17 17 17;
-    --app-input-border: 63 63 70;
+    --sidebar-background: 0 0% 9%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 83 78% 55%;
+    --sidebar-primary-foreground: 94 100% 6%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 83 78% 55%;
   }
 }
 
@@ -140,18 +71,36 @@ html {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 
+  /* Corta palabras solo si no entran en la línea (sin partir "Musculación" en columnas angostas). */
   :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   pre,
   code {
     overflow-x: auto;
     white-space: pre;
+  }
+
+  /* Foco visible para quien navega con teclado. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Sin animaciones para quien pidió reducir el movimiento en su sistema. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
@@ -160,12 +109,6 @@ html {
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-  html:not(.dark) .shadow-card {
-    box-shadow:
-      0 2px 10px rgba(0, 0, 0, 0.07),
-      0 0 0 1px rgba(0, 0, 0, 0.07),
-      0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   .shadow-btn-lime {
@@ -177,66 +120,11 @@ html {
   .glass-border {
     border: 1px solid rgba(255, 255, 255, 0.07);
   }
-  html:not(.dark) .glass-border {
-    border: 1px solid rgba(0, 0, 0, 0.13);
-  }
 
-  /* Dropdown shadow */
-  .shadow-dropdown {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
-  }
-  .dark .shadow-dropdown {
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-  }
-  html:not(.dark) .shadow-dropdown {
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.10),
-      0 0 0 1px rgba(0, 0, 0, 0.07);
-  }
-
-  /* Light mode: fix invisible opacity-based borders */
-  html:not(.dark) [class*="border-app-border"] {
-    border-color: rgb(0 0 0 / 0.11) !important;
-  }
-  html:not(.dark) [class*="divide-app-border"] > * + * {
-    border-color: rgb(0 0 0 / 0.09) !important;
-  }
-
-  /* Light mode: sidebar and header structural separation */
-  html:not(.dark) aside {
-    box-shadow: 2px 0 16px rgb(0 0 0 / 0.05);
-  }
-  html:not(.dark) header.sticky {
-    box-shadow: 0 2px 12px rgb(0 0 0 / 0.05);
-  }
-
-  /* Light mode: fix dark-shade opacity backgrounds that turn grayish */
-  html:not(.dark) [class*="bg-red-900\/"]   { background-color: rgb(239 68 68 / 0.12) !important; }
-  html:not(.dark) [class*="bg-green-900\/"] { background-color: rgb(34 197 94 / 0.12) !important; }
-
-  /* Light mode: shift accent colors to darker variants for legibility */
-  html:not(.dark) .text-lime-400   { color: #4d7c0f; }
-  html:not(.dark) .text-green-400  { color: #15803d; }
-  html:not(.dark) .text-red-400    { color: #dc2626; }
-  html:not(.dark) .text-amber-400  { color: #b45309; }
-  html:not(.dark) .text-blue-400   { color: #1d4ed8; }
-  html:not(.dark) .text-violet-400 { color: #6d28d9; }
-
-  html:not(.dark) .bg-lime-400     { background-color: #4d7c0f; }
-  html:not(.dark) .bg-green-400    { background-color: #15803d; }
-  html:not(.dark) .bg-red-400      { background-color: #dc2626; }
-  html:not(.dark) .bg-amber-400    { background-color: #b45309; }
-  html:not(.dark) .bg-blue-400     { background-color: #1d4ed8; }
-
-  html:not(.dark) .border-lime-400 { border-color: #4d7c0f; }
-
-  /* Thin scrollbar */
+  /* Thin scrollbar for dark panels */
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-  }
-  html:not(.dark) .scrollbar-thin {
-    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
@@ -248,8 +136,25 @@ html {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 2px;
   }
-  html:not(.dark) .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 2px;
+}
+
+/* Al imprimir un recibo, solo sale el recibo (en blanco y negro). */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+    color: black !important;
+    border-color: lightgray !important;
+  }
+  .print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    background: white;
   }
 }

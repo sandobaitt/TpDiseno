@@ -1,4 +1,23 @@
-export type NovedadType = "incident" | "change" | "normal";
+import { daysAgo } from "./seed";
+
+/**
+ * Tipos de novedad (CU 4 de Personal). "absence" se crea desde la app; la
+ * semilla usa solo los tres tipos que conoce el panel del admin (otro grupo).
+ */
+export type NovedadType = "absence" | "incident" | "change" | "normal";
+
+export const NOVEDAD_TYPE_LABELS: Record<NovedadType, string> = {
+  absence: "Ausencia",
+  incident: "Incidente",
+  change: "Cambio de turno",
+  normal: "General",
+};
+
+export const NOVEDAD_STATUS_LABELS: Record<NovedadStatus, string> = {
+  in_progress: "En curso",
+  resolved: "Resuelta",
+  closed: "Cerrada",
+};
 export type NovedadEntity = "profesor" | "clase";
 export type NovedadStatus = "resolved" | "in_progress" | "closed";
 
@@ -6,71 +25,99 @@ export interface Novedad {
   id: string;
   type: NovedadType;
   entityType: NovedadEntity;
+  /** Id del profesor o del slot de clase vinculado, si se eligió de la lista. */
+  entityId?: string;
   entityName: string;
-  timestamp: string;
+  /** Sede donde ocurrió (el encargado ve solo las de su sede). */
+  branchId: string;
+  timestamp: string; // ISO con hora local
   detail: string;
   status: NovedadStatus;
+  /** Id del usuario que la registró. */
+  createdBy: string;
+  /** Si se avisa al profesor involucrado (le aparece en su campana). */
+  notifyTeacher?: boolean;
+  /** Las novedades no se borran: se anulan con motivo (queda en el historial). */
+  annulled?: { by: string; at: string; reason: string };
 }
 
 export const novedadesMock: Novedad[] = [
   {
     id: "nov_001",
     type: "incident",
-    entityType: "profesor",
-    entityName: "Marcos Rojo (Crossfit AM)",
-    timestamp: "2026-05-13T08:30:00",
+    entityType: "clase",
+    entityId: "sl_c01",
+    entityName: "Musculación · Centro",
+    branchId: "br_001",
+    timestamp: `${daysAgo(1)}T09:15:00`,
     detail:
-      "El profesor reportó que la barra olímpica del rack 3 tiene una deformación en el rodamiento central. Se aisló el equipo y se solicitó orden de reparación.",
-    status: "resolved",
+      "Se cortó el cable de la polea alta. Se dejó fuera de servicio y se pidió la reparación.",
+    status: "in_progress",
+    createdBy: "us_se_001",
   },
   {
     id: "nov_002",
     type: "change",
-    entityType: "clase",
-    entityName: "Spinning PM",
-    timestamp: "2026-05-12T14:15:00",
+    entityType: "profesor",
+    entityId: "tc_007",
+    entityName: "Diego Ferraro",
+    branchId: "br_002",
+    timestamp: `${daysAgo(2)}T11:30:00`,
     detail:
-      "Cambio de horario solicitado por la profesora Laura Giménez. La clase pasa de 18:00 a 19:30 los días martes y jueves por superposición con el torneo de la federación.",
+      "Diego pidió licencia por un trámite personal. Se le pidió a Tomás Ibáñez que cubra el HIIT del viernes 09:00.",
     status: "in_progress",
+    createdBy: "us_en_002",
   },
   {
     id: "nov_003",
     type: "normal",
     entityType: "profesor",
-    entityName: "Lucía Méndez (Yoga)",
-    timestamp: "2026-05-11T10:00:00",
+    entityId: "tc_006",
+    entityName: "Carla Benítez",
+    branchId: "br_002",
+    timestamp: `${daysAgo(5)}T18:00:00`,
     detail:
-      "Se dio de alta a la nueva profesora de yoga con disponibilidad completa en sucursal Belgrano. Certificados y documentación verificada por recursos humanos.",
+      "Carla toma también la clase de Yoga de los jueves 19:30. Documentación verificada.",
     status: "resolved",
+    createdBy: "us_en_002",
   },
   {
     id: "nov_004",
     type: "incident",
     entityType: "clase",
-    entityName: "Funcional Sala 2",
-    timestamp: "2026-05-10T19:45:00",
+    entityId: "sl_c09",
+    entityName: "Zumba · Centro",
+    branchId: "br_001",
+    timestamp: `${daysAgo(9)}T19:40:00`,
     detail:
-      "Filtración de agua en el techo de la sala 2 durante la tormenta. Se evacuó la clase y se cancelaron las actividades hasta nuevo aviso. Mantenimiento ya fue notificado.",
-    status: "in_progress",
+      "Corte de luz durante la clase. Se terminó 20 minutos antes y se avisó a los alumnos.",
+    status: "resolved",
+    createdBy: "us_se_001",
   },
   {
     id: "nov_005",
     type: "change",
-    entityType: "profesor",
-    entityName: "Gonzalo Pérez (Musculación)",
-    timestamp: "2026-05-09T11:30:00",
+    entityType: "clase",
+    entityId: "sl_c03",
+    entityName: "Spinning · Centro",
+    branchId: "br_001",
+    timestamp: `${daysAgo(12)}T10:00:00`,
     detail:
-      "El profesor solicita cambio de sucursal de Palermo a Caballito por razones personales. Se evaluará disponibilidad de cupo en la sede solicitada.",
+      "La clase de los lunes pasa de 19:00 a 19:15 por un cambio de turno de la sala.",
     status: "closed",
+    createdBy: "us_en_001",
   },
   {
     id: "nov_006",
     type: "normal",
-    entityType: "clase",
-    entityName: "HIIT Intensivo",
-    timestamp: "2026-05-08T07:00:00",
+    entityType: "profesor",
+    entityId: "tc_004",
+    entityName: "Valentina Méndez",
+    branchId: "br_001",
+    timestamp: `${daysAgo(16)}T08:30:00`,
     detail:
-      "Nueva clase HIIT agregada a la grilla semanal los lunes, miércoles y viernes a las 7:00 AM. Cupo máximo 20 personas. Instructora a cargo: Valentina Rossi.",
+      "Valentina tiene turno médico el martes. La reemplaza Carla Benítez en Zumba.",
     status: "resolved",
+    createdBy: "us_en_001",
   },
 ];

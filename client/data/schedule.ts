@@ -1,141 +1,48 @@
-export interface GymClass {
+/**
+ * Cronograma semanal: cada clase (o turno de sala) se repite todas las semanas
+ * el mismo día y horario, en una sede y con un profesor asignado.
+ * Las fechas concretas y los reemplazos se calculan en `domain/schedule.ts`.
+ */
+export interface ClassSlot {
   id: string;
-  time: string;
+  activityId: string;
+  branchId: string;
+  teacherId: string;
+  /** 1 = lunes … 7 = domingo */
+  weekday: number;
+  start: string; // "HH:MM"
   durationMin: number;
-  title: string;
-  coach: string;
   capacity: number;
-  booked: number;
-  enrolledStudentIds: string[];
-  isPro?: boolean;
-  isFull?: boolean;
 }
 
-export interface DaySchedule {
-  dayAbbr: string;
-  dayFull: string;
-  date: number;
-  month: string;
-  isActive?: boolean;
-  classes: GymClass[];
-}
+export const scheduleMock: ClassSlot[] = [
+  // ── Sede Centro (br_001) ──
+  { id: "sl_c01", activityId: "ac_musc", branchId: "br_001", teacherId: "tc_001", weekday: 1, start: "08:00", durationMin: 120, capacity: 25 },
+  { id: "sl_c02", activityId: "ac_cross", branchId: "br_001", teacherId: "tc_002", weekday: 1, start: "18:00", durationMin: 60, capacity: 15 },
+  { id: "sl_c03", activityId: "ac_spin", branchId: "br_001", teacherId: "tc_004", weekday: 1, start: "19:15", durationMin: 45, capacity: 18 },
+  { id: "sl_c04", activityId: "ac_func", branchId: "br_001", teacherId: "tc_002", weekday: 2, start: "07:00", durationMin: 60, capacity: 15 },
+  { id: "sl_c05", activityId: "ac_zumba", branchId: "br_001", teacherId: "tc_004", weekday: 2, start: "19:00", durationMin: 60, capacity: 20 },
+  { id: "sl_c06", activityId: "ac_musc", branchId: "br_001", teacherId: "tc_001", weekday: 3, start: "08:00", durationMin: 120, capacity: 25 },
+  { id: "sl_c07", activityId: "ac_cross", branchId: "br_001", teacherId: "tc_002", weekday: 3, start: "18:00", durationMin: 60, capacity: 15 },
+  { id: "sl_c08", activityId: "ac_hiit", branchId: "br_001", teacherId: "tc_001", weekday: 4, start: "07:00", durationMin: 45, capacity: 15 },
+  { id: "sl_c09", activityId: "ac_zumba", branchId: "br_001", teacherId: "tc_004", weekday: 4, start: "19:00", durationMin: 60, capacity: 20 },
+  { id: "sl_c10", activityId: "ac_musc", branchId: "br_001", teacherId: "tc_001", weekday: 5, start: "08:00", durationMin: 120, capacity: 25 },
+  { id: "sl_c11", activityId: "ac_yoga", branchId: "br_001", teacherId: "tc_002", weekday: 5, start: "18:00", durationMin: 60, capacity: 15 },
+  { id: "sl_c12", activityId: "ac_func", branchId: "br_001", teacherId: "tc_002", weekday: 6, start: "10:00", durationMin: 60, capacity: 15 },
 
-export const DAY_NAMES = [
-  { abbr: "LUN", full: "Lunes" },
-  { abbr: "MAR", full: "Martes" },
-  { abbr: "MIE", full: "Miércoles" },
-  { abbr: "JUE", full: "Jueves" },
-  { abbr: "VIE", full: "Viernes" },
-  { abbr: "SAB", full: "Sábado" },
-  { abbr: "DOM", full: "Domingo" },
+  // ── Sede Zona Norte (br_002) ──
+  { id: "sl_n01", activityId: "ac_musc", branchId: "br_002", teacherId: "tc_007", weekday: 1, start: "09:00", durationMin: 120, capacity: 25 },
+  { id: "sl_n02", activityId: "ac_kick", branchId: "br_002", teacherId: "tc_003", weekday: 1, start: "20:00", durationMin: 60, capacity: 15 },
+  { id: "sl_n03", activityId: "ac_musc", branchId: "br_002", teacherId: "tc_001", weekday: 2, start: "18:00", durationMin: 120, capacity: 25 },
+  { id: "sl_n04", activityId: "ac_zumba", branchId: "br_002", teacherId: "tc_006", weekday: 2, start: "20:00", durationMin: 60, capacity: 20 },
+  { id: "sl_n05", activityId: "ac_musc", branchId: "br_002", teacherId: "tc_007", weekday: 3, start: "09:00", durationMin: 120, capacity: 25 },
+  { id: "sl_n06", activityId: "ac_kick", branchId: "br_002", teacherId: "tc_003", weekday: 3, start: "20:00", durationMin: 60, capacity: 15 },
+  { id: "sl_n07", activityId: "ac_func", branchId: "br_002", teacherId: "tc_003", weekday: 4, start: "18:00", durationMin: 60, capacity: 15 },
+  { id: "sl_n08", activityId: "ac_yoga", branchId: "br_002", teacherId: "tc_006", weekday: 4, start: "19:30", durationMin: 60, capacity: 15 },
+  { id: "sl_n09", activityId: "ac_hiit", branchId: "br_002", teacherId: "tc_007", weekday: 5, start: "09:00", durationMin: 45, capacity: 15 },
+  { id: "sl_n10", activityId: "ac_zumba", branchId: "br_002", teacherId: "tc_006", weekday: 6, start: "11:00", durationMin: 60, capacity: 20 },
 ];
 
-export function assignStudentsToClass(
-  classTitle: string,
-  classTime: string,
-  classDayIdx: number,
-  classCapacity: number,
-  students: { id: string; name: string; plan: string; weekSession: string }[],
-  studentBusyAt: Map<string, Set<string>>,
-): { enrolledIds: string[]; presentCount: number } {
-  const isMusculacion = classTitle === "MUSCULACIÓN";
-
-  const candidates = students.filter((s) => {
-    if (isMusculacion) return s.plan === "Musculación";
-    return s.plan === "Pase Libre";
-  });
-
-  const enrolled: string[] = [];
-  for (const s of candidates) {
-    if (enrolled.length >= classCapacity) break;
-    const busy = studentBusyAt.get(s.id);
-    if (busy?.has(`${classDayIdx}_${classTime}`)) continue;
-    if (!busy) studentBusyAt.set(s.id, new Set());
-    studentBusyAt.get(s.id)!.add(`${classDayIdx}_${classTime}`);
-    enrolled.push(s.id);
-  }
-
-  const presentCount = Math.floor(enrolled.length * (0.5 + Math.random() * 0.4));
-  return { enrolledIds: enrolled, presentCount: Math.max(1, presentCount) };
+export function getSlot(slotId: string): ClassSlot | undefined {
+  return scheduleMock.find((s) => s.id === slotId);
 }
-
-export function buildWeekFromWorkoutTypes(
-  baseDate: Date,
-  workoutTypes: { id: string; name: string; isProOnly: boolean; weeklySlots: { days: number[]; time: string; durationMin: number; capacity: number }[] }[],
-  teachers: { fullName: string; specialtyIds: string[]; status: string }[],
-  students?: { id: string; name: string; plan: string; weekSession: string }[],
-): DaySchedule[] {
-  const activeTeachers = teachers.filter((t) => t.status === "active");
-  let classCounter = 0;
-
-  return DAY_NAMES.map((day, dayIdx) => {
-    const d = new Date(baseDate);
-    d.setDate(baseDate.getDate() + dayIdx);
-    const classes: GymClass[] = [];
-    const teacherBusyAt = new Set<string>();
-    const studentBusyAt = new Map<string, Set<string>>();
-
-    for (const wt of workoutTypes) {
-      const slots = wt.weeklySlots.filter((s) => s.days.includes(dayIdx));
-      if (slots.length === 0) continue;
-
-      const candidates = activeTeachers.filter((t) => t.specialtyIds.includes(wt.id));
-      if (candidates.length === 0) continue;
-
-      for (const slot of slots) {
-        const freeTeacher = candidates.find((t) => !teacherBusyAt.has(`${t.fullName}_${slot.time}`));
-        if (!freeTeacher) continue;
-
-        teacherBusyAt.add(`${freeTeacher.fullName}_${slot.time}`);
-
-        let enrolledIds: string[] = [];
-        let presentCount = 0;
-        if (students) {
-          const result = assignStudentsToClass(
-            wt.name.toUpperCase(), slot.time, dayIdx, slot.capacity, students, studentBusyAt,
-          );
-          enrolledIds = result.enrolledIds;
-          presentCount = result.presentCount;
-        }
-
-        classCounter++;
-        classes.push({
-          id: `cls_${String(classCounter).padStart(3, "0")}`,
-          time: slot.time,
-          durationMin: slot.durationMin,
-          title: wt.name.toUpperCase(),
-          coach: freeTeacher.fullName,
-          capacity: slot.capacity,
-          booked: enrolledIds.length,
-          enrolledStudentIds: enrolledIds,
-          isPro: wt.isProOnly || undefined,
-          isFull: enrolledIds.length >= slot.capacity || undefined,
-        });
-      }
-    }
-
-    classes.sort((a, b) => a.time.localeCompare(b.time));
-
-    return {
-      dayAbbr: day.abbr,
-      dayFull: day.full,
-      date: d.getDate(),
-      month: d.toLocaleDateString("es-AR", { month: "short" }).replace(".", "").toUpperCase(),
-      isActive: dayIdx === 1,
-      classes,
-    };
-  });
-}
-
-import { workoutTypesMock } from "./workoutTypes";
-import { teachersMock } from "./teachers";
-import { classStudentsMock } from "./classStudents";
-
-const _BASE_DATE = new Date(2025, 4, 12);
-
-export const weekMock: DaySchedule[] = buildWeekFromWorkoutTypes(
-  _BASE_DATE,
-  workoutTypesMock,
-  teachersMock,
-  classStudentsMock,
-);

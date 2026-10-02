@@ -1,6 +1,20 @@
-export type AppUserRole = "admin" | "alumno" | "profesor" | "secretario";
+export type AppUserRole =
+  | "admin"
+  | "encargado"
+  | "secretario"
+  | "profesor"
+  | "alumno";
 
 export type AppUserStatus = "active" | "inactive";
+
+/** Nombre de cada rol para mostrar en la interfaz. */
+export const ROLE_LABELS: Record<AppUserRole, string> = {
+  admin: "Administrador",
+  encargado: "Encargado",
+  secretario: "Secretaría",
+  profesor: "Profesor",
+  alumno: "Alumno",
+};
 
 export interface AppUser {
   id: string;
@@ -9,6 +23,12 @@ export interface AppUser {
   dni: string;
   role: AppUserRole;
   status: AppUserStatus;
+  /** Sede donde trabaja (encargado y secretaría). El encargado solo ve esta sede. */
+  branchId?: string;
+  /** Alumno vinculado (rol alumno): sus datos se buscan por este id. */
+  clientId?: string;
+  /** Profesor vinculado (rol profesor). */
+  teacherId?: string;
   /**
    * Solo para desarrollo/mocks. No usar en producción.
    */
@@ -39,229 +59,55 @@ export const appUsersMock: AppUser[] = [
     createdAt: "2025-10-15T12:00:00.000Z",
   },
 
-  // Alumno (22)
+  // Encargados de sede (los de la entrevista)
+  {
+    id: "us_en_001",
+    fullName: "Adrián López",
+    email: "encargado1@squatgym.com",
+    dni: "28.400.001",
+    role: "encargado",
+    status: "active",
+    branchId: "br_001",
+    password: "encargado123",
+    createdAt: "2025-08-01T09:00:00.000Z",
+  },
+  {
+    id: "us_en_002",
+    fullName: "Susana García",
+    email: "encargado2@squatgym.com",
+    dni: "28.400.002",
+    role: "encargado",
+    status: "active",
+    branchId: "br_002",
+    password: "encargado123",
+    createdAt: "2025-08-01T09:00:00.000Z",
+  },
+
+  // Alumno (2)
   {
     id: "us_al_001",
-    fullName: "Martina Gómez",
-    email: "martina.gomez@email.com",
+    fullName: "Martín Rodríguez",
+    email: "alumno1@email.com",
     dni: "34.567.890",
     role: "alumno",
     status: "active",
+    clientId: "cl_001",
     password: "alumno123",
     createdAt: "2026-02-12T14:20:00.000Z",
   },
   {
     id: "us_al_002",
-    fullName: "Lucas Ferrari",
-    email: "lucas.ferrari@email.com",
+    fullName: "Laura Gómez",
+    email: "alumno2@email.com",
     dni: "38.123.456",
     role: "alumno",
     status: "active",
+    clientId: "cl_002",
     password: "alumno123",
     createdAt: "2025-11-20T09:05:00.000Z",
   },
-  {
-    id: "us_al_003",
-    fullName: "Valentina Costa",
-    email: "valentina.costa@email.com",
-    dni: "32.987.654",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-01-03T12:00:00.000Z",
-  },
-  {
-    id: "us_al_004",
-    fullName: "Mateo Silva",
-    email: "mateo.silva@email.com",
-    dni: "40.111.222",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-02-28T08:00:00.000Z",
-  },
-  {
-    id: "us_al_005",
-    fullName: "Sofía Rodríguez",
-    email: "sofia.rodriguez@email.com",
-    dni: "36.555.777",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-12-10T11:00:00.000Z",
-  },
-  {
-    id: "us_al_006",
-    fullName: "Julián Torres",
-    email: "julian.torres@email.com",
-    dni: "33.444.111",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-01-18T16:00:00.000Z",
-  },
-  {
-    id: "us_al_007",
-    fullName: "Camila Rivas",
-    email: "camila.rivas@email.com",
-    dni: "31.999.333",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-09-05T07:30:00.000Z",
-  },
-  {
-    id: "us_al_008",
-    fullName: "Facundo Luna",
-    email: "facundo.luna@email.com",
-    dni: "35.222.888",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-03-01T09:30:00.000Z",
-  },
-  {
-    id: "us_al_009",
-    fullName: "Agustín Herrera",
-    email: "agustin.herrera@email.com",
-    dni: "37.777.444",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-04-15T13:00:00.000Z",
-  },
-  {
-    id: "us_al_010",
-    fullName: "Malena Acosta",
-    email: "malena.acosta@email.com",
-    dni: "30.888.555",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-10-22T15:00:00.000Z",
-  },
-  {
-    id: "us_al_011",
-    fullName: "Thiago Medina",
-    email: "thiago.medina@email.com",
-    dni: "39.111.666",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-03-20T10:00:00.000Z",
-  },
-  {
-    id: "us_al_012",
-    fullName: "Isabella Roldán",
-    email: "isabella.roldan@email.com",
-    dni: "34.555.999",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-04-01T12:00:00.000Z",
-  },
-  {
-    id: "us_al_013",
-    fullName: "Benjamín Paz",
-    email: "benjamin.paz@email.com",
-    dni: "32.666.333",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-11-30T08:15:00.000Z",
-  },
-  {
-    id: "us_al_014",
-    fullName: "Emilia Arias",
-    email: "emilia.arias@email.com",
-    dni: "37.444.111",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-12-05T09:00:00.000Z",
-  },
-  {
-    id: "us_al_015",
-    fullName: "Santiago Maldonado",
-    email: "santiago.maldonado@email.com",
-    dni: "35.777.222",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-03-15T14:30:00.000Z",
-  },
-  {
-    id: "us_al_016",
-    fullName: "Francesca Russo",
-    email: "francesca.russo@email.com",
-    dni: "33.111.888",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-02-01T11:00:00.000Z",
-  },
-  {
-    id: "us_al_017",
-    fullName: "Nicolás Ferreyra",
-    email: "nicolas.ferreyra@alumno.com",
-    dni: "31.333.777",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-04-28T10:00:00.000Z",
-  },
-  {
-    id: "us_al_018",
-    fullName: "Zoe Quiroga",
-    email: "zoe.quiroga@email.com",
-    dni: "38.999.444",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-03-10T13:15:00.000Z",
-  },
-  {
-    id: "us_al_019",
-    fullName: "Bautista Lescano",
-    email: "bautista.lescano@email.com",
-    dni: "36.222.555",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-04-10T15:30:00.000Z",
-  },
-  {
-    id: "us_al_020",
-    fullName: "Catalina Palacios",
-    email: "catalina.palacios@email.com",
-    dni: "30.555.666",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2025-08-20T08:00:00.000Z",
-  },
-  {
-    id: "us_al_021",
-    fullName: "Lautaro Navarro",
-    email: "lautaro.navarro@email.com",
-    dni: "39.444.888",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-01-28T09:00:00.000Z",
-  },
-  {
-    id: "us_al_022",
-    fullName: "Brunela Vargas",
-    email: "brunela.vargas@email.com",
-    dni: "34.777.111",
-    role: "alumno",
-    status: "active",
-    password: "alumno123",
-    createdAt: "2026-03-05T11:45:00.000Z",
-  },
 
-  // Profesor (5)
+  // Profesor (2)
   {
     id: "us_pr_001",
     fullName: "Tomás Ibáñez",
@@ -269,6 +115,7 @@ export const appUsersMock: AppUser[] = [
     dni: "33.300.001",
     role: "profesor",
     status: "active",
+    teacherId: "tc_001",
     password: "profe123",
     createdAt: "2025-05-01T10:00:00.000Z",
   },
@@ -279,41 +126,12 @@ export const appUsersMock: AppUser[] = [
     dni: "33.300.002",
     role: "profesor",
     status: "active",
+    teacherId: "tc_002",
     password: "profe123",
     createdAt: "2026-01-22T08:30:00.000Z",
   },
-  {
-    id: "us_pr_003",
-    fullName: "Lautaro Roldán",
-    email: "profe3@squatgym.com",
-    dni: "31.500.789",
-    role: "profesor",
-    status: "active",
-    password: "profe123",
-    createdAt: "2025-11-10T14:00:00.000Z",
-  },
-  {
-    id: "us_pr_004",
-    fullName: "Valentina Méndez",
-    email: "profe4@squatgym.com",
-    dni: "34.888.222",
-    role: "profesor",
-    status: "active",
-    password: "profe123",
-    createdAt: "2026-03-05T09:00:00.000Z",
-  },
-  {
-    id: "us_pr_005",
-    fullName: "Gonzalo Paz",
-    email: "profe5@squatgym.com",
-    dni: "30.111.444",
-    role: "profesor",
-    status: "active",
-    password: "profe123",
-    createdAt: "2024-08-20T11:00:00.000Z",
-  },
 
-  // Secretario (2)
+  // Secretaría (2)
   {
     id: "us_se_001",
     fullName: "Nicolás Ferreyra",
@@ -321,6 +139,7 @@ export const appUsersMock: AppUser[] = [
     dni: "33.210.987",
     role: "secretario",
     status: "active",
+    branchId: "br_001",
     password: "secre123",
     createdAt: "2026-01-05T12:00:00.000Z",
   },
@@ -331,6 +150,7 @@ export const appUsersMock: AppUser[] = [
     dni: "31.222.111",
     role: "secretario",
     status: "active",
+    branchId: "br_002",
     password: "secre123",
     createdAt: "2026-02-20T15:30:00.000Z",
   },
@@ -354,42 +174,67 @@ export const MOCK_SESSION_STORAGE_KEY = "squatgym_mock_session";
 
 export type MockSessionPayload = Pick<
   AppUser,
-  "id" | "fullName" | "email" | "role"
+  "id" | "fullName" | "email" | "role" | "branchId" | "clientId" | "teacherId"
 >;
 
-export function saveMockSession(user: AppUser) {
-  const payload: MockSessionPayload = {
+function toSessionPayload(user: AppUser): MockSessionPayload {
+  return {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    branchId: user.branchId,
+    clientId: user.clientId,
+    teacherId: user.teacherId,
   };
-  localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(payload));
+}
+
+export function saveMockSession(user: AppUser) {
+  localStorage.setItem(
+    MOCK_SESSION_STORAGE_KEY,
+    JSON.stringify({ id: user.id }),
+  );
 }
 
 export function clearMockSession() {
   localStorage.removeItem(MOCK_SESSION_STORAGE_KEY);
 }
 
+/**
+ * Devuelve la sesión actual. En el navegador solo se guarda el id del usuario:
+ * el rol, la sede y los vínculos se toman siempre del registro de usuarios,
+ * así que no se pueden cambiar editando el localStorage.
+ */
 export function getMockSession(): MockSessionPayload | null {
   const raw = localStorage.getItem(MOCK_SESSION_STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as MockSessionPayload;
+    const { id } = JSON.parse(raw) as { id?: string };
+    const user = appUsersMock.find((u) => u.id === id && u.status === "active");
+    return user ? toSessionPayload(user) : null;
   } catch {
     return null;
   }
+}
+
+/** Nombre de quien registró algo (usuario del sistema, pago online o sistema). */
+export function getUserName(userId: string | undefined): string {
+  if (userId === "online") return "Pago online del alumno";
+  if (userId === "alumno") return "El alumno, desde la app";
+  return appUsersMock.find((u) => u.id === userId)?.fullName ?? "Sistema";
 }
 
 export function getPostLoginPath(role: AppUserRole): string {
   switch (role) {
     case "admin":
       return "/admin";
+    case "encargado":
+      return "/encargado/asistencia";
     case "alumno":
       return "/alumno";
     case "profesor":
       return "/profesor/asistencia";
     case "secretario":
-      return "/secretaria";
+      return "/secretaria/alumnos";
   }
 }

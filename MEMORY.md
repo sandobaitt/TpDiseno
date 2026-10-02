@@ -1,0 +1,233 @@
+# MEMORY.md — estado del proyecto
+
+Última actualización: **02/10/2026**, al terminar la etapa E19. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+
+## Decisiones tomadas (y por qué)
+
+| Tema | Decisión | Por qué |
+|---|---|---|
+| Datos compartidos | **Store central en memoria**: Context + `useReducer`, sin dependencias. No se guarda nada entre recargas. | El foco es la navegación, pero los flujos tienen que verse conectados en la demo. Recargar vuelve al estado inicial. |
+| Borradores | Solo los formularios largos guardan borrador en el navegador. | Regla de Wi-Fi inestable: no perder lo cargado. |
+| Mora | Vence el día 5 y bloquea con 15 días de atraso, o sea el día 20. Las constantes van en `client/data/rules.ts`, que se crea en E3. | El escenario dice "15 a 20 días": se tomó 15 y queda configurable. |
+| Estados de cuenta | Al día / Por vencer (días 1–5) / Deudor (días 6–19) / Bloqueado (desde el día 20) / Inactivo. Se **calculan**, no se guardan. | Que el estado nunca quede desactualizado respecto de los pagos. |
+| Cobro | Sin recargos ni intereses. Medios: efectivo, débito, transferencia y QR. El pago online del alumno no ofrece efectivo. | Así lo dice la regla; el código anterior la contradecía. |
+| Bajas | Baja lógica, solo del Admin, con confirmación. Se quita "Eliminar cuenta" del alumno. | CU 11. |
+| Funciones fuera de los CU | Se quitan "Reservar clase", "Visibilidad del perfil" y "Modo silencio". | No figuran en ningún caso de uso. |
+| Encargado | Se crea con los nombres de la entrevista: Adrián López (Centro) y Susana García (Norte). Ve solo su sede. | No existía. |
+| Términos | En la interfaz se dice "alumno", con voseo. Los identificadores del código siguen en inglés. | Coherencia con los CU y con el código existente. |
+| Gestor de paquetes | npm. | Es el del lockfile y los scripts; pnpm no está instalado. |
+| Lo que no se toca | Deploy en Vercel (`server/`, `api/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
+| Restos de la plantilla | Se borraron `netlify/`, `netlify.toml`, `.dockerignore` y la dependencia `serverless-http` (02/10/2026, con OK del grupo). | El deploy es solo en Vercel y el proyecto no usa Docker: no cumplían ninguna función. |
+| Documentación | Se borraron AGENTS.md, ARQUITECTURA_FRONTEND.md y `.builder/`. Se conserva `.agents/rules/frontend.md`, que es para otras herramientas. | Para tener una sola fuente de verdad. |
+| Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan. **Confirmado por el grupo el 02/10/2026:** no se acumulan. |
+| Reactivación | Al reactivar, los meses de baja no se cobran y el mes de regreso es proporcional (como un alta). | El escenario no lo dice. Sin esta regla, un alumno reactivado quedaba con deuda por los meses en que no vino. **Confirmado por el grupo el 02/10/2026.** |
+| Íconos y fuentes | Tabler Icons (`public/vendor/tabler-icons/`) e Inter y Plus Jakarta Sans (`public/fonts/`) se sirven desde el repo, sin CDN. | Con la red lenta los íconos tardaban o no aparecían. Así la app se ve igual sin internet (regla de Wi-Fi inestable). Aprobado el 02/10/2026. |
+| Otros grupos | No se coordina por ahora con Finanzas ni con el panel del admin: se deja como está. | Decisión del grupo, 02/10/2026. Lo que habría que ajustar figura en `docs/COBERTURA_CU.md` (limitaciones). |
+| Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
+| PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
+
+## Estado actual
+
+- Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
+- Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
+- Después del cierre, con las respuestas del grupo:
+  - **E19:** limpieza de la raíz: se borraron los restos de Netlify (`netlify/`, `netlify.toml`, `serverless-http`) y `.dockerignore`. `components.json` (shadcn) ahora apunta a `client/global.css`, que es el archivo real.
+  - **E18:** carpeta `specs/` con una spec por funcionalidad (13 de Alumnos, 6 de Personal y 7 transversales): qué hace, reglas, dónde está (ruta, página, componentes, dominio, datos, store) y cómo se verificó. `npm run specs` controla que todo lo citado exista en el código; se probó con datos falsos y los detecta.
+  - **E17:** ESLint (`npm run lint`) con las reglas recomendadas de JavaScript, TypeScript y hooks de React. Solo es una herramienta de desarrollo: no entra en la app. Deja afuera el deploy y los archivos de otros grupos. Encontró 5 detalles (un import sin usar, un `catch` vacío y tipos vacíos de shadcn) y se corrigieron.
+  - **E16:** promociones sin acumular y reactivación sin cobrar los meses de baja quedan confirmadas. Íconos y fuentes se sirven desde el repo: probado con internet bloqueado, todas nuestras pantallas se ven completas.
+- En E15 se resolvió lo siguiente:
+  - **Cobertura final** (`docs/COBERTURA_CU.md`): los 24 CU con su ruta, cómo se cumplen y en qué etapa, más las limitaciones del prototipo. La línea base del 01/10 quedó en el commit de E0 (`9a3d900`).
+  - **Guion de la defensa** (`docs/GUION_DEFENSA.md`): de 10 a 12 minutos, con un recorrido por rol y las decisiones que conviene explicar.
+  - **README:** cómo correrlo y todos los usuarios de prueba, con qué mirar en cada uno.
+  - **Diagnóstico y plan:** quedan como documentos históricos, con una nota arriba que remite a la cobertura.
+- En E14 se resolvió lo siguiente:
+  - **Carga diferida (`React.lazy`):** el bloque principal bajó de 736 KB a 520 KB (166 KB gzip). Cada pantalla se descarga cuando se usa.
+  - **Dependencias quitadas** (66 paquetes): `three`, `@react-three/fiber`, `@react-three/drei`, `@types/three` y `@tanstack/react-query`. También se sacaron `QueryClientProvider` y el Toaster de Radix, porque se usa sonner.
+  - **Código muerto:** se borró `SystemFooter`. `globales/` pasó a `common/errors/`.
+  - **Textos:** la 404 dice "Esta página no existe" en lugar de jerga, y el acceso rápido del login dice "(DEMO)".
+  - **Revisión final en nuestros módulos:** no quedan `style={{}}`, colores hex, `"use client"`, tuteo ni textos de menos de 11 px. Lo que queda está en pantallas de otros grupos (`Index`, `AdminPanel`).
+- En E13 se resolvió lo siguiente:
+  - **Wi-Fi inestable:** aviso discreto "Sin conexión. Podés seguir: lo que cargues queda guardado en este equipo" y "Volvió la conexión".
+  - **Borradores:** tienen borrador la inscripción, la DDJJ (también en diálogo), la novedad, la observación y la comunicación. Al volver a abrir avisan "Recuperamos…" y sobreviven a una recarga.
+- En E12 se resolvió lo siguiente:
+  - **Novedades (CU 4 y 5):**
+    - tipos Ausencia, Incidente, Cambio de turno y General, vinculados a un profesor o una clase de la sede;
+    - fecha y hora arrancan en "ahora"; borrador guardado;
+    - "Avisarle al profesor": le aparece en su campana (CU 7);
+    - historial con filtros (tipo, estado, fechas y sede para el admin);
+    - **se anulan con motivo**, no se borran.
+  - **Mis horas (CU 6 y 10):**
+    - horas dictadas y programadas por período, sede y clase, con alumnos por clase;
+    - aviso de diferencias con el cronograma;
+    - se borró `horasMock`.
+  - **Diferencias para encargado y admin (CU 10):** "Horas por profesor" en la semana de la sede, con una insignia si faltan horas.
+  - **Observaciones (CU 9):** el profesor las vincula a una clase y fecha. El encargado (su sede) y el admin las ven en "Observaciones".
+  - **Reemplazos (CU 8):** confirmación antes de aceptar o rechazar. Si se rechaza, al encargado de esa sede le llega el aviso "la clase quedó sin cubrir".
+  - **Avisos del encargado:** novedades, reemplazos rechazados, observaciones nuevas y turnos para confirmar.
+- En E11 se resolvió lo siguiente:
+  - **Asistencia de profesores real** (antes era inventada, con fecha de 2023 y KPIs fijos).
+  - **Registrar turnos (CU 1):** secretaría (pestaña "Profesores" de Asistencia) y encargado.
+    - Según el cronograma del día, con los reemplazos.
+    - Presente o ausente, con motivo.
+    - Lo ya confirmado no se toca desde ahí.
+  - **Semana de la sede (CU 2):** programado contra registrado, con KPIs (dictadas, ausencias, sin registrar, para confirmar).
+    - Filtros por profesor y por empleado o contratado.
+    - Las semanas anteriores funcionan como historial.
+  - **Confirmar o corregir (CU 3), solo el encargado:**
+    - confirmar uno por uno o "Confirmar lo registrado";
+    - corregir con motivo obligatorio, conservando el valor anterior;
+    - registrar un turno faltante (queda confirmado).
+  - **Admin:** consulta todas las sedes, sin acciones.
+  - **Semilla:** los turnos de anoche desde las 18 quedan "sin registrar", para la demo.
+  - **Borrados:** `data/adminAttendance.ts`, `AdminShiftCard` y la pestaña vieja de presentismo del personal.
+- En E10 se resolvió lo siguiente:
+  - **Admin, "Alumnos" (CU 11)** en `/admin/alumnos`:
+    - lista con filtros; alta con el mismo formulario de inscripción; ficha única con edición validada;
+    - **baja con motivo** (lista de motivos y detalle) y confirmación;
+    - **reactivación** que no cobra los meses de baja.
+  - **Gestión de personal** quedó solo para el personal (`components/personal/StaffDirectory.tsx`); los alumnos se sacaron de ahí.
+  - **Encargado, "Inscripciones de mi sede" (CU 12)** en `/encargado/inscripciones`:
+    - altas y bajas por mes, gráfico de los últimos 6 meses (con tabla accesible);
+    - por plan, y el detalle con quién inscribió a cada alumno;
+    - solo consulta.
+  - **Menú del admin:** "Dashboard" pasó a llamarse "Inicio".
+- En E9 se resolvió lo siguiente:
+  - **Centro de avisos para todos los roles** (`NotificationBell`):
+    - contador discreto y lista, sin modales;
+    - "marcar como leído": lo leído se guarda en el store, por usuario;
+    - avisos calculados en `domain/notifications.ts`, con tests.
+  - **Qué avisa a cada rol:**
+    - **alumno:** cuota por vencer, vencida y acceso suspendido (CU 10); restricción, DDJJ faltante, documento en revisión, pago registrado y mensajes de secretaría;
+    - **secretaría:** deudores y bloqueados de su sede, documentos para revisar y novedades;
+    - **profesor:** reemplazos pendientes (CU 7 de Personal);
+    - **encargado y admin:** novedades en curso.
+  - **Alumno:**
+    - "Alertas y preferencias" con datos reales; las preferencias se guardan en el navegador;
+    - DDJJ real: es el mismo formulario que el de la inscripción;
+    - certificado subido desde la app: queda "Pendiente de revisión" y secretaría recibe el aviso;
+    - "Mi cuenta" usa el cobro y el recibo compartidos.
+  - **Comunicaciones (CU 14)** en `/secretaria/comunicaciones`:
+    - plantillas;
+    - destinatarios (todos, sede, plan, por vencer, deudores o un alumno) con vista previa y cantidad;
+    - `{nombre}` personalizado, email opcional (simulado) y borrador;
+    - confirmación antes de enviar, e historial con destinatarios.
+- En E8 se resolvió lo siguiente:
+  - **Asistencia por clase y sede (CU 6):**
+    - secretaría elige día, sede y clase; el profesor ve solo sus clases, incluidos los reemplazos;
+    - `ClassRoster`: presente, ausente o justificada, y "marcar presentes a los habilitados";
+    - los bloqueados no se pueden marcar presentes (misma verificación que el CU 13);
+    - se guarda en el store con "Último registro: quién y cuándo";
+    - se corrige hasta 30 días atrás, y el registro dice "Corrigió".
+  - **Mi asistencia (CU 7):** historial con ausencias justificadas y sin justificar, resumen por mes, exportar a CSV e imprimir.
+  - **Mi plan y cronograma (CU 8):** tarjeta del plan, clases incluidas resaltadas y las demás como "No incluida", filtro por sede y "Ver solo las clases de mi plan".
+  - **Limpieza:** se borró `data/classStudents.ts`. Las observaciones del profesor pasaron a `components/personal/ObservationsPanel.tsx` (se completan en E12).
+  - La pestaña "Personal" de Asistencia (`components/personal/StaffAttendanceToday.tsx`) es la pantalla vieja y se reemplaza en E11.
+- En E7 se resolvió lo siguiente:
+  - **Cobro nuevo** (`components/alumnos/payments/`), un solo componente para secretaría y para el pago online del alumno:
+    - se elige cuántas cuotas, de la más vieja a la más nueva, con hasta 6 por adelantado;
+    - medio de pago y promoción o cupón, con el motivo cuando no aplica;
+    - recibo para ver o imprimir.
+  - **Cobros:** lista ordenada por urgencia, KPIs (adeudado y cobrado hoy) y pestaña "Pagos de hoy" con recibos.
+  - **Promociones (CU 9):** `data/promotions.ts` y `domain/promotions.ts` con tests.
+  - **Restricción manual (CU 5):** desde la ficha, con motivo y registro de quién la aplicó. Se ve como "Restringido" en la lista.
+  - **Control de acceso (CU 13)** en `/secretaria/acceso`:
+    - busca por DNI completo (el resultado sale solo) o por nombre;
+    - permite elegir una clase de hoy para controlar el plan;
+    - el resultado se muestra en grande, con botones para cobrar, registrar asistencia y ver la ficha;
+    - muestra los últimos controles.
+- En E6 se resolvió lo siguiente:
+  - **Carpeta `components/alumnos/`:** lista (`StudentsDashboard`, `StudentsTable`, `StudentStats`), inscripción (`enrollment/`), ficha (`profile/`) y DDJJ compartida (`health/`).
+  - **Rutas de secretaría:** `/secretaria` redirige a `/secretaria/alumnos`; la inscripción es `/secretaria/alumnos/nuevo` y la ficha `/secretaria/alumnos/:id`.
+  - **Inscripción en 5 pasos (CU 1):**
+    - DNI y email sin duplicados (avisa apenas se escriben);
+    - menor con adulto responsable y autorización adjunta;
+    - peso, estatura, condiciones y antecedentes;
+    - certificado opcional;
+    - plan, sede y fecha de inicio con la cuota proporcional;
+    - "Registrar e ir a cobrar" abre la ficha con el cobro listo;
+    - borrador guardado.
+  - **Ficha única:** reemplaza a `MemberDetailModal` y `member-detail/`. Tiene estas pestañas:
+    - Resumen: cuenta, habilitación, legajo y contacto;
+    - Datos (edición validada);
+    - Salud y documentos: DDJJ, adjuntar y "Marcar como revisado";
+    - Pagos, con recibo;
+    - Historial: asistencia y registro de actividad.
+  - **Permisos dentro de la ficha:** `studentCapabilities(rol)`. Secretaría edita y cobra, solo el admin da de baja y el encargado solo consulta.
+  - **Inicio de secretaría:** accesos rápidos (Tomar asistencia, Cobrar cuota, Inscribir alumno) y KPIs que filtran la lista.
+  - **Registro de actividad desde la semilla:** cada ficha muestra quién la inscribió, cobró o adjuntó documentos.
+- En E5 se resolvió lo siguiente:
+  - **Tokens de tema oscuro** (los primitivos de `ui/` ya salen oscuros), estados semánticos e Inter por defecto.
+  - **Accesibilidad global:** foco visible y respeto de "reducir movimiento".
+  - **Contraste AA:** los grises pasan a `gray-400` en nuestros módulos.
+  - **Textos legibles:** 11 px como mínimo.
+  - **Componentes compartidos:** `PageHeader`, `StatCard`, `StatusBadge`, `SearchInput`, `SegmentedTabs`, `EmptyState`, `FormField` y `WeekNavigator`.
+  - **Filtros:** `FilterSelect` pasa a ser accesible (Radix).
+  - **Tablas:** `DataTable` se ve como tarjetas por debajo de 1024 px y tiene filas operables con teclado.
+  - **Avisos** en tema oscuro.
+  - **Novedades:** botón visible "Marcar resuelta" (antes solo aparecía con el mouse).
+  - **Reemplazos:** tiene un historial real.
+- En E4 se resolvió lo siguiente:
+  - **Store central en memoria** (`StoreProvider` + `useAppState` + `useStoreActions`), con registro de actividad.
+  - **Flujos conectados**, probados en el navegador:
+    - inscribir → cobrar (recibo con fecha, monto, medio y quién cobró) → el alumno pasa a "Al día";
+    - cobrar desbloquea;
+    - una baja del admin se ve en secretaría;
+    - aceptar un reemplazo cambia el cronograma;
+    - una novedad nueva aparece en la campana.
+  - **Ficha del alumno:** "Guardar cambios" guarda y valida.
+- En E3 se resolvió lo siguiente:
+  - **Mocks coherentes:** 18 alumnos, 7 profesores (empleados y contratados) y 22 clases semanales con sede y profesor reales. Pagos, asistencias y reemplazos se generan relativos a hoy.
+  - **Reglas en `domain/`, con tests:** `billing`, `access`, `schedule` y `hours`.
+  - **Estados calculados:** las pantallas muestran el estado de cuenta calculado, con `AccountStatusBadge`.
+  - **Mi cuenta del alumno real:** sin pagos inventados, con monto adeudado, fecha límite y recibos.
+  - **Cobro:** junta todas las cuotas adeudadas.
+  - **Cronogramas:** semana real; el profesor ve solo sus clases.
+  - **Fechas:** se corrigieron las corridas un día.
+  - **KPIs de secretaría:** se calculan desde los datos.
+  - **Novedades:** guardan sede y autor.
+- En E2 se resolvió lo siguiente:
+  - Rol `encargado`: Adrián López en Centro y Susana García en Norte. Por ahora usa la asistencia del admin y Novedades; el filtro por sede llega en E11.
+  - Sede (`branchId`) en los usuarios de secretaría y encargado.
+  - Vínculo alumno/profesor por id.
+  - Las rutas se controlan por rol (`domain/permissions.ts`), con tests.
+  - Página "No tenés permiso".
+  - La sesión guarda solo el id.
+- En E1 se corrigió lo siguiente:
+  - Cobro sin recargo, con 4 medios y sin efectivo online.
+  - Datos fijos en lugar de aleatorios.
+  - Se borraron las rutas huérfanas.
+  - Desaparece "Deudor $0".
+  - Las bajas son lógicas y piden confirmación.
+  - La inscripción guarda borrador y confirma antes de cerrar.
+  - Las tablas no se cortan en el celular.
+  - Los íconos se cargan una sola vez.
+  - Búsqueda por nombre o DNI.
+  - Un solo cierre de sesión, con confirmación.
+  - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
+  - El login usa una imagen local.
+- **Ya existen** `domain/` y `store/` (`state.ts`, `actions.ts`, `reducer.ts`, `selectors.ts` y `StoreProvider.tsx`). Todas las pantallas de nuestros módulos leen del store.
+- La estructura por módulo quedó completa: `alumnos/`, `personal/`, `common/` (con `errors/`) y `cronograma/` (calendario compartido). Ya no existen `secretaria/`, `member-detail/`, `cobros/`, `novedades/` ni `globales/`.
+- **Helpers disponibles:**
+  - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
+  - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
+- Ya no quedan mocks viejos: todas las pantallas de nuestros módulos usan los datos del store.
+
+## Pendientes
+
+
+## Problemas conocidos (los más graves)
+
+Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
+
+- **Fuera de nuestro alcance (se deja como está):**
+  - `AdminPanel` (otro grupo) usa su propia lista de promociones, distinta de `data/promotions.ts`.
+  - `AdminPanel` solo conoce los tipos de novedad incidente, cambio y general: no muestra ausencias ni anulaciones.
+  - La landing (`pages/Index.tsx`) carga imágenes de `api.builder.io`: sin internet no se ven.
+
+## Lo que no hay que romper
+
+- El login y el acceso rápido: triple clic en "Ingresar".
+- Las rutas actuales de cada rol y sus menús (`data/navigation.ts`).
+- El deploy en Vercel.
+- Las pantallas de otros grupos: `pages/Index.tsx` y las pestañas Información, Finanzas y Kiosco de `pages/AdminPanel.tsx`.
+- `npm run typecheck`, `npm run lint`, `npm test`, `npm run specs` y `npm run build` tienen que pasar en cada commit.

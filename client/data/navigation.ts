@@ -6,15 +6,22 @@ interface RoleNavConfig {
   items: SidebarNavItem[];
 }
 
-const roleNavigation: Record<string, RoleNavConfig> = {
+const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
   secretario: {
     panelName: "secretaría",
     items: [
       {
         id: "members",
-        label: "Gestión de socios",
+        label: "Gestión de alumnos",
         iconClassName: "ti ti-users",
-        to: "/secretaria",
+        to: "/secretaria/alumnos",
+        end: false,
+      },
+      {
+        id: "access",
+        label: "Control de acceso",
+        iconClassName: "ti ti-door-enter",
+        to: "/secretaria/acceso",
       },
       {
         id: "checkins",
@@ -29,10 +36,57 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         to: "/secretaria/cobros",
       },
       {
+        id: "kiosk",
+        label: "Kiosco",
+        iconClassName: "ti ti-shopping-cart",
+        disabled: true,
+      },
+      {
+        id: "comms",
+        label: "Comunicaciones",
+        iconClassName: "ti ti-message",
+        to: "/secretaria/comunicaciones",
+      },
+      {
+        id: "schedule",
+        label: "Cronogramas",
+        iconClassName: "ti ti-calendar",
+        disabled: true,
+      },
+      {
         id: "news",
         label: "Novedades",
         iconClassName: "ti ti-speakerphone",
         to: "/secretaria/novedades",
+      },
+    ],
+  },
+  encargado: {
+    panelName: "encargado de sede",
+    items: [
+      {
+        id: "staff-attendance",
+        label: "Asistencia docente",
+        iconClassName: "ti ti-calendar-check",
+        to: "/encargado/asistencia",
+      },
+      {
+        id: "news",
+        label: "Novedades",
+        iconClassName: "ti ti-speakerphone",
+        to: "/encargado/novedades",
+      },
+      {
+        id: "observations",
+        label: "Observaciones",
+        iconClassName: "ti ti-notes",
+        to: "/encargado/observaciones",
+      },
+      {
+        id: "enrollments",
+        label: "Inscripciones de mi sede",
+        iconClassName: "ti ti-user-plus",
+        to: "/encargado/inscripciones",
       },
     ],
   },
@@ -41,14 +95,21 @@ const roleNavigation: Record<string, RoleNavConfig> = {
     items: [
       {
         id: "dashboard",
-        label: "Dashboard",
+        label: "Inicio",
         iconClassName: "ti ti-dashboard",
         to: "/admin",
       },
       {
+        id: "students",
+        label: "Alumnos",
+        iconClassName: "ti ti-users",
+        to: "/admin/alumnos",
+        end: false,
+      },
+      {
         id: "staff",
         label: "Gestión de personal",
-        iconClassName: "ti ti-users",
+        iconClassName: "ti ti-briefcase",
         to: "/admin/personal",
       },
       {
@@ -63,6 +124,12 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         iconClassName: "ti ti-speakerphone",
         to: "/admin/novedades",
       },
+      {
+        id: "observations",
+        label: "Observaciones de profesores",
+        iconClassName: "ti ti-notes",
+        to: "/admin/observaciones",
+      },
     ],
   },
   alumno: {
@@ -70,7 +137,7 @@ const roleNavigation: Record<string, RoleNavConfig> = {
     items: [
       {
         id: "schedule",
-        label: "Cronograma de clases",
+        label: "Mi plan y cronograma",
         iconClassName: "ti ti-calendar",
         to: "/alumno/cronograma",
       },
@@ -98,20 +165,20 @@ const roleNavigation: Record<string, RoleNavConfig> = {
     panelName: "profesor",
     items: [
       {
-        id: "students",
-        label: "Asistencia y alumnos",
-        iconClassName: "ti ti-users",
-        to: "/profesor/asistencia",
-      },
-      {
         id: "schedule",
         label: "Cronograma",
         iconClassName: "ti ti-calendar",
         to: "/profesor/cronograma",
       },
       {
+        id: "students",
+        label: "Asistencia y alumnos",
+        iconClassName: "ti ti-users",
+        to: "/profesor/asistencia",
+      },
+      {
         id: "replacements",
-        label: "Reemplazos y novedades",
+        label: "Reemplazos",
         iconClassName: "ti ti-arrows-exchange",
         to: "/profesor/reemplazos",
       },
@@ -125,10 +192,11 @@ const roleNavigation: Record<string, RoleNavConfig> = {
   },
 };
 
+const EMPTY_NAV: RoleNavConfig = { panelName: "", items: [] };
+
+/** Menú del rol. Un rol desconocido no recibe ningún ítem (antes caía en el de secretaría). */
 export function getNavigationByRole(role?: string): RoleNavConfig {
-  const normalized = role === "secretaria" ? "secretario" : role;
-  if (normalized && normalized in roleNavigation) {
-    return roleNavigation[normalized];
-  }
-  return roleNavigation.secretario;
+  return role && role in roleNavigation
+    ? roleNavigation[role as AppUserRole]
+    : EMPTY_NAV;
 }
