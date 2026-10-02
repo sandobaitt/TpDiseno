@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { novedadesMock, type Novedad } from "@/data/novedades";
+import type { Novedad } from "@/data/novedades";
+import { useAppState } from "@/store/StoreProvider";
 import { getMockSession, clearMockSession, ROLE_LABELS, type AppUserRole } from "@/data/users";
 
 function getInitials(fullName: string): string {
@@ -43,10 +44,6 @@ const NOVEDADES_ROUTE: Partial<Record<AppUserRole, string>> = {
   secretario: "/secretaria/novedades",
 };
 
-const recentNovedades = [...novedadesMock]
-  .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-  .slice(0, 4);
-
 interface HeaderProps {
   nav: string;
   title: string;
@@ -63,8 +60,14 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
   const roleStyle = ROLE_STYLE[role];
   const initials = session ? getInitials(session.fullName) : "?";
   const hasNovedades = role in NOVEDADES_ROUTE;
+  // Novedades del store: las nuevas aparecen enseguida. Encargado y secretaría ven solo las de su sede.
+  const { novedades } = useAppState();
+  const visibleNovedades = session?.branchId ? novedades.filter((n) => n.branchId === session.branchId) : novedades;
+  const recentNovedades = [...visibleNovedades]
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+    .slice(0, 4);
   const inProgressCount = hasNovedades
-    ? novedadesMock.filter((n) => n.status === "in_progress").length
+    ? visibleNovedades.filter((n) => n.status === "in_progress").length
     : 0;
 
   const [bellOpen, setBellOpen] = React.useState(false);

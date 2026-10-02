@@ -2,19 +2,18 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { MemberDetail } from "@/components/member-detail/MemberDetail";
-import type { Client } from "@/data/clients";
 import { getPlan } from "@/data/plans";
 import { PAYMENT_METHOD_LABELS } from "@/data/payments";
 import { branchesMock } from "@/data/branches";
 import { toast } from "sonner";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { formatDateShort, parseISODate } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
+import { onlyDigits } from "@/lib/format";
 import { selectAccount, selectClientPayments } from "@/store/selectors";
 
 interface MemberDetailModalProps {
   clientId: string | null;
-  extraClients?: Client[];
   onClose: () => void;
 }
 
@@ -46,7 +45,9 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
   );
 }
 
-export function MemberDetailModal({ clientId, extraClients = [], onClose }: MemberDetailModalProps) {
+export function MemberDetailModal({ clientId, onClose }: MemberDetailModalProps) {
+  const state = useAppState();
+  const actions = useStoreActions();
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
@@ -57,14 +58,13 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
   const [editPhone, setEditPhone] = React.useState("");
   const [editBranchId, setEditBranchId] = React.useState("");
 
-  const allClients = [...extraClients, ...seedState.clients];
-  const client = clientId ? allClients.find((c) => c.id === clientId) : undefined;
+  const client = clientId ? state.clients.find((c) => c.id === clientId) : undefined;
   const clientPlan = getPlan(client?.planId);
   // Estado de cuenta calculado con las reglas de cobro (deuda real, sin montos inventados).
-  const account = client ? selectAccount(seedState, client) : undefined;
+  const account = client ? selectAccount(state, client) : undefined;
 
   const transactions = client
-    ? selectClientPayments(seedState, client.id).map((p) => ({
+    ? selectClientPayments(state, client.id).map((p) => ({
         id: p.id,
         type: (p.status === "approved" ? "payment" : "unpaid") as "payment" | "unpaid",
         title: p.description || p.concept,
@@ -87,7 +87,21 @@ export function MemberDetailModal({ clientId, extraClients = [], onClose }: Memb
   }
 
   function handleSave() {
-    toast.success("Perfil actualizado");
+    if (!client) return;
+    // Validaciones mínimas antes de guardar en el store.
+    if (!editName.trim()) return toast.error("El nombre no puede quedar vacío.");
+    if (!/^\S+@\S+\.\S+$/.test(editEmail.trim())) return toast.error("Revisá el email: no parece válido.");
+    if (onlyDigits(editDni).length < 7) return toast.error("Revisá el DNI: tiene que tener al menos 7 números.");
+    const duplicated = state.clients.some((c) => c.id !== client.id && onlyDigits(c.dni) === onlyDigits(editDni));
+    if (duplicated) return toast.error("Ya hay otro alumno con ese DNI.");
+    actions.updateClient(client.id, {
+      fullName: editName.trim(),
+      email: editEmail.trim(),
+      dni: editDni.trim(),
+      phone: editPhone.trim() || undefined,
+      branchId: editBranchId,
+    });
+    toast.success("Datos del alumno actualizados");
     setEditing(false);
     setEditOpen(false);
   }

@@ -217,6 +217,12 @@ export function getMockSession(): MockSessionPayload | null {
   }
 }
 
+/** Nombre de quien registró algo (usuario del sistema, pago online o sistema). */
+export function getUserName(userId: string | undefined): string {
+  if (userId === "online") return "Pago online del alumno";
+  return appUsersMock.find((u) => u.id === userId)?.fullName ?? "Sistema";
+}
+
 export function getPostLoginPath(role: AppUserRole): string {
   switch (role) {
     case "admin":

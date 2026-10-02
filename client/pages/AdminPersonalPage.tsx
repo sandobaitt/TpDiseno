@@ -14,7 +14,8 @@ import { getPlan, plansMock } from "@/data/plans";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
 import { formatDateShort, todayISO } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
+import { onlyDigits } from "@/lib/format";
 import { selectAccount } from "@/store/selectors";
 import { FilterSelect } from "@/components/common/FilterSelect";
 import { matchesPersonSearch } from "@/lib/format";
@@ -58,7 +59,10 @@ export default function AdminPersonalPage() {
   const [studentPage, setStudentPage] = React.useState(1);
 
   const [staffList, setStaffList] = React.useState<Employee[]>(employeesMock);
-  const [studentList, setStudentList] = React.useState<Client[]>(seedState.clients);
+  const state = useAppState();
+  const actions = useStoreActions();
+  // Los alumnos salen del store: una baja acá se ve también en la pantalla de secretaría.
+  const studentList = state.clients;
 
   // Search & filters
   const [search, setSearch] = React.useState("");
@@ -68,9 +72,8 @@ export default function AdminPersonalPage() {
 
   const [selectedEmployee, setSelectedEmployee] =
     React.useState<Employee | null>(null);
-  const [selectedClient, setSelectedClient] = React.useState<Client | null>(
-    null,
-  );
+  const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+  const selectedClient = studentList.find((c) => c.id === selectedClientId) ?? null;
   const [editing, setEditing] = React.useState(false);
   // Confirmación de baja (lógica): qué registro se quiere dar de baja.
   const [pendingDeactivation, setPendingDeactivation] = React.useState<"employee" | "client" | null>(null);
@@ -101,7 +104,7 @@ export default function AdminPersonalPage() {
     return studentList.filter((cli) => {
       const matchesSearch = matchesPersonSearch(search, { name: cli.fullName, dni: cli.dni, email: cli.email });
       const matchesPlan = !filterPlan || cli.planId === filterPlan;
-      const matchesStatus = !filterStatus || selectAccount(seedState, cli).status === filterStatus;
+      const matchesStatus = !filterStatus || selectAccount(state, cli).status === filterStatus;
       return matchesSearch && matchesPlan && matchesStatus;
     });
   }, [studentList, search, filterPlan, filterStatus]);
@@ -119,7 +122,7 @@ export default function AdminPersonalPage() {
 
   function openEmployee(emp: Employee) {
     setSelectedEmployee(emp);
-    setSelectedClient(null);
+    setSelectedClientId(null);
     setEditing(false);
     setEditName(emp.fullName);
     setEditEmail(emp.email);
@@ -130,7 +133,7 @@ export default function AdminPersonalPage() {
   }
 
   function openClient(cli: Client) {
-    setSelectedClient(cli);
+    setSelectedClientId(cli.id);
     setSelectedEmployee(null);
     setEditing(false);
     setEditClientName(cli.fullName);
@@ -142,7 +145,7 @@ export default function AdminPersonalPage() {
 
   function closeDialog() {
     setSelectedEmployee(null);
-    setSelectedClient(null);
+    setSelectedClientId(null);
     setEditing(false);
   }
 
@@ -191,32 +194,19 @@ export default function AdminPersonalPage() {
 
   function handleEditClient() {
     if (!selectedClient) return;
-    setStudentList((prev) =>
-      prev.map((c) =>
-        c.id === selectedClient.id
-          ? {
-              ...c,
-              fullName: editClientName,
-              email: editClientEmail,
-              dni: editClientDni,
-              phone: editClientPhone || undefined,
-              branchId: editClientBranchId,
-            }
-          : c,
-      ),
-    );
-    setSelectedClient((prev) =>
-      prev
-        ? {
-            ...prev,
-            fullName: editClientName,
-            email: editClientEmail,
-            dni: editClientDni,
-            phone: editClientPhone || undefined,
-            branchId: editClientBranchId,
-          }
-        : null,
-    );
+    if (!editClientName.trim()) return toast.error("El nombre no puede quedar vacío.");
+    if (!/^\S+@\S+\.\S+$/.test(editClientEmail.trim())) return toast.error("Revisá el email: no parece válido.");
+    if (onlyDigits(editClientDni).length < 7) return toast.error("Revisá el DNI: tiene que tener al menos 7 números.");
+    if (studentList.some((c) => c.id !== selectedClient.id && onlyDigits(c.dni) === onlyDigits(editClientDni))) {
+      return toast.error("Ya hay otro alumno con ese DNI.");
+    }
+    actions.updateClient(selectedClient.id, {
+      fullName: editClientName.trim(),
+      email: editClientEmail.trim(),
+      dni: editClientDni.trim(),
+      phone: editClientPhone.trim() || undefined,
+      branchId: editClientBranchId,
+    });
     setEditing(false);
     toast.success("Alumno actualizado");
   }
@@ -224,12 +214,8 @@ export default function AdminPersonalPage() {
   /** Baja lógica: el alumno queda inactivo y conserva su historial de pagos y asistencias. */
   function setClientStatus(status: ClientStatus) {
     if (!selectedClient) return;
-    const changes: Partial<Client> =
-      status === "inactive"
-        ? { status, deactivatedAt: todayISO(), deactivationReason: "Baja registrada por administración." }
-        : { status, deactivatedAt: undefined, deactivationReason: undefined };
-    setStudentList((prev) => prev.map((c) => (c.id === selectedClient.id ? { ...c, ...changes } : c)));
-    setSelectedClient((prev) => (prev ? { ...prev, ...changes } : null));
+    if (status === "inactive") actions.deactivateClient(selectedClient.id, "Baja registrada por administración.");
+    else actions.reactivateClient(selectedClient.id);
     toast.success(status === "inactive" ? "Alumno dado de baja" : "Alumno reactivado");
   }
 
@@ -441,7 +427,7 @@ export default function AdminPersonalPage() {
                   <span className="text-gray-500 text-[10px] hidden md:block">
                     {plan?.name ?? "Sin plan"}
                   </span>
-                  <AccountStatusBadge status={selectAccount(seedState, cli).status} />
+                  <AccountStatusBadge status={selectAccount(state, cli).status} />
                   <i className="ti ti-chevron-right text-gray-600 text-sm group-hover:text-gray-400 transition-colors" />
                 </button>
               );
@@ -589,7 +575,7 @@ export default function AdminPersonalPage() {
                                       {clientPlan.name}
                                     </span>
                                   )}
-                                  <AccountStatusBadge status={selectAccount(seedState, selectedClient).status} />
+                                  <AccountStatusBadge status={selectAccount(state, selectedClient).status} />
                                 </div>
                               )}
                             </div>

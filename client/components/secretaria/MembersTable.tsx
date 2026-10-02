@@ -2,13 +2,12 @@ import * as React from "react";
 import { DataTable } from "../common/DataTable";
 import { Pagination } from "../common/Pagination";
 import { FilterSelect } from "../common/FilterSelect";
-import type { Client } from "@/data/clients";
 import { getPlan, plansMock } from "@/data/plans";
 import { MemberDetailModal } from "./MemberDetailModal";
 import { matchesPersonSearch } from "@/lib/format";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
 import { selectAccount, selectLastAccess } from "@/store/selectors";
 
 interface Member {
@@ -26,13 +25,13 @@ interface Member {
 
 interface MembersTableProps {
   className?: string;
-  extraClients?: Client[];
   onAddClick?: () => void;
 }
 
 const ITEMS_PER_PAGE = 8;
 
-export function MembersTable({ className = "", extraClients = [], onAddClick }: MembersTableProps) {
+export function MembersTable({ className = "", onAddClick }: MembersTableProps) {
+  const state = useAppState();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
   const [filterStatus, setFilterStatus] = React.useState("");
@@ -89,7 +88,7 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
     return `${day}, ${time}`;
   };
 
-  const allMembers: Member[] = [...extraClients, ...seedState.clients].map((client, index) => {
+  const allMembers: Member[] = state.clients.map((client, index) => {
     const style = initialsStyles[index % initialsStyles.length];
 
     return {
@@ -99,8 +98,8 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
       dni: client.dni,
       plan: getPlan(client.planId)?.name ?? "-",
       // El estado se calcula a partir de los pagos (no se guarda a mano).
-      status: selectAccount(seedState, client).status,
-      lastAccess: formatLastAccess(selectLastAccess(seedState, client.id)),
+      status: selectAccount(state, client).status,
+      lastAccess: formatLastAccess(selectLastAccess(state, client.id)),
       initials: getInitials(client.fullName),
       ...style,
     };
@@ -260,7 +259,6 @@ export function MembersTable({ className = "", extraClients = [], onAddClick }: 
 
       <MemberDetailModal
         clientId={selectedClientId}
-        extraClients={extraClients}
         onClose={() => setSelectedClientId(null)}
       />
     </section>

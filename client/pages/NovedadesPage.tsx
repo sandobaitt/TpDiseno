@@ -1,31 +1,27 @@
-import * as React from "react";
 import { NovedadesSidebar } from "@/components/novedades/NovedadesSidebar";
 import { NovedadesHistory } from "@/components/novedades/NovedadesHistory";
-import { novedadesMock, type Novedad } from "@/data/novedades";
+import { getMockSession } from "@/data/users";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
 
 export default function NovedadesPage() {
-  const [novedades, setNovedades] = React.useState<Novedad[]>(novedadesMock);
-
-  function handleAdd(novedad: Novedad) {
-    setNovedades((prev) => [novedad, ...prev]);
-  }
-
-  function handleResolve(id: string) {
-    setNovedades((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, status: "resolved" } : n)),
-    );
-  }
-
-  function handleDelete(id: string) {
-    setNovedades((prev) => prev.filter((n) => n.id !== id));
-  }
+  const { novedades } = useAppState();
+  const actions = useStoreActions();
+  // El encargado (y la secretaría) ven solo las novedades de su sede; el admin ve todas.
+  const branchId = getMockSession()?.branchId;
+  const visible = branchId
+    ? novedades.filter((n) => n.branchId === branchId)
+    : novedades;
 
   return (
     <div className="px-7 pb-7 max-sm:px-4">
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          <NovedadesSidebar onAdd={handleAdd} />
-          <NovedadesHistory novedades={novedades} onResolve={handleResolve} onDelete={handleDelete} />
-        </div>
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <NovedadesSidebar onAdd={actions.addNovedad} />
+        <NovedadesHistory
+          novedades={visible}
+          onResolve={actions.resolveNovedad}
+          onDelete={actions.removeNovedad}
+        />
       </div>
+    </div>
   );
 }

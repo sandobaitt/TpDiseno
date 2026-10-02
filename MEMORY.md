@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **01/10/2026**, al terminar la etapa E3. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **01/10/2026**, al terminar la etapa E4. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,7 +23,16 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E3 terminadas**. Sigue **E4**: store central en memoria.
+- Fase 3: **E0 a E4 terminadas**. Sigue **E5**: base visual (tokens, primitivos y componentes compartidos).
+- En E4 se resolvió lo siguiente:
+  - **Store central en memoria** (`StoreProvider` + `useAppState` + `useStoreActions`), con registro de actividad.
+  - **Flujos conectados**, probados en el navegador:
+    - inscribir → cobrar (recibo con fecha, monto, medio y quién cobró) → el alumno pasa a "Al día";
+    - cobrar desbloquea;
+    - una baja del admin se ve en secretaría;
+    - aceptar un reemplazo cambia el cronograma;
+    - una novedad nueva aparece en la campana.
+  - **Ficha del alumno:** "Guardar cambios" guarda y valida.
 - En E3 se resolvió lo siguiente:
   - **Mocks coherentes:** 18 alumnos, 7 profesores (empleados y contratados) y 22 clases semanales con sede y profesor reales. Pagos, asistencias y reemplazos se generan relativos a hoy.
   - **Reglas en `domain/`, con tests:** `billing`, `access`, `schedule` y `hours`.
@@ -54,7 +63,7 @@
   - Un solo cierre de sesión, con confirmación.
   - Se quitaron "Reservar", "Eliminar cuenta", "Visibilidad del perfil" y "Modo silencio".
   - El login usa una imagen local.
-- **Ya existen** `domain/` y `store/` (`state.ts` + `selectors.ts`). Por ahora las pantallas leen `seedState`, que es de solo lectura; en E4 pasan a leer el store.
+- **Ya existen** `domain/` y `store/` (`state.ts`, `actions.ts`, `reducer.ts`, `selectors.ts` y `StoreProvider.tsx`). Todas las pantallas de nuestros módulos leen del store.
 - `components/alumnos/` y `components/personal/` todavía **no existen**. Las carpetas viejas siguen en uso: `secretaria/`, `member-detail/`, `cobros/`, `cronograma/`, `novedades/` y `globales/`.
 - **Helpers disponibles:**
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
@@ -74,7 +83,6 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- El cobro todavía no registra el pago ni emite recibo (C3). El recargo ya se quitó.
 - En las columnas angostas del cronograma, las palabras largas se parten ("Musculació n") por la regla global `overflow-wrap: anywhere` de `global.css`. Se revisa en E5.
 - Los avisos (toasts) y algunos diálogos se ven en tema claro hasta que se apliquen los tokens oscuros (E5).
 - Radix avisa que varios diálogos no tienen título accesible. Se corrige al rehacer cada pantalla.

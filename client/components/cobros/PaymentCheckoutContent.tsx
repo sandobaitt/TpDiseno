@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { getPlan } from "@/data/plans";
 import { PAYMENT_METHOD_LABELS, type PaymentMethod } from "@/data/payments";
 import { formatARS } from "@/lib/format";
-import { addMonths, formatDate, formatPeriod, toPeriod, todayISO } from "@/lib/dates";
+import { addMonths, formatDate, formatDateTime, formatPeriod, toPeriod, todayISO } from "@/lib/dates";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { dueDateFor } from "@/domain/billing";
-import { seedState } from "@/store/state";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
+import { getUserName } from "@/data/users";
+import type { Payment } from "@/data/payments";
 import { selectAccount } from "@/store/selectors";
 import {
   AlertDialog,
@@ -64,7 +66,11 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
   const [promoId, setPromoId] = React.useState("none");
   const [promoOpen, setPromoOpen] = React.useState(false);
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [paid, setPaid] = React.useState(false);
+  // Pago recién registrado (para mostrar su recibo).
+  const [paidPayment, setPaidPayment] = React.useState<Payment | null>(null);
+  const paid = paidPayment !== null;
+  const state = useAppState();
+  const actions = useStoreActions();
   const promoRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -77,12 +83,12 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [promoOpen]);
 
-  const client = seedState.clients.find((c) => c.id === clientId);
+  const client = state.clients.find((c) => c.id === clientId);
   const plan = getPlan(client?.planId);
 
   if (!client) return null;
 
-  const account = selectAccount(seedState, client);
+  const account = selectAccount(state, client);
   const isDebtor = account.status === "deudor" || account.status === "bloqueado";
   // Se cobran todas las cuotas adeudadas. Si está al día, puede adelantar el mes siguiente.
   // Regla de negocio: no hay intereses ni recargos por mora.
@@ -98,12 +104,25 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
   const total = subtotal - discountAmt;
 
   function handlePay() { setDialogOpen(true); }
-  function handleConfirm() { setPaid(true); }
+  function handleConfirm() {
+    // Queda registrado en el store: cambia el estado de cuenta y la habilitación en todas las pantallas.
+    const payment = actions.registerPayment({
+      clientId: client!.id,
+      periods: charges.map((c) => c.period),
+      subtotalArs: subtotal,
+      discountArs: discountAmt,
+      promoId: activePromo.id !== "none" ? activePromo.id : undefined,
+      method: selectedPayment,
+      online: alumnoMode,
+      description: `Cuota${charges.length > 1 ? "s" : ""} ${charges.map((c) => formatPeriod(c.period)).join(", ")} · ${plan?.name ?? ""}`,
+    });
+    setPaidPayment(payment);
+  }
 
   function handleClose() {
     if (paid) {
       setDialogOpen(false);
-      setPaid(false);
+      setPaidPayment(null);
       if (onClose) { onClose(); } else { navigate(-1); }
     } else {
       setDialogOpen(false);
@@ -368,12 +387,25 @@ export function PaymentCheckoutContent({ clientId, onClose, alumnoMode = false }
                   </div>
                   <AlertDialogTitle className="text-white text-xl">Pago registrado</AlertDialogTitle>
                   <AlertDialogDescription asChild>
-                    <div className="flex flex-col items-center gap-1">
-                      <p className="text-gray-400 text-sm">
-                        El pago de{" "}
-                        <span className="text-white font-semibold">{formatARS(total)}</span>{" "}
-                        fue registrado correctamente.
-                      </p>
+                    <div className="flex w-full flex-col gap-3">
+                      <p className="text-gray-300 text-sm">Recibo digital {paidPayment?.receiptNumber}</p>
+                      {paidPayment && (
+                        <dl className="w-full rounded-xl bg-neutral-800 p-4 text-left text-sm">
+                          {[
+                            ["Alumno", client.fullName],
+                            ["Período", paidPayment.periods.map((p) => formatPeriod(p)).join(", ")],
+                            ["Monto", formatARS(paidPayment.amountArs)],
+                            ["Medio de pago", PAYMENT_METHOD_LABELS[paidPayment.method]],
+                            ["Fecha", formatDateTime(paidPayment.createdAt)],
+                            ["Registrado por", getUserName(paidPayment.processedBy)],
+                          ].map(([label, value]) => (
+                            <div key={label} className="flex justify-between gap-4 py-1">
+                              <dt className="text-gray-400">{label}</dt>
+                              <dd className="text-right font-semibold text-white">{value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      )}
                     </div>
                   </AlertDialogDescription>
                 </div>

@@ -7,7 +7,9 @@ import { getTeacher } from "@/data/teachers";
 import { getMockSession } from "@/data/users";
 import { branchName } from "@/components/cronograma/weekView";
 import { addMinutesToTime, parseISODate } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
+import type { AppState } from "@/store/state";
+import { toast } from "sonner";
 
 type TabId = "solicitudes" | "novedades";
 
@@ -22,8 +24,8 @@ interface ReplacementRequest {
 }
 
 /** Pedidos pendientes en los que el profesor logueado es el candidato. */
-function buildRequests(teacherId: string | undefined): ReplacementRequest[] {
-  return seedState.replacements
+function buildRequests(state: AppState, teacherId: string | undefined): ReplacementRequest[] {
+  return state.replacements
     .filter((r) => r.status === "pending" && r.candidateTeacherId === teacherId)
     .map((r) => {
       const slot = getSlot(r.slotId);
@@ -44,18 +46,24 @@ const ITEMS_PER_PAGE = 2;
 export default function ProfesorReemplazosPage() {
   const [activeTab, setActiveTab] = React.useState<TabId>("solicitudes");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [requests, setRequests] = React.useState(() => buildRequests(getMockSession()?.teacherId));
+  const state = useAppState();
+  const actions = useStoreActions();
+  // Pedidos pendientes para este profesor: al responder, desaparecen solos de la lista.
+  const requests = React.useMemo(() => buildRequests(state, getMockSession()?.teacherId), [state]);
 
   const totalPages = Math.ceil(requests.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedRequests = requests.slice(start, start + ITEMS_PER_PAGE);
 
+  // Aceptar cambia el cronograma y suma las horas al reemplazante (lo calcula domain/schedule y domain/hours).
   const handleConfirm = (id: string) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+    actions.respondReplacement(id, true);
+    toast.success("Reemplazo aceptado: ya figura en tu cronograma.");
   };
 
   const handleReject = (id: string) => {
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+    actions.respondReplacement(id, false);
+    toast.info("Reemplazo rechazado. Le avisamos al encargado.");
   };
 
   return (

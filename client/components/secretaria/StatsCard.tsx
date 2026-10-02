@@ -1,5 +1,5 @@
 import type { Client } from "@/data/clients";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
 import { selectAccount } from "@/store/selectors";
 
 interface StatCardProps {
@@ -43,8 +43,9 @@ interface StatsCardsProps {
 
 /** Resumen calculado con los datos reales (antes eran números fijos). */
 export function StatsCards({ className = "", clients }: StatsCardsProps) {
+  const state = useAppState();
   const active = clients.filter((c) => c.status === "active");
-  const statuses = active.map((c) => selectAccount(seedState, c).status);
+  const statuses = active.map((c) => selectAccount(state, c).status);
   const count = (...wanted: string[]) =>
     statuses.filter((s) => wanted.includes(s)).length;
 

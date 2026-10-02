@@ -6,7 +6,7 @@ import { classStudentsMock, type ClassStudent } from "@/data/classStudents";
 import type { Bitacora } from "@/data/bitacoras";
 import { getMockSession } from "@/data/users";
 import { getTeacher } from "@/data/teachers";
-import { seedState } from "@/store/state";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
 
 type AttendanceStatus = "present" | "absent" | null;
 
@@ -24,10 +24,10 @@ export default function ProfesorAsistenciaPage() {
     Record<string, AttendanceStatus>
   >({});
   const teacherId = getMockSession()?.teacherId;
-  // Cada profesor ve sus propias observaciones.
-  const [bitacoras, setBitacoras] = React.useState<Bitacora[]>(() =>
-    seedState.bitacoras.filter((b) => b.teacherId === teacherId),
-  );
+  const state = useAppState();
+  const actions = useStoreActions();
+  // Cada profesor ve sus propias observaciones (el encargado las verá en su panel).
+  const bitacoras = state.bitacoras.filter((b) => b.teacherId === teacherId);
   const [selectedBitacora, setSelectedBitacora] =
     React.useState<Bitacora | null>(null);
   const [showForm, setShowForm] = React.useState(false);
@@ -67,7 +67,7 @@ export default function ProfesorAsistenciaPage() {
       studentName: formStudent || undefined,
       createdAt: new Date().toISOString(),
     };
-    setBitacoras((prev) => [newBitacora, ...prev]);
+    actions.addBitacora(newBitacora);
     setShowForm(false);
     setFormTitle("");
     setFormContent("");

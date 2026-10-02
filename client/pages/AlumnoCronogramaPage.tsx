@@ -9,10 +9,11 @@ import {
 import { scheduleMock } from "@/data/schedule";
 import { sessionsBetween } from "@/domain/schedule";
 import { addDays, startOfWeek, todayISO } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
 
 export default function AlumnoCronogramaPage() {
   const today = todayISO();
+  const { replacements } = useAppState();
   const [weekStart, setWeekStart] = React.useState(() => startOfWeek(today));
   const [activeDate, setActiveDate] = React.useState(today);
 
@@ -22,9 +23,9 @@ export default function AlumnoCronogramaPage() {
         weekStart,
         addDays(weekStart, 6),
         scheduleMock,
-        seedState.replacements,
+        replacements,
       ),
-    [weekStart],
+    [weekStart, replacements],
   );
   const days = buildWeekDays(weekStart, activeDate);
 

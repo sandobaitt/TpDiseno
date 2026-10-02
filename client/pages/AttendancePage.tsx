@@ -4,7 +4,8 @@ import { FilterSelect } from "@/components/common/FilterSelect";
 import { getPlan } from "@/data/plans";
 import { AccountStatusBadge } from "@/components/common/AccountStatusBadge";
 import { ACCOUNT_STATUS_LABELS, type AccountStatus } from "@/domain/billing";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
+import type { AppState } from "@/store/state";
 import { selectAccount } from "@/store/selectors";
 import { employeesMock } from "@/data/employees";
 import { branchesMock } from "@/data/branches";
@@ -44,20 +45,24 @@ function getInitials(fullName: string) {
   return `${first}${second}`.toUpperCase();
 }
 
-const studentsData = seedState.clients.filter((c) => c.status === "active").map((c, i) => {
-  const planName = getPlan(c.planId)?.name ?? "Sin plan";
-  const style = avatarStyles[i % avatarStyles.length];
-  return {
-    id: c.id,
-    name: c.fullName,
-    dni: c.dni,
-    plan: planName,
-    financialStatus: selectAccount(seedState, c).status as AccountStatus,
-    initials: getInitials(c.fullName),
-    initialsBg: style.bg,
-    initialsText: style.text,
-  };
-});
+function buildStudents(state: AppState) {
+  return state.clients
+    .filter((c) => c.status === "active")
+    .map((c, i) => {
+      const planName = getPlan(c.planId)?.name ?? "Sin plan";
+      const style = avatarStyles[i % avatarStyles.length];
+      return {
+        id: c.id,
+        name: c.fullName,
+        dni: c.dni,
+        plan: planName,
+        financialStatus: selectAccount(state, c).status as AccountStatus,
+        initials: getInitials(c.fullName),
+        initialsBg: style.bg,
+        initialsText: style.text,
+      };
+    });
+}
 
 const employeesData = employeesMock.map((e, i) => {
   const style = avatarStyles[i % avatarStyles.length];
@@ -68,7 +73,9 @@ const employeesData = employeesMock.map((e, i) => {
     dni: e.dni,
     role: e.role,
     roleLabel: roleLabels[e.role] ?? e.role,
-    roleBadge: roleBadgeStyles[e.role] ?? "bg-zinc-800 text-gray-400 border border-zinc-700/40",
+    roleBadge:
+      roleBadgeStyles[e.role] ??
+      "bg-zinc-800 text-gray-400 border border-zinc-700/40",
     branch: branch?.code ?? "Sin sede",
     status: e.status,
     initials: getInitials(e.fullName),
@@ -93,14 +100,25 @@ interface StatCardProps {
   valueColor?: string;
 }
 
-function StatCard({ icon, label, value, iconBg, iconColor, valueColor }: StatCardProps) {
+function StatCard({
+  icon,
+  label,
+  value,
+  iconBg,
+  iconColor,
+  valueColor,
+}: StatCardProps) {
   return (
     <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}>
+      <div
+        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBg}`}
+      >
         <i className={`ti ${icon} text-base ${iconColor}`} />
       </div>
       <div>
-        <p className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-white"}`}>
+        <p
+          className={`text-2xl font-extrabold leading-tight ${valueColor ?? "text-white"}`}
+        >
           {value}
         </p>
         <p className="text-[11px] text-gray-500 font-medium">{label}</p>
@@ -112,21 +130,30 @@ function StatCard({ icon, label, value, iconBg, iconColor, valueColor }: StatCar
 type PresenceFilter = "all" | "present" | "absent";
 
 export default function AttendancePage() {
+  const state = useAppState();
+  const studentsData = React.useMemo(() => buildStudents(state), [state]);
   const [activeTab, setActiveTab] = React.useState<TabId>("students");
   const [studentPage, setStudentPage] = React.useState(1);
   const [teacherPage, setTeacherPage] = React.useState(1);
 
   const [search, setSearch] = React.useState("");
-  const [presenceFilter, setPresenceFilter] = React.useState<PresenceFilter>("all");
+  const [presenceFilter, setPresenceFilter] =
+    React.useState<PresenceFilter>("all");
   const [filterFinancial, setFilterFinancial] = React.useState("");
   const [filterPlan, setFilterPlan] = React.useState("");
   const [filterRole, setFilterRole] = React.useState("");
   const [filterBranch, setFilterBranch] = React.useState("");
 
-  const uniqueBranches = [...new Set(employeesData.map((e) => e.branch).filter(Boolean))];
-  const uniquePlans = [...new Set(studentsData.map((s) => s.plan).filter((p) => p !== "Sin plan"))];
+  const uniqueBranches = [
+    ...new Set(employeesData.map((e) => e.branch).filter(Boolean)),
+  ];
+  const uniquePlans = [
+    ...new Set(studentsData.map((s) => s.plan).filter((p) => p !== "Sin plan")),
+  ];
 
-  const [studentCheckins, setStudentCheckins] = React.useState<Record<string, boolean>>({
+  const [studentCheckins, setStudentCheckins] = React.useState<
+    Record<string, boolean>
+  >({
     cl_001: true,
     cl_002: false,
     cl_003: true,
@@ -134,7 +161,9 @@ export default function AttendancePage() {
   });
 
   // Estado inicial fijo de la demo (antes era aleatorio y cambiaba en cada visita).
-  const [teacherCheckins, setTeacherCheckins] = React.useState<Record<string, boolean>>({
+  const [teacherCheckins, setTeacherCheckins] = React.useState<
+    Record<string, boolean>
+  >({
     em_001: true,
     em_002: true,
     em_003: false,
@@ -150,17 +179,25 @@ export default function AttendancePage() {
     setFilterBranch("");
   };
 
-  React.useEffect(() => { setStudentPage(1); }, [search, presenceFilter, filterFinancial, filterPlan]);
-  React.useEffect(() => { setTeacherPage(1); }, [search, presenceFilter, filterRole, filterBranch]);
+  React.useEffect(() => {
+    setStudentPage(1);
+  }, [search, presenceFilter, filterFinancial, filterPlan]);
+  React.useEffect(() => {
+    setTeacherPage(1);
+  }, [search, presenceFilter, filterRole, filterBranch]);
 
   // Stats
-  const studentPresent = studentsData.filter((s) => studentCheckins[s.id]).length;
+  const studentPresent = studentsData.filter(
+    (s) => studentCheckins[s.id],
+  ).length;
   const studentAbsent = studentsData.length - studentPresent;
   const studentRate = studentsData.length
     ? Math.round((studentPresent / studentsData.length) * 100)
     : 0;
 
-  const teacherPresent = employeesData.filter((e) => teacherCheckins[e.id]).length;
+  const teacherPresent = employeesData.filter(
+    (e) => teacherCheckins[e.id],
+  ).length;
   const teacherAbsent = employeesData.length - teacherPresent;
   const teacherRate = employeesData.length
     ? Math.round((teacherPresent / employeesData.length) * 100)
@@ -168,24 +205,35 @@ export default function AttendancePage() {
 
   const present = activeTab === "students" ? studentPresent : teacherPresent;
   const absent = activeTab === "students" ? studentAbsent : teacherAbsent;
-  const total = activeTab === "students" ? studentsData.length : employeesData.length;
+  const total =
+    activeTab === "students" ? studentsData.length : employeesData.length;
   const rate = activeTab === "students" ? studentRate : teacherRate;
 
   // Filtered lists
   const filteredStudents = React.useMemo(() => {
     return studentsData.filter((s) => {
-      if (!matchesPersonSearch(search, { name: s.name, dni: s.dni })) return false;
+      if (!matchesPersonSearch(search, { name: s.name, dni: s.dni }))
+        return false;
       if (presenceFilter === "present" && !studentCheckins[s.id]) return false;
       if (presenceFilter === "absent" && studentCheckins[s.id]) return false;
-      if (filterFinancial && s.financialStatus !== filterFinancial) return false;
+      if (filterFinancial && s.financialStatus !== filterFinancial)
+        return false;
       if (filterPlan && s.plan !== filterPlan) return false;
       return true;
     });
-  }, [search, presenceFilter, filterFinancial, filterPlan, studentCheckins]);
+  }, [
+    studentsData,
+    search,
+    presenceFilter,
+    filterFinancial,
+    filterPlan,
+    studentCheckins,
+  ]);
 
   const filteredTeachers = React.useMemo(() => {
     return employeesData.filter((e) => {
-      if (!matchesPersonSearch(search, { name: e.name, dni: e.dni })) return false;
+      if (!matchesPersonSearch(search, { name: e.name, dni: e.dni }))
+        return false;
       if (presenceFilter === "present" && !teacherCheckins[e.id]) return false;
       if (presenceFilter === "absent" && teacherCheckins[e.id]) return false;
       if (filterRole && e.role !== filterRole) return false;
@@ -199,349 +247,450 @@ export default function AttendancePage() {
   const teacherTotalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
   const studentStart = (studentPage - 1) * ITEMS_PER_PAGE;
   const teacherStart = (teacherPage - 1) * ITEMS_PER_PAGE;
-  const paginatedStudents = filteredStudents.slice(studentStart, studentStart + ITEMS_PER_PAGE);
-  const paginatedTeachers = filteredTeachers.slice(teacherStart, teacherStart + ITEMS_PER_PAGE);
+  const paginatedStudents = filteredStudents.slice(
+    studentStart,
+    studentStart + ITEMS_PER_PAGE,
+  );
+  const paginatedTeachers = filteredTeachers.slice(
+    teacherStart,
+    teacherStart + ITEMS_PER_PAGE,
+  );
 
   return (
     <section className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
-
-        {/* Header */}
-        <div className="flex items-start justify-between flex-wrap gap-3 pt-1">
-          <div>
-            <h1 className="text-white text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-              CONTROL DE ASISTENCIA
-            </h1>
-            <p className="text-gray-500 text-sm mt-1">Registro de presencia diario del gimnasio.</p>
-            <div className="h-px bg-white/[0.06] mt-4" />
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 glass-border">
-            <i className="ti ti-calendar text-lime-400 text-sm" />
-            <span className="text-xs font-semibold text-gray-300">{todayLabel}</span>
-          </div>
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-3 pt-1">
+        <div>
+          <h1 className="text-white text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+            CONTROL DE ASISTENCIA
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Registro de presencia diario del gimnasio.
+          </p>
+          <div className="h-px bg-white/[0.06] mt-4" />
         </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <StatCard
-            icon="ti-users"
-            label="Total registros"
-            value={total}
-            iconBg="bg-zinc-800"
-            iconColor="text-gray-400"
-          />
-          <StatCard
-            icon="ti-circle-check"
-            label="Presentes hoy"
-            value={present}
-            iconBg="bg-lime-400/10"
-            iconColor="text-lime-400"
-            valueColor="text-lime-400"
-          />
-          <StatCard
-            icon="ti-circle-x"
-            label="Ausentes hoy"
-            value={absent}
-            iconBg="bg-red-500/10"
-            iconColor="text-red-400"
-            valueColor="text-red-400"
-          />
-          <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-lime-400/10">
-              <i className="ti ti-chart-bar text-base text-lime-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-2xl font-extrabold leading-tight text-white">{rate}%</p>
-              <p className="text-[11px] text-gray-500 font-medium">Tasa de asistencia</p>
-              <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-lime-400 transition-all duration-500"
-                  style={{ width: `${rate}%` }}
-                />
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-900 glass-border">
+          <i className="ti ti-calendar text-lime-400 text-sm" />
+          <span className="text-xs font-semibold text-gray-300">
+            {todayLabel}
+          </span>
         </div>
+      </div>
 
-        {/* Tabs + Table */}
-        <div className="flex flex-col gap-4">
-          {/* Tab bar */}
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => { setActiveTab("students"); setStudentPage(1); clearFilters(); }}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
-                activeTab === "students"
-                  ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                  : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-              }`}
-            >
-              <i className="ti ti-users text-base" />
-              Alumnos
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "students" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
-                {studentsData.length}
-              </span>
-            </button>
-            <button
-              onClick={() => { setActiveTab("teachers"); setTeacherPage(1); clearFilters(); }}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
-                activeTab === "teachers"
-                  ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
-                  : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
-              }`}
-            >
-              <i className="ti ti-user-star text-base" />
-              Profesores / Staff
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "teachers" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}>
-                {employeesData.length}
-              </span>
-            </button>
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <StatCard
+          icon="ti-users"
+          label="Total registros"
+          value={total}
+          iconBg="bg-zinc-800"
+          iconColor="text-gray-400"
+        />
+        <StatCard
+          icon="ti-circle-check"
+          label="Presentes hoy"
+          value={present}
+          iconBg="bg-lime-400/10"
+          iconColor="text-lime-400"
+          valueColor="text-lime-400"
+        />
+        <StatCard
+          icon="ti-circle-x"
+          label="Ausentes hoy"
+          value={absent}
+          iconBg="bg-red-500/10"
+          iconColor="text-red-400"
+          valueColor="text-red-400"
+        />
+        <div className="flex items-center gap-4 rounded-2xl bg-neutral-900 px-5 py-4 shadow-card glass-border">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-lime-400/10">
+            <i className="ti ti-chart-bar text-base text-lime-400" />
           </div>
-
-          {/* Search + Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative flex-1 min-w-[180px] max-w-[280px]">
-              <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Nombre o DNI..."
-                aria-label="Buscar por nombre o DNI"
-                className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+          <div className="flex-1 min-w-0">
+            <p className="text-2xl font-extrabold leading-tight text-white">
+              {rate}%
+            </p>
+            <p className="text-[11px] text-gray-500 font-medium">
+              Tasa de asistencia
+            </p>
+            <div className="mt-1.5 h-1 rounded-full bg-zinc-800 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-lime-400 transition-all duration-500"
+                style={{ width: `${rate}%` }}
               />
-              {search && (
-                <button onClick={() => setSearch("")} aria-label="Limpiar búsqueda" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer">
-                  <i className="ti ti-x text-xs" />
-                </button>
-              )}
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Presence filter */}
-            {(["all", "present", "absent"] as PresenceFilter[]).map((f) => (
-              <button
-                key={f}
-                onClick={() => setPresenceFilter(f)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
-                  presenceFilter === f
-                    ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
-                    : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
-                }`}
-              >
-                {f === "all" ? "Todos" : f === "present" ? "Presentes" : "Ausentes"}
-              </button>
-            ))}
-
-            {/* Student: financial status + plan dropdowns */}
-            {activeTab === "students" && (
-              <>
-                <FilterSelect
-                  value={filterFinancial}
-                  onChange={setFilterFinancial}
-                  placeholder="Todos los estados"
-                  options={(Object.keys(ACCOUNT_STATUS_LABELS) as AccountStatus[])
-                    .filter((value) => value !== "inactivo")
-                    .map((value) => ({ value, label: ACCOUNT_STATUS_LABELS[value] }))}
-                />
-                <FilterSelect
-                  value={filterPlan}
-                  onChange={setFilterPlan}
-                  placeholder="Todos los planes"
-                  options={uniquePlans.map((p) => ({ value: p, label: p }))}
-                />
-              </>
-            )}
-
-            {/* Teacher: role + branch dropdowns */}
-            {activeTab === "teachers" && (
-              <>
-                <FilterSelect
-                  value={filterRole}
-                  onChange={setFilterRole}
-                  placeholder="Todos los roles"
-                  options={Object.entries(roleLabels).map(([key, label]) => ({ value: key, label }))}
-                />
-                <FilterSelect
-                  value={filterBranch}
-                  onChange={setFilterBranch}
-                  placeholder="Todas las sedes"
-                  options={uniqueBranches.map((b) => ({ value: b, label: b }))}
-                />
-              </>
-            )}
-
-            {(search || presenceFilter !== "all" || filterFinancial || filterPlan || filterRole || filterBranch) && (
-              <button
-                onClick={clearFilters}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
-              >
-                Limpiar
-              </button>
-            )}
-
-            <span className="text-xs text-gray-600 ml-auto">
-              {activeTab === "students" ? filteredStudents.length : filteredTeachers.length} registros
+      {/* Tabs + Table */}
+      <div className="flex flex-col gap-4">
+        {/* Tab bar */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => {
+              setActiveTab("students");
+              setStudentPage(1);
+              clearFilters();
+            }}
+            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
+              activeTab === "students"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
+            }`}
+          >
+            <i className="ti ti-users text-base" />
+            Alumnos
+            <span
+              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "students" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
+            >
+              {studentsData.length}
             </span>
-          </div>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("teachers");
+              setTeacherPage(1);
+              clearFilters();
+            }}
+            className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold whitespace-nowrap rounded-xl cursor-pointer transition-all duration-150 ${
+              activeTab === "teachers"
+                ? "text-lime-400 border border-lime-400/60 bg-lime-400/10 shadow-[0_0_10px_rgba(149,253,0,0.08)]"
+                : "text-stone-500 hover:text-stone-300 hover:bg-white/[0.03]"
+            }`}
+          >
+            <i className="ti ti-user-star text-base" />
+            Profesores / Staff
+            <span
+              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${activeTab === "teachers" ? "bg-lime-400/20 text-lime-400" : "bg-zinc-800 text-gray-500"}`}
+            >
+              {employeesData.length}
+            </span>
+          </button>
+        </div>
 
-          {/* Table card */}
-          <div className="rounded-2xl bg-neutral-900 shadow-card glass-border overflow-hidden">
-            {/* Column headers */}
-            {activeTab === "students" ? (
-              <>
-                <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600">ALUMNO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">ESTADO FINANCIERO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
-                </div>
-                <div>
-                  {filteredStudents.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-14 gap-2">
-                      <i className="ti ti-search-off text-3xl text-gray-700" />
-                      <p className="text-sm text-gray-600 font-medium">Sin resultados</p>
-                    </div>
-                  ) : null}
-                  {paginatedStudents.map((row) => {
-                    const present = studentCheckins[row.id] ?? false;
-                    return (
-                      <div
-                        key={row.id}
-                        className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_160px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
-                      >
-                        {/* Name + plan */}
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${row.initialsBg}`}>
-                            <span className={`text-sm font-bold ${row.initialsText}`}>{row.initials}</span>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{row.name}</p>
-                            <p className="text-[11px] text-gray-500 truncate">{row.plan}</p>
-                          </div>
-                        </div>
-
-                        {/* Financial status */}
-                        <div className="flex sm:justify-center">
-<AccountStatusBadge status={row.financialStatus} />
-                        </div>
-
-                        {/* Check-in dual button */}
-                        <div className="flex items-center gap-1.5 justify-center">
-                          <button
-                            onClick={() => setStudentCheckins((prev) => ({ ...prev, [row.id]: false }))}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                              !present
-                                ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
-                            }`}
-                          >
-                            <i className="ti ti-x text-[10px] shrink-0" />
-                            Ausente
-                          </button>
-                          <button
-                            onClick={() => setStudentCheckins((prev) => ({ ...prev, [row.id]: true }))}
-                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
-                              present
-                                ? "bg-lime-400 text-black shadow-btn-lime"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
-                            }`}
-                          >
-                            <i className="ti ti-check text-[10px] shrink-0" />
-                            Presente
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600">EMPLEADO</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">SUCURSAL</span>
-                  <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">CHECK-IN</span>
-                </div>
-                <div>
-                  {filteredTeachers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-14 gap-2">
-                      <i className="ti ti-search-off text-3xl text-gray-700" />
-                      <p className="text-sm text-gray-600 font-medium">Sin resultados</p>
-                    </div>
-                  ) : null}
-                  {paginatedTeachers.map((row) => {
-                    const present = teacherCheckins[row.id] ?? false;
-                    return (
-                      <div
-                        key={row.id}
-                        className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_120px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
-                      >
-                        {/* Name + role */}
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${row.initialsBg}`}>
-                            <span className={`text-sm font-bold ${row.initialsText}`}>{row.initials}</span>
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{row.name}</p>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${row.roleBadge}`}>
-                              {row.roleLabel}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Branch */}
-                        <div className="flex sm:justify-center">
-                          <span className="text-xs text-gray-400 font-medium">{row.branch}</span>
-                        </div>
-
-                        {/* Ausente / Presente dual button */}
-                        <div className="flex items-center gap-1.5 justify-center">
-                          <button
-                            onClick={() =>
-                              setTeacherCheckins((prev) => ({ ...prev, [row.id]: false }))
-                            }
-                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
-                              !present
-                                ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
-                            }`}
-                          >
-                            <i className="ti ti-x text-[10px] shrink-0" />
-                            Ausente
-                          </button>
-                          <button
-                            onClick={() =>
-                              setTeacherCheckins((prev) => ({ ...prev, [row.id]: true }))
-                            }
-                            className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
-                              present
-                                ? "bg-lime-400 text-black shadow-btn-lime"
-                                : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
-                            }`}
-                          >
-                            <i className="ti ti-check text-[10px] shrink-0" />
-                            Presente
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
+        {/* Search + Filters */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[180px] max-w-[280px]">
+            <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Nombre o DNI..."
+              aria-label="Buscar por nombre o DNI"
+              className="w-full pl-9 pr-8 py-2 rounded-xl bg-neutral-900 glass-border text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 transition-all"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                aria-label="Limpiar búsqueda"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 cursor-pointer"
+              >
+                <i className="ti ti-x text-xs" />
+              </button>
             )}
           </div>
 
-          {/* Pagination */}
+          {/* Presence filter */}
+          {(["all", "present", "absent"] as PresenceFilter[]).map((f) => (
+            <button
+              key={f}
+              onClick={() => setPresenceFilter(f)}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-150 cursor-pointer ${
+                presenceFilter === f
+                  ? "bg-lime-400/10 border-lime-400/40 text-lime-400"
+                  : "bg-neutral-900 border-white/[0.06] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
+              }`}
+            >
+              {f === "all"
+                ? "Todos"
+                : f === "present"
+                  ? "Presentes"
+                  : "Ausentes"}
+            </button>
+          ))}
+
+          {/* Student: financial status + plan dropdowns */}
+          {activeTab === "students" && (
+            <>
+              <FilterSelect
+                value={filterFinancial}
+                onChange={setFilterFinancial}
+                placeholder="Todos los estados"
+                options={(Object.keys(ACCOUNT_STATUS_LABELS) as AccountStatus[])
+                  .filter((value) => value !== "inactivo")
+                  .map((value) => ({
+                    value,
+                    label: ACCOUNT_STATUS_LABELS[value],
+                  }))}
+              />
+              <FilterSelect
+                value={filterPlan}
+                onChange={setFilterPlan}
+                placeholder="Todos los planes"
+                options={uniquePlans.map((p) => ({ value: p, label: p }))}
+              />
+            </>
+          )}
+
+          {/* Teacher: role + branch dropdowns */}
+          {activeTab === "teachers" && (
+            <>
+              <FilterSelect
+                value={filterRole}
+                onChange={setFilterRole}
+                placeholder="Todos los roles"
+                options={Object.entries(roleLabels).map(([key, label]) => ({
+                  value: key,
+                  label,
+                }))}
+              />
+              <FilterSelect
+                value={filterBranch}
+                onChange={setFilterBranch}
+                placeholder="Todas las sedes"
+                options={uniqueBranches.map((b) => ({ value: b, label: b }))}
+              />
+            </>
+          )}
+
+          {(search ||
+            presenceFilter !== "all" ||
+            filterFinancial ||
+            filterPlan ||
+            filterRole ||
+            filterBranch) && (
+            <button
+              onClick={clearFilters}
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer ml-1"
+            >
+              Limpiar
+            </button>
+          )}
+
+          <span className="text-xs text-gray-600 ml-auto">
+            {activeTab === "students"
+              ? filteredStudents.length
+              : filteredTeachers.length}{" "}
+            registros
+          </span>
+        </div>
+
+        {/* Table card */}
+        <div className="rounded-2xl bg-neutral-900 shadow-card glass-border overflow-hidden">
+          {/* Column headers */}
           {activeTab === "students" ? (
-            <Pagination
-              currentPage={studentPage}
-              totalPages={studentTotalPages}
-              onPageChange={setStudentPage}
-            />
+            <>
+              <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_160px_152px] px-6 py-3 border-b border-white/[0.05]">
+                <span className="text-[10px] font-bold tracking-widest text-gray-600">
+                  ALUMNO
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                  ESTADO FINANCIERO
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                  CHECK-IN
+                </span>
+              </div>
+              <div>
+                {filteredStudents.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-14 gap-2">
+                    <i className="ti ti-search-off text-3xl text-gray-700" />
+                    <p className="text-sm text-gray-600 font-medium">
+                      Sin resultados
+                    </p>
+                  </div>
+                ) : null}
+                {paginatedStudents.map((row) => {
+                  const present = studentCheckins[row.id] ?? false;
+                  return (
+                    <div
+                      key={row.id}
+                      className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_160px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                    >
+                      {/* Name + plan */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${row.initialsBg}`}
+                        >
+                          <span
+                            className={`text-sm font-bold ${row.initialsText}`}
+                          >
+                            {row.initials}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">
+                            {row.name}
+                          </p>
+                          <p className="text-[11px] text-gray-500 truncate">
+                            {row.plan}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Financial status */}
+                      <div className="flex sm:justify-center">
+                        <AccountStatusBadge status={row.financialStatus} />
+                      </div>
+
+                      {/* Check-in dual button */}
+                      <div className="flex items-center gap-1.5 justify-center">
+                        <button
+                          onClick={() =>
+                            setStudentCheckins((prev) => ({
+                              ...prev,
+                              [row.id]: false,
+                            }))
+                          }
+                          className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                            !present
+                              ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                          }`}
+                        >
+                          <i className="ti ti-x text-[10px] shrink-0" />
+                          Ausente
+                        </button>
+                        <button
+                          onClick={() =>
+                            setStudentCheckins((prev) => ({
+                              ...prev,
+                              [row.id]: true,
+                            }))
+                          }
+                          className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                            present
+                              ? "bg-lime-400 text-black shadow-btn-lime"
+                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                          }`}
+                        >
+                          <i className="ti ti-check text-[10px] shrink-0" />
+                          Presente
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           ) : (
-            <Pagination
-              currentPage={teacherPage}
-              totalPages={teacherTotalPages}
-              onPageChange={setTeacherPage}
-            />
+            <>
+              <div className="hidden sm:grid grid-cols-[minmax(0,1fr)_120px_152px] px-6 py-3 border-b border-white/[0.05]">
+                <span className="text-[10px] font-bold tracking-widest text-gray-600">
+                  EMPLEADO
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                  SUCURSAL
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-gray-600 text-center">
+                  CHECK-IN
+                </span>
+              </div>
+              <div>
+                {filteredTeachers.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-14 gap-2">
+                    <i className="ti ti-search-off text-3xl text-gray-700" />
+                    <p className="text-sm text-gray-600 font-medium">
+                      Sin resultados
+                    </p>
+                  </div>
+                ) : null}
+                {paginatedTeachers.map((row) => {
+                  const present = teacherCheckins[row.id] ?? false;
+                  return (
+                    <div
+                      key={row.id}
+                      className="grid grid-cols-1 gap-3 sm:gap-0 sm:grid-cols-[minmax(0,1fr)_120px_152px] items-center px-4 sm:px-6 py-4 border-b border-white/[0.04] last:border-0 hover:bg-white/[0.025] transition-colors duration-100"
+                    >
+                      {/* Name + role */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center ${row.initialsBg}`}
+                        >
+                          <span
+                            className={`text-sm font-bold ${row.initialsText}`}
+                          >
+                            {row.initials}
+                          </span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">
+                            {row.name}
+                          </p>
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${row.roleBadge}`}
+                          >
+                            {row.roleLabel}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Branch */}
+                      <div className="flex sm:justify-center">
+                        <span className="text-xs text-gray-400 font-medium">
+                          {row.branch}
+                        </span>
+                      </div>
+
+                      {/* Ausente / Presente dual button */}
+                      <div className="flex items-center gap-1.5 justify-center">
+                        <button
+                          onClick={() =>
+                            setTeacherCheckins((prev) => ({
+                              ...prev,
+                              [row.id]: false,
+                            }))
+                          }
+                          className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 cursor-pointer ${
+                            !present
+                              ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-red-500/20 hover:text-red-400/60"
+                          }`}
+                        >
+                          <i className="ti ti-x text-[10px] shrink-0" />
+                          Ausente
+                        </button>
+                        <button
+                          onClick={() =>
+                            setTeacherCheckins((prev) => ({
+                              ...prev,
+                              [row.id]: true,
+                            }))
+                          }
+                          className={`flex-1 flex items-center justify-center gap-1 py-2.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-150 active:scale-[0.97] cursor-pointer ${
+                            present
+                              ? "bg-lime-400 text-black shadow-btn-lime"
+                              : "bg-transparent text-gray-600 border border-zinc-800 hover:border-lime-400/30 hover:text-lime-400/60"
+                          }`}
+                        >
+                          <i className="ti ti-check text-[10px] shrink-0" />
+                          Presente
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
-      </section>
+
+        {/* Pagination */}
+        {activeTab === "students" ? (
+          <Pagination
+            currentPage={studentPage}
+            totalPages={studentTotalPages}
+            onPageChange={setStudentPage}
+          />
+        ) : (
+          <Pagination
+            currentPage={teacherPage}
+            totalPages={teacherTotalPages}
+            onPageChange={setTeacherPage}
+          />
+        )}
+      </div>
+    </section>
   );
 }

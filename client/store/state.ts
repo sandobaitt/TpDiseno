@@ -8,6 +8,7 @@ import {
 import { replacementsMock, type Replacement } from "@/data/replacements";
 import { novedadesMock, type Novedad } from "@/data/novedades";
 import { bitacorasMock, type Bitacora } from "@/data/bitacoras";
+import type { ActivityEntry } from "./actions";
 
 /**
  * Datos que cambian mientras se usa la app (los catálogos fijos, como planes,
@@ -21,6 +22,8 @@ export interface AppState {
   replacements: Replacement[];
   novedades: Novedad[];
   bitacoras: Bitacora[];
+  /** Registro de actividad: quién hizo qué y cuándo (en memoria). */
+  activity: ActivityEntry[];
 }
 
 /** Estado inicial de la demo, armado con los mocks. */
@@ -33,11 +36,6 @@ export function createSeedState(): AppState {
     replacements: [...replacementsMock],
     novedades: [...novedadesMock],
     bitacoras: [...bitacorasMock],
+    activity: [],
   };
 }
-
-/**
- * Estado de solo lectura que usan las pantallas hasta que se conecten al store
- * central (etapa E4).
- */
-export const seedState: AppState = createSeedState();

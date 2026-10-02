@@ -234,7 +234,12 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - `hours.ts`: horas contra cronograma.
   - `permissions.ts`: rol → ruta.
 - **El estado de cuenta nunca se guarda:** se calcula desde los pagos (`selectAccount`).
-- **Lectura del estado:** `client/store/state.ts` arma el estado inicial y `client/store/selectors.ts` tiene los selectores (`selectAccount`, `selectAccess`, `selectClientPayments`…). Ver MEMORY.md sobre la migración al store.
+- **Store central en memoria** (`client/store/`):
+  - Las pantallas leen con `useAppState()` y modifican con `useStoreActions()`: `registerPayment`, `registerClient`, `deactivateClient`, `respondReplacement`, `addNovedad`, etc.
+  - Los cálculos se hacen con los selectores de `selectors.ts`.
+  - **Nunca** se copian los mocks a un `useState` local: así los flujos quedan conectados.
+  - No se guarda nada entre recargas: recargar reinicia la demo.
+- **Registro de actividad:** cada acción del store agrega a `state.activity` quién, qué y cuándo. Para mostrar quién registró algo se usa `getUserName(userId)`.
 
 ## Reglas de trabajo
 

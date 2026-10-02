@@ -20,7 +20,7 @@ import {
   todayISO,
 } from "@/lib/dates";
 import { formatARS } from "@/lib/format";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
 import { selectAccount } from "@/store/selectors";
 
 function capitalize(text: string) {
@@ -102,10 +102,11 @@ export default function AlumnoPagosPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
 
   // El alumno se identifica por el id vinculado a su usuario.
+  const state = useAppState();
   const session = getMockSession();
-  const client = seedState.clients.find((c) => c.id === session?.clientId);
+  const client = state.clients.find((c) => c.id === session?.clientId);
   const plan = getPlan(client?.planId);
-  const account = client ? selectAccount(seedState, client) : undefined;
+  const account = client ? selectAccount(state, client) : undefined;
   const today = todayISO();
 
   if (!client || !account) {
@@ -121,7 +122,7 @@ export default function AlumnoPagosPage() {
   const months = [...account.charges].reverse();
   const selectedCharge = months.find((m) => m.period === selectedPeriod);
   const selectedPayment = selectedCharge?.paymentId
-    ? seedState.payments.find((p) => p.id === selectedCharge.paymentId)
+    ? state.payments.find((p) => p.id === selectedCharge.paymentId)
     : undefined;
   const totalPages = Math.ceil(months.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -194,7 +195,7 @@ export default function AlumnoPagosPage() {
         <div className="mt-3 flex flex-col gap-3">
           {paginatedMonths.map((m) => {
             const payment = m.paymentId
-              ? seedState.payments.find((p) => p.id === m.paymentId)
+              ? state.payments.find((p) => p.id === m.paymentId)
               : undefined;
             return (
               <button

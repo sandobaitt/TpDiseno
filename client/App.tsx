@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { RequireAuth } from "@/components/common/RequireAuth";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
+import { StoreProvider } from "@/store/StoreProvider";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
@@ -35,6 +36,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <StoreProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -66,6 +68,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </StoreProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

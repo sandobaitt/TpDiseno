@@ -10,7 +10,8 @@ import { getActivityName } from "@/data/activities";
 import { getTeacher } from "@/data/teachers";
 import { branchName } from "@/components/cronograma/weekView";
 import { formatDateShort } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
+import type { AppState } from "@/store/state";
 import { selectClientAttendance } from "@/store/selectors";
 
 interface AttendanceRow extends StudentAttendance {
@@ -19,9 +20,9 @@ interface AttendanceRow extends StudentAttendance {
 }
 
 /** Historial del alumno logueado (cada alumno ve solo lo suyo). */
-function buildRows(clientId: string | undefined): AttendanceRow[] {
+function buildRows(state: AppState, clientId: string | undefined): AttendanceRow[] {
   if (!clientId) return [];
-  return selectClientAttendance(seedState, clientId).map((record) => {
+  return selectClientAttendance(state, clientId).map((record) => {
     const slot = getSlot(record.slotId);
     return {
       ...record,
@@ -46,7 +47,8 @@ const ITEMS_PER_PAGE = 4;
 
 export default function AlumnoPanel() {
   const [currentPage, setCurrentPage] = React.useState(1);
-  const rows = React.useMemo(() => buildRows(getMockSession()?.clientId), []);
+  const state = useAppState();
+  const rows = React.useMemo(() => buildRows(state, getMockSession()?.clientId), [state]);
   const totalPages = Math.ceil(rows.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = rows.slice(start, start + ITEMS_PER_PAGE);

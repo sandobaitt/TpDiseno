@@ -10,11 +10,12 @@ import { scheduleMock } from "@/data/schedule";
 import { getMockSession } from "@/data/users";
 import { sessionsBetween } from "@/domain/schedule";
 import { addDays, formatMinutes, startOfWeek, todayISO } from "@/lib/dates";
-import { seedState } from "@/store/state";
+import { useAppState } from "@/store/StoreProvider";
 
 export default function ProfesorCronogramaPage() {
   const teacherId = getMockSession()?.teacherId;
   const today = todayISO();
+  const { replacements } = useAppState();
   const [weekStart, setWeekStart] = React.useState(() => startOfWeek(today));
   const [activeDate, setActiveDate] = React.useState(today);
 
@@ -25,9 +26,9 @@ export default function ProfesorCronogramaPage() {
         weekStart,
         addDays(weekStart, 6),
         scheduleMock,
-        seedState.replacements,
+        replacements,
       ).filter((s) => s.teacherId === teacherId),
-    [weekStart, teacherId],
+    [weekStart, teacherId, replacements],
   );
   const days = buildWeekDays(weekStart, activeDate);
   const totalMins = sessions.reduce((sum, s) => sum + s.durationMin, 0);
