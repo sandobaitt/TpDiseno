@@ -189,6 +189,20 @@ describe("otras acciones del store", () => {
     expect(state.activity).toHaveLength(before + 1);
   });
 
+  it("reactivar guarda el período de baja (no se cobra)", () => {
+    let state = createSeedState();
+    const ana = state.clients.find((c) => c.id === "cl_004")!;
+    expect(ana.status).toBe("inactive");
+    state = dispatch(state, { type: "client/reactivate", clientId: ana.id });
+    const back = state.clients.find((c) => c.id === ana.id)!;
+    expect(back.status).toBe("active");
+    expect(back.inactivePeriods).toEqual([
+      { from: ana.deactivatedAt, to: SEED_TODAY },
+    ]);
+    // no queda con deuda por los meses en que no vino
+    expect(selectAccount(state, back, SEED_TODAY).status).not.toBe("bloqueado");
+  });
+
   it("la inscripción guarda quién la registró", () => {
     let state = createSeedState();
     const nuevo = { ...state.clients[0], id: "cl_nuevo", createdBy: undefined };

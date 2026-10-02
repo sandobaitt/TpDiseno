@@ -453,3 +453,25 @@ export function getRecordChecklist(
   }
   return items;
 }
+
+/** Inscripciones y bajas de una sede, mes a mes (CU 12). */
+export interface BranchEnrollmentMonth {
+  period: string;
+  enrolled: number;
+  deactivated: number;
+}
+
+export function branchEnrollmentHistory(
+  clients: Client[],
+  branchId: string,
+  periods: string[],
+): BranchEnrollmentMonth[] {
+  const ofBranch = clients.filter((c) => c.branchId === branchId);
+  return periods.map((period) => ({
+    period,
+    enrolled: ofBranch.filter((c) => toPeriod(c.enrolledAt) === period).length,
+    deactivated: ofBranch.filter(
+      (c) => !!c.deactivatedAt && toPeriod(c.deactivatedAt) === period,
+    ).length,
+  }));
+}

@@ -143,6 +143,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `hooks/use-notifications.ts` + `common/NotificationBell` | Avisos de la campana según el rol, calculados con los datos (`domain/notifications.ts`). Para sumar un aviso, se agrega en el dominio. |
 | `domain/communications.ts` | Destinatarios (`resolveAudience`) y `{nombre}` (`personalize`) de las comunicaciones. |
 | `hooks/use-stored-state.ts` | Preferencias de cada usuario guardadas en el navegador. |
+| `components/alumnos/StudentsDashboard` + `profile/StudentProfile` | Lista y ficha del alumno. Se reusan para secretaría (`variant="secretaria"`) y admin (`variant="admin"`); lo que se puede hacer sale de `studentCapabilities(rol)`. |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
@@ -253,7 +254,8 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 - **Personal:**
   - Todos son profesores, empleados o contratados. Hay un profesor por turno y sede que controla a los contratados.
   - Se manejan reemplazos y se comparan las horas registradas con el cronograma.
-- **Bajas:** son **lógicas**. El alumno queda inactivo y conserva su historial. Las hace solo el Administrador, con confirmación.
+- **Bajas:** son **lógicas**. El alumno queda inactivo y conserva su historial. Las hace solo el Administrador, con motivo y confirmación.
+  - Al reactivar, los meses en que estuvo de baja no se cobran y el mes de regreso se cobra proporcional, como un alta (`inactivePeriods` en el alumno).
 - **Registro de actividad:** las operaciones importantes (pagos, asistencias, modificaciones) registran quién, qué y cuándo, aunque sea en un log mock.
 - **Wi-Fi inestable:** se muestra el estado de conexión y nunca se pierde lo que el usuario ya cargó en un formulario.
 

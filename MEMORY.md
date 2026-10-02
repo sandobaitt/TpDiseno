@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E9. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E10. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -19,13 +19,25 @@
 | Lo que no se toca | Deploy (`server/`, `api/`, `netlify/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
 | Documentación | Se borraron AGENTS.md, ARQUITECTURA_FRONTEND.md y `.builder/`. Se conserva `.agents/rules/frontend.md`, que es para otras herramientas. | Para tener una sola fuente de verdad. |
 | Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan: se eligió lo más simple de explicar. **Confirmar con el grupo.** |
+| Reactivación | Al reactivar, los meses de baja no se cobran y el mes de regreso es proporcional (como un alta). | El escenario no lo dice. Sin esta regla, un alumno reactivado quedaba con deuda por los meses en que no vino. **Confirmar con el grupo.** |
 | Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
 | PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
 
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E9 terminadas**. Sigue **E10**: Admin con "Alumnos" en su menú (alta, baja con motivo, modificación y reactivación con la ficha única) y Encargado con "Inscripciones de mi sede" (CU 11 y 12).
+- Fase 3: **E0 a E10 terminadas**. Sigue **E11**: asistencia de profesores por turno y sede, confirmar o corregir (encargado) e historial (CU 1 a 3 de Personal). Reemplaza `data/adminAttendance.ts`.
+- En E10 se resolvió lo siguiente:
+  - **Admin, "Alumnos" (CU 11)** en `/admin/alumnos`:
+    - lista con filtros; alta con el mismo formulario de inscripción; ficha única con edición validada;
+    - **baja con motivo** (lista de motivos y detalle) y confirmación;
+    - **reactivación** que no cobra los meses de baja.
+  - **Gestión de personal** quedó solo para el personal (`components/personal/StaffDirectory.tsx`); los alumnos se sacaron de ahí.
+  - **Encargado, "Inscripciones de mi sede" (CU 12)** en `/encargado/inscripciones`:
+    - altas y bajas por mes, gráfico de los últimos 6 meses (con tabla accesible);
+    - por plan, y el detalle con quién inscribió a cada alumno;
+    - solo consulta.
+  - **Menú del admin:** "Dashboard" pasó a llamarse "Inicio".
 - En E9 se resolvió lo siguiente:
   - **Centro de avisos para todos los roles** (`NotificationBell`):
     - contador discreto y lista, sin modales;

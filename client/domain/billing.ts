@@ -78,12 +78,15 @@ export function proratedAmount(
   return Math.round((monthlyPrice * (total - day + 1)) / total);
 }
 
-/** Vencimiento de la cuota de un mes. La de alta vence ENROLLMENT_GRACE_DAYS días después de inscribirse. */
-export function dueDateFor(period: string, enrolledAt: string): string {
+/**
+ * Vencimiento de la cuota de un mes. La del mes de alta (o de regreso después
+ * de una baja) vence ENROLLMENT_GRACE_DAYS días después de esa fecha.
+ */
+export function dueDateFor(period: string, startDate: string): string {
   const regular = dateInPeriod(period, PAYMENT_DUE_DAY);
-  if (period !== toPeriod(enrolledAt)) return regular;
-  const enrollmentDue = addDays(enrolledAt, ENROLLMENT_GRACE_DAYS);
-  return enrollmentDue > regular ? enrollmentDue : regular;
+  if (period !== toPeriod(startDate)) return regular;
+  const startDue = addDays(startDate, ENROLLMENT_GRACE_DAYS);
+  return startDue > regular ? startDue : regular;
 }
 
 export function getAccountSummary(
@@ -108,24 +111,38 @@ export function getAccountSummary(
       p.concept === "membership",
   );
 
-  const enrolledDay = Number(client.enrolledAt.slice(8, 10));
+  const gaps = client.inactivePeriods ?? [];
   const charges: MonthlyCharge[] =
     !plan || firstPeriod > lastPeriod
       ? []
-      : periodRange(firstPeriod, lastPeriod).map((period) => {
-          const prorated = period === firstPeriod && enrolledDay > 1;
-          const payment = approved.find((p) => p.periods.includes(period));
-          return {
-            period,
-            amount: prorated
-              ? proratedAmount(plan.monthlyPriceArs, client.enrolledAt)
-              : plan.monthlyPriceArs,
-            prorated,
-            dueDate: dueDateFor(period, client.enrolledAt),
-            paid: !!payment,
-            paymentId: payment?.id,
-          };
-        });
+      : periodRange(firstPeriod, lastPeriod)
+          // Los meses completos en que estuvo de baja no se cobran.
+          .filter(
+            (period) =>
+              !gaps.some(
+                (g) => period > toPeriod(g.from) && period < toPeriod(g.to),
+              ),
+          )
+          .map((period) => {
+            // El mes de alta y el de regreso se cobran como un alta: proporcional.
+            const comeback = gaps.find(
+              (g) => toPeriod(g.to) === period && toPeriod(g.from) !== period,
+            );
+            const start =
+              period === firstPeriod ? client.enrolledAt : comeback?.to;
+            const prorated = !!start && Number(start.slice(8, 10)) > 1;
+            const payment = approved.find((p) => p.periods.includes(period));
+            return {
+              period,
+              amount: prorated
+                ? proratedAmount(plan.monthlyPriceArs, start!)
+                : plan.monthlyPriceArs,
+              prorated,
+              dueDate: dueDateFor(period, start ?? client.enrolledAt),
+              paid: !!payment,
+              paymentId: payment?.id,
+            };
+          });
 
   const unpaid = charges.filter((c) => !c.paid);
   const paidPeriods = new Set(approved.flatMap((p) => p.periods));

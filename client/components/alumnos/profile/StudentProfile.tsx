@@ -37,6 +37,7 @@ import { StudentEditDialog } from "./StudentEditDialog";
 import { HealthEditDialog } from "@/components/alumnos/health/HealthEditDialog";
 import { AttachmentDialog } from "./AttachmentDialog";
 import { RestrictDialog } from "./RestrictDialog";
+import { DeactivateDialog } from "./DeactivateDialog";
 
 type TabId = "resumen" | "datos" | "salud" | "pagos" | "historial";
 
@@ -76,6 +77,8 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
     | "cobro"
     | "restringir"
     | "quitarRestriccion"
+    | "baja"
+    | "reactivar"
     | null
   >(null);
 
@@ -172,6 +175,30 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
                 Editar datos
               </Button>
             )}
+            {caps.deactivate &&
+              (client.status === "active" ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialog("baja")}
+                  className="rounded-xl border-danger/40 text-danger hover:bg-danger/10 hover:text-danger"
+                >
+                  <i className="ti ti-user-off text-base" aria-hidden="true" />
+                  Dar de baja
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => setDialog("reactivar")}
+                  className="rounded-xl font-bold"
+                >
+                  <i
+                    className="ti ti-user-check text-base"
+                    aria-hidden="true"
+                  />
+                  Reactivar
+                </Button>
+              ))}
             {canCollect && account.owedAmount > 0 && (
               <Button
                 type="button"
@@ -308,6 +335,27 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
             onConfirm={() => {
               actions.unrestrictClient(client.id);
               toast.success("Restricción quitada.");
+            }}
+          />
+        </>
+      )}
+      {caps.deactivate && (
+        <>
+          <DeactivateDialog
+            client={client}
+            open={dialog === "baja"}
+            onOpenChange={(open) => setDialog(open ? "baja" : null)}
+          />
+          <ConfirmDialog
+            open={dialog === "reactivar"}
+            onOpenChange={(open) => setDialog(open ? "reactivar" : null)}
+            title={`¿Reactivar a ${client.fullName}?`}
+            description="Vuelve a estar activo desde hoy. Los meses que estuvo de baja no se cobran y la cuota de este mes es proporcional."
+            confirmLabel="Reactivar"
+            iconClassName="ti ti-user-check"
+            onConfirm={() => {
+              actions.reactivateClient(client.id);
+              toast.success(`Inscripción de ${client.fullName} reactivada.`);
             }}
           />
         </>

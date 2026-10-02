@@ -76,6 +76,12 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         iconClassName: "ti ti-speakerphone",
         to: "/encargado/novedades",
       },
+      {
+        id: "enrollments",
+        label: "Inscripciones de mi sede",
+        iconClassName: "ti ti-user-plus",
+        to: "/encargado/inscripciones",
+      },
     ],
   },
   admin: {
@@ -83,14 +89,21 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
     items: [
       {
         id: "dashboard",
-        label: "Dashboard",
+        label: "Inicio",
         iconClassName: "ti ti-dashboard",
         to: "/admin",
       },
       {
+        id: "students",
+        label: "Alumnos",
+        iconClassName: "ti ti-users",
+        to: "/admin/alumnos",
+        end: false,
+      },
+      {
         id: "staff",
         label: "Gestión de personal",
-        iconClassName: "ti ti-users",
+        iconClassName: "ti ti-briefcase",
         to: "/admin/personal",
       },
       {

@@ -48,13 +48,23 @@ function applyAction(state: AppState, action: StoreAction): AppState {
         deactivationReason: action.reason,
         deactivatedBy: action.meta.userId,
       });
-    case "client/reactivate":
+    case "client/reactivate": {
+      const client = state.clients.find((c) => c.id === action.clientId);
+      const back = action.meta.at.slice(0, 10);
       return updateClient(state, action.clientId, {
         status: "active",
+        // El tiempo que estuvo de baja queda registrado y no se cobra.
+        inactivePeriods: client?.deactivatedAt
+          ? [
+              ...(client.inactivePeriods ?? []),
+              { from: client.deactivatedAt, to: back },
+            ]
+          : client?.inactivePeriods,
         deactivatedAt: undefined,
         deactivationReason: undefined,
         deactivatedBy: undefined,
       });
+    }
     case "client/restrict":
       return updateClient(state, action.clientId, {
         manualRestriction: {

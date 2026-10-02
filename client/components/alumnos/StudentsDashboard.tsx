@@ -6,40 +6,63 @@ import { useAppState } from "@/store/StoreProvider";
 import { StudentStats } from "./StudentStats";
 import { StudentsTable } from "./StudentsTable";
 
-/** Inicio de secretaría: accesos rápidos, resumen y lista de alumnos. */
-export function StudentsDashboard() {
+interface StudentsDashboardProps {
+  /** Secretaría (inicio con accesos rápidos) o Administrador (ABM, CU 11). */
+  variant?: "secretaria" | "admin";
+}
+
+/** Lista de alumnos con resumen. Secretaría la usa como inicio; el admin, para el ABM. */
+export function StudentsDashboard({
+  variant = "secretaria",
+}: StudentsDashboardProps) {
   const state = useAppState();
   const [statusFilter, setStatusFilter] = React.useState("");
+  const isAdmin = variant === "admin";
+  const basePath = isAdmin ? "/admin/alumnos" : "/secretaria/alumnos";
 
   return (
     <div className="flex flex-col gap-6 px-7 pb-7 max-sm:px-4">
       <PageHeader
-        title="Gestión de alumnos"
-        subtitle="Buscá un alumno para ver su ficha, inscribí alumnos nuevos o cobrá cuotas."
+        title={isAdmin ? "Alumnos" : "Gestión de alumnos"}
+        subtitle={
+          isAdmin
+            ? "Alta, modificación y baja de alumnos de todas las sedes. Las bajas conservan el historial."
+            : "Buscá un alumno para ver su ficha, inscribí alumnos nuevos o cobrá cuotas."
+        }
         actions={
           <>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link to="/secretaria/acceso">
-                <i className="ti ti-door-enter text-base" aria-hidden="true" />
-                Control de acceso
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link to="/secretaria/asistencia">
-                <i className="ti ti-user-check text-base" aria-hidden="true" />
-                Tomar asistencia
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link to="/secretaria/cobros">
-                <i className="ti ti-cash text-base" aria-hidden="true" />
-                Cobrar cuota
-              </Link>
-            </Button>
+            {!isAdmin && (
+              <>
+                <Button asChild variant="outline" className="rounded-xl">
+                  <Link to="/secretaria/acceso">
+                    <i
+                      className="ti ti-door-enter text-base"
+                      aria-hidden="true"
+                    />
+                    Control de acceso
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-xl">
+                  <Link to="/secretaria/asistencia">
+                    <i
+                      className="ti ti-user-check text-base"
+                      aria-hidden="true"
+                    />
+                    Tomar asistencia
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-xl">
+                  <Link to="/secretaria/cobros">
+                    <i className="ti ti-cash text-base" aria-hidden="true" />
+                    Cobrar cuota
+                  </Link>
+                </Button>
+              </>
+            )}
             <Button asChild className="rounded-xl font-bold">
-              <Link to="/secretaria/alumnos/nuevo">
+              <Link to={`${basePath}/nuevo`}>
                 <i className="ti ti-user-plus text-base" aria-hidden="true" />
-                Inscribir alumno
+                {isAdmin ? "Dar de alta" : "Inscribir alumno"}
               </Link>
             </Button>
           </>
@@ -53,7 +76,7 @@ export function StudentsDashboard() {
       <StudentsTable
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        basePath="/secretaria/alumnos"
+        basePath={basePath}
       />
     </div>
   );

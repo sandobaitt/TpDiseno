@@ -81,6 +81,8 @@ export interface Client {
   deactivationReason?: string;
   /** Id del administrador que hizo la baja. */
   deactivatedBy?: string;
+  /** Bajas anteriores que ya se reactivaron: esos meses no se cobran. */
+  inactivePeriods?: { from: string; to: string }[];
   /** Restricción de acceso aplicada a mano por secretaría (además de la automática por deuda). */
   manualRestriction?: ManualRestriction;
   health?: HealthDeclaration;

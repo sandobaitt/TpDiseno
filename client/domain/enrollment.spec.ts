@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  branchEnrollmentHistory,
   buildClientFromDraft,
   dniError,
   emailError,
@@ -258,6 +259,28 @@ describe("estado del legajo", () => {
       ["ddjj", "ok"],
       ["certificado", "pending"],
       ["autorizacion", "missing"],
+    ]);
+  });
+});
+
+describe("inscripciones por sede (CU 12)", () => {
+  it("cuenta altas y bajas de la sede, mes a mes", () => {
+    const clients: Client[] = [
+      { ...existing[0], id: "a", enrolledAt: "2026-09-03" },
+      { ...existing[0], id: "b", enrolledAt: "2026-10-01" },
+      { ...existing[0], id: "c", enrolledAt: "2026-10-02", branchId: "br_002" },
+      {
+        ...existing[1],
+        id: "d",
+        enrolledAt: "2025-03-01",
+        deactivatedAt: "2026-09-28",
+      },
+    ];
+    expect(
+      branchEnrollmentHistory(clients, "br_001", ["2026-09", "2026-10"]),
+    ).toEqual([
+      { period: "2026-09", enrolled: 1, deactivated: 1 },
+      { period: "2026-10", enrolled: 1, deactivated: 0 },
     ]);
   });
 });

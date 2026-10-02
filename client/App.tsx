@@ -32,6 +32,10 @@ import ProfesorCronogramaPage from "./pages/ProfesorCronogramaPage";
 import ProfesorHorasPage from "./pages/ProfesorHorasPage";
 import AdminAsistenciaPage from "./pages/AdminAsistenciaPage";
 import AdminPersonalPage from "./pages/AdminPersonalPage";
+import AdminAlumnosPage from "./pages/AdminAlumnosPage";
+import AdminAlumnoPage from "./pages/AdminAlumnoPage";
+import AdminInscripcionPage from "./pages/AdminInscripcionPage";
+import EncargadoInscripcionesPage from "./pages/EncargadoInscripcionesPage";
 
 const queryClient = new QueryClient();
 
@@ -49,12 +53,16 @@ const App = () => (
           {/* Rutas privadas: un solo DashboardLayout. RequireAuth controla sesión y rol (domain/permissions.ts). */}
           <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/alumnos" element={<AdminAlumnosPage />} />
+            <Route path="/admin/alumnos/nuevo" element={<AdminInscripcionPage />} />
+            <Route path="/admin/alumnos/:clientId" element={<AdminAlumnoPage />} />
             <Route path="/admin/personal" element={<AdminPersonalPage />} />
             <Route path="/admin/asistencia" element={<AdminAsistenciaPage />} />
             <Route path="/admin/novedades" element={<NovedadesPage />} />
             <Route path="/encargado" element={<Navigate to="/encargado/asistencia" replace />} />
             <Route path="/encargado/asistencia" element={<AdminAsistenciaPage />} />
             <Route path="/encargado/novedades" element={<NovedadesPage />} />
+            <Route path="/encargado/inscripciones" element={<EncargadoInscripcionesPage />} />
             <Route path="/alumno" element={<AlumnoPanel />} />
             <Route path="/alumno/cronograma" element={<AlumnoCronogramaPage />} />
             <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />

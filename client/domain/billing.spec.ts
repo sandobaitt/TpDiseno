@@ -224,3 +224,42 @@ describe("cuotas por adelantado", () => {
     expect(first.amount).toBe(proratedAmount(30000, "2026-04-16"));
   });
 });
+
+describe("baja y reactivación", () => {
+  it("no cobra los meses en que estuvo de baja y el regreso es proporcional", () => {
+    const alumno = client("2026-01-01", {
+      inactivePeriods: [{ from: "2026-03-20", to: "2026-06-16" }],
+    });
+    const account = getAccountSummary(
+      alumno,
+      paid("2026-01", "2026-02", "2026-03"),
+      plan,
+      "2026-06-18",
+    );
+    // abril y mayo no se generan; junio es proporcional desde el 16
+    expect(account.charges.map((c) => c.period)).toEqual([
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-06",
+    ]);
+    expect(account.unpaid[0]).toMatchObject({
+      period: "2026-06",
+      prorated: true,
+      amount: proratedAmount(30000, "2026-06-16"),
+      dueDate: "2026-06-21",
+    });
+    expect(account.status).toBe("por_vencer");
+  });
+
+  it("si vuelve el mismo mes de la baja, ese mes se cobra normal", () => {
+    const alumno = client("2026-01-01", {
+      inactivePeriods: [{ from: "2026-03-02", to: "2026-03-20" }],
+    });
+    const account = getAccountSummary(alumno, [], plan, "2026-03-25");
+    expect(account.charges.find((c) => c.period === "2026-03")).toMatchObject({
+      amount: 30000,
+      prorated: false,
+    });
+  });
+});
