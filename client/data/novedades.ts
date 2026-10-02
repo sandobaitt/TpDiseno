@@ -1,6 +1,23 @@
 import { daysAgo } from "./seed";
 
-export type NovedadType = "incident" | "change" | "normal";
+/**
+ * Tipos de novedad (CU 4 de Personal). "absence" se crea desde la app; la
+ * semilla usa solo los tres tipos que conoce el panel del admin (otro grupo).
+ */
+export type NovedadType = "absence" | "incident" | "change" | "normal";
+
+export const NOVEDAD_TYPE_LABELS: Record<NovedadType, string> = {
+  absence: "Ausencia",
+  incident: "Incidente",
+  change: "Cambio de turno",
+  normal: "General",
+};
+
+export const NOVEDAD_STATUS_LABELS: Record<NovedadStatus, string> = {
+  in_progress: "En curso",
+  resolved: "Resuelta",
+  closed: "Cerrada",
+};
 export type NovedadEntity = "profesor" | "clase";
 export type NovedadStatus = "resolved" | "in_progress" | "closed";
 
@@ -18,6 +35,10 @@ export interface Novedad {
   status: NovedadStatus;
   /** Id del usuario que la registró. */
   createdBy: string;
+  /** Si se avisa al profesor involucrado (le aparece en su campana). */
+  notifyTeacher?: boolean;
+  /** Las novedades no se borran: se anulan con motivo (queda en el historial). */
+  annulled?: { by: string; at: string; reason: string };
 }
 
 export const novedadesMock: Novedad[] = [

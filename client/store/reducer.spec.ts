@@ -142,8 +142,29 @@ describe("otras acciones del store", () => {
     let state = createSeedState();
     const before = state.activity.length;
     state = dispatch(state, { type: "novedad/resolve", id: "nov_001" });
-    state = dispatch(state, { type: "novedad/remove", id: "nov_002" });
+    state = dispatch(state, {
+      type: "novedad/annul",
+      id: "nov_002",
+      reason: "Cargada por error",
+    });
     expect(state.activity).toHaveLength(before + 2);
+  });
+
+  it("las novedades no se borran: se anulan con motivo", () => {
+    let state = createSeedState();
+    const total = state.novedades.length;
+    state = dispatch(state, {
+      type: "novedad/annul",
+      id: "nov_001",
+      reason: "Duplicada",
+    });
+    expect(state.novedades).toHaveLength(total);
+    expect(
+      state.novedades.find((n) => n.id === "nov_001")?.annulled,
+    ).toMatchObject({
+      by: "us_se_001",
+      reason: "Duplicada",
+    });
   });
 
   it("la semilla ya trae la historia de cada alumno (inscripción y pagos)", () => {

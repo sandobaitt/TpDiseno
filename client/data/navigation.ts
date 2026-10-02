@@ -77,6 +77,12 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         to: "/encargado/novedades",
       },
       {
+        id: "observations",
+        label: "Observaciones",
+        iconClassName: "ti ti-notes",
+        to: "/encargado/observaciones",
+      },
+      {
         id: "enrollments",
         label: "Inscripciones de mi sede",
         iconClassName: "ti ti-user-plus",
@@ -117,6 +123,12 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         label: "Historial de novedades",
         iconClassName: "ti ti-speakerphone",
         to: "/admin/novedades",
+      },
+      {
+        id: "observations",
+        label: "Observaciones de profesores",
+        iconClassName: "ti ti-notes",
+        to: "/admin/observaciones",
       },
     ],
   },

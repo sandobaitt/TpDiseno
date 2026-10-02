@@ -6,6 +6,8 @@ export interface Bitacora {
   teacherId: string;
   branchId: string;
   slotId?: string;
+  /** Fecha de la clase a la que se refiere (AAAA-MM-DD). */
+  date?: string;
   title: string;
   content: string;
   clientId?: string;

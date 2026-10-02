@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/PageHeader";
 import { TeacherClassAttendance } from "@/components/alumnos/attendance/TeacherClassAttendance";
-import { ObservationsPanel } from "@/components/personal/ObservationsPanel";
+import { ObservationsPanel } from "@/components/personal/observations/ObservationsPanel";
 import { getMockSession } from "@/data/users";
 
 export default function ProfesorAsistenciaPage() {

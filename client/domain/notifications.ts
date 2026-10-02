@@ -223,14 +223,31 @@ export function novedadNotifications(
     .sort(byNewest);
 }
 
-/** Avisos del profesor: reemplazos que esperan su respuesta (CU 7 de Personal). */
+/** Días que se muestra un aviso de novedad u observación. */
+const RECENT_DAYS = 7;
+
+/**
+ * Avisos del profesor (CU 7 de Personal): reemplazos que esperan su respuesta
+ * y novedades que lo involucran (a él o a una de sus clases).
+ */
 export function teacherNotifications(input: {
   teacherId: string;
   replacements: Replacement[];
   describe: (replacement: Replacement) => string;
+  novedades?: Novedad[];
+  /** Profesor titular de una clase del cronograma. */
+  teacherOfSlot?: (slotId: string) => string | undefined;
+  today?: string;
 }): AppNotification[] {
-  const { teacherId, replacements, describe } = input;
-  return replacements
+  const {
+    teacherId,
+    replacements,
+    describe,
+    novedades = [],
+    teacherOfSlot,
+    today,
+  } = input;
+  const list: AppNotification[] = replacements
     .filter((r) => r.candidateTeacherId === teacherId && r.status === "pending")
     .map((r) => ({
       id: `reemplazo-${r.id}`,
@@ -240,6 +257,83 @@ export function teacherNotifications(input: {
       detail: describe(r),
       date: r.requestedAt,
       link: "/profesor/reemplazos",
-    }))
-    .sort(byNewest);
+    }));
+
+  for (const n of novedades) {
+    if (!n.notifyTeacher || n.annulled) continue;
+    if (today && diffDays(n.timestamp.slice(0, 10), today) > RECENT_DAYS)
+      continue;
+    const involved =
+      (n.entityType === "profesor" && n.entityId === teacherId) ||
+      (n.entityType === "clase" &&
+        !!n.entityId &&
+        teacherOfSlot?.(n.entityId) === teacherId);
+    if (!involved) continue;
+    list.push({
+      id: `novedad-profe-${n.id}`,
+      tone: n.type === "incident" ? "danger" : "info",
+      icon: n.type === "change" ? "ti-calendar-event" : "ti-speakerphone",
+      title: `Novedad: ${n.entityName}`,
+      detail: n.detail,
+      date: n.timestamp,
+      link: "/profesor/cronograma",
+    });
+  }
+  return list.sort(byNewest);
+}
+
+/**
+ * Avisos del encargado de su sede: novedades en curso, reemplazos rechazados
+ * (la clase quedó sin cubrir), observaciones nuevas y turnos para confirmar.
+ */
+export function managerNotifications(input: {
+  novedades: Novedad[];
+  rejectedReplacements: { id: string; detail: string; date: string }[];
+  observations: {
+    id: string;
+    title: string;
+    teacherName: string;
+    date: string;
+  }[];
+  toConfirm: number;
+  today: string;
+}): AppNotification[] {
+  const { novedades, rejectedReplacements, observations, toConfirm, today } =
+    input;
+  const list = novedadNotifications(novedades, "/encargado/novedades");
+  for (const r of rejectedReplacements) {
+    if (diffDays(r.date, today) > RECENT_DAYS) continue;
+    list.push({
+      id: `reemplazo-rechazado-${r.id}`,
+      tone: "danger",
+      icon: "ti-user-x",
+      title: "Reemplazo rechazado: la clase quedó sin cubrir",
+      detail: r.detail,
+      date: r.date,
+      link: "/encargado/asistencia",
+    });
+  }
+  for (const o of observations) {
+    if (diffDays(o.date.slice(0, 10), today) > RECENT_DAYS) continue;
+    list.push({
+      id: `observacion-${o.id}`,
+      tone: "info",
+      icon: "ti-notes",
+      title: `Observación de ${o.teacherName}`,
+      detail: o.title,
+      date: o.date,
+      link: "/encargado/observaciones",
+    });
+  }
+  if (toConfirm > 0)
+    list.push({
+      id: `turnos-para-confirmar-${today}-${toConfirm}`,
+      tone: "warning",
+      icon: "ti-shield-check",
+      title: `${toConfirm} ${toConfirm === 1 ? "turno de profesor para confirmar" : "turnos de profesores para confirmar"}`,
+      detail: "Revisalos en Asistencia docente.",
+      date: today,
+      link: "/encargado/asistencia",
+    });
+  return list.sort(byNewest);
 }

@@ -72,6 +72,13 @@ export function getTeacherHours(
     return { session, attendance: record, state };
   });
 
+  return summarizeTeacherSessions(records);
+}
+
+/** Totales de un conjunto de clases (sirve para filtrar por sede o actividad y volver a sumar). */
+export function summarizeTeacherSessions(
+  records: TeacherSessionRecord[],
+): HoursSummary {
   const past = records.filter((r) => r.state !== "programada");
   const scheduledMin = past.reduce((sum, r) => sum + r.session.durationMin, 0);
   const workedMin = past

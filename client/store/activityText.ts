@@ -33,6 +33,8 @@ export const activityText = {
     `Registró la asistencia de ${count} ${count === 1 ? "profesor" : "profesores"} del ${dateLabel}`,
   confirmTeacherAttendanceMany: (count: number) =>
     `Confirmó ${count} ${count === 1 ? "asistencia" : "asistencias"} de profesores`,
+  annulNovedad: (entityName: string, reason: string) =>
+    `Anuló la novedad sobre ${entityName}: ${reason}`,
   sendCommunication: (subject: string, count: number) =>
     `Envió «${subject}» a ${count} ${count === 1 ? "alumno" : "alumnos"}`,
   payment: (payment: Payment, name: string) =>

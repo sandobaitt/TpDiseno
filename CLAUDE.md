@@ -145,6 +145,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `hooks/use-stored-state.ts` | Preferencias de cada usuario guardadas en el navegador. |
 | `components/alumnos/StudentsDashboard` + `profile/StudentProfile` | Lista y ficha del alumno. Se reusan para secretaría (`variant="secretaria"`) y admin (`variant="admin"`); lo que se puede hacer sale de `studentCapabilities(rol)`. |
 | `components/personal/attendance/` | `ShiftRegister` (registrar turnos de profesores) y `TeacherAttendanceBoard` (semana programada contra registrada, con confirmar y corregir). Reglas en `domain/teacherAttendance.ts`. |
+| `components/personal/` | Novedades (`novedades/`), horas del profesor (`hours/MyHours`), observaciones (`observations/`) y asistencia de profesores (`attendance/`). |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
@@ -253,6 +254,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - Se pueden adjuntar certificados.
   - Un menor necesita la autorización firmada de un adulto responsable.
   - Se valida que el alumno no esté duplicado.
+- **Novedades:** no se borran, se **anulan** con motivo (quedan en el historial). La semilla usa solo los tipos y estados que conoce el panel del admin (otro grupo); un test lo controla.
 - **Personal:**
   - Todos son profesores, empleados o contratados. Hay un profesor por turno y sede que controla a los contratados.
   - Se manejan reemplazos y se comparan las horas registradas con el cronograma.

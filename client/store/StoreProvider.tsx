@@ -381,13 +381,14 @@ export function useStoreActions() {
           ),
         });
       },
-      removeNovedad(id: string) {
+      annulNovedad(id: string, reason: string) {
         const novedad = stateRef.current.novedades.find((n) => n.id === id);
         dispatch({
-          type: "novedad/remove",
+          type: "novedad/annul",
           id,
+          reason,
           meta: meta(
-            `Eliminó la novedad sobre ${novedad?.entityName ?? "-"}`,
+            activityText.annulNovedad(novedad?.entityName ?? "-", reason),
             "novedad",
             id,
           ),

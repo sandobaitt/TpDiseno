@@ -200,10 +200,21 @@ function applyAction(state: AppState, action: StoreAction): AppState {
           n.id === action.id ? { ...n, status: "resolved" } : n,
         ),
       };
-    case "novedad/remove":
+    case "novedad/annul":
       return {
         ...state,
-        novedades: state.novedades.filter((n) => n.id !== action.id),
+        novedades: state.novedades.map((n) =>
+          n.id === action.id
+            ? {
+                ...n,
+                annulled: {
+                  by: action.meta.userId,
+                  at: action.meta.at,
+                  reason: action.reason,
+                },
+              }
+            : n,
+        ),
       };
     case "bitacora/add":
       return { ...state, bitacoras: [action.bitacora, ...state.bitacoras] };

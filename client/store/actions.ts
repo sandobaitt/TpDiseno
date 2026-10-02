@@ -63,7 +63,7 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "replacement/respond"; id: string; accept: boolean }
   | { type: "novedad/add"; novedad: Novedad }
   | { type: "novedad/resolve"; id: string }
-  | { type: "novedad/remove"; id: string }
+  | { type: "novedad/annul"; id: string; reason: string }
   | { type: "bitacora/add"; bitacora: Bitacora }
   | { type: "communication/send"; communication: Communication }
   | { type: "notification/markRead"; userId: string; ids: string[] }

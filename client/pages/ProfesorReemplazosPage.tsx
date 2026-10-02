@@ -10,6 +10,7 @@ import { addMinutesToTime, parseISODate } from "@/lib/dates";
 import { useAppState, useStoreActions } from "@/store/StoreProvider";
 import type { AppState } from "@/store/state";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -99,16 +100,24 @@ export default function ProfesorReemplazosPage() {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedRequests = requests.slice(start, start + ITEMS_PER_PAGE);
 
-  // Aceptar cambia el cronograma y suma las horas al reemplazante (lo calcula domain/schedule y domain/hours).
-  const handleConfirm = (id: string) => {
-    actions.respondReplacement(id, true);
-    toast.success("Reemplazo aceptado: ya figura en tu cronograma.");
-  };
+  // Antes de responder se pide confirmación (CU 8 de Personal).
+  const [pending, setPending] = React.useState<{
+    id: string;
+    accept: boolean;
+  } | null>(null);
+  const pendingRequest = requests.find((r) => r.id === pending?.id);
+  const handleConfirm = (id: string) => setPending({ id, accept: true });
+  const handleReject = (id: string) => setPending({ id, accept: false });
 
-  const handleReject = (id: string) => {
-    actions.respondReplacement(id, false);
-    toast.info("Reemplazo rechazado. Le avisamos al encargado.");
-  };
+  // Aceptar cambia el cronograma y suma las horas al reemplazante (lo calcula domain/schedule y domain/hours).
+  function respond() {
+    if (!pending) return;
+    actions.respondReplacement(pending.id, pending.accept);
+    if (pending.accept)
+      toast.success("Reemplazo aceptado: ya figura en tu cronograma.");
+    else toast.info("Reemplazo rechazado. Le avisamos al encargado.");
+    setPending(null);
+  }
 
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
@@ -195,6 +204,26 @@ export default function ProfesorReemplazosPage() {
           ))}
         </ul>
       )}
+      <ConfirmDialog
+        open={!!pending}
+        onOpenChange={(open) => !open && setPending(null)}
+        title={
+          pending?.accept ? "¿Aceptás el reemplazo?" : "¿Rechazás el reemplazo?"
+        }
+        description={
+          pendingRequest
+            ? `${pendingRequest.title} · ${pendingRequest.dateLabel} ${pendingRequest.timeLabel}. ${
+                pending?.accept
+                  ? "La clase pasa a tu cronograma y se te suman las horas."
+                  : "La clase queda sin cubrir y se le avisa al encargado."
+              }`
+            : undefined
+        }
+        confirmLabel={pending?.accept ? "Sí, acepto" : "Sí, rechazo"}
+        tone={pending?.accept ? "default" : "danger"}
+        iconClassName={pending?.accept ? "ti ti-circle-check" : "ti ti-x"}
+        onConfirm={respond}
+      />
     </div>
   );
 }

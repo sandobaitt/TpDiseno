@@ -37,6 +37,7 @@ import AdminAlumnoPage from "./pages/AdminAlumnoPage";
 import AdminInscripcionPage from "./pages/AdminInscripcionPage";
 import EncargadoInscripcionesPage from "./pages/EncargadoInscripcionesPage";
 import EncargadoAsistenciaPage from "./pages/EncargadoAsistenciaPage";
+import ObservacionesPage from "./pages/ObservacionesPage";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,10 @@ const App = () => (
               />
               <Route path="/admin/novedades" element={<NovedadesPage />} />
               <Route
+                path="/admin/observaciones"
+                element={<ObservacionesPage />}
+              />
+              <Route
                 path="/encargado"
                 element={<Navigate to="/encargado/asistencia" replace />}
               />
@@ -84,6 +89,10 @@ const App = () => (
                 element={<EncargadoAsistenciaPage />}
               />
               <Route path="/encargado/novedades" element={<NovedadesPage />} />
+              <Route
+                path="/encargado/observaciones"
+                element={<ObservacionesPage />}
+              />
               <Route
                 path="/encargado/inscripciones"
                 element={<EncargadoInscripcionesPage />}

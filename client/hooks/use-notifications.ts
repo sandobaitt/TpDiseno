@@ -1,8 +1,10 @@
 import { getMockSession } from "@/data/users";
 import { getSlot } from "@/data/schedule";
+import { getTeacher } from "@/data/teachers";
 import { getActivityName } from "@/data/activities";
 import { branchesMock } from "@/data/branches";
 import {
+  managerNotifications,
   novedadNotifications,
   secretaryNotifications,
   studentNotifications,
@@ -50,12 +52,38 @@ export function useNotifications() {
         today,
       });
       break;
-    case "encargado":
-      list = novedadNotifications(
-        state.novedades.filter((n) => n.branchId === session.branchId),
-        "/encargado/novedades",
-      );
+    case "encargado": {
+      const inBranch = (slotId: string) =>
+        getSlot(slotId)?.branchId === session.branchId;
+      list = managerNotifications({
+        novedades: state.novedades.filter(
+          (n) => n.branchId === session.branchId && !n.annulled,
+        ),
+        rejectedReplacements: state.replacements
+          .filter((r) => r.status === "rejected" && inBranch(r.slotId))
+          .map((r) => {
+            const slot = getSlot(r.slotId);
+            return {
+              id: r.id,
+              detail: `${slot ? getActivityName(slot.activityId) : "Clase"} del ${formatDateLong(r.date)}: ${getTeacher(r.candidateTeacherId)?.fullName ?? "el profesor"} no puede cubrirla.`,
+              date: r.respondedAt ?? r.requestedAt,
+            };
+          }),
+        observations: state.bitacoras
+          .filter((b) => b.branchId === session.branchId)
+          .map((b) => ({
+            id: b.id,
+            title: b.title,
+            teacherName: getTeacher(b.teacherId)?.fullName ?? "un profesor",
+            date: b.createdAt,
+          })),
+        toConfirm: state.teacherAttendance.filter(
+          (a) => !a.confirmedAt && inBranch(a.slotId),
+        ).length,
+        today,
+      });
       break;
+    }
     case "admin":
       list = novedadNotifications(state.novedades, "/admin/novedades");
       break;
@@ -63,6 +91,9 @@ export function useNotifications() {
       list = teacherNotifications({
         teacherId: session.teacherId ?? "",
         replacements: state.replacements,
+        novedades: state.novedades,
+        teacherOfSlot: (slotId) => getSlot(slotId)?.teacherId,
+        today,
         describe: (r) => {
           const slot = getSlot(r.slotId);
           const branch = branchesMock.find((b) => b.id === slot?.branchId);

@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E11. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E12. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -26,7 +26,22 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E11 terminadas**. Sigue **E12**: novedades con tipo "Ausencia" y "anular", horas desde el dominio (reemplaza `horasMock`) con diferencias, observaciones visibles para el encargado y avisos al profesor (CU 4 a 10 de Personal).
+- Fase 3: **E0 a E12 terminadas**. Sigue **E13**: indicador de conexión (Wi-Fi inestable) y borradores en los formularios que faltan.
+- En E12 se resolvió lo siguiente:
+  - **Novedades (CU 4 y 5):**
+    - tipos Ausencia, Incidente, Cambio de turno y General, vinculados a un profesor o una clase de la sede;
+    - fecha y hora arrancan en "ahora"; borrador guardado;
+    - "Avisarle al profesor": le aparece en su campana (CU 7);
+    - historial con filtros (tipo, estado, fechas y sede para el admin);
+    - **se anulan con motivo**, no se borran.
+  - **Mis horas (CU 6 y 10):**
+    - horas dictadas y programadas por período, sede y clase, con alumnos por clase;
+    - aviso de diferencias con el cronograma;
+    - se borró `horasMock`.
+  - **Diferencias para encargado y admin (CU 10):** "Horas por profesor" en la semana de la sede, con una insignia si faltan horas.
+  - **Observaciones (CU 9):** el profesor las vincula a una clase y fecha. El encargado (su sede) y el admin las ven en "Observaciones".
+  - **Reemplazos (CU 8):** confirmación antes de aceptar o rechazar. Si se rechaza, al encargado de esa sede le llega el aviso "la clase quedó sin cubrir".
+  - **Avisos del encargado:** novedades, reemplazos rechazados, observaciones nuevas y turnos para confirmar.
 - En E11 se resolvió lo siguiente:
   - **Asistencia de profesores real** (antes era inventada, con fecha de 2023 y KPIs fijos).
   - **Registrar turnos (CU 1):** secretaría (pestaña "Profesores" de Asistencia) y encargado.
@@ -174,8 +189,7 @@
 - **Helpers disponibles:**
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
   - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
-- **Quedan con mocks viejos hasta su etapa:**
-  - `horasMock` dentro de `ProfesorHorasPage` (E12).
+- Ya no quedan mocks viejos: todas las pantallas de nuestros módulos usan los datos del store.
 
 ## Pendientes
 
@@ -183,6 +197,7 @@
 - Consultar antes de agregar ESLint, porque suma dependencias de desarrollo.
 - Coordinar con el grupo de Finanzas: el cobro ya lee `data/promotions.ts` (con los ids dc1…dc5 de su lista), pero `AdminPanel` todavía usa su propia lista interna. No se tocó porque es de ese grupo.
 - Confirmar con el grupo si las promociones se acumulan (hoy se aplica una por cobro).
+- Avisar al grupo del panel del admin (`AdminPanel`, otro grupo): lee la semilla de novedades y solo conoce los tipos incidente, cambio y general. Las ausencias y las anulaciones que se hacen en la app no aparecen ahí. Si quieren mostrarlas, tienen que sumar `absence` a su `TYPE_CONFIG`.
 
 ## Problemas conocidos (los más graves)
 

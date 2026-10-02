@@ -107,3 +107,12 @@ describe("la demo siempre muestra cada situación de cuenta (cualquier día)", (
     expect(statusOf("cl_004")).toBe("inactivo");
   });
 });
+
+describe("compatibilidad con el panel del admin (otro grupo)", () => {
+  it("la semilla de novedades usa solo los tipos y estados que ese panel conoce", () => {
+    for (const n of novedadesMock) {
+      expect(["incident", "change", "normal"]).toContain(n.type);
+      expect(["resolved", "in_progress", "closed"]).toContain(n.status);
+    }
+  });
+});

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  managerNotifications,
   secretaryNotifications,
   studentNotifications,
   teacherNotifications,
@@ -213,5 +214,74 @@ describe("comunicaciones (CU 14)", () => {
     expect(
       personalize("Hola {nombre}!", { fullName: "Martín Rodríguez" }),
     ).toBe("Hola Martín!");
+  });
+});
+
+describe("avisos de novedades y del encargado (CU 7 de Personal)", () => {
+  const novedad = {
+    id: "nov_x",
+    type: "change" as const,
+    entityType: "clase" as const,
+    entityId: "sl_c11",
+    entityName: "Yoga · Centro",
+    branchId: "br_001",
+    timestamp: `${TODAY}T09:00:00`,
+    detail: "La clase pasa a las 18:30.",
+    status: "in_progress" as const,
+    createdBy: "us_en_001",
+    notifyTeacher: true,
+  };
+
+  it("al profesor le llegan las novedades de sus clases si se pidió avisarle", () => {
+    const base = {
+      teacherId: "tc_002",
+      replacements: [],
+      describe: () => "",
+      teacherOfSlot: () => "tc_002",
+      today: TODAY,
+    };
+    expect(
+      teacherNotifications({ ...base, novedades: [novedad] })[0].title,
+    ).toBe("Novedad: Yoga · Centro");
+    expect(
+      teacherNotifications({
+        ...base,
+        novedades: [{ ...novedad, notifyTeacher: false }],
+      }),
+    ).toEqual([]);
+    expect(
+      teacherNotifications({
+        ...base,
+        novedades: [
+          { ...novedad, annulled: { by: "x", at: TODAY, reason: "error" } },
+        ],
+      }),
+    ).toEqual([]);
+  });
+
+  it("al encargado le avisa reemplazos rechazados, observaciones y turnos para confirmar", () => {
+    const list = managerNotifications({
+      novedades: [],
+      rejectedReplacements: [
+        { id: "r1", detail: "Yoga del viernes", date: TODAY },
+      ],
+      observations: [
+        {
+          id: "b1",
+          title: "Molestia en rodilla",
+          teacherName: "Micaela Sosa",
+          date: `${TODAY}T10:00:00`,
+        },
+      ],
+      toConfirm: 3,
+      today: TODAY,
+    });
+    expect(list.map((n) => n.title).sort()).toEqual(
+      [
+        "3 turnos de profesores para confirmar",
+        "Observación de Micaela Sosa",
+        "Reemplazo rechazado: la clase quedó sin cubrir",
+      ].sort(),
+    );
   });
 });

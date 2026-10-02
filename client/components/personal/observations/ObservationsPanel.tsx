@@ -14,7 +14,10 @@ import { EmptyState } from "@/components/common/EmptyState";
 import { FormField, inputClasses } from "@/components/common/FormField";
 import type { Bitacora } from "@/data/bitacoras";
 import { getTeacher } from "@/data/teachers";
-import { formatDateTime, nowISO } from "@/lib/dates";
+import { scheduleMock } from "@/data/schedule";
+import { sessionsBetween } from "@/domain/schedule";
+import { addDays, formatDateTime, nowISO, todayISO } from "@/lib/dates";
+import { observationClassLabel } from "./classLabel";
 import { cleanText } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useAppState, useStoreActions } from "@/store/StoreProvider";
@@ -23,9 +26,12 @@ interface ObservationsPanelProps {
   teacherId?: string;
 }
 
+/** Clases de los últimos días a las que se puede vincular una observación. */
+const LINKABLE_DAYS = 7;
+
 /**
- * Observaciones de jornada del profesor (CU 9 de Personal). En E12 se vinculan
- * a la clase y las ve el encargado de la sede.
+ * Observaciones de jornada del profesor (CU 9 de Personal): se vinculan a una
+ * clase y fecha, y las ve el encargado de la sede (y el admin).
  */
 export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
   const state = useAppState();
@@ -37,6 +43,17 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [clientId, setClientId] = React.useState("");
+  const [classKey, setClassKey] = React.useState("");
+  const today = todayISO();
+  const recentClasses = sessionsBetween(
+    addDays(today, -LINKABLE_DAYS),
+    today,
+    scheduleMock,
+    state.replacements,
+  )
+    .filter((s) => s.teacherId === teacherId)
+    .reverse();
+  const classLabel = observationClassLabel;
   const [errors, setErrors] = React.useState<{
     title?: string;
     content?: string;
@@ -46,6 +63,11 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
     setTitle("");
     setContent("");
     setClientId("");
+    setClassKey(
+      recentClasses[0]
+        ? `${recentClasses[0].slotId}|${recentClasses[0].date}`
+        : "",
+    );
     setErrors({});
     setFormOpen(true);
   }
@@ -59,10 +81,19 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
     setErrors(found);
     if (found.title || found.content) return;
     const student = students.find((c) => c.id === clientId);
+    const [slotId, date] = classKey
+      ? classKey.split("|")
+      : [undefined, undefined];
+    const linked = recentClasses.find(
+      (s) => s.slotId === slotId && s.date === date,
+    );
     actions.addBitacora({
       id: `bit_${Date.now().toString(36)}`,
       teacherId: teacherId ?? "",
-      branchId: getTeacher(teacherId)?.branchIds[0] ?? "br_001",
+      branchId:
+        linked?.branchId ?? getTeacher(teacherId)?.branchIds[0] ?? "br_001",
+      slotId: linked?.slotId,
+      date: linked?.date,
       title: cleanText(title),
       content: cleanText(content),
       clientId: student?.id,
@@ -110,6 +141,11 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                 <span className="line-clamp-2 text-xs text-gray-300">
                   {b.content}
                 </span>
+                {classLabel(b.slotId, b.date) && (
+                  <span className="text-xs text-primary">
+                    {classLabel(b.slotId, b.date)}
+                  </span>
+                )}
                 <span className="text-xs text-gray-400">
                   {formatDateTime(b.createdAt)}
                   {b.studentName && ` · ${b.studentName}`}
@@ -133,6 +169,8 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                 </DialogTitle>
                 <DialogDescription>
                   {formatDateTime(selected.createdAt)}
+                  {classLabel(selected.slotId, selected.date) &&
+                    ` · ${classLabel(selected.slotId, selected.date)}`}
                   {selected.studentName && ` · ${selected.studentName}`}
                 </DialogDescription>
               </DialogHeader>
@@ -165,6 +203,26 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                   aria-describedby={describedBy}
                   className={inputClasses}
                 />
+              )}
+            </FormField>
+            <FormField label="Clase">
+              {(fieldId) => (
+                <select
+                  id={fieldId}
+                  value={classKey}
+                  onChange={(e) => setClassKey(e.target.value)}
+                  className={inputClasses}
+                >
+                  <option value="">Sin clase en particular</option>
+                  {recentClasses.map((c) => (
+                    <option
+                      key={`${c.slotId}|${c.date}`}
+                      value={`${c.slotId}|${c.date}`}
+                    >
+                      {classLabel(c.slotId, c.date)}
+                    </option>
+                  ))}
+                </select>
               )}
             </FormField>
             <FormField label="Alumno (opcional)">

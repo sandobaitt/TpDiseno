@@ -6,6 +6,7 @@ import { FilterSelect } from "@/components/common/FilterSelect";
 import { StatCard } from "@/components/common/StatCard";
 import { StatusBadge, type StatusTone } from "@/components/common/StatusBadge";
 import { EmptyState } from "@/components/common/EmptyState";
+import { SectionCard } from "@/components/common/SectionCard";
 import { scheduleMock } from "@/data/schedule";
 import { getActivityName } from "@/data/activities";
 import { branchesMock } from "@/data/branches";
@@ -29,6 +30,7 @@ import {
   addDays,
   formatDate,
   formatDateLong,
+  formatMinutes,
   nowISO,
   startOfWeek,
   todayISO,
@@ -93,6 +95,20 @@ export function TeacherAttendanceBoard({
     .filter((r) => r.record && !r.record.confirmedAt)
     .map((r) => r.record!.id);
   const days = [...new Set(rows.map((r) => r.session.date))];
+  // Diferencias con el cronograma por profesor (CU 10): registradas contra programadas.
+  const byTeacher = [...new Set(rows.map((r) => r.session.teacherId))]
+    .map((id) => {
+      const due = rows.filter(
+        (r) => r.session.teacherId === id && r.state !== "programada",
+      );
+      const scheduled = due.reduce((sum, r) => sum + r.session.durationMin, 0);
+      const worked = due
+        .filter((r) => r.state === "presente")
+        .reduce((sum, r) => sum + r.session.durationMin, 0);
+      return { id, scheduled, worked, difference: worked - scheduled };
+    })
+    .filter((t) => t.scheduled > 0)
+    .sort((a, b) => a.difference - b.difference);
   const teachers = teachersMock.filter(
     (t) => !branch || t.branchIds.includes(branch),
   );
@@ -171,6 +187,38 @@ export function TeacherAttendanceBoard({
           tone="info"
         />
       </div>
+
+      {byTeacher.length > 0 && (
+        <SectionCard title="Horas por profesor" icon="ti-clock-hour-4">
+          <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {byTeacher.map((t) => (
+              <li
+                key={t.id}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-neutral-800/40 px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white">
+                    {getTeacher(t.id)?.fullName ?? "Profesor"}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {formatMinutes(t.worked)} registradas de{" "}
+                    {formatMinutes(t.scheduled)} programadas
+                  </p>
+                </div>
+                {t.difference < 0 ? (
+                  <StatusBadge tone="warning" icon="ti-alert-triangle">
+                    {formatMinutes(t.difference)}
+                  </StatusBadge>
+                ) : (
+                  <StatusBadge tone="success" icon="ti-check">
+                    Sin diferencia
+                  </StatusBadge>
+                )}
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      )}
 
       {rows.length === 0 ? (
         <EmptyState
