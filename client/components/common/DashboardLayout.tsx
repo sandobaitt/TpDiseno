@@ -39,7 +39,7 @@ export function DashboardLayout() {
     const partial = all
       .filter((item) => item.to && location.pathname.startsWith(item.to + "/"))
       .sort((a, b) => (b.to?.length ?? 0) - (a.to?.length ?? 0))[0];
-    return partial?.label ?? "Dashboard";
+    return partial?.label ?? "Inicio";
   }, [nav.items, location.pathname]);
 
   const footerItems: SidebarNavItem[] = React.useMemo(

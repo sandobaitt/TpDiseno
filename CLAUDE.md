@@ -77,7 +77,10 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 **Cómo agregar una pantalla:**
 1. El componente principal va en `client/components/<módulo>/`.
 2. La página `client/pages/MiPantalla.tsx` solo importa y renderiza ese componente.
-3. Se registra la ruta en `client/App.tsx`, dentro del grupo protegido. Si va en el menú, se agrega el ítem en `client/data/navigation.ts`.
+3. Se registra la ruta en `client/App.tsx`, dentro del grupo protegido y **bajo el prefijo del rol**: `/admin`, `/encargado`, `/secretaria`, `/profesor` o `/alumno`.
+   - Los permisos de cada prefijo están en `client/domain/permissions.ts` y los aplica `RequireAuth`.
+   - Si dos roles usan la misma pantalla, se registra una ruta en cada prefijo.
+4. Si va en el menú, se agrega el ítem en `client/data/navigation.ts`. Un test controla que cada ítem del menú sea accesible para su rol.
 
 **DashboardLayout** (`components/common/DashboardLayout.tsx`):
 - Es un **layout de ruta**: no recibe props.
@@ -153,9 +156,10 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `alumno` | Solo **sus** datos. |
 
 **Sesión mock:**
-- Vive en `localStorage`. Los helpers están en `client/data/users.ts`: `getMockSession()`, `saveMockSession()`, `clearMockSession()` y `getPostLoginPath(role)`.
+- En `localStorage` se guarda **solo el id** del usuario.
+- El rol, la sede (`branchId`) y los vínculos con su alumno (`clientId`) o profesor (`teacherId`) se toman siempre de `client/data/users.ts`. Así no se pueden cambiar editando el navegador.
+- Los helpers están en `client/data/users.ts`: `getMockSession()`, `saveMockSession()`, `clearMockSession()`, `getPostLoginPath(role)` y `ROLE_LABELS`.
 - Haciendo triple clic en "Ingresar" aparece el acceso rápido por rol.
-- El rol `encargado` todavía se está agregando (ver MEMORY.md).
 
 ## Casos de uso
 

@@ -1,6 +1,20 @@
-export type AppUserRole = "admin" | "alumno" | "profesor" | "secretario";
+export type AppUserRole =
+  | "admin"
+  | "encargado"
+  | "secretario"
+  | "profesor"
+  | "alumno";
 
 export type AppUserStatus = "active" | "inactive";
+
+/** Nombre de cada rol para mostrar en la interfaz. */
+export const ROLE_LABELS: Record<AppUserRole, string> = {
+  admin: "Administrador",
+  encargado: "Encargado",
+  secretario: "Secretaría",
+  profesor: "Profesor",
+  alumno: "Alumno",
+};
 
 export interface AppUser {
   id: string;
@@ -9,6 +23,12 @@ export interface AppUser {
   dni: string;
   role: AppUserRole;
   status: AppUserStatus;
+  /** Sede donde trabaja (encargado y secretaría). El encargado solo ve esta sede. */
+  branchId?: string;
+  /** Alumno vinculado (rol alumno): sus datos se buscan por este id. */
+  clientId?: string;
+  /** Profesor vinculado (rol profesor). */
+  teacherId?: string;
   /**
    * Solo para desarrollo/mocks. No usar en producción.
    */
@@ -39,6 +59,30 @@ export const appUsersMock: AppUser[] = [
     createdAt: "2025-10-15T12:00:00.000Z",
   },
 
+  // Encargados de sede (los de la entrevista)
+  {
+    id: "us_en_001",
+    fullName: "Adrián López",
+    email: "encargado1@squatgym.com",
+    dni: "28.400.001",
+    role: "encargado",
+    status: "active",
+    branchId: "br_001",
+    password: "encargado123",
+    createdAt: "2025-08-01T09:00:00.000Z",
+  },
+  {
+    id: "us_en_002",
+    fullName: "Susana García",
+    email: "encargado2@squatgym.com",
+    dni: "28.400.002",
+    role: "encargado",
+    status: "active",
+    branchId: "br_002",
+    password: "encargado123",
+    createdAt: "2025-08-01T09:00:00.000Z",
+  },
+
   // Alumno (2)
   {
     id: "us_al_001",
@@ -47,6 +91,7 @@ export const appUsersMock: AppUser[] = [
     dni: "34.567.890",
     role: "alumno",
     status: "active",
+    clientId: "cl_001",
     password: "alumno123",
     createdAt: "2026-02-12T14:20:00.000Z",
   },
@@ -57,6 +102,7 @@ export const appUsersMock: AppUser[] = [
     dni: "38.123.456",
     role: "alumno",
     status: "active",
+    clientId: "cl_002",
     password: "alumno123",
     createdAt: "2025-11-20T09:05:00.000Z",
   },
@@ -69,6 +115,7 @@ export const appUsersMock: AppUser[] = [
     dni: "33.300.001",
     role: "profesor",
     status: "active",
+    teacherId: "tc_001",
     password: "profe123",
     createdAt: "2025-05-01T10:00:00.000Z",
   },
@@ -79,11 +126,12 @@ export const appUsersMock: AppUser[] = [
     dni: "33.300.002",
     role: "profesor",
     status: "active",
+    teacherId: "tc_002",
     password: "profe123",
     createdAt: "2026-01-22T08:30:00.000Z",
   },
 
-  // Secretario (2)
+  // Secretaría (2)
   {
     id: "us_se_001",
     fullName: "Nicolás Ferreyra",
@@ -91,6 +139,7 @@ export const appUsersMock: AppUser[] = [
     dni: "33.210.987",
     role: "secretario",
     status: "active",
+    branchId: "br_001",
     password: "secre123",
     createdAt: "2026-01-05T12:00:00.000Z",
   },
@@ -101,6 +150,7 @@ export const appUsersMock: AppUser[] = [
     dni: "31.222.111",
     role: "secretario",
     status: "active",
+    branchId: "br_002",
     password: "secre123",
     createdAt: "2026-02-20T15:30:00.000Z",
   },
@@ -124,28 +174,44 @@ export const MOCK_SESSION_STORAGE_KEY = "squatgym_mock_session";
 
 export type MockSessionPayload = Pick<
   AppUser,
-  "id" | "fullName" | "email" | "role"
+  "id" | "fullName" | "email" | "role" | "branchId" | "clientId" | "teacherId"
 >;
 
-export function saveMockSession(user: AppUser) {
-  const payload: MockSessionPayload = {
+function toSessionPayload(user: AppUser): MockSessionPayload {
+  return {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    branchId: user.branchId,
+    clientId: user.clientId,
+    teacherId: user.teacherId,
   };
-  localStorage.setItem(MOCK_SESSION_STORAGE_KEY, JSON.stringify(payload));
+}
+
+export function saveMockSession(user: AppUser) {
+  localStorage.setItem(
+    MOCK_SESSION_STORAGE_KEY,
+    JSON.stringify({ id: user.id }),
+  );
 }
 
 export function clearMockSession() {
   localStorage.removeItem(MOCK_SESSION_STORAGE_KEY);
 }
 
+/**
+ * Devuelve la sesión actual. En el navegador solo se guarda el id del usuario:
+ * el rol, la sede y los vínculos se toman siempre del registro de usuarios,
+ * así que no se pueden cambiar editando el localStorage.
+ */
 export function getMockSession(): MockSessionPayload | null {
   const raw = localStorage.getItem(MOCK_SESSION_STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as MockSessionPayload;
+    const { id } = JSON.parse(raw) as { id?: string };
+    const user = appUsersMock.find((u) => u.id === id && u.status === "active");
+    return user ? toSessionPayload(user) : null;
   } catch {
     return null;
   }
@@ -155,6 +221,8 @@ export function getPostLoginPath(role: AppUserRole): string {
   switch (role) {
     case "admin":
       return "/admin";
+    case "encargado":
+      return "/encargado/asistencia";
     case "alumno":
       return "/alumno";
     case "profesor":

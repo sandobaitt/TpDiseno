@@ -1,7 +1,7 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { getMockSession } from "@/data/users";
+import { getMockSession, ROLE_LABELS } from "@/data/users";
 
 export interface SidebarNavItem {
   id: string;
@@ -26,17 +26,6 @@ interface SidebarNavProps {
   onToggleCollapse?: () => void;
 }
 
-function getRoleLabel(role: string) {
-  switch (role) {
-    case "admin":      return "administrador";
-    case "alumno":     return "alumno";
-    case "profesor":   return "profesor";
-    case "secretario": return "secretario";
-    case "secretaria": return "secretario";
-    default:           return role;
-  }
-}
-
 export function SidebarNav({
   className = "",
   isOpen = false,
@@ -53,7 +42,7 @@ export function SidebarNav({
     if (brandSubtitle) return brandSubtitle;
     const session = getMockSession();
     if (!session?.role) return "PANEL";
-    return `PANEL DE ${getRoleLabel(session.role).toUpperCase()}`;
+    return `PANEL DE ${ROLE_LABELS[session.role].toUpperCase()}`;
   }, [brandSubtitle]);
 
   const handleItemClick = (item: SidebarNavItem) => {

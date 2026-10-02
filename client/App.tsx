@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import { RequireAuth } from "@/components/common/RequireAuth";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
 import Index from "./pages/Index";
@@ -40,12 +40,15 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-          {/* Protected routes share a single DashboardLayout instance */}
+          {/* Rutas privadas: un solo DashboardLayout. RequireAuth controla sesión y rol (domain/permissions.ts). */}
           <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/personal" element={<AdminPersonalPage />} />
             <Route path="/admin/asistencia" element={<AdminAsistenciaPage />} />
             <Route path="/admin/novedades" element={<NovedadesPage />} />
+            <Route path="/encargado" element={<Navigate to="/encargado/asistencia" replace />} />
+            <Route path="/encargado/asistencia" element={<AdminAsistenciaPage />} />
+            <Route path="/encargado/novedades" element={<NovedadesPage />} />
             <Route path="/alumno" element={<AlumnoPanel />} />
             <Route path="/alumno/cronograma" element={<AlumnoCronogramaPage />} />
             <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />

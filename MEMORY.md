@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **01/10/2026**, al terminar la etapa E1. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **01/10/2026**, al terminar la etapa E2. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -23,7 +23,14 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 y E1 terminadas**. Sigue **E2**: roles y permisos.
+- Fase 3: **E0, E1 y E2 terminadas**. Sigue **E3**: datos coherentes, reglas y dominio.
+- En E2 se resolvió lo siguiente:
+  - Rol `encargado`: Adrián López en Centro y Susana García en Norte. Por ahora usa la asistencia del admin y Novedades; el filtro por sede llega en E11.
+  - Sede (`branchId`) en los usuarios de secretaría y encargado.
+  - Vínculo alumno/profesor por id.
+  - Las rutas se controlan por rol (`domain/permissions.ts`), con tests.
+  - Página "No tenés permiso".
+  - La sesión guarda solo el id.
 - En E1 se corrigió lo siguiente:
   - Cobro sin recargo, con 4 medios y sin efectivo online.
   - Datos fijos en lugar de aleatorios.
@@ -50,7 +57,6 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- No hay control de rol en las rutas y no existe el Encargado (C1, C2).
 - El cobro todavía no registra el pago ni emite recibo (C3). El recargo ya se quitó.
 - El estado de cuenta del alumno muestra pagos inventados (C4).
 - Las fechas de solo día se muestran corridas un día (A1).

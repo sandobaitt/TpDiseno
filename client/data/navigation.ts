@@ -6,7 +6,7 @@ interface RoleNavConfig {
   items: SidebarNavItem[];
 }
 
-const roleNavigation: Record<string, RoleNavConfig> = {
+const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
   secretario: {
     panelName: "secretaría",
     items: [
@@ -51,6 +51,23 @@ const roleNavigation: Record<string, RoleNavConfig> = {
         label: "Novedades",
         iconClassName: "ti ti-speakerphone",
         to: "/secretaria/novedades",
+      },
+    ],
+  },
+  encargado: {
+    panelName: "encargado de sede",
+    items: [
+      {
+        id: "staff-attendance",
+        label: "Asistencia docente",
+        iconClassName: "ti ti-calendar-check",
+        to: "/encargado/asistencia",
+      },
+      {
+        id: "news",
+        label: "Novedades",
+        iconClassName: "ti ti-speakerphone",
+        to: "/encargado/novedades",
       },
     ],
   },
@@ -143,10 +160,11 @@ const roleNavigation: Record<string, RoleNavConfig> = {
   },
 };
 
+const EMPTY_NAV: RoleNavConfig = { panelName: "", items: [] };
+
+/** Menú del rol. Un rol desconocido no recibe ningún ítem (antes caía en el de secretaría). */
 export function getNavigationByRole(role?: string): RoleNavConfig {
-  const normalized = role === "secretaria" ? "secretario" : role;
-  if (normalized && normalized in roleNavigation) {
-    return roleNavigation[normalized];
-  }
-  return roleNavigation.secretario;
+  return role && role in roleNavigation
+    ? roleNavigation[role as AppUserRole]
+    : EMPTY_NAV;
 }

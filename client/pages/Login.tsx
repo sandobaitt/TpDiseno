@@ -2,21 +2,20 @@ import { FormEvent, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, type AppUser } from "@/data/users";
+import { appUsersMock, findMockUserByEmailOrDni, getPostLoginPath, saveMockSession, ROLE_LABELS, type AppUser, type AppUserRole } from "@/data/users";
 import loginBg from "@/assets/login-bg.jpg";
 
-const DEBUG_USERS: AppUser[] = [
-  appUsersMock.find((u) => u.role === "admin")!,
-  appUsersMock.find((u) => u.role === "secretario")!,
-  appUsersMock.find((u) => u.role === "profesor")!,
-  appUsersMock.find((u) => u.role === "alumno")!,
-];
+const DEBUG_ROLES: AppUserRole[] = ["admin", "encargado", "secretario", "profesor", "alumno"];
+const DEBUG_USERS: AppUser[] = DEBUG_ROLES.map(
+  (role) => appUsersMock.find((u) => u.role === role)!,
+);
 
-const ROLE_STYLE: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-  admin:      { label: "Admin",       bg: "bg-lime-400/10",   text: "text-lime-400",   dot: "bg-lime-400"   },
-  secretario: { label: "Secretario",  bg: "bg-violet-400/10", text: "text-violet-400", dot: "bg-violet-400" },
-  profesor:   { label: "Profesor",    bg: "bg-blue-400/10",   text: "text-blue-400",   dot: "bg-blue-400"   },
-  alumno:     { label: "Alumno",      bg: "bg-gray-400/10",   text: "text-gray-400",   dot: "bg-gray-500"   },
+const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
+  admin:      { bg: "bg-lime-400/10",   text: "text-lime-400"   },
+  encargado:  { bg: "bg-amber-400/10",  text: "text-amber-400"  },
+  secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
+  profesor:   { bg: "bg-blue-400/10",   text: "text-blue-400"   },
+  alumno:     { bg: "bg-gray-400/10",   text: "text-gray-300"   },
 };
 
 function getInitials(name: string) {
@@ -221,7 +220,7 @@ export default function Login() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-white text-xs font-semibold truncate leading-tight">{user.fullName.split(" ")[0]}</p>
-                          <span className={`text-[9px] font-bold ${s.text}`}>{s.label}</span>
+                          <span className={`text-[11px] font-bold ${s.text}`}>{ROLE_LABELS[user.role]}</span>
                         </div>
                       </button>
                     );

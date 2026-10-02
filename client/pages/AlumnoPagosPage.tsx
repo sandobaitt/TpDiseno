@@ -19,7 +19,8 @@ interface MonthRecord {
 function getClientFromSession(): Client | undefined {
   const session = getMockSession();
   if (!session) return;
-  return clientsMock.find((c) => c.fullName === session.fullName);
+  // El alumno se identifica por el id vinculado a su usuario (antes era por nombre).
+  return clientsMock.find((c) => c.id === session.clientId);
 }
 
 function buildMonthHistory(client: Client, planPrice: number): MonthRecord[] {

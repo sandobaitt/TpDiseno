@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { novedadesMock, type Novedad } from "@/data/novedades";
-import { getMockSession, clearMockSession } from "@/data/users";
+import { getMockSession, clearMockSession, ROLE_LABELS, type AppUserRole } from "@/data/users";
 
 function getInitials(fullName: string): string {
   const parts = fullName.trim().split(/\s+/);
@@ -29,15 +29,17 @@ const STATUS_STYLE: Record<Novedad["status"], { label: string; color: string }> 
   closed:      { label: "Cerrado",   color: "text-gray-500"  },
 };
 
-const ROLE_STYLE: Record<string, { label: string; bg: string; text: string }> = {
-  admin:      { label: "Administrador", bg: "bg-lime-400/10",   text: "text-lime-400"   },
-  secretario: { label: "Secretario",    bg: "bg-violet-400/10", text: "text-violet-400" },
-  profesor:   { label: "Profesor",      bg: "bg-blue-400/10",   text: "text-blue-400"   },
-  alumno:     { label: "Alumno",        bg: "bg-gray-400/10",   text: "text-gray-400"   },
+const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
+  admin:      { bg: "bg-lime-400/10",   text: "text-lime-400"   },
+  encargado:  { bg: "bg-amber-400/10",  text: "text-amber-400"  },
+  secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
+  profesor:   { bg: "bg-blue-400/10",   text: "text-blue-400"   },
+  alumno:     { bg: "bg-gray-400/10",   text: "text-gray-300"   },
 };
 
-const NOVEDADES_ROUTE: Record<string, string> = {
+const NOVEDADES_ROUTE: Partial<Record<AppUserRole, string>> = {
   admin:      "/admin/novedades",
+  encargado:  "/encargado/novedades",
   secretario: "/secretaria/novedades",
 };
 
@@ -57,10 +59,10 @@ interface HeaderProps {
 export function Header({ nav, title, className = "", onMenuClick, onLogoutClick }: HeaderProps) {
   const navigate = useNavigate();
   const session = getMockSession();
-  const role = session?.role ?? "alumno";
-  const roleStyle = ROLE_STYLE[role] ?? ROLE_STYLE.alumno;
+  const role: AppUserRole = session?.role ?? "alumno";
+  const roleStyle = ROLE_STYLE[role];
   const initials = session ? getInitials(session.fullName) : "?";
-  const hasNovedades = role === "admin" || role === "secretario";
+  const hasNovedades = role in NOVEDADES_ROUTE;
   const inProgressCount = hasNovedades
     ? novedadesMock.filter((n) => n.status === "in_progress").length
     : 0;
@@ -195,7 +197,7 @@ export function Header({ nav, title, className = "", onMenuClick, onLogoutClick 
                 <div className="min-w-0">
                   <p className="text-white text-sm font-bold truncate">{session?.fullName ?? "Usuario"}</p>
                   <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${roleStyle.bg} ${roleStyle.text}`}>
-                    {roleStyle.label}
+                    {ROLE_LABELS[role]}
                   </span>
                 </div>
               </div>

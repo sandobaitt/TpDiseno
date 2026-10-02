@@ -28,6 +28,7 @@ Otros comandos útiles:
 | Rol | Usuario | Contraseña |
 |---|---|---|
 | Administrador | admin1@squatgym.com | admin123 |
+| Encargado (sede Centro) | encargado1@squatgym.com | encargado123 |
 | Secretaria | secre1@squatgym.com | secre123 |
 | Profesor | profe1@squatgym.com | profe123 |
 | Alumno | alumno1@email.com | alumno123 |
