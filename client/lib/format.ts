@@ -66,3 +66,8 @@ export function formatDni(value: string): string {
 export function cleanText(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
+
+/** Primera letra en mayúscula ("lunes, 28 de septiembre" → "Lunes, 28 de septiembre"). */
+export function capitalizeFirst(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}

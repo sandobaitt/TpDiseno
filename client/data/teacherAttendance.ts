@@ -61,6 +61,7 @@ function buildTeacherAttendance(): TeacherAttendance[] {
   for (const s of sessions) {
     const pick = seededPercent("ta", s.slotId, s.date);
     if (!s.replacementId && pick >= 6 && pick < 11) continue; // sin registro: genera diferencia de horas
+    if (s.date === daysAgo(1) && s.start >= "18:00") continue; // lo de anoche todavía no se cargó
     const absent = !s.replacementId && pick < 6;
     const confirmed = diffDays(s.date, SEED_TODAY) >= 7;
     records.push({

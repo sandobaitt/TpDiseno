@@ -140,6 +140,19 @@ function applyAction(state: AppState, action: StoreAction): AppState {
             : a,
         ),
       };
+    case "teacherAttendance/confirmMany":
+      return {
+        ...state,
+        teacherAttendance: state.teacherAttendance.map((a) =>
+          action.ids.includes(a.id) && !a.confirmedAt
+            ? {
+                ...a,
+                confirmedBy: action.meta.userId,
+                confirmedAt: action.meta.at.slice(0, 10),
+              }
+            : a,
+        ),
+      };
     case "teacherAttendance/correct":
       return {
         ...state,
@@ -148,6 +161,11 @@ function applyAction(state: AppState, action: StoreAction): AppState {
             ? {
                 ...a,
                 status: action.status,
+                // Si ahora figura presente, el motivo de ausencia ya no corresponde.
+                reason:
+                  action.status === "present"
+                    ? undefined
+                    : (a.reason ?? "Corrección del encargado"),
                 correction: {
                   by: action.meta.userId,
                   at: action.meta.at,

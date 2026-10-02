@@ -144,6 +144,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `domain/communications.ts` | Destinatarios (`resolveAudience`) y `{nombre}` (`personalize`) de las comunicaciones. |
 | `hooks/use-stored-state.ts` | Preferencias de cada usuario guardadas en el navegador. |
 | `components/alumnos/StudentsDashboard` + `profile/StudentProfile` | Lista y ficha del alumno. Se reusan para secretaría (`variant="secretaria"`) y admin (`variant="admin"`); lo que se puede hacer sale de `studentCapabilities(rol)`. |
+| `components/personal/attendance/` | `ShiftRegister` (registrar turnos de profesores) y `TeacherAttendanceBoard` (semana programada contra registrada, con confirmar y corregir). Reglas en `domain/teacherAttendance.ts`. |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |
@@ -167,6 +168,7 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
   - Botones de 40 px o más en el celular.
   - **Un estado nunca se comunica solo con color**: siempre va con texto o ícono, por ejemplo "Deudor".
 - **Responsive:** primero el celular, sobre todo para alumno y profesor. En pantallas chicas, las tablas pasan a tarjetas.
+  - Para fechas en español no se usa la clase `capitalize` (pone "De" con mayúscula): se usa `capitalizeFirst` de `lib/format.ts`.
   - Las grillas llevan siempre `grid-cols-1` de base (por ejemplo, `grid grid-cols-1 lg:grid-cols-2`). Sin eso, un texto largo ensancha la columna y la pantalla se desborda en el celular.
 - **Feedback:**
   - Cada acción muestra un aviso (sonner).

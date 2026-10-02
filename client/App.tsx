@@ -36,6 +36,7 @@ import AdminAlumnosPage from "./pages/AdminAlumnosPage";
 import AdminAlumnoPage from "./pages/AdminAlumnoPage";
 import AdminInscripcionPage from "./pages/AdminInscripcionPage";
 import EncargadoInscripcionesPage from "./pages/EncargadoInscripcionesPage";
+import EncargadoAsistenciaPage from "./pages/EncargadoAsistenciaPage";
 
 const queryClient = new QueryClient();
 
@@ -45,46 +46,103 @@ const App = () => (
       <Toaster />
       <Sonner />
       <StoreProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/unauthorized" element={<UnauthorizedAccess />} />
-          {/* Rutas privadas: un solo DashboardLayout. RequireAuth controla sesión y rol (domain/permissions.ts). */}
-          <Route element={<RequireAuth><DashboardLayout /></RequireAuth>}>
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin/alumnos" element={<AdminAlumnosPage />} />
-            <Route path="/admin/alumnos/nuevo" element={<AdminInscripcionPage />} />
-            <Route path="/admin/alumnos/:clientId" element={<AdminAlumnoPage />} />
-            <Route path="/admin/personal" element={<AdminPersonalPage />} />
-            <Route path="/admin/asistencia" element={<AdminAsistenciaPage />} />
-            <Route path="/admin/novedades" element={<NovedadesPage />} />
-            <Route path="/encargado" element={<Navigate to="/encargado/asistencia" replace />} />
-            <Route path="/encargado/asistencia" element={<AdminAsistenciaPage />} />
-            <Route path="/encargado/novedades" element={<NovedadesPage />} />
-            <Route path="/encargado/inscripciones" element={<EncargadoInscripcionesPage />} />
-            <Route path="/alumno" element={<AlumnoPanel />} />
-            <Route path="/alumno/cronograma" element={<AlumnoCronogramaPage />} />
-            <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />
-            <Route path="/alumno/pagos" element={<AlumnoPagosPage />} />
-            <Route path="/profesor" element={<ProfesorAsistenciaPage />} />
-            <Route path="/profesor/asistencia" element={<ProfesorAsistenciaPage />} />
-            <Route path="/profesor/reemplazos" element={<ProfesorReemplazosPage />} />
-            <Route path="/profesor/cronograma" element={<ProfesorCronogramaPage />} />
-            <Route path="/profesor/horas" element={<ProfesorHorasPage />} />
-            <Route path="/secretaria" element={<Navigate to="/secretaria/alumnos" replace />} />
-            <Route path="/secretaria/alumnos" element={<SecretariaAlumnosPage />} />
-            <Route path="/secretaria/alumnos/nuevo" element={<SecretariaInscripcionPage />} />
-            <Route path="/secretaria/alumnos/:clientId" element={<SecretariaAlumnoPage />} />
-            <Route path="/secretaria/acceso" element={<SecretariaAccesoPage />} />
-            <Route path="/secretaria/comunicaciones" element={<SecretariaComunicacionesPage />} />
-            <Route path="/secretaria/asistencia" element={<AttendancePage />} />
-            <Route path="/secretaria/cobros" element={<PaymentsPage />} />
-            <Route path="/secretaria/novedades" element={<NovedadesPage />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/unauthorized" element={<UnauthorizedAccess />} />
+            {/* Rutas privadas: un solo DashboardLayout. RequireAuth controla sesión y rol (domain/permissions.ts). */}
+            <Route
+              element={
+                <RequireAuth>
+                  <DashboardLayout />
+                </RequireAuth>
+              }
+            >
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/alumnos" element={<AdminAlumnosPage />} />
+              <Route
+                path="/admin/alumnos/nuevo"
+                element={<AdminInscripcionPage />}
+              />
+              <Route
+                path="/admin/alumnos/:clientId"
+                element={<AdminAlumnoPage />}
+              />
+              <Route path="/admin/personal" element={<AdminPersonalPage />} />
+              <Route
+                path="/admin/asistencia"
+                element={<AdminAsistenciaPage />}
+              />
+              <Route path="/admin/novedades" element={<NovedadesPage />} />
+              <Route
+                path="/encargado"
+                element={<Navigate to="/encargado/asistencia" replace />}
+              />
+              <Route
+                path="/encargado/asistencia"
+                element={<EncargadoAsistenciaPage />}
+              />
+              <Route path="/encargado/novedades" element={<NovedadesPage />} />
+              <Route
+                path="/encargado/inscripciones"
+                element={<EncargadoInscripcionesPage />}
+              />
+              <Route path="/alumno" element={<AlumnoPanel />} />
+              <Route
+                path="/alumno/cronograma"
+                element={<AlumnoCronogramaPage />}
+              />
+              <Route path="/alumno/ajustes" element={<AlumnoAjustesPage />} />
+              <Route path="/alumno/pagos" element={<AlumnoPagosPage />} />
+              <Route path="/profesor" element={<ProfesorAsistenciaPage />} />
+              <Route
+                path="/profesor/asistencia"
+                element={<ProfesorAsistenciaPage />}
+              />
+              <Route
+                path="/profesor/reemplazos"
+                element={<ProfesorReemplazosPage />}
+              />
+              <Route
+                path="/profesor/cronograma"
+                element={<ProfesorCronogramaPage />}
+              />
+              <Route path="/profesor/horas" element={<ProfesorHorasPage />} />
+              <Route
+                path="/secretaria"
+                element={<Navigate to="/secretaria/alumnos" replace />}
+              />
+              <Route
+                path="/secretaria/alumnos"
+                element={<SecretariaAlumnosPage />}
+              />
+              <Route
+                path="/secretaria/alumnos/nuevo"
+                element={<SecretariaInscripcionPage />}
+              />
+              <Route
+                path="/secretaria/alumnos/:clientId"
+                element={<SecretariaAlumnoPage />}
+              />
+              <Route
+                path="/secretaria/acceso"
+                element={<SecretariaAccesoPage />}
+              />
+              <Route
+                path="/secretaria/comunicaciones"
+                element={<SecretariaComunicacionesPage />}
+              />
+              <Route
+                path="/secretaria/asistencia"
+                element={<AttendancePage />}
+              />
+              <Route path="/secretaria/cobros" element={<PaymentsPage />} />
+              <Route path="/secretaria/novedades" element={<NovedadesPage />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
       </StoreProvider>
     </TooltipProvider>
   </QueryClientProvider>

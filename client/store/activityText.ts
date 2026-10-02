@@ -29,6 +29,10 @@ export const activityText = {
     `Revisó ${docWithArticle(doc.kind, true)} (${doc.fileName}) de ${name}`,
   saveAttendance: (count: number, classLabel: string, correction: boolean) =>
     `${correction ? "Corrigió" : "Registró"} la asistencia de ${count} ${count === 1 ? "alumno" : "alumnos"} en ${classLabel}`,
+  saveTeacherAttendance: (count: number, dateLabel: string) =>
+    `Registró la asistencia de ${count} ${count === 1 ? "profesor" : "profesores"} del ${dateLabel}`,
+  confirmTeacherAttendanceMany: (count: number) =>
+    `Confirmó ${count} ${count === 1 ? "asistencia" : "asistencias"} de profesores`,
   sendCommunication: (subject: string, count: number) =>
     `Envió «${subject}» a ${count} ${count === 1 ? "alumno" : "alumnos"}`,
   payment: (payment: Payment, name: string) =>

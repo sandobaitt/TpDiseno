@@ -2,9 +2,11 @@ import * as React from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SegmentedTabs } from "@/components/common/SegmentedTabs";
 import { SecretaryAttendance } from "@/components/alumnos/attendance/SecretaryAttendance";
-import { StaffAttendanceToday } from "@/components/personal/StaffAttendanceToday";
+import { ShiftRegister } from "@/components/personal/attendance/ShiftRegister";
+import { branchesMock } from "@/data/branches";
+import { getMockSession } from "@/data/users";
 
-type TabId = "students" | "staff";
+type TabId = "students" | "teachers";
 
 export default function AttendancePage() {
   const [tab, setTab] = React.useState<TabId>("students");
@@ -12,7 +14,7 @@ export default function AttendancePage() {
     <div className="flex flex-col gap-5 px-7 pb-7 max-sm:px-4">
       <PageHeader
         title="Control de asistencia"
-        subtitle="Asistencia por clase y sede. Los alumnos bloqueados no se pueden marcar presentes."
+        subtitle="Asistencia de alumnos por clase y de profesores por turno."
       />
       <SegmentedTabs<TabId>
         label="Lista de asistencia"
@@ -20,10 +22,17 @@ export default function AttendancePage() {
         onChange={setTab}
         items={[
           { id: "students", label: "Alumnos por clase", icon: "ti-users" },
-          { id: "staff", label: "Personal", icon: "ti-user-star" },
+          { id: "teachers", label: "Profesores", icon: "ti-user-star" },
         ]}
       />
-      {tab === "students" ? <SecretaryAttendance /> : <StaffAttendanceToday />}
+      {tab === "students" ? (
+        <SecretaryAttendance />
+      ) : (
+        <ShiftRegister
+          branchId={getMockSession()?.branchId ?? branchesMock[0].id}
+          allowBranchChange
+        />
+      )}
     </div>
   );
 }

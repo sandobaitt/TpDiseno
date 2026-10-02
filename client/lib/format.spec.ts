@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  capitalizeFirst,
   cleanText,
   formatARS,
   formatDni,
@@ -79,5 +80,13 @@ describe("formatDni", () => {
 describe("cleanText", () => {
   it("saca los espacios de más", () => {
     expect(cleanText("  Ana   María ")).toBe("Ana María");
+  });
+});
+
+describe("capitalizeFirst", () => {
+  it("pone en mayúscula solo la primera letra", () => {
+    expect(capitalizeFirst("lunes, 28 de septiembre")).toBe(
+      "Lunes, 28 de septiembre",
+    );
   });
 });

@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E10. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E11. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -26,7 +26,23 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E10 terminadas**. Sigue **E11**: asistencia de profesores por turno y sede, confirmar o corregir (encargado) e historial (CU 1 a 3 de Personal). Reemplaza `data/adminAttendance.ts`.
+- Fase 3: **E0 a E11 terminadas**. Sigue **E12**: novedades con tipo "Ausencia" y "anular", horas desde el dominio (reemplaza `horasMock`) con diferencias, observaciones visibles para el encargado y avisos al profesor (CU 4 a 10 de Personal).
+- En E11 se resolvió lo siguiente:
+  - **Asistencia de profesores real** (antes era inventada, con fecha de 2023 y KPIs fijos).
+  - **Registrar turnos (CU 1):** secretaría (pestaña "Profesores" de Asistencia) y encargado.
+    - Según el cronograma del día, con los reemplazos.
+    - Presente o ausente, con motivo.
+    - Lo ya confirmado no se toca desde ahí.
+  - **Semana de la sede (CU 2):** programado contra registrado, con KPIs (dictadas, ausencias, sin registrar, para confirmar).
+    - Filtros por profesor y por empleado o contratado.
+    - Las semanas anteriores funcionan como historial.
+  - **Confirmar o corregir (CU 3), solo el encargado:**
+    - confirmar uno por uno o "Confirmar lo registrado";
+    - corregir con motivo obligatorio, conservando el valor anterior;
+    - registrar un turno faltante (queda confirmado).
+  - **Admin:** consulta todas las sedes, sin acciones.
+  - **Semilla:** los turnos de anoche desde las 18 quedan "sin registrar", para la demo.
+  - **Borrados:** `data/adminAttendance.ts`, `AdminShiftCard` y la pestaña vieja de presentismo del personal.
 - En E10 se resolvió lo siguiente:
   - **Admin, "Alumnos" (CU 11)** en `/admin/alumnos`:
     - lista con filtros; alta con el mismo formulario de inscripción; ficha única con edición validada;
@@ -159,7 +175,6 @@
   - `lib/dates.ts`: `parseISODate`, `addDays`, `diffDays`, meses "AAAA-MM", formatos y `todayISO`, que respeta `DEMO_TODAY`.
   - `lib/format.ts`, `hooks/use-draft.ts`, `common/ConfirmDialog.tsx` y `common/AccountStatusBadge.tsx`.
 - **Quedan con mocks viejos hasta su etapa:**
-  - `data/adminAttendance.ts` (asistencia del admin/encargado, E11).
   - `horasMock` dentro de `ProfesorHorasPage` (E12).
 
 ## Pendientes
@@ -173,8 +188,7 @@
 
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
-- **Diálogos sin título accesible** (Radix avisa en la consola). Se corrigen al rehacer cada pantalla:
-  - `AdminAsistenciaPage` (E11).
+- Los diálogos sin título accesible quedaron resueltos en E11: no queda ninguno sin título.
 - **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).
   - Con la red lenta, la página tarda en cargar y los íconos pueden no aparecer. Pasó el 02/10/2026: el CDN tardaba más de 10 s.
   - Propuesta: servirlos desde el repo (E13, Wi-Fi). Está pendiente de que el grupo decida.

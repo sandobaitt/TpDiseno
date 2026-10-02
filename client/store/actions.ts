@@ -53,6 +53,7 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "attendance/save"; records: StudentAttendance[] }
   | { type: "teacherAttendance/save"; records: TeacherAttendance[] }
   | { type: "teacherAttendance/confirm"; id: string }
+  | { type: "teacherAttendance/confirmMany"; ids: string[] }
   | {
       type: "teacherAttendance/correct";
       id: string;

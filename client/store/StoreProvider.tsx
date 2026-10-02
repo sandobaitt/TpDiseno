@@ -288,7 +288,10 @@ export function useStoreActions() {
           type: "teacherAttendance/save",
           records,
           meta: meta(
-            `Registró la asistencia de ${records.length} profesores del ${formatDate(date)}`,
+            activityText.saveTeacherAttendance(
+              records.length,
+              formatDate(date),
+            ),
             "asistencia_profesor",
             date,
           ),
@@ -305,6 +308,18 @@ export function useStoreActions() {
             `Confirmó la asistencia de ${getTeacher(record?.teacherId)?.fullName ?? "profesor"} en ${record ? slotLabel(record.slotId, record.date) : "una clase"}`,
             "asistencia_profesor",
             id,
+          ),
+        });
+      },
+      confirmTeacherAttendanceMany(ids: string[]) {
+        if (ids.length === 0) return;
+        dispatch({
+          type: "teacherAttendance/confirmMany",
+          ids,
+          meta: meta(
+            activityText.confirmTeacherAttendanceMany(ids.length),
+            "asistencia_profesor",
+            ids[0],
           ),
         });
       },

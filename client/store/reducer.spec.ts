@@ -203,6 +203,27 @@ describe("otras acciones del store", () => {
     expect(selectAccount(state, back, SEED_TODAY).status).not.toBe("bloqueado");
   });
 
+  it("el encargado confirma varias asistencias de profesores juntas", () => {
+    let state = createSeedState();
+    const pending = state.teacherAttendance
+      .filter((a) => !a.confirmedAt)
+      .slice(0, 3)
+      .map((a) => a.id);
+    expect(pending.length).toBeGreaterThan(0);
+    state = dispatch(state, {
+      type: "teacherAttendance/confirmMany",
+      ids: pending,
+    });
+    const confirmed = state.teacherAttendance.filter((a) =>
+      pending.includes(a.id),
+    );
+    expect(
+      confirmed.every(
+        (a) => a.confirmedBy === "us_se_001" && a.confirmedAt === SEED_TODAY,
+      ),
+    ).toBe(true);
+  });
+
   it("la inscripción guarda quién la registró", () => {
     let state = createSeedState();
     const nuevo = { ...state.clients[0], id: "cl_nuevo", createdBy: undefined };
