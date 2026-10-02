@@ -22,6 +22,7 @@ Es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4
 - [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md): cobertura de cada CU.
 - [`docs/PLAN.md`](docs/PLAN.md): etapas y decisiones.
 - [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md): recorrido sugerido para la presentación.
+- [`specs/`](specs/README.md): una spec por funcionalidad (qué hace, dónde está en el código y cómo se verificó).
 
 ## Comandos (npm)
 
@@ -32,6 +33,7 @@ npm run build       # build de producción (cliente + servidor)
 npm test            # Vitest
 npm run typecheck   # TypeScript
 npm run lint        # ESLint: errores comunes (variables sin usar, hooks, any, console.log)
+npm run specs       # Controla que lo citado en specs/ exista en el código
 npm run format.fix  # Prettier
 ```
 
@@ -66,6 +68,7 @@ client/
 ├── store/             Store central en memoria + registro de actividad
 ├── lib/, hooks/       Utilidades (cn, fechas, formatos) y hooks
 docs/                  Diagnóstico, cobertura de CU, plan, guion de la defensa y escenario
+specs/                 Una spec por funcionalidad + check.mjs (npm run specs)
 ```
 
 La migración por módulo terminó en E14: ya no quedan carpetas viejas.
@@ -293,7 +296,8 @@ La migración por módulo terminó en E14: ya no quedan carpetas viejas.
 ## Reglas de trabajo
 
 1. Se trabaja **por etapas chicas**, con **un commit por etapa** y mensajes claros en español.
-2. Después de cada etapa se corren `npm run typecheck`, `npm run lint`, `npm test` y `npm run build`, y se verifica que nada se rompió.
+2. Después de cada etapa se corren `npm run typecheck`, `npm run lint`, `npm test`, `npm run specs` y `npm run build`, y se verifica que nada se rompió.
+   - Si una etapa agrega o cambia una funcionalidad, se actualiza su spec en `specs/` en el mismo commit.
 3. No se agrega backend ni dependencias pesadas sin consultar. Tampoco se borran archivos sin avisar.
 4. No se cambia lo que ya cumple un caso de uso. Si algo es ambiguo, se pregunta.
 5. Si el código contradice un CU o una regla de negocio, **se marca** y no se decide por cuenta propia.

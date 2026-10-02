@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E17. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E18. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -30,6 +30,7 @@
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
 - Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
 - Después del cierre, con las respuestas del grupo:
+  - **E18:** carpeta `specs/` con una spec por funcionalidad (13 de Alumnos, 6 de Personal y 7 transversales): qué hace, reglas, dónde está (ruta, página, componentes, dominio, datos, store) y cómo se verificó. `npm run specs` controla que todo lo citado exista en el código; se probó con datos falsos y los detecta.
   - **E17:** ESLint (`npm run lint`) con las reglas recomendadas de JavaScript, TypeScript y hooks de React. Solo es una herramienta de desarrollo: no entra en la app. Deja afuera el deploy y los archivos de otros grupos. Encontró 5 detalles (un import sin usar, un `catch` vacío y tipos vacíos de shadcn) y se corrigieron.
   - **E16:** promociones sin acumular y reactivación sin cobrar los meses de baja quedan confirmadas. Íconos y fuentes se sirven desde el repo: probado con internet bloqueado, todas nuestras pantallas se ven completas.
 - En E15 se resolvió lo siguiente:
@@ -227,4 +228,4 @@ Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 - Las rutas actuales de cada rol y sus menús (`data/navigation.ts`).
 - El deploy en Vercel.
 - Las pantallas de otros grupos: `pages/Index.tsx` y las pestañas Información, Finanzas y Kiosco de `pages/AdminPanel.tsx`.
-- `npm run typecheck`, `npm run lint`, `npm test` y `npm run build` tienen que pasar en cada commit.
+- `npm run typecheck`, `npm run lint`, `npm test`, `npm run specs` y `npm run build` tienen que pasar en cada commit.

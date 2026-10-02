@@ -23,6 +23,7 @@ Después abrí http://localhost:3000.
 | `npm test` | Corre los tests de las reglas de negocio (Vitest). |
 | `npm run typecheck` | Revisa los tipos. |
 | `npm run lint` | Busca errores comunes en el código (ESLint). |
+| `npm run specs` | Controla que las specs de `specs/` coincidan con el código. |
 | `npm run format.fix` | Da formato al código (Prettier). |
 
 ## Usuarios de prueba
@@ -49,6 +50,7 @@ Para cambiar de rol sin perder lo que hiciste, cerrá sesión desde el menú (no
 |---|---|
 | [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md) | Cómo se cumple cada caso de uso y en qué pantalla. |
 | [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) | Recorrido sugerido para la presentación. |
+| [`specs/`](specs/README.md) | Una spec por funcionalidad: qué hace, dónde está en el código y cómo se verificó. |
 | [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md) | Diagnóstico inicial del proyecto. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Plan de trabajo por etapas. |
 | [`CLAUDE.md`](CLAUDE.md) | Convenciones, roles, casos de uso y reglas de trabajo. |

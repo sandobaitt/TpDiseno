@@ -11,7 +11,8 @@
     "test": "vitest --run",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
-    "lint": "eslint client shared"
+    "lint": "eslint client shared",
+    "specs": "node specs/check.mjs"
   },
   "dependencies": {
     "dotenv": "^17.2.1",
