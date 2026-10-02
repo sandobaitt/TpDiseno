@@ -13,6 +13,7 @@ import {
 } from "@/data/teacherAttendance";
 import type { Novedad } from "@/data/novedades";
 import type { Bitacora } from "@/data/bitacoras";
+import type { Communication } from "@/data/communications";
 import { getMockSession } from "@/data/users";
 import { getSlot } from "@/data/schedule";
 import { getActivityName } from "@/data/activities";
@@ -375,6 +376,30 @@ export function useStoreActions() {
             "novedad",
             id,
           ),
+        });
+      },
+      sendCommunication(communication: Communication) {
+        dispatch({
+          type: "communication/send",
+          communication,
+          meta: meta(
+            activityText.sendCommunication(
+              communication.subject,
+              communication.recipientIds.length,
+            ),
+            "comunicacion",
+            communication.id,
+          ),
+        });
+      },
+      markNotificationsRead(ids: string[]) {
+        const userId = getMockSession()?.id;
+        if (!userId || ids.length === 0) return;
+        dispatch({
+          type: "notification/markRead",
+          userId,
+          ids,
+          meta: meta("Marcó avisos como leídos", "comunicacion", userId),
         });
       },
       addBitacora(bitacora: Bitacora) {

@@ -7,6 +7,7 @@ import type {
 } from "@/data/teacherAttendance";
 import type { Novedad } from "@/data/novedades";
 import type { Bitacora } from "@/data/bitacoras";
+import type { Communication } from "@/data/communications";
 
 /** Tipo de registro afectado (para el registro de actividad). */
 export type ActivityEntity =
@@ -16,7 +17,8 @@ export type ActivityEntity =
   | "asistencia_profesor"
   | "reemplazo"
   | "novedad"
-  | "observacion";
+  | "observacion"
+  | "comunicacion";
 
 /** Una línea del registro de actividad: quién, qué y cuándo. */
 export interface ActivityEntry {
@@ -62,4 +64,6 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "novedad/resolve"; id: string }
   | { type: "novedad/remove"; id: string }
   | { type: "bitacora/add"; bitacora: Bitacora }
+  | { type: "communication/send"; communication: Communication }
+  | { type: "notification/markRead"; userId: string; ids: string[] }
 );

@@ -161,6 +161,34 @@ describe("otras acciones del store", () => {
     );
   });
 
+  it("una comunicación queda guardada y marcar avisos como leídos no ensucia el registro", () => {
+    let state = createSeedState();
+    const before = state.activity.length;
+    state = dispatch(state, {
+      type: "communication/send",
+      communication: {
+        id: "com_test",
+        templateId: "libre",
+        subject: "Prueba",
+        body: "Hola {nombre}",
+        audience: { kind: "todos" },
+        audienceLabel: "Todos",
+        recipientIds: ["cl_001"],
+        byEmail: false,
+        sentBy: "us_se_001",
+        sentAt: `${SEED_TODAY}T10:00:00`,
+      },
+    });
+    state = dispatch(state, {
+      type: "notification/markRead",
+      userId: "us_al_001",
+      ids: ["com_test", "com_test"],
+    });
+    expect(state.communications[0].id).toBe("com_test");
+    expect(state.notificationReads.us_al_001).toEqual(["com_test"]);
+    expect(state.activity).toHaveLength(before + 1);
+  });
+
   it("la inscripción guarda quién la registró", () => {
     let state = createSeedState();
     const nuevo = { ...state.clients[0], id: "cl_nuevo", createdBy: undefined };

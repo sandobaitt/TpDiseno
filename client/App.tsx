@@ -17,6 +17,7 @@ import SecretariaAlumnosPage from "./pages/SecretariaAlumnosPage";
 import SecretariaAlumnoPage from "./pages/SecretariaAlumnoPage";
 import SecretariaInscripcionPage from "./pages/SecretariaInscripcionPage";
 import SecretariaAccesoPage from "./pages/SecretariaAccesoPage";
+import SecretariaComunicacionesPage from "./pages/SecretariaComunicacionesPage";
 import AdminPanel from "./pages/AdminPanel";
 import AlumnoPanel from "./pages/AlumnoPanel";
 import AttendancePage from "./pages/AttendancePage";
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/secretaria/alumnos/nuevo" element={<SecretariaInscripcionPage />} />
             <Route path="/secretaria/alumnos/:clientId" element={<SecretariaAlumnoPage />} />
             <Route path="/secretaria/acceso" element={<SecretariaAccesoPage />} />
+            <Route path="/secretaria/comunicaciones" element={<SecretariaComunicacionesPage />} />
             <Route path="/secretaria/asistencia" element={<AttendancePage />} />
             <Route path="/secretaria/cobros" element={<PaymentsPage />} />
             <Route path="/secretaria/novedades" element={<NovedadesPage />} />

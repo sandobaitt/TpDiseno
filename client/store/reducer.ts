@@ -179,6 +179,21 @@ function applyAction(state: AppState, action: StoreAction): AppState {
       };
     case "bitacora/add":
       return { ...state, bitacoras: [action.bitacora, ...state.bitacoras] };
+    case "communication/send":
+      return {
+        ...state,
+        communications: [action.communication, ...state.communications],
+      };
+    case "notification/markRead": {
+      const current = state.notificationReads[action.userId] ?? [];
+      return {
+        ...state,
+        notificationReads: {
+          ...state.notificationReads,
+          [action.userId]: [...new Set([...current, ...action.ids])],
+        },
+      };
+    }
   }
 }
 
@@ -187,6 +202,8 @@ let activityCounter = 0;
 /** Reducer del store: aplica el cambio y deja constancia en el registro de actividad. */
 export function storeReducer(state: AppState, action: StoreAction): AppState {
   const next = applyAction(state, action);
+  // Marcar avisos como leídos no es una operación del negocio: no va al registro.
+  if (action.type === "notification/markRead") return next;
   activityCounter += 1;
   const entry: ActivityEntry = {
     id: `act_${activityCounter}`,

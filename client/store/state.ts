@@ -8,6 +8,7 @@ import {
 import { replacementsMock, type Replacement } from "@/data/replacements";
 import { novedadesMock, type Novedad } from "@/data/novedades";
 import { bitacorasMock, type Bitacora } from "@/data/bitacoras";
+import { communicationsMock, type Communication } from "@/data/communications";
 import type { ActivityEntry } from "./actions";
 import { activityText } from "./activityText";
 
@@ -23,6 +24,9 @@ export interface AppState {
   replacements: Replacement[];
   novedades: Novedad[];
   bitacoras: Bitacora[];
+  communications: Communication[];
+  /** Avisos que cada usuario ya marcó como leídos (id de usuario → ids de aviso). */
+  notificationReads: Record<string, string[]>;
   /** Registro de actividad: quién hizo qué y cuándo (en memoria). */
   activity: ActivityEntry[];
 }
@@ -31,7 +35,11 @@ export interface AppState {
  * Registro de actividad de los datos semilla (inscripciones, documentos,
  * restricciones, bajas y pagos), para que cada ficha muestre su historia.
  */
-function seedActivity(clients: Client[], payments: Payment[]): ActivityEntry[] {
+function seedActivity(
+  clients: Client[],
+  payments: Payment[],
+  communications: Communication[],
+): ActivityEntry[] {
   const entries: ActivityEntry[] = [];
   const add = (entry: Omit<ActivityEntry, "id">, key: string) =>
     entries.push({ id: `act_seed_${key}`, ...entry });
@@ -110,6 +118,22 @@ function seedActivity(clients: Client[], payments: Payment[]): ActivityEntry[] {
     );
   }
 
+  for (const message of communications) {
+    add(
+      {
+        at: message.sentAt,
+        userId: message.sentBy,
+        summary: activityText.sendCommunication(
+          message.subject,
+          message.recipientIds.length,
+        ),
+        entity: "comunicacion",
+        entityId: message.id,
+      },
+      message.id,
+    );
+  }
+
   return entries.sort((a, b) => b.at.localeCompare(a.at));
 }
 
@@ -123,6 +147,8 @@ export function createSeedState(): AppState {
     replacements: [...replacementsMock],
     novedades: [...novedadesMock],
     bitacoras: [...bitacorasMock],
-    activity: seedActivity(clientsMock, paymentsMock),
+    communications: [...communicationsMock],
+    notificationReads: {},
+    activity: seedActivity(clientsMock, paymentsMock, communicationsMock),
   };
 }

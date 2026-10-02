@@ -45,7 +45,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         id: "comms",
         label: "Comunicaciones",
         iconClassName: "ti ti-message",
-        disabled: true,
+        to: "/secretaria/comunicaciones",
       },
       {
         id: "schedule",

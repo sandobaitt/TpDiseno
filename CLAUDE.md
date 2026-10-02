@@ -140,6 +140,9 @@ La estructura está en migración. Qué carpetas existen y cuáles todavía son 
 | `data/promotions.ts` + `domain/promotions.ts` | Única fuente de promociones y sus condiciones (vigencia, cupón, efectivo, antigüedad, semestral, familiar). |
 | `components/alumnos/attendance/ClassRoster` | Lista de una clase (presente, ausente o justificada) con la verificación de acceso. La usan secretaría y profesor. |
 | `domain/attendance.ts` | Quiénes van en la lista de una clase, resumen de asistencia y `toCsv` (con `lib/download.ts` para descargar). |
+| `hooks/use-notifications.ts` + `common/NotificationBell` | Avisos de la campana según el rol, calculados con los datos (`domain/notifications.ts`). Para sumar un aviso, se agrega en el dominio. |
+| `domain/communications.ts` | Destinatarios (`resolveAudience`) y `{nombre}` (`personalize`) de las comunicaciones. |
+| `hooks/use-stored-state.ts` | Preferencias de cada usuario guardadas en el navegador. |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador. |

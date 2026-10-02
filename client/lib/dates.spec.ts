@@ -8,6 +8,7 @@ import {
   daysInPeriod,
   diffDays,
   formatMinutes,
+  formatRelativeDate,
   monthsBetween,
   parseISODate,
   periodRange,
@@ -66,6 +67,16 @@ describe("meses", () => {
     expect(daysInPeriod("2026-02")).toBe(28);
     expect(daysInPeriod("2028-02")).toBe(29);
     expect(dateInPeriod("2026-05", 5)).toBe("2026-05-05");
+  });
+});
+
+describe("fechas relativas", () => {
+  it("dice hoy, ayer o la fecha", () => {
+    expect(formatRelativeDate("2026-10-02T18:30:00", "2026-10-02")).toBe(
+      "Hoy 18:30",
+    );
+    expect(formatRelativeDate("2026-10-01", "2026-10-02")).toBe("Ayer");
+    expect(formatRelativeDate("2026-09-28", "2026-10-02")).toBe("28/09/2026");
   });
 });
 

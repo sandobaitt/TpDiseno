@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E8. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E9. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -25,7 +25,27 @@
 ## Estado actual
 
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
-- Fase 3: **E0 a E8 terminadas**. Sigue **E9**: DDJJ y certificados reales del alumno, alertas calculadas, centro de notificaciones y "Comunicaciones" de secretaría (CU 2, 3, 10 y 14).
+- Fase 3: **E0 a E9 terminadas**. Sigue **E10**: Admin con "Alumnos" en su menú (alta, baja con motivo, modificación y reactivación con la ficha única) y Encargado con "Inscripciones de mi sede" (CU 11 y 12).
+- En E9 se resolvió lo siguiente:
+  - **Centro de avisos para todos los roles** (`NotificationBell`):
+    - contador discreto y lista, sin modales;
+    - "marcar como leído": lo leído se guarda en el store, por usuario;
+    - avisos calculados en `domain/notifications.ts`, con tests.
+  - **Qué avisa a cada rol:**
+    - **alumno:** cuota por vencer, vencida y acceso suspendido (CU 10); restricción, DDJJ faltante, documento en revisión, pago registrado y mensajes de secretaría;
+    - **secretaría:** deudores y bloqueados de su sede, documentos para revisar y novedades;
+    - **profesor:** reemplazos pendientes (CU 7 de Personal);
+    - **encargado y admin:** novedades en curso.
+  - **Alumno:**
+    - "Alertas y preferencias" con datos reales; las preferencias se guardan en el navegador;
+    - DDJJ real: es el mismo formulario que el de la inscripción;
+    - certificado subido desde la app: queda "Pendiente de revisión" y secretaría recibe el aviso;
+    - "Mi cuenta" usa el cobro y el recibo compartidos.
+  - **Comunicaciones (CU 14)** en `/secretaria/comunicaciones`:
+    - plantillas;
+    - destinatarios (todos, sede, plan, por vencer, deudores o un alumno) con vista previa y cantidad;
+    - `{nombre}` personalizado, email opcional (simulado) y borrador;
+    - confirmación antes de enviar, e historial con destinatarios.
 - En E8 se resolvió lo siguiente:
   - **Asistencia por clase y sede (CU 6):**
     - secretaría elige día, sede y clase; el profesor ve solo sus clases, incluidos los reemplazos;
@@ -142,7 +162,6 @@
 Cada uno está detallado en `docs/DIAGNOSTICO.md`, con su ID entre paréntesis.
 
 - **Diálogos sin título accesible** (Radix avisa en la consola). Se corrigen al rehacer cada pantalla:
-  - `AlumnoPanel` (E9);
   - `AdminAsistenciaPage` (E11).
 - **Íconos y fuentes por internet:** se cargan desde CDN (jsdelivr y Google Fonts).
   - Con la red lenta, la página tarda en cargar y los íconos pueden no aparecer. Pasó el 02/10/2026: el CDN tardaba más de 10 s.

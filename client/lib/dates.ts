@@ -147,6 +147,18 @@ export function formatDateTime(isoDateTime: string): string {
   return `${date} ${time}`;
 }
 
+/** "Hoy 18:30", "Ayer" o "28/09/2026" (para avisos y listas). */
+export function formatRelativeDate(
+  isoDateOrTime: string,
+  today: string,
+): string {
+  const day = isoDateOrTime.slice(0, 10);
+  const time = isoDateOrTime.length > 10 ? isoDateOrTime.slice(11, 16) : "";
+  if (day === today) return time ? `Hoy ${time}` : "Hoy";
+  if (day === addDays(today, -1)) return time ? `Ayer ${time}` : "Ayer";
+  return formatDate(day);
+}
+
 /** Suma minutos a una hora "HH:MM". */
 export function addMinutesToTime(time: string, minutes: number): string {
   const [h, m] = time.split(":").map(Number);

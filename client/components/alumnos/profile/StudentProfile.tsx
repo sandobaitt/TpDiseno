@@ -34,7 +34,7 @@ import { HealthSection } from "./HealthSection";
 import { PaymentsSection } from "./PaymentsSection";
 import { HistorySection } from "./HistorySection";
 import { StudentEditDialog } from "./StudentEditDialog";
-import { HealthEditDialog } from "./HealthEditDialog";
+import { HealthEditDialog } from "@/components/alumnos/health/HealthEditDialog";
 import { AttachmentDialog } from "./AttachmentDialog";
 import { RestrictDialog } from "./RestrictDialog";
 
