@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E18. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E19. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -16,7 +16,8 @@
 | Encargado | Se crea con los nombres de la entrevista: Adrián López (Centro) y Susana García (Norte). Ve solo su sede. | No existía. |
 | Términos | En la interfaz se dice "alumno", con voseo. Los identificadores del código siguen en inglés. | Coherencia con los CU y con el código existente. |
 | Gestor de paquetes | npm. | Es el del lockfile y los scripts; pnpm no está instalado. |
-| Lo que no se toca | Deploy (`server/`, `api/`, `netlify/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
+| Lo que no se toca | Deploy en Vercel (`server/`, `api/`, `vercel.json`) y módulos de otros grupos. | Riesgo de romper el deploy, y alcance del grupo. |
+| Restos de la plantilla | Se borraron `netlify/`, `netlify.toml`, `.dockerignore` y la dependencia `serverless-http` (02/10/2026, con OK del grupo). | El deploy es solo en Vercel y el proyecto no usa Docker: no cumplían ninguna función. |
 | Documentación | Se borraron AGENTS.md, ARQUITECTURA_FRONTEND.md y `.builder/`. Se conserva `.agents/rules/frontend.md`, que es para otras herramientas. | Para tener una sola fuente de verdad. |
 | Promociones | Una sola por cobro (no se acumulan). Están en `data/promotions.ts`, con los mismos ids que Admin → Finanzas (dc1…dc5), más plan familiar, una promo de temporada y cupones. | El escenario no dice si se acumulan. **Confirmado por el grupo el 02/10/2026:** no se acumulan. |
 | Reactivación | Al reactivar, los meses de baja no se cobran y el mes de regreso es proporcional (como un alta). | El escenario no lo dice. Sin esta regla, un alumno reactivado quedaba con deuda por los meses en que no vino. **Confirmado por el grupo el 02/10/2026.** |
@@ -30,6 +31,7 @@
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
 - Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
 - Después del cierre, con las respuestas del grupo:
+  - **E19:** limpieza de la raíz: se borraron los restos de Netlify (`netlify/`, `netlify.toml`, `serverless-http`) y `.dockerignore`. `components.json` (shadcn) ahora apunta a `client/global.css`, que es el archivo real.
   - **E18:** carpeta `specs/` con una spec por funcionalidad (13 de Alumnos, 6 de Personal y 7 transversales): qué hace, reglas, dónde está (ruta, página, componentes, dominio, datos, store) y cómo se verificó. `npm run specs` controla que todo lo citado exista en el código; se probó con datos falsos y los detecta.
   - **E17:** ESLint (`npm run lint`) con las reglas recomendadas de JavaScript, TypeScript y hooks de React. Solo es una herramienta de desarrollo: no entra en la app. Deja afuera el deploy y los archivos de otros grupos. Encontró 5 detalles (un import sin usar, un `catch` vacío y tipos vacíos de shadcn) y se corrigieron.
   - **E16:** promociones sin acumular y reactivación sin cobrar los meses de baja quedan confirmadas. Íconos y fuentes se sirven desde el repo: probado con internet bloqueado, todas nuestras pantallas se ven completas.

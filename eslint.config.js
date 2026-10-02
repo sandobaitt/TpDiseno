@@ -14,7 +14,6 @@ export default tseslint.config(
       // Servidor y deploy de la plantilla: no se tocan.
       "server/**",
       "api/**",
-      "netlify/**",
       // Módulos de otros grupos.
       "client/pages/Index.tsx",
       "client/pages/AdminPanel.tsx",
