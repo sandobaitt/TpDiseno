@@ -1,0 +1,119 @@
+@startuml ejemplo_secuencia_catedra
+!pragma layout smetana
+autonumber
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+' ==============================================================================
+' EJEMPLO DE REFERENCIA: Caso de Uso "Reservar Entradas" (camino estándar)
+' Precondición: Cliente autenticado. No validado por la cátedra.
+' Cubre: CTRLSesion, LTE (recorrido) con guarda por atributo, LTTE (lista temporal)
+'        + destroy(), búsqueda indexada, patrón experto, cambio de estado con mensaje
+'        de negocio, actor externo invocado por Sistema (asíncrono), composición
+'        Reserva-Entrada y destroy de la UI al final.
+' ==============================================================================
+
+actor "Cliente" as Actor
+boundary "PantallaReservarEntradas" as UI <<Boundary>>
+control "CTRLReservarEntradas" as CTRLCU <<Control>>
+control "CTRLSesion" as CTRLSesion <<Control>>
+participant "Sistema" as Sistema <<Sistema>>
+participant "LTE: Eventos" as LTE <<Entity>>
+participant "e: Evento" as Evento <<Entity>>
+participant "LTTE: Eventos" as LTTE
+participant "r: Reserva" as Reserva <<Entity>>
+participant "en: Entrada" as Entrada <<Entity>>
+actor "Entidad Bancaria" as Banco
+
+== Pasos 1 y 2: El cliente solicita reservar y el sistema muestra los eventos con cupo ==
+Actor -> UI: seleccionarOpcionReservar()
+activate UI
+UI -> CTRLCU: iniciarReserva()
+activate CTRLCU
+
+CTRLCU -> CTRLSesion: obtenerUsuarioLogueado()
+activate CTRLSesion
+CTRLSesion --> CTRLCU: cliente
+deactivate CTRLSesion
+
+CTRLCU -> Sistema: obtenerEventosDisponibles()
+activate Sistema
+
+create LTTE
+Sistema -> LTTE: create()
+
+' Recorrido: el getter devuelve el objeto y se compara por atributo en la guarda
+loop for each e in LTE
+    Sistema -> LTE: getEvento()
+    activate LTE
+    LTE --> Sistema: e
+    deactivate LTE
+
+    opt e.cupoDisponible > 0
+        Sistema -> LTTE: add(e)
+    end
+end
+
+Sistema --> CTRLCU: LTTE
+Sistema -> LTTE: destroy()
+destroy LTTE
+deactivate Sistema
+
+CTRLCU -> UI: mostrarEventos(LTTE)
+UI --> Actor: eventos disponibles
+
+== Pasos 3 a 5: El cliente selecciona evento y cantidad; el sistema calcula el importe y cobra ==
+Actor -> UI: seleccionarEvento(idEvento, cantidad)
+UI -> CTRLCU: tomarSeleccion(idEvento, cantidad)
+
+CTRLCU -> Sistema: registrarReserva(cliente, idEvento, cantidad)
+activate Sistema
+
+' Búsqueda indexada: un objeto puntual por su id, sin loop
+Sistema -> LTE: getEvento(idEvento)
+activate LTE
+LTE --> Sistema: e
+deactivate LTE
+
+' Patrón experto: el evento calcula su importe
+Sistema -> Evento: calcularImporte(cantidad)
+activate Evento
+Evento --> Sistema: importe
+deactivate Evento
+
+' Actor externo: lo invoca Sistema, mensaje asíncrono
+Sistema ->> Banco: procesarPago(cliente, importe)
+activate Banco
+Banco --> Sistema: pagoAprobado
+deactivate Banco
+
+' Composición: Sistema crea la cabecera, la cabecera crea los detalles
+create Reserva
+Sistema -> Reserva: create(cliente, e, importe)
+loop i = 1..cantidad
+    Sistema -> Reserva: agregarEntrada()
+    activate Reserva
+    create Entrada
+    Reserva -> Entrada: create()
+    deactivate Reserva
+end
+
+' Cambio de estado con mensaje de negocio, no con setEstado
+Sistema -> Reserva: confirmar()
+Sistema -> Evento: decrementarCupo(cantidad)
+
+Sistema --> CTRLCU: r
+deactivate Sistema
+
+== Paso 6: El sistema informa la reserva confirmada ==
+CTRLCU -> UI: mostrarConfirmacion(r)
+UI --> Actor: reserva confirmada
+
+CTRLCU -> UI: destroy()
+destroy UI
+deactivate CTRLCU
+
+@enduml

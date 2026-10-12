@@ -1,0 +1,184 @@
+@startuml 2_clases_gestionar_asistencia
+!pragma layout smetana
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==============================================================================
+' DIAGRAMA DE CLASES: Realización de CU-A06 Gestionar Asistencia Diaria por Clase y Sede
+' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
+'
+' REGLAS DE CÁTEDRA APLICADAS:
+' - Solo las clases que participan en el CU (incluido CU-A13).
+' - UI y controladores (CTRL, CTRLSesion) SIN atributos.
+' - Dominio con atributos privados (-) tipados y métodos públicos (+) con parámetros tipados.
+' - Todo mensaje recibido en la secuencia figura como método (verificar.py).
+' - Relaciones: dependencia, asociación con navegabilidad y cardinalidad,
+'   agregación (colecciones del Sistema), composición y generalización.
+' ==============================================================================
+
+package "Presentación y Control" {
+
+    class "PantallaGestionarAsistencia" as UI <<Boundary>> {
+        + seleccionarOpcionGestionarAsistencia(): void
+        + mostrarSedes(sedes: List, sedePropuesta: Sede, fechaPropuesta: Date): void
+        + seleccionarSedeYFecha(idSede: int, fecha: Date): void
+        + mostrarClases(clases: List): void
+        + seleccionarClase(idClase: int): void
+        + mostrarAlumnos(alumnos: List): void
+        + indicarAsistencia(idAlumno: int, estado: String): void
+        + terminarCarga(): void
+        + solicitarConfirmacion(asistencias: List): void
+        + confirmarRegistro(): void
+        + mostrarAsistenciaRegistrada(registro: RegistroAsistencia): void
+    }
+
+    class "CTRLGestionarAsistencia" as CTRLCU <<Control>> {
+        + iniciarGestionAsistencia(): void
+        + tomarSedeYFecha(idSede: int, fecha: Date): void
+        + tomarClase(idClase: int): void
+        + tomarAsistencias(asistencias: List): void
+        + tomarConfirmacion(): void
+    }
+
+    class "CTRLSesion" as CTRLSesion <<Control>> {
+        + obtenerUsuarioLogueado(): Usuario
+    }
+
+    class "Sistema" as Sistema <<Sistema>> {
+        - diasBloqueoDeuda: int
+        + obtenerSedesActivas(): List
+        + obtenerClasesDelDia(idSede: int, fecha: Date): List
+        + calcularDiaSemana(fecha: Date): int
+        + obtenerAlumnosDeClase(idClase: int, fecha: Date): List
+        + registrarAsistencia(idClase: int, fecha: Date, asistencias: List, usuario: Usuario): RegistroAsistencia
+    }
+}
+
+package "Dominio" {
+
+    abstract class "Usuario" as Usuario <<Entity>> {
+        - idUsuario: int
+        - nombre: String
+        - apellido: String
+        - email: String
+        + getNombreCompleto(): String
+    }
+
+    class "Secretaria" as Secretaria <<Entity>> {
+        - legajo: int
+    }
+
+    class "Profesor" as Profesor <<Entity>> {
+        - tipoContrato: String
+    }
+
+    class "Sede" as Sede <<Entity>> {
+        - idSede: int
+        - nombre: String
+        - direccion: String
+        - estado: String
+    }
+
+    class "Actividad" as Actividad <<Entity>> {
+        - idActividad: int
+        - nombre: String
+    }
+
+    class "Clase" as Clase <<Entity>> {
+        - idClase: int
+        - diaSemana: int
+        - horaInicio: Time
+        - horaFin: Time
+        - cupo: int
+    }
+
+    class "Plan" as Plan <<Entity>> {
+        - idPlan: int
+        - nombre: String
+        - precioMensual: float
+        + incluyeActividad(actividad: Actividad): boolean
+    }
+
+    class "Alumno" as Alumno <<Entity>> {
+        - idAlumno: int
+        - dni: String
+        - nombre: String
+        - apellido: String
+        - estado: String
+        - fechaInscripcion: Date
+        - restriccionManual: boolean
+        - motivoRestriccion: String
+        + cursaActividad(actividad: Actividad): boolean
+        + verificarHabilitacion(fecha: Date, diasBloqueo: int): String
+        + calcularDiasAtraso(fecha: Date): int
+    }
+
+    class "Cuota" as Cuota <<Entity>> {
+        - periodo: String
+        - importe: float
+        - fechaVencimiento: Date
+        - fechaPago: Date
+        + estaPaga(): boolean
+        + calcularDiasAtraso(fecha: Date): int
+    }
+
+    class "RegistroAsistencia" as RegistroAsistencia <<Entity>> {
+        - idRegistro: int
+        - fecha: Date
+        - fechaHoraRegistro: DateTime
+        + agregarDetalle(alumno: Alumno, estado: String): void
+    }
+
+    class "DetalleAsistencia" as DetalleAsistencia <<Entity>> {
+        - estado: String
+    }
+}
+
+' ------------------------------------------------------------------------------
+' RELACIONES
+' ------------------------------------------------------------------------------
+
+' Flujo de control (dependencia y asociaciones navegables)
+UI ..> CTRLCU : invoca >
+CTRLCU --> CTRLSesion : consulta sesión >
+CTRLCU --> Sistema : delega operaciones >
+
+' Colecciones que conoce el Sistema (agregación)
+Sistema o-- "*" Sede : sedes
+Sistema o-- "*" Clase : cronograma
+Sistema o-- "*" Alumno : alumnos
+Sistema o-- "*" RegistroAsistencia : registros
+
+' Generalización: los dos roles del CU son usuarios del sistema
+Usuario <|-- Secretaria
+Usuario <|-- Profesor
+
+' Asociaciones del dominio (cardinalidad y navegabilidad)
+Secretaria "*" --> "1" Sede : trabaja en >
+Clase "*" --> "1" Sede : se dicta en >
+Clase "*" --> "1" Actividad : es de >
+Clase "*" --> "1" Profesor : dictada por >
+Plan "*" --> "1..*" Actividad : habilita >
+Alumno "*" --> "1" Plan : contrata >
+RegistroAsistencia "*" --> "1" Clase : corresponde a >
+RegistroAsistencia "*" --> "1" Usuario : registrado por >
+DetalleAsistencia "*" --> "1" Alumno : de >
+
+' Composiciones (el ciclo de vida de las partes depende del todo)
+Alumno "1" *-- "*" Cuota : cuotas
+RegistroAsistencia "1" *-- "1..*" DetalleAsistencia : detalles
+
+note right of Sistema
+  **diasBloqueoDeuda** es el umbral
+  configurable de bloqueo (15 días de
+  atraso desde el vencimiento, el día 5).
+end note
+
+note bottom of DetalleAsistencia
+  **estado**: presente, ausente
+  o ausente con justificación.
+end note
+
+@enduml

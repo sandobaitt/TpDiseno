@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E19. Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **02/10/2026**, al terminar la etapa E20 (inicio del TPI 2). Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -24,6 +24,7 @@
 | Íconos y fuentes | Tabler Icons (`public/vendor/tabler-icons/`) e Inter y Plus Jakarta Sans (`public/fonts/`) se sirven desde el repo, sin CDN. | Con la red lenta los íconos tardaban o no aparecían. Así la app se ve igual sin internet (regla de Wi-Fi inestable). Aprobado el 02/10/2026. |
 | Otros grupos | No se coordina por ahora con Finanzas ni con el panel del admin: se deja como está. | Decisión del grupo, 02/10/2026. Lo que habría que ajustar figura en `docs/COBERTURA_CU.md` (limitaciones). |
 | Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
+| TPI 2 (diseño) | Todo lo de la segunda entrega vive en `tpi2/`. Las skills de la cátedra se copiaron de `~/Documents/dsi-2026` a `.claude/skills/dsi-*`, y las herramientas (`render.sh`, `verificar.py`, `bin/plantuml`, `apunte.md`) a `tpi2/`. Actores: Secretaria y Profesor; CU realizado: CU-A06 (incluye CU-A13). | Trabajar en el repo del grupo, al lado del escenario y del prototipo, con las pautas de la cátedra. Arquitectura y patrones quedan para después (decisión del 02/10/2026). |
 | PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
 
 ## Estado actual
@@ -31,6 +32,7 @@
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
 - Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
 - Después del cierre, con las respuestas del grupo:
+  - **E20 (TPI 2, sin commit):** carpeta `tpi2/` con el diagrama de CU de Secretaria y Profesor y la realización del CU-A06: descripción con 9 caminos alternativos más el CU-A13 incluido, diagrama de clases (15 clases), 15 tarjetas CRC y secuencia del camino estándar. `verificar.py` no marca nada. Se corrigió el nombre de la materia (Diseño, no Análisis).
   - **E19:** limpieza de la raíz: se borraron los restos de Netlify (`netlify/`, `netlify.toml`, `serverless-http`) y `.dockerignore`. `components.json` (shadcn) ahora apunta a `client/global.css`, que es el archivo real.
   - **E18:** carpeta `specs/` con una spec por funcionalidad (13 de Alumnos, 6 de Personal y 7 transversales): qué hace, reglas, dónde está (ruta, página, componentes, dominio, datos, store) y cómo se verificó. `npm run specs` controla que todo lo citado exista en el código; se probó con datos falsos y los detecta.
   - **E17:** ESLint (`npm run lint`) con las reglas recomendadas de JavaScript, TypeScript y hooks de React. Solo es una herramienta de desarrollo: no entra en la app. Deja afuera el deploy y los archivos de otros grupos. Encontró 5 detalles (un import sin usar, un `catch` vacío y tipos vacíos de shadcn) y se corrigieron.
@@ -214,6 +216,7 @@
 
 ## Pendientes
 
+- TPI 2: completar el nombre del grupo en `tpi2/README.md`, hacer la arquitectura (tipo y 2 vistas) y el patrón, y armar el PDF en `tpi2/entrega/`.
 
 ## Problemas conocidos (los más graves)
 

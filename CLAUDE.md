@@ -6,7 +6,7 @@ Este archivo es la fuente de verdad sobre cómo se trabaja en este repo. El esta
 
 ## Proyecto
 
-Es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4, prof. Gaona).
+Es el TP Integrador de **Diseño de Sistemas de Información** (UTN FRRe, K2.4, prof. Gaona).
 
 **SquatGym** es una cadena de gimnasios con 2 sedes y unos 800 alumnos. El repo es un prototipo **solo front-end**:
 - No hay backend real; todo funciona con datos simulados (mock).
@@ -23,6 +23,7 @@ Es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4
 - [`docs/PLAN.md`](docs/PLAN.md): etapas y decisiones.
 - [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md): recorrido sugerido para la presentación.
 - [`specs/`](specs/README.md): una spec por funcionalidad (qué hace, dónde está en el código y cómo se verificó).
+- [`tpi2/`](tpi2/README.md): segunda entrega del TPI (diagrama de CU y realización del CU-A06). Tiene sus propias reglas en `tpi2/CLAUDE.md` y usa las skills de la cátedra de `.claude/skills/dsi-*`.
 
 ## Comandos (npm)
 
@@ -69,6 +70,8 @@ client/
 ├── lib/, hooks/       Utilidades (cn, fechas, formatos) y hooks
 docs/                  Diagnóstico, cobertura de CU, plan, guion de la defensa y escenario
 specs/                 Una spec por funcionalidad + check.mjs (npm run specs)
+tpi2/                  Segunda entrega del TPI: diagramas UML (PlantUML), descripción de CU y tarjetas CRC
+.claude/skills/        Skills de la cátedra (dsi-*) para resolver los diagramas de tpi2/
 ```
 
 La migración por módulo terminó en E14: ya no quedan carpetas viejas.

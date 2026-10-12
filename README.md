@@ -1,6 +1,6 @@
 # SquatGym: prototipo front-end
 
-Este es el TP Integrador de **Análisis de Sistemas de Información** (UTN FRRe, K2.4).
+Este es el TP Integrador de **Diseño de Sistemas de Información** (UTN FRRe, K2.4).
 
 Es un prototipo navegable de los módulos **Gestión de Alumnos** (14 casos de uso) y **Gestión de Personal** (10 casos de uso) para SquatGym, una cadena de gimnasios con 2 sedes. Se puede usar en PC, notebook y celular.
 
@@ -50,6 +50,7 @@ Para cambiar de rol sin perder lo que hiciste, cerrá sesión desde el menú (no
 |---|---|
 | [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md) | Cómo se cumple cada caso de uso y en qué pantalla. |
 | [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) | Recorrido sugerido para la presentación. |
+| [`tpi2/`](tpi2/README.md) | Segunda entrega del TPI: diagrama de casos de uso y realización del CU-A06. |
 | [`specs/`](specs/README.md) | Una spec por funcionalidad: qué hace, dónde está en el código y cómo se verificó. |
 | [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md) | Diagnóstico inicial del proyecto. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Plan de trabajo por etapas. |

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PLANTUML_JAR="$HOME/.local/share/plantuml/plantuml.jar"
+
+# Fallback check if jar is also in repo or custom path
+if [ ! -f "$PLANTUML_JAR" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    if [ -f "$SCRIPT_DIR/plantuml.jar" ]; then
+        PLANTUML_JAR="$SCRIPT_DIR/plantuml.jar"
+    elif [ -f "$SCRIPT_DIR/../lib/plantuml.jar" ]; then
+        PLANTUML_JAR="$SCRIPT_DIR/../lib/plantuml.jar"
+    else
+        echo "Error: plantuml.jar not found at $PLANTUML_JAR" >&2
+        exit 1
+    fi
+fi
+
+JAVA_BIN="java"
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    JAVA_BIN="$JAVA_HOME/bin/java"
+fi
+
+EXTRA_FLAGS=()
+# If dot is not installed on the system, enable Smetana layout engine automatically
+if ! command -v dot >/dev/null 2>&1; then
+    EXTRA_FLAGS+=("-Playout=smetana")
+fi
+
+exec "$JAVA_BIN" -Djava.awt.headless=true -DPLANTUML_LIMIT_SIZE=8192 -jar "$PLANTUML_JAR" "${EXTRA_FLAGS[@]}" "$@"
