@@ -5,17 +5,65 @@
 
 html {
   scroll-behavior: smooth;
-  /* Controles nativos (calendario, desplegables, barras de scroll) en tema oscuro. */
-  color-scheme: dark;
+  /* Soporta claro/oscuro y deja que lo controle la clase .dark */
+  color-scheme: light dark;
 }
 
 @layer base {
   /**
-   * Tokens de diseño (tema oscuro). Los usan los primitivos de components/ui
-   * y las clases semánticas de Tailwind (bg-background, text-muted-foreground,
-   * text-success…). Formato: valores HSL sin "hsl()".
+   * Tokens de diseño.
+   * :root = tema claro
+   * .dark = tema oscuro (mismos valores que antes había en :root)
    */
   :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    /* Verde de marca de la app (lime-400) */
+    --primary: 83 78% 45%;
+    --primary-foreground: 94 100% 6%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Estados */
+    --success: 142 69% 40%;
+    --warning: 38 92% 50%;
+    --danger: 0 84% 60%;
+    --info: 213 94% 50%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 83 78% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 83 78% 45%;
+    --sidebar-primary-foreground: 94 100% 6%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 83 78% 45%;
+  }
+
+  .dark {
     --background: 0 0% 9%; /* #171717 */
     --foreground: 0 0% 96%;
 
@@ -32,7 +80,7 @@ html {
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 96%;
 
-    /* Texto secundario: gris con contraste AA sobre el fondo (≈7:1) */
+    /* Texto secundario */
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 64%;
 
@@ -42,7 +90,7 @@ html {
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Estados (siempre acompañados de texto o ícono) */
+    /* Estados */
     --success: 142 69% 58%;
     --warning: 46 97% 65%;
     --danger: 0 91% 71%;
@@ -51,8 +99,6 @@ html {
     --border: 0 0% 18%;
     --input: 0 0% 20%;
     --ring: 83 78% 55%;
-
-    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 9%;
     --sidebar-foreground: 0 0% 96%;

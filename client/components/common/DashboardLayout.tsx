@@ -66,7 +66,7 @@ export function DashboardLayout() {
 
   return (
     <>
-      <div className="flex bg-neutral-900 min-h-screen relative overflow-hidden">
+      <div className="flex bg-background min-h-screen relative overflow-hidden">
         <SidebarNav
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

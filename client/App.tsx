@@ -1,6 +1,6 @@
 import "./global.css";
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,9 +9,14 @@ import { RequireAuth } from "@/components/common/RequireAuth";
 import { DashboardLayout } from "@/components/common/DashboardLayout";
 import { PageLoading } from "@/components/common/PageLoading";
 import { StoreProvider } from "@/store/StoreProvider";
+import { applyTheme, getInitialTheme } from "@/lib/theme";
 import Login from "./pages/Login";
 import UnauthorizedAccess from "./pages/UnauthorizedAccess";
 import NotFound from "./pages/NotFound";
+
+if (typeof window !== "undefined") {
+  applyTheme(getInitialTheme());
+}
 
 // Las pantallas se cargan cuando se usan: cada rol descarga solo lo suyo.
 const Index = lazy(() => import("./pages/Index"));

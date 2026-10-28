@@ -7,6 +7,7 @@ import {
   ROLE_LABELS,
   type AppUserRole,
 } from "@/data/users";
+import { useTheme } from "@/hooks/use-theme";
 
 function getInitials(fullName: string): string {
   const parts = fullName.trim().split(/\s+/);
@@ -18,7 +19,7 @@ const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
   encargado: { bg: "bg-amber-400/10", text: "text-amber-400" },
   secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
   profesor: { bg: "bg-blue-400/10", text: "text-blue-400" },
-  alumno: { bg: "bg-gray-400/10", text: "text-gray-300" },
+  alumno: { bg: "bg-gray-400/10", text: "text-gray-500 dark:text-gray-300" },
 };
 
 interface HeaderProps {
@@ -44,6 +45,7 @@ export function Header({
   const initials = session ? getInitials(session.fullName) : "?";
   const [userOpen, setUserOpen] = React.useState(false);
   const userRef = React.useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   React.useEffect(() => {
     if (!userOpen) return;
@@ -67,14 +69,14 @@ export function Header({
 
   return (
     <header
-      className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-3.5 border-b bg-neutral-900 border-white/[0.05] ${className}`}
+      className={`flex sticky top-0 z-10 justify-between items-center px-7 max-sm:px-4 py-3.5 border-b bg-background border-border ${className}`}
     >
       <nav className="flex gap-2 items-center max-md:hidden">
-        <span className="text-sm text-gray-400">{nav}</span>
+        <span className="text-sm text-muted-foreground">{nav}</span>
       </nav>
 
       <div className="hidden gap-2 items-center max-md:flex">
-        <h1 className="text-lg font-extrabold tracking-tight text-lime-400">
+        <h1 className="text-lg font-extrabold tracking-tight text-primary">
           {title}
         </h1>
       </div>
@@ -90,23 +92,23 @@ export function Header({
             }}
             aria-label="Menú de usuario"
             aria-expanded={userOpen}
-            className="flex justify-center items-center w-9 h-9 rounded-xl cursor-pointer bg-zinc-800 hover:bg-zinc-700 transition-all duration-150 glass-border"
+            className="flex justify-center items-center w-9 h-9 rounded-xl cursor-pointer bg-secondary hover:bg-accent transition-all duration-150 border border-border"
           >
-            <span className="text-white text-[11px] font-extrabold">
+            <span className="text-foreground text-[11px] font-extrabold">
               {initials}
             </span>
           </button>
 
           {userOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-neutral-900 border border-white/[0.07] shadow-[0_16px_48px_rgba(0,0,0,0.7)] overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
-              <div className="flex items-center gap-3 px-4 py-4 border-b border-white/[0.05]">
-                <div className="w-10 h-10 rounded-xl bg-zinc-800 border border-white/[0.07] flex items-center justify-center shrink-0">
-                  <span className="text-white text-sm font-extrabold">
+            <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-popover border border-border shadow-lg overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-100">
+              <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
+                <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center shrink-0">
+                  <span className="text-foreground text-sm font-extrabold">
                     {initials}
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-white text-sm font-bold truncate">
+                  <p className="text-foreground text-sm font-bold truncate">
                     {session?.fullName ?? "Usuario"}
                   </p>
                   <span
@@ -118,8 +120,18 @@ export function Header({
               </div>
               <div className="p-2">
                 <button
+                  onClick={() => {
+                    toggleTheme();
+                    setUserOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-foreground hover:bg-accent text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <i className={`ti ${theme === "dark" ? "ti-sun" : "ti-moon"} text-sm`} />
+                  {theme === "dark" ? "Tema: Claro" : "Tema: Oscuro"}
+                </button>
+                <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-red-400/70 hover:text-red-400 hover:bg-red-500/[0.07] text-xs font-bold transition-colors cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-red-500 hover:text-red-600 dark:text-red-400/70 dark:hover:text-red-400 hover:bg-red-500/[0.07] text-xs font-bold transition-colors cursor-pointer"
                 >
                   <i className="ti ti-logout text-sm" />
                   Cerrar sesión
