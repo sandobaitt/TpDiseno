@@ -16,8 +16,8 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 |---|---|---|
 | 1. Diagrama de CU | [`01-casos-de-uso/casos_de_uso_secretaria_profesor.puml`](01-casos-de-uso/casos_de_uso_secretaria_profesor.puml) (+ `.svg`) | ✅ Hecho |
 | 2.i Descripción (estándar, alternativos, include y extend) | [`02-realizacion-cu/1_descripcion_cu_registrar_pagos.md`](02-realizacion-cu/1_descripcion_cu_registrar_pagos.md) | ✅ Hecho |
-| 2.ii Diagrama de clases | `02-realizacion-cu/2_clases_registrar_pagos.puml` | ⏳ Falta |
-| 2.iii Tarjetas CRC | `02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md` | ⏳ Falta |
+| 2.ii Diagrama de clases | [`02-realizacion-cu/2_clases_registrar_pagos.puml`](02-realizacion-cu/2_clases_registrar_pagos.puml) (+ `.svg`) | ✅ Hecho |
+| 2.iii Tarjetas CRC (las 9 clases) | [`02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md`](02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md) | ✅ Hecho |
 | 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_registrar_pagos.puml`](02-realizacion-cu/4_secuencia_registrar_pagos.puml) (+ `.svg`) | ✅ Hecho |
 | 3. Arquitectura (tipo y 2 vistas) | [`03-arquitectura/`](03-arquitectura/) | ⏳ Para después |
 | 4. Patrón aplicado al CU | [`04-patrones/`](04-patrones/) | ⏳ Para después |
@@ -25,9 +25,9 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 
 El PDF respeta el orden de la consigna: descripción, diagrama de clases, tarjetas CRC y diagrama de secuencia. Los archivos de `02-realizacion-cu/` están numerados en ese orden.
 
-## Qué falta del CU
+## Estado del CU
 
-Según el orden del apunte actualizado: primero las clases (sin métodos ni atributos), después la secuencia (ya está), después se completan las clases con los métodos y atributos que salieron de la secuencia, y al final las tarjetas CRC. Cuando estén las clases, `verificar.py` controla que cada mensaje de la secuencia exista en ellas y en las tarjetas.
+La realización de Registrar Pagos está completa: descripción, clases, tarjetas CRC y secuencia. `verificar.py` confirma que cada mensaje de la secuencia existe en el diagrama de clases y en su tarjeta.
 
 ## Cómo se trabaja
 

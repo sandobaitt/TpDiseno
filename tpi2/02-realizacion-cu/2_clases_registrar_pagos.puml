@@ -1,0 +1,155 @@
+@startuml 2_clases_registrar_pagos
+!pragma layout smetana
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam defaultFontSize 13
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassBorderColor #444444
+skinparam PackageBorderColor #999999
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+
+' ==============================================================================
+' DIAGRAMA DE CLASES: Realización de Registrar Pagos
+' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
+'
+' REGLAS DEL APUNTE APLICADAS:
+' - Solo las clases que participan en el CU (camino estándar). La Entidad Bancaria
+'   es actor externo: no es una clase del sistema.
+' - UI y controladores (CTRL, CTRLSesion) SIN atributos.
+' - Clases en singular. Dominio con atributos privados (-) tipados y métodos públicos (+).
+' - Todo mensaje que recibe una clase en la secuencia figura como método acá
+'   (tpi2/verificar.py). Los create() de listas temporales y el destroy() de la UI
+'   no se listan, igual que las búsquedas indexadas sobre colecciones.
+' - Relaciones: dependencia, asociación (navegabilidad y multiplicidad),
+'   agregación (colecciones del Sistema) y composición (Alumno ◆— Cuota).
+' ==============================================================================
+
+package "Presentación y control" {
+
+    class UIRegistrarPagos <<Boundary>> {
+        + seleccionarOpcionRegistrarPagos(): void
+        + solicitarDniONombre(): void
+        + ingresarDni(dni: String): void
+        + mostrarEstadoDeCuenta(alumno: Alumno, cuotasPendientes: List): void
+        + seleccionarCuota(idCuota: int): void
+        + mostrarCuotaSeleccionada(cuota: Cuota): void
+        + terminarSeleccion(): void
+        + mostrarMontoYMediosDePago(montoTotal: float): void
+        + seleccionarMedioPago(medioPago: String): void
+        + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: String): void
+        + confirmarPago(): void
+        + mostrarPagoRegistrado(recibo: Recibo): void
+    }
+
+    class CTRLRegistrarPagos <<Control>> {
+        + iniciarRegistroPago(): void
+        + tomarDni(dni: String): void
+        + tomarCuota(idCuota: int): void
+        + tomarFinSeleccion(): void
+        + tomarMedioPago(medioPago: String): void
+        + tomarConfirmacion(): void
+    }
+
+    class CTRLSesion <<Control>> {
+        + obtenerUsuarioLogueado(): Secretaria
+    }
+
+    class Sistema <<Sistema>> {
+        + obtenerAlumno(dni: String): Alumno
+        + obtenerCuotasPendientes(alumno: Alumno): List
+        + iniciarSeleccionCuotas(): void
+        + agregarCuotaSeleccionada(idCuota: int): Cuota
+        + obtenerMontoTotal(): float
+        + obtenerCuotasSeleccionadas(): List
+        + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: String, secretaria: Secretaria): Recibo
+        - calcularTotal(): float
+        - generarNumeroRecibo(): int
+    }
+}
+
+package "Dominio" {
+
+    class Alumno <<Entity>> {
+        - idAlumno: int
+        - dni: String
+        - nombre: String
+        - apellido: String
+        - estado: String
+        - estadoCuenta: String
+        + getCuotas(): List
+        + actualizarEstadoCuenta(): void
+    }
+
+    class Cuota <<Entity>> {
+        - idCuota: int
+        - periodo: String
+        - importe: float
+        - fechaVencimiento: Date
+        - estado: String
+        + marcarPagada(): void
+    }
+
+    class Pago <<Entity>> {
+        - idPago: int
+        - fechaHora: DateTime
+        - montoTotal: float
+        - medioPago: String
+        + create(): void
+        + setDatos(datosPago: DatosPago): void
+        + setAlumno(alumno: Alumno): void
+        + setSecretaria(secretaria: Secretaria): void
+        + agregarCuota(cuota: Cuota): void
+    }
+
+    class Recibo <<Entity>> {
+        - nroRecibo: int
+        - fechaEmision: DateTime
+        + create(): void
+        + setDatos(datosRecibo: DatosRecibo): void
+        + setPago(pago: Pago): void
+    }
+
+    class Secretaria <<Entity>> {
+        - idUsuario: int
+        - nombre: String
+        - apellido: String
+        - legajo: int
+    }
+}
+
+' ------------------------------------------------------------------------------
+' RELACIONES
+' ------------------------------------------------------------------------------
+
+' Presentación y control
+UIRegistrarPagos "1" -- "1" CTRLRegistrarPagos
+CTRLRegistrarPagos "1" --> "1" CTRLSesion : consulta la sesión
+CTRLRegistrarPagos "1" --> "1" Sistema : delega operaciones
+
+' Colecciones que conoce el Sistema (agregación)
+Sistema "1" o-- "*" Alumno : alumnos
+Sistema "1" o-- "*" Pago : pagos
+Sistema "1" o-- "*" Recibo : recibos
+
+' Dominio (con la dirección de cada flecha, para que el dibujo quede ordenado)
+Pago "*" -left-> "1" Alumno : realizado por
+Recibo "1" -left-> "1" Pago : comprobante de
+Alumno "1" *-down- "*" Cuota : cuotas
+Pago "1" -down-> "1..*" Cuota : cuotas pagadas
+Pago "*" -down-> "1" Secretaria : cobrado por
+
+legend bottom
+  **Referencias**
+  Alumno.estado: activo o inactivo. Alumno.estadoCuenta: al día, por vencer, deudor o bloqueado.
+  Cuota.estado: pendiente o pagada.
+  Pago.medioPago: efectivo, tarjeta de débito, transferencia o QR.
+  DatosPago agrupa fecha y hora, monto total y medio de pago. DatosRecibo agrupa número y fecha de emisión.
+  (No son clases del dominio: se usan para setear varios datos de una vez.)
+  Las listas temporales (cuotas pendientes y cuotas seleccionadas) las crea, llena y destruye el Sistema.
+  La Entidad Bancaria es un actor externo: no es una clase del sistema.
+endlegend
+
+@enduml
