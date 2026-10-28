@@ -429,6 +429,41 @@ export function useStoreActions() {
           ),
         });
       },
+      markDdjjSigned(clientId: string) {
+        dispatch({
+          type: "client/markDdjjSigned",
+          clientId,
+          meta: meta(
+            `Marcó la declaración jurada como firmada digitalmente`,
+            "alumno",
+            clientId,
+          ),
+        });
+      },
+      sendDebtAlerts(clientIds: string[]) {
+        if (clientIds.length === 0) return { sent: 0 };
+        const userId = getMockSession()?.id ?? "sistema";
+        for (const clientId of clientIds) {
+          const id = newId("debt-alert");
+          dispatch({
+            type: "communication/send",
+            communication: {
+              id,
+              templateId: "vencimiento",
+              subject: "Alerta de vencimiento de cuota",
+              body: "Hola {nombre}, te recordamos que tenés una cuota vencida. Por favor, regularizá tu situación en recepción o desde cobros para mantener habilitado tu acceso al gimnasio.",
+              audience: { kind: "alumno", clientId },
+              audienceLabel: "Alumno",
+              recipientIds: [clientId],
+              byEmail: false,
+              sentBy: userId,
+              sentAt: nowISO(),
+            },
+            meta: meta("Enviar alerta de deuda", "alumno", clientId),
+          });
+        }
+        return { sent: clientIds.length };
+      },
     };
   }, [dispatch, stateRef]);
 }

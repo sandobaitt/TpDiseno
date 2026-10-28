@@ -9,9 +9,11 @@ import {
   type Client,
 } from "@/data/clients";
 import { HEALTH_CONDITIONS } from "@/data/health";
-import { getUserName } from "@/data/users";
+import { getMockSession, getUserName } from "@/data/users";
 import { formatDate } from "@/lib/dates";
 import { formatFileSize } from "@/lib/files";
+import { useStoreActions } from "@/store/StoreProvider";
+import { toast } from "sonner";
 
 interface HealthSectionProps {
   client: Client;
@@ -32,6 +34,11 @@ export function HealthSection({
     health?.conditions.includes(c.id),
   );
   const documents = client.attachments ?? [];
+  const actions = useStoreActions();
+  const session = getMockSession();
+  const role = session?.role;
+  const isSigned = health?.status === "firmada" || Boolean(health?.signedAt);
+  const canMarkSigned = role === "secretario" && !isSigned;
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -39,22 +46,39 @@ export function HealthSection({
         title="Declaración jurada de salud"
         icon="ti-heartbeat"
         actions={
-          onEditHealth &&
-          health?.signedAt && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onEditHealth}
-              className="rounded-xl"
-            >
-              <i className="ti ti-pencil text-sm" aria-hidden="true" />
-              Actualizar
-            </Button>
-          )
+          <>
+            {canMarkSigned && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  actions.markDdjjSigned?.(client.id);
+                  toast.success("Declaración jurada marcada como firmada digitalmente.");
+                }}
+                className="rounded-xl"
+              >
+                <i className="ti ti-file-signature text-sm" aria-hidden="true" />
+                Marcar como firmada
+              </Button>
+            )}
+            {onEditHealth &&
+              health?.signedAt && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={onEditHealth}
+                  className="rounded-xl"
+                >
+                  <i className="ti ti-pencil text-sm" aria-hidden="true" />
+                  Actualizar
+                </Button>
+              )}
+          </>
         }
       >
-        {!health?.signedAt ? (
+        {!isSigned ? (
           <EmptyState
             icon="ti-file-alert"
             title="Todavía no completó la declaración jurada"
@@ -106,7 +130,9 @@ export function HealthSection({
                 : []),
               {
                 label: "Firmada",
-                value: `${formatDate(health.signedAt)}${health.signedBy ? ` por ${health.signedBy}` : ""}`,
+                value: `${formatDate(health.signedAt ?? health.signedStaffAt?.slice(0, 10) ?? new Date().toISOString().slice(0, 10))}${
+                  health.signedBy ? ` por ${health.signedBy}` : ""
+                }${health.signedByStaff ? " (marcada digitalmente por secretaría)" : ""}`,
               },
             ]}
           />

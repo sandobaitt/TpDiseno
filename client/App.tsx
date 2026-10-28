@@ -168,6 +168,10 @@ const App = () => (
               />
               <Route path="/secretaria/cobros" element={<PaymentsPage />} />
               <Route path="/secretaria/novedades" element={<NovedadesPage />} />
+              <Route
+                path="/secretaria/observaciones"
+                element={<ObservacionesPage />}
+              />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

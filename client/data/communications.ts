@@ -11,6 +11,7 @@ export type CommunicationTemplateId =
   | "vencimiento"
   | "cambio_clase"
   | "promocion"
+  | "general"
   | "libre";
 
 export const COMMUNICATION_TEMPLATES: {
@@ -24,22 +25,29 @@ export const COMMUNICATION_TEMPLATES: {
     id: "vencimiento",
     label: "Vencimiento de cuota",
     icon: "ti-calendar-due",
-    subject: "Tu cuota vence pronto",
-    body: "Hola {nombre}: te recordamos que la cuota vence el día 5. Podés pagarla en recepción o desde la app, sin recargos.",
+    subject: "Recordatorio: cuota por vencer o vencida",
+    body: "Hola {nombre}, te recordamos que tu cuota vence el {fecha}. El monto a abonar es {monto}. Podés regularizarlo en recepción o desde la app, sin recargos.",
   },
   {
     id: "cambio_clase",
-    label: "Cambio de clase",
+    label: "Cambio de clase / reemplazo",
     icon: "ti-calendar-event",
-    subject: "Cambio de horario",
-    body: "Hola {nombre}: te avisamos que hay un cambio en el horario de una de tus clases. Revisá el cronograma en la app.",
+    subject: "Cambio en tu cronograma",
+    body: "Hola {nombre}, hubo un cambio en tu clase programada. Revisá el cronograma actualizado en la app para conocer el nuevo horario, sede o profesor.",
   },
   {
     id: "promocion",
-    label: "Promoción",
+    label: "Promoción vigente",
     icon: "ti-discount",
-    subject: "Promoción para vos",
-    body: "Hola {nombre}: este mes tenemos una promoción especial. Consultá en recepción.",
+    subject: "Promoción disponible",
+    body: "Hola {nombre}, tenemos una promoción vigente: {promocion}. Consultá en recepción los detalles y condiciones para aprovecharla.",
+  },
+  {
+    id: "general",
+    label: "Comunicado general",
+    icon: "ti-speakerphone",
+    subject: "Comunicado SQUATGYM",
+    body: "Hola {nombre}, {mensaje}.",
   },
   {
     id: "libre",

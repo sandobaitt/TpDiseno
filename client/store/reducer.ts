@@ -79,6 +79,19 @@ function applyAction(state: AppState, action: StoreAction): AppState {
       });
     case "client/saveHealth":
       return updateClient(state, action.clientId, { health: action.health });
+    case "client/markDdjjSigned": {
+      const client = state.clients.find((c) => c.id === action.clientId);
+      const currentHealth = client?.health;
+      const health: import("@/data/clients").HealthDeclaration = {
+        ...(currentHealth ?? { conditions: [] }),
+        status: "firmada",
+        signedAt: currentHealth?.signedAt ?? action.meta.at.slice(0, 10),
+        signedBy: currentHealth?.signedBy ?? client?.fullName,
+        signedByStaff: action.meta.userId,
+        signedStaffAt: action.meta.at,
+      };
+      return updateClient(state, action.clientId, { health });
+    }
     case "client/addAttachment": {
       const client = state.clients.find((c) => c.id === action.clientId);
       const attachment = {

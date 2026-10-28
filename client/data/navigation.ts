@@ -59,6 +59,12 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         iconClassName: "ti ti-speakerphone",
         to: "/secretaria/novedades",
       },
+      {
+        id: "observations",
+        label: "Observaciones",
+        iconClassName: "ti ti-notes",
+        to: "/secretaria/observaciones",
+      },
     ],
   },
   encargado: {

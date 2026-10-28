@@ -1,8 +1,11 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
-import { useAppState } from "@/store/StoreProvider";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
+import { selectAccount } from "@/store/selectors";
+import { todayISO } from "@/lib/dates";
 import { StudentStats } from "./StudentStats";
 import { StudentsTable } from "./StudentsTable";
 
@@ -16,9 +19,23 @@ export function StudentsDashboard({
   variant = "secretaria",
 }: StudentsDashboardProps) {
   const state = useAppState();
+  const actions = useStoreActions();
   const [statusFilter, setStatusFilter] = React.useState("");
   const isAdmin = variant === "admin";
   const basePath = isAdmin ? "/admin/alumnos" : "/secretaria/alumnos";
+  const today = todayISO();
+
+  const debtClientIds = React.useMemo(() => {
+    const ids: string[] = [];
+    for (const client of state.clients) {
+      if (client.status !== "active") continue;
+      const account = selectAccount(state, client, today);
+      if (account.status === "deudor" || account.status === "bloqueado") {
+        ids.push(client.id);
+      }
+    }
+    return ids;
+  }, [state, today]);
 
   return (
     <div className="flex flex-col gap-6 px-7 pb-7 max-sm:px-4">
@@ -33,6 +50,20 @@ export function StudentsDashboard({
           <>
             {!isAdmin && (
               <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-xl"
+                  disabled={debtClientIds.length === 0}
+                  onClick={() => {
+                    const result = actions.sendDebtAlerts?.(debtClientIds);
+                    const sent = result?.sent ?? debtClientIds.length;
+                    toast.success(`Se enviaron ${sent} alerta(s) a alumnos con pagos pendientes.`);
+                  }}
+                >
+                  <i className="ti ti-bell-ringing text-base" aria-hidden="true" />
+                  Enviar alerta a deudores
+                </Button>
                 <Button asChild variant="outline" className="rounded-xl">
                   <Link to="/secretaria/acceso">
                     <i

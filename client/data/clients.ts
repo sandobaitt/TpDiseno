@@ -19,6 +19,12 @@ export interface HealthDeclaration {
   signedAt?: string;
   /** Quién firma: el alumno, o el adulto responsable si es menor. */
   signedBy?: string;
+  /** Estado explícito de la DDJJ */
+  status?: "pendiente" | "firmada";
+  /** Quién marcó como firmada desde secretaría */
+  signedByStaff?: string;
+  /** Fecha/hora en que se marcó como firmada desde secretaría */
+  signedStaffAt?: string;
 }
 
 export type AttachmentKind = "certificado" | "autorizacion";
