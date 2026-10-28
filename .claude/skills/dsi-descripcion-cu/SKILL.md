@@ -13,6 +13,16 @@ Esta skill establece las normas estrictas de redacción y corrección de la cát
 
 ---
 
+## 🔄 Actualización del apunte (28/10/2026)
+
+El apunte nuevo (`tpi2/apunte.md`) agrega estas reglas:
+
+- **Precondición en los alternativos:** lo que garantiza la precondición tampoco se repite en los caminos alternativos.
+- **Postcondición solo si hay cambio de estado:** si el CU solo consulta o muestra información y no modifica nada, **no lleva postcondición**.
+- **Ingreso múltiple:** el actor no ingresa listas de una sola vez. El sistema muestra las opciones, el actor selecciona **un** elemento, el sistema responde, y se repite hasta que el actor indica que terminó.
+
+---
+
 ## 📌 Reglas de Oro de la Cátedra (Checklist de Parcial)
 
 ### 1. Precondiciones y Postcondiciones

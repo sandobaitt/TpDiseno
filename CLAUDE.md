@@ -23,7 +23,7 @@ Es el TP Integrador de **Diseño de Sistemas de Información** (UTN FRRe, K2.4, 
 - [`docs/PLAN.md`](docs/PLAN.md): etapas y decisiones.
 - [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md): recorrido sugerido para la presentación.
 - [`specs/`](specs/README.md): una spec por funcionalidad (qué hace, dónde está en el código y cómo se verificó).
-- [`tpi2/`](tpi2/README.md): segunda entrega del TPI (diagrama de CU y realización de Registrar Asistencia de Alumnos y la descripción de Registrar Pagos). Tiene sus propias reglas en `tpi2/CLAUDE.md` y usa las skills de la cátedra de `.claude/skills/dsi-*`.
+- [`tpi2/`](tpi2/README.md): segunda entrega del TPI (diagrama de CU y realización de Registrar Pagos). Tiene sus propias reglas en `tpi2/CLAUDE.md` y usa las skills de la cátedra de `.claude/skills/dsi-*`.
 
 ## Comandos (npm)
 

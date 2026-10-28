@@ -20,6 +20,21 @@ Esta skill define las reglas obligatorias, criterios de corrección y convencion
 
 ---
 
+## 🔄 Actualización del apunte (28/10/2026)
+
+El apunte nuevo (`tpi2/apunte.md`) gana sobre lo que dice esta skill más abajo. Cambios que afectan al diagrama:
+
+- **Notación de listas:** recorrido `LL[c]: Clientes` (lista de `c` sobre `Clientes`) y lista temporal `LLT[filtrados]: Clientes`. En los ejemplos de abajo, `LTC` se lee `LL[c]` y `LTTC` se lee `LLT[...]`. `verificar.py` acepta las dos notaciones.
+- **Loop:** `for each c in Clientes`.
+- **Altas:** `create()` seguido de los sets (`setDatos(datos)`, `setAlumno(a)`…), **siempre desde el Sistema**. Con muchos datos: `setDatos(datosX)` y una nota que diga qué contiene. La composición no cambia: la cabecera crea sus partes.
+- **Ingreso múltiple:** el actor nunca envía listas; manda un elemento por vuelta dentro de un `loop` y el sistema responde en cada una. Como el CTRL no tiene atributos, el Sistema acumula lo elegido en una lista temporal.
+- **Nombres:** `UI<Nombre del CU>` y `CTRL<Nombre del CU>` (ej: `UIRealizarReserva`, `CTRLRealizarReserva`).
+- **Entidad a colección:** un objeto puede pedir colecciones a otro con getters (`a.getCuotas()`).
+- **Listas temporales:** sin retorno tras `create`/`add`, pero **leer** un elemento (`getX()`) sí devuelve el objeto. El `destroy` es lo correcto aunque la profesora dijo que no hace falta en el parcial.
+- **Orden de trabajo:** primero el diagrama de clases sin métodos ni atributos, después la secuencia, después se completan las clases y al final las tarjetas CRC.
+
+---
+
 ## 📌 Reglas de Oro de la Cátedra (Checklist de Examen)
 
 ### 1. Alcance: solo el camino estándar

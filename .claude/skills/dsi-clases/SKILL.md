@@ -13,6 +13,19 @@ Esta skill establece las reglas y criterios de evaluación de la cátedra de **D
 
 ---
 
+## 🔄 Actualización del apunte (28/10/2026)
+
+El apunte nuevo (`tpi2/apunte.md`) gana sobre lo que dice esta skill más abajo:
+
+- **Orden:** el diagrama de clases se arranca **sin métodos ni atributos** (solo las clases y sus relaciones). Los métodos y atributos se completan **después** de hacer el diagrama de secuencia, con lo que se usó ahí.
+- **Nombres en singular:** `Paciente`, no `Pacientes`.
+- **Herencia:** no lleva multiplicidad en los extremos.
+- **Agregación vs composición:** agregación = ciclo de vida independiente (los contenidos siguen existiendo sin el contenedor); composición = las partes mueren con el todo.
+- **Sets:** si la secuencia hace `setX(...)`, la clase necesita ese método (o `setDatos(...)`).
+- **CTRL → UI:** puede pasar estructuras de datos como parámetro (`mostrarPrioridades(lista)`).
+
+---
+
 ## 📌 Reglas de Oro de la Cátedra (Checklist de Parcial)
 
 ### 1. Alcance Restringido al Caso de Uso

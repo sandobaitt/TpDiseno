@@ -1,6 +1,6 @@
 # MEMORY.md — estado del proyecto
 
-Última actualización: **02/10/2026**, al terminar la etapa E20 (inicio del TPI 2). Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
+Última actualización: **28/10/2026**, al terminar la etapa E22 (TPI 2: secuencia de Registrar Pagos). Las etapas están en [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Decisiones tomadas (y por qué)
 
@@ -24,7 +24,7 @@
 | Íconos y fuentes | Tabler Icons (`public/vendor/tabler-icons/`) e Inter y Plus Jakarta Sans (`public/fonts/`) se sirven desde el repo, sin CDN. | Con la red lenta los íconos tardaban o no aparecían. Así la app se ve igual sin internet (regla de Wi-Fi inestable). Aprobado el 02/10/2026. |
 | Otros grupos | No se coordina por ahora con Finanzas ni con el panel del admin: se deja como está. | Decisión del grupo, 02/10/2026. Lo que habría que ajustar figura en `docs/COBERTURA_CU.md` (limitaciones). |
 | Restricción manual | La aplica o la quita solo secretaría, con motivo obligatorio. | CU 5 (actor: Sistema / Secretaria). |
-| TPI 2 (diseño) | Todo lo de la segunda entrega vive en `tpi2/`. Las skills de la cátedra se copiaron de `~/Documents/dsi-2026` a `.claude/skills/dsi-*`, y las herramientas (`render.sh`, `verificar.py`, `bin/plantuml`, `apunte.md`) a `tpi2/`. Actores: Secretaria y Profesor; CU realizado: Registrar Asistencia de Alumnos (incluye Verificar Habilitación para Ingresar a Clase). El diagrama de CU es el que dibujó el grupo en draw.io; los CU no llevan código. | Trabajar en el repo del grupo, al lado del escenario y del prototipo, con las pautas de la cátedra. Arquitectura y patrones quedan para después (decisión del 02/10/2026). |
+| TPI 2 (diseño) | Todo lo de la segunda entrega vive en `tpi2/`. Las skills de la cátedra se copiaron de `~/Documents/dsi-2026` a `.claude/skills/dsi-*`, y las herramientas (`render.sh`, `verificar.py`, `bin/plantuml`) a `tpi2/`; el apunte actualizado (octubre 2026) está en `tpi2/apunte.md` y `tpi2/apunte.pdf`. Actores: Secretaria y Profesor; CU realizado: **Registrar Pagos** (incluye Emitir Recibos; lo extiende Aplicar Promociones), con la descripción que escribió el grupo. El diagrama de CU es el que dibujó el grupo en draw.io; los CU no llevan código. | Trabajar en el repo del grupo, al lado del escenario y del prototipo, con las pautas de la cátedra. Cambio del 28/10/2026: se deja de realizar Registrar Asistencia de Alumnos. Arquitectura y patrones quedan para después. |
 | PDF del escenario | Queda sin versionar (`docs/Escenario completo SQUATGYM.pdf`), salvo que el grupo decida subirlo. | — |
 
 ## Estado actual
@@ -32,7 +32,8 @@
 - Las Fases 1 (diagnóstico) y 2 (plan) se aprobaron el 01/10/2026.
 - Fase 3: **E0 a E15 terminadas**. Los 24 CU quedaron completos; el detalle está en [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md). Para presentar: [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) y los usuarios de prueba del README.
 - Después del cierre, con las respuestas del grupo:
-  - **E21 (TPI 2, sin commit, 28/10/2026):** se pasó a PlantUML el diagrama de CU que dibujó el grupo en draw.io (Usuario ← Secretaria y Profesor; Entidad Bancaria a la derecha; include Emitir Recibos y Verificar Habilitación; extend Aplicar Promociones y Consultar Detalle de Clase; incluye kiosco y stock). Los 4 archivos de la realización se renombraron a `*_registrar_asistencia_alumnos` (sin códigos CU-A06/A13; clases `PantallaRegistrarAsistencia` y `CTRLRegistrarAsistencia`) y `verificar.py` no marca nada. Descripción nueva de Registrar Pagos (con Emitir Recibos y Aplicar Promociones) en `1b_descripcion_cu_registrar_pagos.md`. Los `.svg` se regeneraron con `tpi2/render.sh` (se instaló Temurin JRE 21 con winget y `plantuml.jar` en `~/.local/share/plantuml/`).
+  - **E22 (TPI 2, sin commit, 28/10/2026):** se borró todo lo de la realización de Registrar Asistencia de Alumnos (descripción, clases, CRC y secuencia; el CU sigue en el diagrama del grupo). Se puso la descripción de Registrar Pagos que escribió el grupo (`1_descripcion_cu_registrar_pagos.md`) y se hizo su diagrama de secuencia del camino estándar (`4_secuencia_registrar_pagos.puml`) con el apunte nuevo. Se actualizaron `tpi2/apunte.md` (+ `apunte.pdf`), las 4 skills `dsi-*` y `verificar.py` (acepta `LL[c]`/`LLT[...]` y permite leer de una lista temporal). Faltan clases, CRC, arquitectura y patrón.
+  - **E21 (TPI 2, sin commit, 28/10/2026) — reemplazada por E22 en lo de asistencia:** se pasó a PlantUML el diagrama de CU que dibujó el grupo en draw.io (Usuario ← Secretaria y Profesor; Entidad Bancaria a la derecha; include Emitir Recibos y Verificar Habilitación; extend Aplicar Promociones y Consultar Detalle de Clase; incluye kiosco y stock). Los 4 archivos de la realización se renombraron a `*_registrar_asistencia_alumnos` (sin códigos CU-A06/A13; clases `PantallaRegistrarAsistencia` y `CTRLRegistrarAsistencia`) y `verificar.py` no marca nada. Descripción nueva de Registrar Pagos (con Emitir Recibos y Aplicar Promociones) en `1b_descripcion_cu_registrar_pagos.md`. Los `.svg` se regeneraron con `tpi2/render.sh` (se instaló Temurin JRE 21 con winget y `plantuml.jar` en `~/.local/share/plantuml/`).
   - **E20 (TPI 2, sin commit):** carpeta `tpi2/` con el diagrama de CU de Secretaria y Profesor y la realización del CU-A06: descripción con 9 caminos alternativos más el CU-A13 incluido, diagrama de clases (15 clases), 15 tarjetas CRC y secuencia del camino estándar. `verificar.py` no marca nada. Se corrigió el nombre de la materia (Diseño, no Análisis).
   - **E19:** limpieza de la raíz: se borraron los restos de Netlify (`netlify/`, `netlify.toml`, `serverless-http`) y `.dockerignore`. `components.json` (shadcn) ahora apunta a `client/global.css`, que es el archivo real.
   - **E18:** carpeta `specs/` con una spec por funcionalidad (13 de Alumnos, 6 de Personal y 7 transversales): qué hace, reglas, dónde está (ruta, página, componentes, dominio, datos, store) y cómo se verificó. `npm run specs` controla que todo lo citado exista en el código; se probó con datos falsos y los detecta.
@@ -217,7 +218,7 @@
 
 ## Pendientes
 
-- TPI 2: definir los siguientes ejercicios de la realización (¿se realiza también Registrar Pagos?), completar el nombre del grupo en `tpi2/README.md`, hacer la arquitectura (tipo y 2 vistas) y el patrón, y armar el PDF en `tpi2/entrega/`.
+- TPI 2: hacer el diagrama de clases y las tarjetas CRC de Registrar Pagos, completar el nombre del grupo en `tpi2/README.md`, hacer la arquitectura (tipo y 2 vistas) y el patrón, y armar el PDF en `tpi2/entrega/`. Revisar con el grupo las incoherencias de la descripción de Registrar Pagos (ver el informe del 28/10/2026).
 
 ## Problemas conocidos (los más graves)
 

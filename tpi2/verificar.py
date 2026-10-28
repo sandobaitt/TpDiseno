@@ -138,7 +138,9 @@ def clasificar(alias, p, creados):
     et = p["etiqueta"]
     clase_txt = et.split(":", 1)[1].strip() if ":" in et else et
     prefijo = et.split(":", 1)[0].strip() if ":" in et else ""
-    es_lt = bool(re.match(r"^LT[A-Z]+$", prefijo))
+    # Apunte actualizado: LL[c]: Clientes (recorrido) y LLT[filtrados]: Clientes (lista temporal).
+    # Se sigue aceptando la notación anterior: LTC / LTTC.
+    es_lt = bool(re.match(r"^(LT[A-Z]+|LLT?\[[^\]]+\])$", prefijo))
     p["clase_txt"] = clase_txt
     p["es_temporal"] = es_lt and alias in creados
     p["es_coleccion"] = es_lt and alias not in creados
@@ -248,8 +250,14 @@ def verificar(sec_path, cls_path, crc_path):
         if p["es_temporal"] and alias not in destruidos:
             err(p["linea"], f"la lista temporal '{p['etiqueta']}' no tiene destroy")
         if p["es_temporal"]:
+            # Sin retorno tras create/add (el Sistema ya la conoce). Leer un elemento (getX) sí devuelve.
+            ultimo = None
             for m in mensajes:
-                if m["origen"] == alias and m["flecha"].startswith("--") and m["destino"] == sistema_alias:
+                if m["destino"] == alias and not m["flecha"].startswith("--"):
+                    mm = re.match(r"(\w+)\s*\(", m["texto"])
+                    ultimo = mm.group(1) if mm else None
+                if m["origen"] == alias and m["flecha"].startswith("--") and m["destino"] == sistema_alias \
+                        and ultimo in {"create", "add"}:
                     err(m["linea"], f"retorno desde la lista temporal '{p['etiqueta']}' hacia Sistema")
     if ui_alias and ui_alias not in destruidos:
         warn(0, "el CTRL no destruye la UI al final del CU (CTRLCU -> UI: destroy())")

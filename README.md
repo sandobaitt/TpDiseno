@@ -50,7 +50,7 @@ Para cambiar de rol sin perder lo que hiciste, cerrá sesión desde el menú (no
 |---|---|
 | [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md) | Cómo se cumple cada caso de uso y en qué pantalla. |
 | [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) | Recorrido sugerido para la presentación. |
-| [`tpi2/`](tpi2/README.md) | Segunda entrega del TPI: diagrama de casos de uso y realización del CU-A06. |
+| [`tpi2/`](tpi2/README.md) | Segunda entrega del TPI: diagrama de casos de uso y realización de Registrar Pagos. |
 | [`specs/`](specs/README.md) | Una spec por funcionalidad: qué hace, dónde está en el código y cómo se verificó. |
 | [`docs/DIAGNOSTICO.md`](docs/DIAGNOSTICO.md) | Diagnóstico inicial del proyecto. |
 | [`docs/PLAN.md`](docs/PLAN.md) | Plan de trabajo por etapas. |

@@ -5,7 +5,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 ## Fuente de verdad (en este orden)
 
 1. La consigna: `consigna/TPI 2 - Consigna-2026.pdf`.
-2. El apunte de cátedra: `apunte.md`. Si algo lo contradice, gana el apunte.
+2. El apunte de cátedra, en su versión actualizada (octubre 2026): `apunte.md` (el PDF con las imágenes es `apunte.pdf`). Si algo lo contradice, gana el apunte.
 3. Las skills de la cátedra en `.claude/skills/`:
    - `dsi-casos-de-uso`
    - `dsi-descripcion-cu`
@@ -20,13 +20,14 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 
 - **Actores asignados:** Secretaria y Profesor.
 - **Alcance del diagrama de CU:** los CU de Secretaria y Profesor que dibujó el grupo en draw.io (incluye kiosco y stock). El diagrama del grupo manda: no se agregan ni se quitan CU sin consultar. Los CU no llevan código (CU-A06, etc.).
-- **CU realizado:** Registrar Asistencia de Alumnos (incluye Verificar Habilitación para Ingresar a Clase).
-- **Descripción adicional:** Registrar Pagos, con su include (Emitir Recibos) y su extend (Aplicar Promociones), en `02-realizacion-cu/1b_descripcion_cu_registrar_pagos.md`.
+- **CU realizado:** Registrar Pagos, con su include (Emitir Recibos) y su extend (Aplicar Promociones). La descripción es la que escribió el grupo (`02-realizacion-cu/1_descripcion_cu_registrar_pagos.md`): no se reescribe sin consultar.
+- **Registrar Asistencia de Alumnos** ya no se realiza: se borraron su descripción, clases, CRC y secuencia. Sigue en el diagrama de CU del grupo.
 - **Orden del PDF:**
   1. descripción (estándar, alternativos y CU incluidos o extendidos);
   2. diagrama de clases;
   3. tarjetas CRC;
   4. diagrama de secuencia.
+- **Orden de trabajo (apunte actualizado):** clases sin métodos ni atributos → secuencia → completar las clases con lo que salió de la secuencia → tarjetas CRC. Los archivos se numeran en el orden del PDF.
 - **Caminos alternativos:** van **todos** los casos posibles en la descripción. Hay que marcar los 2 más significativos.
 - **Diagrama de secuencia:** cubre **solo el camino estándar**.
 - **Arquitectura y patrones:** quedan para después.
@@ -41,6 +42,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
   - corrección de asistencia hasta 30 días atrás.
   
   Las `specs/` describen lo que ya hace el prototipo.
+- Notación del apunte nuevo: `LL[c]: Clientes` para recorrer y `LLT[filtrados]: Clientes` para listas temporales; `UI<CU>` y `CTRL<CU>`; las clases en singular; `create()` y después los sets, siempre desde el Sistema.
 - Los nombres de los diagramas van en español (clases, métodos, atributos). El código del prototipo está en inglés, pero eso no pasa al diseño.
 - Cada cambio en secuencia, clases o CRC se cierra así:
   1. `tpi2/verificar.py tpi2/02-realizacion-cu` sin observaciones;

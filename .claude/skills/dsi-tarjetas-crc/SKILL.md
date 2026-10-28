@@ -13,6 +13,17 @@ Esta skill establece las reglas y formato oficial de la cátedra de **Diseño de
 
 ---
 
+## 🔄 Actualización del apunte (28/10/2026)
+
+El apunte nuevo (`tpi2/apunte.md`) agrega estas pautas:
+
+- **Se hacen al final:** con el diagrama de clases ya completo (con los métodos que salieron de la secuencia).
+- **Responsabilidades:** salen de mirar los métodos de la clase, redactadas como tareas: `setEvento()` = *"Conocer el evento correspondiente a la reserva"*; `create()` = *"Crear una reserva"*.
+- **Colaboraciones:** salen de las asociaciones del diagrama de clases.
+- En el parcial por lo visto piden solo 3 tarjetas; en el TPI, una por cada clase del diagrama.
+
+---
+
 ## 📌 Reglas de Oro de la Cátedra (Checklist de Parcial)
 
 ### 1. Coherencia Absoluta con el Diagrama de Clases

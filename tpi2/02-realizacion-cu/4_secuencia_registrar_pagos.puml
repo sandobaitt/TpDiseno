@@ -1,0 +1,231 @@
+@startuml 4_secuencia_registrar_pagos
+!pragma layout smetana
+autonumber
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+' ==============================================================================
+' REALIZACIÓN DEL CASO DE USO: Registrar Pagos
+' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
+'
+' REGLAS DEL APUNTE ACTUALIZADO APLICADAS:
+' - Solo camino estándar (actor: Secretaria; pago con tarjeta de débito y sin promoción).
+' - UI<CU> y CTRL<CU>. CTRLSesion preexistente (sin create) provee la secretaria logueada.
+' - Búsqueda indexada del alumno por DNI (Alumnos.getAlumno(dni)), sin loop.
+' - Recorrido de las cuotas: LL[c]: Cuotas; el loop lo hace el Sistema.
+' - Listas temporales LLT[...]: creadas, llenadas y destruidas por el Sistema.
+' - Ingreso múltiple: la secretaria selecciona UNA cuota por vuelta (nunca una lista).
+'   Como el CTRL no tiene atributos, el Sistema acumula las cuotas elegidas en
+'   LLT[seleccionadas]: Cuotas (se crea con iniciarSeleccionCuotas()).
+' - Mensaje reflexivo para el cálculo del total (Sistema -> Sistema).
+' - Alta de entidades: create() y después los sets, siempre desde el Sistema.
+' - Cambio de estado de la cuota con un mensaje de negocio (marcarPagada()).
+' - La Entidad Bancaria es actor externo: la invoca el Sistema con mensaje asíncrono.
+' - Paso 12 incluye Emitir Recibos (se dibuja en línea).
+' - El CTRL destruye la UI al finalizar.
+' ==============================================================================
+
+actor "Secretaria" as Actor
+boundary "UIRegistrarPagos" as UI <<Boundary>>
+control "CTRLRegistrarPagos" as CTRLCU <<Control>>
+control "CTRLSesion" as CTRLSesion <<Control>>
+participant "Sistema" as Sistema <<Sistema>>
+participant "Alumnos" as Alumnos <<Entity>>
+participant "a: Alumno" as Alumno <<Entity>>
+participant "LL[c]: Cuotas" as LLC <<Entity>>
+participant "c: Cuota" as Cuota <<Entity>>
+participant "LLT[pendientes]: Cuotas" as LLTP
+participant "LLT[seleccionadas]: Cuotas" as LLTS
+participant "p: Pago" as Pago <<Entity>>
+participant "r: Recibo" as Recibo <<Entity>>
+actor "Entidad Bancaria" as Banco
+
+== Pasos 1 y 2: La secretaria elige registrar pagos y el sistema solicita el DNI o el nombre del alumno ==
+Actor -> UI: seleccionarOpcionRegistrarPagos()
+activate UI
+UI -> CTRLCU: iniciarRegistroPago()
+activate CTRLCU
+CTRLCU -> UI: solicitarDniONombre()
+UI --> Actor: solicita DNI o nombre del alumno
+
+== Paso 3: La secretaria ingresa el DNI del alumno ==
+Actor -> UI: ingresarDni(dni)
+UI -> CTRLCU: tomarDni(dni)
+
+== Paso 4: El sistema busca al alumno, muestra su estado de cuenta y solicita las cuotas a pagar ==
+CTRLCU -> Sistema: obtenerAlumno(dni)
+activate Sistema
+' Búsqueda indexada: un objeto puntual conocido por su DNI
+Sistema -> Alumnos: getAlumno(dni)
+activate Alumnos
+Alumnos --> Sistema: a
+deactivate Alumnos
+Sistema --> CTRLCU: a
+deactivate Sistema
+
+CTRLCU -> Sistema: obtenerCuotasPendientes(a)
+activate Sistema
+' Entidad a colección: el alumno entrega sus cuotas
+Sistema -> Alumno: getCuotas()
+activate Alumno
+Alumno --> Sistema: LL[c]
+deactivate Alumno
+
+create LLTP
+Sistema -> LLTP: create()
+
+loop for each c in Cuotas
+    Sistema -> LLC: getCuota()
+    activate LLC
+    LLC --> Sistema: c
+    deactivate LLC
+
+    ' Cuotas adeudadas y próximas a vencer: todas las que siguen impagas
+    opt c.estado = pendiente
+        Sistema -> LLTP: add(c)
+    end
+end
+
+Sistema --> CTRLCU: LLT[pendientes]
+Sistema -> LLTP: destroy()
+destroy LLTP
+deactivate Sistema
+
+' Lista de las cuotas del pago en curso: la completa el paso 5
+CTRLCU -> Sistema: iniciarSeleccionCuotas()
+activate Sistema
+create LLTS
+Sistema -> LLTS: create()
+deactivate Sistema
+
+CTRLCU -> UI: mostrarEstadoDeCuenta(a, LLT[pendientes])
+UI --> Actor: estado de cuenta con las cuotas adeudadas y próximas a vencer
+
+== Paso 5: La secretaria selecciona las cuotas a pagar, una por vez ==
+loop mientras la secretaria seleccione cuotas
+    Actor -> UI: seleccionarCuota(idCuota)
+    UI -> CTRLCU: tomarCuota(idCuota)
+
+    CTRLCU -> Sistema: agregarCuotaSeleccionada(idCuota)
+    activate Sistema
+    ' Búsqueda indexada sobre las cuotas del alumno
+    Sistema -> LLC: getCuota(idCuota)
+    activate LLC
+    LLC --> Sistema: c
+    deactivate LLC
+    Sistema -> LLTS: add(c)
+    Sistema --> CTRLCU: c
+    deactivate Sistema
+
+    CTRLCU -> UI: mostrarCuotaSeleccionada(c)
+    UI --> Actor: cuota seleccionada
+end
+
+Actor -> UI: terminarSeleccion()
+UI -> CTRLCU: tomarFinSeleccion()
+
+== Paso 6: El sistema calcula el monto total y solicita el medio de pago ==
+CTRLCU -> Sistema: obtenerMontoTotal()
+activate Sistema
+Sistema -> Sistema: calcularTotal()
+Sistema --> CTRLCU: montoTotal
+deactivate Sistema
+
+CTRLCU -> UI: mostrarMontoYMediosDePago(montoTotal)
+UI --> Actor: monto total y medios de pago (efectivo, débito, transferencia, QR)
+
+== Paso 7: La secretaria selecciona tarjeta de débito como medio de pago y ninguna promoción ==
+Actor -> UI: seleccionarMedioPago(medioPago)
+UI -> CTRLCU: tomarMedioPago(medioPago)
+
+note over Actor, CTRLCU
+  Camino estándar sin promoción. Si la secretaria pide una promoción
+  se ejecuta Aplicar Promociones (camino alternativo 7.a).
+end note
+
+== Paso 8: El sistema muestra el resumen del cobro ==
+CTRLCU -> Sistema: obtenerCuotasSeleccionadas()
+activate Sistema
+Sistema --> CTRLCU: LLT[seleccionadas]
+deactivate Sistema
+
+CTRLCU -> UI: mostrarResumenCobro(a, LLT[seleccionadas], montoTotal, medioPago)
+UI --> Actor: resumen del cobro (alumno, cuotas, monto total y medio de pago)
+
+== Paso 9: La secretaria confirma la operación ==
+Actor -> UI: confirmarPago()
+UI -> CTRLCU: tomarConfirmacion()
+
+== Pasos 10 y 11: El sistema solicita la validación del pago a la Entidad Bancaria y esta lo valida ==
+CTRLCU -> CTRLSesion: obtenerUsuarioLogueado()
+activate CTRLSesion
+CTRLSesion --> CTRLCU: sec
+deactivate CTRLSesion
+
+CTRLCU -> Sistema: confirmarPago(a, montoTotal, medioPago, sec)
+activate Sistema
+
+Sistema ->> Banco: validarPago(a, montoTotal, medioPago)
+activate Banco
+Banco --> Sistema: pagoValidado
+deactivate Banco
+
+== Paso 12: El sistema registra el pago, actualiza el estado de cuenta, emite el recibo (incluye Emitir Recibos) e informa ==
+create Pago
+Sistema -> Pago: create()
+Sistema -> Pago: setDatos(datosPago)
+Sistema -> Pago: setAlumno(a)
+Sistema -> Pago: setSecretaria(sec)
+
+note right of Pago
+  datosPago: fecha y hora, monto total
+  y medio de pago.
+end note
+
+loop for each c in LLT[seleccionadas]
+    Sistema -> LLTS: getCuota()
+    activate LLTS
+    LLTS --> Sistema: c
+    deactivate LLTS
+
+    Sistema -> Pago: agregarCuota(c)
+    ' El cambio de estado lo hace la cuota con un mensaje de negocio
+    Sistema -> Cuota: marcarPagada()
+end
+
+' El alumno recalcula su estado de cuenta con sus cuotas
+Sistema -> Alumno: actualizarEstadoCuenta()
+activate Alumno
+deactivate Alumno
+
+' --- Emitir Recibos (CU incluido) ---
+Sistema -> Sistema: generarNumeroRecibo()
+
+create Recibo
+Sistema -> Recibo: create()
+Sistema -> Recibo: setDatos(datosRecibo)
+Sistema -> Recibo: setPago(p)
+
+note right of Recibo
+  datosRecibo: número y fecha de emisión.
+  El resto (alumno, cuotas, monto, medio,
+  promoción y secretaria) sale del pago.
+end note
+
+Sistema -> LLTS: destroy()
+destroy LLTS
+
+Sistema --> CTRLCU: r
+deactivate Sistema
+
+CTRLCU -> UI: mostrarPagoRegistrado(r)
+UI --> Actor: pago registrado y recibo digital
+
+CTRLCU -> UI: destroy()
+destroy UI
+deactivate CTRLCU
+
+@enduml
