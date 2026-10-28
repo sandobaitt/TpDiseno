@@ -6,8 +6,9 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 |---|---|
 | Actores asignados | **Secretaria y Profesor** |
 | Grupo | *(completar con el nombre del grupo en la consigna)* |
-| Alcance del diagrama de CU | Los CU de Gestión de Alumnos y Gestión de Personal en los que participan esos actores |
-| CU realizado | **CU-A06 Gestionar Asistencia Diaria por Clase y Sede** (incluye CU-A13) |
+| Alcance del diagrama de CU | Los CU de Secretaria y Profesor del diagrama del grupo (hecho en draw.io y pasado a PlantUML) |
+| CU realizado | **Registrar Asistencia de Alumnos** (incluye Verificar Habilitación para Ingresar a Clase) |
+| Otra descripción | **Registrar Pagos** (incluye Emitir Recibos; lo extiende Aplicar Promociones) |
 | Entrega | 04/11/2026, PDF en el Campus Virtual. Coloquios: 25/11 y 02/12 |
 
 ## Estado
@@ -15,21 +16,22 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 | Punto de la consigna | Archivo | Estado |
 |---|---|---|
 | 1. Diagrama de CU | [`01-casos-de-uso/casos_de_uso_secretaria_profesor.puml`](01-casos-de-uso/casos_de_uso_secretaria_profesor.puml) (+ `.svg`) | ✅ Hecho |
-| 2.i Descripción del CU (estándar, alternativos e include) | [`02-realizacion-cu/1_descripcion_cu_gestionar_asistencia.md`](02-realizacion-cu/1_descripcion_cu_gestionar_asistencia.md) | ✅ Hecho |
-| 2.ii Diagrama de clases | [`02-realizacion-cu/2_clases_gestionar_asistencia.puml`](02-realizacion-cu/2_clases_gestionar_asistencia.puml) (+ `.svg`) | ✅ Hecho |
-| 2.iii Tarjetas CRC (las 15 clases) | [`02-realizacion-cu/3_tarjetas_crc_gestionar_asistencia.md`](02-realizacion-cu/3_tarjetas_crc_gestionar_asistencia.md) | ✅ Hecho |
-| 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_gestionar_asistencia.puml`](02-realizacion-cu/4_secuencia_gestionar_asistencia.puml) (+ `.svg`) | ✅ Hecho |
+| 2.i Descripción del CU (estándar, alternativos e include) | [`02-realizacion-cu/1_descripcion_cu_registrar_asistencia_alumnos.md`](02-realizacion-cu/1_descripcion_cu_registrar_asistencia_alumnos.md) | ✅ Hecho |
+| 2.i Descripción de Registrar Pagos (con include y extend) | [`02-realizacion-cu/1b_descripcion_cu_registrar_pagos.md`](02-realizacion-cu/1b_descripcion_cu_registrar_pagos.md) | ✅ Hecho (falta definir si se realiza) |
+| 2.ii Diagrama de clases | [`02-realizacion-cu/2_clases_registrar_asistencia_alumnos.puml`](02-realizacion-cu/2_clases_registrar_asistencia_alumnos.puml) (+ `.svg`) | ✅ Hecho |
+| 2.iii Tarjetas CRC (las 15 clases) | [`02-realizacion-cu/3_tarjetas_crc_registrar_asistencia_alumnos.md`](02-realizacion-cu/3_tarjetas_crc_registrar_asistencia_alumnos.md) | ✅ Hecho |
+| 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_registrar_asistencia_alumnos.puml`](02-realizacion-cu/4_secuencia_registrar_asistencia_alumnos.puml) (+ `.svg`) | ✅ Hecho |
 | 3. Arquitectura (tipo y 2 vistas) | [`03-arquitectura/`](03-arquitectura/) | ⏳ Para después |
 | 4. Patrón aplicado al CU | [`04-patrones/`](04-patrones/) | ⏳ Para después |
 | PDF final | [`entrega/`](entrega/) | ⏳ Al terminar |
 
 El PDF respeta el orden de la consigna: descripción, diagrama de clases, tarjetas CRC y diagrama de secuencia. Los archivos de `02-realizacion-cu/` están numerados en ese orden.
 
-## Por qué el CU-A06
+## Por qué Registrar Asistencia de Alumnos
 
-La consigna pide el CU de mayor complejidad, para mostrar todas las opciones posibles. El CU-A06:
+La consigna pide el CU de mayor complejidad, para mostrar todas las opciones posibles. Registrar Asistencia de Alumnos:
 - **es el único en el que participan los dos actores** asignados: Secretaria y Profesor;
-- **incluye otro CU** (CU-A13 Verificar Habilitación para Ingresar a Clase), que se describe aparte;
+- **incluye otro CU** (Verificar Habilitación para Ingresar a Clase), que se describe aparte;
 - en la secuencia, **usa todas las herramientas de la cátedra**:
   - sesión (`CTRLSesion`);
   - recorridos (`LTS`, `LTC`, `LTA`) y listas temporales con `destroy`;

@@ -1,7 +1,7 @@
-# Descripción de Caso de Uso: CU-A06 Gestionar Asistencia Diaria por Clase y Sede
+# Descripción de Caso de Uso: Registrar Asistencia de Alumnos
 
 * **Actores:** Secretaria, Profesor. El camino estándar se describe para la Secretaria; lo que cambia para el Profesor está en el camino alternativo 2.a.
-* **CU incluido:** CU-A13 Verificar Habilitación para Ingresar a Clase (se describe más abajo).
+* **CU incluido:** Verificar Habilitación para Ingresar a Clase (se describe más abajo).
 * **Precondiciones:**
   * El actor se encuentra autenticado en el sistema.
   * El cronograma tiene clases programadas.
@@ -16,12 +16,12 @@
 
 | Paso | Responsable | Acción / Proceso |
 | :---: | :---: | :--- |
-| **1** | **Actor** | La secretaria selecciona la opción para gestionar la asistencia diaria. |
+| **1** | **Actor** | La secretaria selecciona la opción para registrar la asistencia de alumnos. |
 | **2** | **Sistema** | Muestra las sedes activas y solicita la sede y la fecha, proponiendo la sede de la secretaria y la fecha actual. |
 | **3** | **Actor** | Selecciona la sede y la fecha. |
 | **4** | **Sistema** | Busca las clases programadas en la sede para el día de la semana de la fecha indicada y las muestra con su actividad, horario y profesor. |
 | **5** | **Actor** | Selecciona una clase. |
-| **6** | **Sistema** | Busca los alumnos activos cuyo plan incluye la actividad de la clase, verifica la habilitación de cada uno para ingresar (*incluye CU-A13 Verificar Habilitación para Ingresar a Clase*) y muestra la lista de alumnos con su habilitación. |
+| **6** | **Sistema** | Busca los alumnos activos cuyo plan incluye la actividad de la clase, verifica la habilitación de cada uno para ingresar (*incluye Verificar Habilitación para Ingresar a Clase*) y muestra la lista de alumnos con su habilitación. |
 | **7** | **Actor** | Indica, para cada alumno, si estuvo presente, ausente o ausente con justificación. |
 | **8** | **Sistema** | Muestra el resumen de la asistencia (cantidad de presentes, ausentes y ausentes con justificación) y solicita confirmación. |
 | **9** | **Actor** | Confirma el registro. |
@@ -76,13 +76,13 @@
 ---
 ---
 
-# Descripción de Caso de Uso incluido: CU-A13 Verificar Habilitación para Ingresar a Clase
+# Descripción de Caso de Uso incluido: Verificar Habilitación para Ingresar a Clase
 
 * **Actor:** Secretaria
 * **Precondición:** La secretaria se encuentra autenticada en el sistema.
 * **Postcondición:** Queda determinado si el alumno está habilitado para ingresar y, si no lo está, el motivo.
 
-> **Cuando lo incluye CU-A06** (paso 6), no hay intervención del actor: el sistema recibe el alumno, la clase y la fecha, y realiza la verificación del paso 4. Si el alumno no está habilitado, el resultado se muestra en la lista de la clase en lugar de terminar el caso de uso.
+> **Cuando lo incluye Registrar Asistencia de Alumnos** (paso 6), no hay intervención del actor: el sistema recibe el alumno, la clase y la fecha, y realiza la verificación del paso 4. Si el alumno no está habilitado, el resultado se muestra en la lista de la clase en lugar de terminar el caso de uso.
 
 ---
 
@@ -122,7 +122,7 @@
 
 #### 4.d El alumno tiene una cuota con 15 o más días de atraso
 1. El sistema informa que el alumno está bloqueado por deuda, con los días de atraso y el monto adeudado.
-2. Fin del caso de uso. La secretaria puede registrar el pago con CU-A04 Registrar Pago de Cuota; al quedar al día, el alumno queda habilitado.
+2. Fin del caso de uso. La secretaria puede registrar el pago con Registrar Pagos; al quedar al día, el alumno queda habilitado.
 
 #### 4.e La actividad de la clase no está incluida en el plan del alumno
 1. El sistema informa que la clase no está incluida en el plan contratado.

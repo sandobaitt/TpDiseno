@@ -1,4 +1,4 @@
-@startuml 2_clases_gestionar_asistencia
+@startuml 2_clases_registrar_asistencia_alumnos
 !pragma layout smetana
 skinparam shadowing false
 skinparam roundcorner 8
@@ -6,11 +6,11 @@ skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
 ' ==============================================================================
-' DIAGRAMA DE CLASES: Realización de CU-A06 Gestionar Asistencia Diaria por Clase y Sede
+' DIAGRAMA DE CLASES: Realización de Registrar Asistencia de Alumnos
 ' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
 '
 ' REGLAS DE CÁTEDRA APLICADAS:
-' - Solo las clases que participan en el CU (incluido CU-A13).
+' - Solo las clases que participan en el CU (incluido Verificar Habilitación para Ingresar a Clase).
 ' - UI y controladores (CTRL, CTRLSesion) SIN atributos.
 ' - Dominio con atributos privados (-) tipados y métodos públicos (+) con parámetros tipados.
 ' - Todo mensaje recibido en la secuencia figura como método (verificar.py).
@@ -20,8 +20,8 @@ skinparam linetype ortho
 
 package "Presentación y Control" {
 
-    class "PantallaGestionarAsistencia" as UI <<Boundary>> {
-        + seleccionarOpcionGestionarAsistencia(): void
+    class "PantallaRegistrarAsistencia" as UI <<Boundary>> {
+        + seleccionarOpcionRegistrarAsistencia(): void
         + mostrarSedes(sedes: List, sedePropuesta: Sede, fechaPropuesta: Date): void
         + seleccionarSedeYFecha(idSede: int, fecha: Date): void
         + mostrarClases(clases: List): void
@@ -34,8 +34,8 @@ package "Presentación y Control" {
         + mostrarAsistenciaRegistrada(registro: RegistroAsistencia): void
     }
 
-    class "CTRLGestionarAsistencia" as CTRLCU <<Control>> {
-        + iniciarGestionAsistencia(): void
+    class "CTRLRegistrarAsistencia" as CTRLCU <<Control>> {
+        + iniciarRegistroAsistencia(): void
         + tomarSedeYFecha(idSede: int, fecha: Date): void
         + tomarClase(idClase: int): void
         + tomarAsistencias(asistencias: List): void

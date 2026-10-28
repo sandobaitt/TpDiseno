@@ -1,4 +1,4 @@
-@startuml 4_secuencia_gestionar_asistencia
+@startuml 4_secuencia_registrar_asistencia_alumnos
 !pragma layout smetana
 autonumber
 skinparam shadowing false
@@ -8,7 +8,7 @@ skinparam sequenceMessageAlign center
 skinparam responseMessageBelowArrow true
 
 ' ==============================================================================
-' REALIZACIÓN DEL CASO DE USO: CU-A06 Gestionar Asistencia Diaria por Clase y Sede
+' REALIZACIÓN DEL CASO DE USO: Registrar Asistencia de Alumnos
 ' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
 '
 ' REGLAS DE CÁTEDRA APLICADAS:
@@ -19,14 +19,14 @@ skinparam responseMessageBelowArrow true
 ' - Búsquedas indexadas para objetos puntuales: getClase(idClase), getAlumno(idAlumno).
 ' - Comparaciones por atributo en las guardas, sin getters extra.
 ' - Experto: el alumno sabe si cursa la actividad (delega en su plan) y si está habilitado.
-' - Paso 6 incluye CU-A13 Verificar Habilitación para Ingresar a Clase.
+' - Paso 6 incluye Verificar Habilitación para Ingresar a Clase.
 ' - Composición: RegistroAsistencia crea sus DetalleAsistencia (el Sistema no los crea).
 ' - El CTRL destruye la UI al finalizar.
 ' ==============================================================================
 
 actor "Secretaria" as Actor
-boundary "PantallaGestionarAsistencia" as UI <<Boundary>>
-control "CTRLGestionarAsistencia" as CTRLCU <<Control>>
+boundary "PantallaRegistrarAsistencia" as UI <<Boundary>>
+control "CTRLRegistrarAsistencia" as CTRLCU <<Control>>
 control "CTRLSesion" as CTRLSesion <<Control>>
 participant "Sistema" as Sistema <<Sistema>>
 participant "LTS: Sedes" as LTS <<Entity>>
@@ -39,10 +39,10 @@ participant "LTTA: Alumnos" as LTTA
 participant "reg: RegistroAsistencia" as Registro <<Entity>>
 participant "det: DetalleAsistencia" as Detalle <<Entity>>
 
-== Pasos 1 y 2: La secretaria elige gestionar la asistencia y el sistema muestra las sedes activas ==
-Actor -> UI: seleccionarOpcionGestionarAsistencia()
+== Pasos 1 y 2: La secretaria elige registrar la asistencia y el sistema muestra las sedes activas ==
+Actor -> UI: seleccionarOpcionRegistrarAsistencia()
 activate UI
-UI -> CTRLCU: iniciarGestionAsistencia()
+UI -> CTRLCU: iniciarRegistroAsistencia()
 activate CTRLCU
 
 CTRLCU -> CTRLSesion: obtenerUsuarioLogueado()
@@ -111,7 +111,7 @@ UI --> Actor: clases del día con actividad, horario y profesor
 Actor -> UI: seleccionarClase(idClase)
 UI -> CTRLCU: tomarClase(idClase)
 
-== Paso 6: El sistema busca los alumnos de la clase y verifica su habilitación (incluye CU-A13) ==
+== Paso 6: El sistema busca los alumnos de la clase y verifica su habilitación (incluye Verificar Habilitación para Ingresar a Clase) ==
 CTRLCU -> Sistema: obtenerAlumnosDeClase(idClase, fecha)
 activate Sistema
 
@@ -142,7 +142,7 @@ loop for each a in LTA
         deactivate LTA
 
         opt cursa = verdadero
-            ' CU-A13 incluido: restricción manual y días de atraso contra el umbral configurable
+            ' CU incluido Verificar Habilitación: restricción manual y días de atraso contra el umbral configurable
             Sistema -> LTA: verificarHabilitacion(fecha, diasBloqueoDeuda)
             activate LTA
             LTA -> LTA: calcularDiasAtraso(fecha)

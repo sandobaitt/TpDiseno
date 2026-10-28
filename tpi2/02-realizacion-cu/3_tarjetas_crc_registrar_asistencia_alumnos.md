@@ -1,34 +1,34 @@
-# Tarjetas CRC: Realización de CU-A06 Gestionar Asistencia Diaria por Clase y Sede
+# Tarjetas CRC: Realización de Registrar Asistencia de Alumnos
 
-> **Pautas de cátedra (DSI 2026):** una tarjeta por cada clase del diagrama de clases, incluidas la UI, los controladores y el Sistema. Anverso con clase y propósito; reverso con responsabilidades (hacer y saber) y colaboradores. Solo se listan las responsabilidades que la clase cumple en este caso de uso, incluido CU-A13.
+> **Pautas de cátedra (DSI 2026):** una tarjeta por cada clase del diagrama de clases, incluidas la UI, los controladores y el Sistema. Anverso con clase y propósito; reverso con responsabilidades (hacer y saber) y colaboradores. Solo se listan las responsabilidades que la clase cumple en este caso de uso, incluido Verificar Habilitación para Ingresar a Clase.
 
 ---
 
-### Tarjeta 1: `PantallaGestionarAsistencia`
+### Tarjeta 1: `PantallaRegistrarAsistencia`
 
 #### Anverso (Frente)
-* **Clase:** `PantallaGestionarAsistencia`
+* **Clase:** `PantallaRegistrarAsistencia`
 * **Propósito:** Interactuar con la secretaria durante la carga de la asistencia: recibir sus selecciones y mostrarle sedes, clases, alumnos, el resumen y el resultado. No contiene reglas de negocio.
 
 #### Reverso (Dorso)
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Recibir la opción de gestionar la asistencia (`seleccionarOpcionGestionarAsistencia()`).<br>- Mostrar las sedes activas con la sede y la fecha propuestas (`mostrarSedes(sedes, sedePropuesta, fechaPropuesta)`).<br>- Recibir la sede y la fecha (`seleccionarSedeYFecha(idSede, fecha)`).<br>- Mostrar las clases del día (`mostrarClases(clases)`).<br>- Recibir la clase elegida (`seleccionarClase(idClase)`).<br>- Mostrar los alumnos con su habilitación (`mostrarAlumnos(alumnos)`).<br>- Recibir el estado de cada alumno (`indicarAsistencia(idAlumno, estado)`) y el fin de la carga (`terminarCarga()`).<br>- Mostrar el resumen y pedir confirmación (`solicitarConfirmacion(asistencias)`).<br>- Recibir la confirmación (`confirmarRegistro()`).<br>- Informar la asistencia registrada (`mostrarAsistenciaRegistrada(registro)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLGestionarAsistencia:** a quien le reenvía cada acción de la secretaria y de quien recibe lo que tiene que mostrar. |
+| **Hacer:**<br>- Recibir la opción de registrar la asistencia (`seleccionarOpcionRegistrarAsistencia()`).<br>- Mostrar las sedes activas con la sede y la fecha propuestas (`mostrarSedes(sedes, sedePropuesta, fechaPropuesta)`).<br>- Recibir la sede y la fecha (`seleccionarSedeYFecha(idSede, fecha)`).<br>- Mostrar las clases del día (`mostrarClases(clases)`).<br>- Recibir la clase elegida (`seleccionarClase(idClase)`).<br>- Mostrar los alumnos con su habilitación (`mostrarAlumnos(alumnos)`).<br>- Recibir el estado de cada alumno (`indicarAsistencia(idAlumno, estado)`) y el fin de la carga (`terminarCarga()`).<br>- Mostrar el resumen y pedir confirmación (`solicitarConfirmacion(asistencias)`).<br>- Recibir la confirmación (`confirmarRegistro()`).<br>- Informar la asistencia registrada (`mostrarAsistenciaRegistrada(registro)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLRegistrarAsistencia:** a quien le reenvía cada acción de la secretaria y de quien recibe lo que tiene que mostrar. |
 
 ---
 
-### Tarjeta 2: `CTRLGestionarAsistencia`
+### Tarjeta 2: `CTRLRegistrarAsistencia`
 
 #### Anverso (Frente)
-* **Clase:** `CTRLGestionarAsistencia`
+* **Clase:** `CTRLRegistrarAsistencia`
 * **Propósito:** Coordinar el flujo del caso de uso: recibe las acciones de la pantalla, obtiene el usuario de la sesión, le pide al Sistema las operaciones de negocio y le indica a la pantalla qué mostrar.
 
 #### Reverso (Dorso)
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Iniciar la gestión de asistencia, obtener la secretaria logueada y las sedes activas (`iniciarGestionAsistencia()`).<br>- Tomar la sede y la fecha y pedir las clases del día (`tomarSedeYFecha(idSede, fecha)`).<br>- Tomar la clase y pedir sus alumnos con la habilitación (`tomarClase(idClase)`).<br>- Tomar la asistencia indicada y pedir confirmación (`tomarAsistencias(asistencias)`).<br>- Tomar la confirmación y pedir el registro (`tomarConfirmacion()`).<br>- Destruir la pantalla al terminar el caso de uso.<br><br>**Saber:**<br>- No tiene atributos. | - **PantallaGestionarAsistencia:** recibe sus eventos y le indica qué mostrar.<br>- **CTRLSesion:** le pide el usuario logueado.<br>- **Sistema:** le delega las búsquedas y el registro. |
+| **Hacer:**<br>- Iniciar el registro de asistencia, obtener la secretaria logueada y las sedes activas (`iniciarRegistroAsistencia()`).<br>- Tomar la sede y la fecha y pedir las clases del día (`tomarSedeYFecha(idSede, fecha)`).<br>- Tomar la clase y pedir sus alumnos con la habilitación (`tomarClase(idClase)`).<br>- Tomar la asistencia indicada y pedir confirmación (`tomarAsistencias(asistencias)`).<br>- Tomar la confirmación y pedir el registro (`tomarConfirmacion()`).<br>- Destruir la pantalla al terminar el caso de uso.<br><br>**Saber:**<br>- No tiene atributos. | - **PantallaRegistrarAsistencia:** recibe sus eventos y le indica qué mostrar.<br>- **CTRLSesion:** le pide el usuario logueado.<br>- **Sistema:** le delega las búsquedas y el registro. |
 
 ---
 
@@ -42,7 +42,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Devolver el usuario que inició sesión (`obtenerUsuarioLogueado()`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLGestionarAsistencia:** quien le pide el usuario.<br>- **Usuario:** el objeto que devuelve (en este caso, la `Secretaria`). |
+| **Hacer:**<br>- Devolver el usuario que inició sesión (`obtenerUsuarioLogueado()`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLRegistrarAsistencia:** quien le pide el usuario.<br>- **Usuario:** el objeto que devuelve (en este caso, la `Secretaria`). |
 
 ---
 
@@ -56,7 +56,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Obtener las sedes activas (`obtenerSedesActivas()`).<br>- Obtener las clases programadas de una sede para el día de la fecha (`obtenerClasesDelDia(idSede, fecha)`), calculando el día de la semana (`calcularDiaSemana(fecha)`).<br>- Obtener los alumnos activos que cursan la actividad de la clase, con su habilitación (`obtenerAlumnosDeClase(idClase, fecha)`).<br>- Registrar la asistencia de la clase: crear el registro y pedirle que agregue un detalle por alumno (`registrarAsistencia(idClase, fecha, asistencias, usuario)`).<br>- Crear, llenar y destruir las listas temporales.<br><br>**Saber:**<br>- Las colecciones de `Sede`, `Clase`, `Alumno` y `RegistroAsistencia`.<br>- `diasBloqueoDeuda`: umbral configurable de bloqueo por deuda (15 días de atraso). | - **CTRLGestionarAsistencia:** quien le pide las operaciones.<br>- **Sede:** recorre las sedes para filtrar las activas.<br>- **Clase:** recorre el cronograma y busca la clase elegida.<br>- **Alumno:** recorre los alumnos, les pregunta si cursan la actividad y si están habilitados.<br>- **RegistroAsistencia:** lo crea y le pide que agregue los detalles. |
+| **Hacer:**<br>- Obtener las sedes activas (`obtenerSedesActivas()`).<br>- Obtener las clases programadas de una sede para el día de la fecha (`obtenerClasesDelDia(idSede, fecha)`), calculando el día de la semana (`calcularDiaSemana(fecha)`).<br>- Obtener los alumnos activos que cursan la actividad de la clase, con su habilitación (`obtenerAlumnosDeClase(idClase, fecha)`).<br>- Registrar la asistencia de la clase: crear el registro y pedirle que agregue un detalle por alumno (`registrarAsistencia(idClase, fecha, asistencias, usuario)`).<br>- Crear, llenar y destruir las listas temporales.<br><br>**Saber:**<br>- Las colecciones de `Sede`, `Clase`, `Alumno` y `RegistroAsistencia`.<br>- `diasBloqueoDeuda`: umbral configurable de bloqueo por deuda (15 días de atraso). | - **CTRLRegistrarAsistencia:** quien le pide las operaciones.<br>- **Sede:** recorre las sedes para filtrar las activas.<br>- **Clase:** recorre el cronograma y busca la clase elegida.<br>- **Alumno:** recorre los alumnos, les pregunta si cursan la actividad y si están habilitados.<br>- **RegistroAsistencia:** lo crea y le pide que agregue los detalles. |
 
 ---
 
@@ -84,7 +84,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Aportar la sede en la que trabaja, que se propone al iniciar la carga.<br><br>**Saber:**<br>- `legajo`.<br>- La `Sede` en la que trabaja. | - **Sede:** sede en la que trabaja.<br>- **CTRLGestionarAsistencia:** la recibe de la sesión y la envía como responsable del registro. |
+| **Hacer:**<br>- Aportar la sede en la que trabaja, que se propone al iniciar la carga.<br><br>**Saber:**<br>- `legajo`.<br>- La `Sede` en la que trabaja. | - **Sede:** sede en la que trabaja.<br>- **CTRLRegistrarAsistencia:** la recibe de la sesión y la envía como responsable del registro. |
 
 ---
 
@@ -168,7 +168,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Responder si cursa la actividad, delegando en su plan (`cursaActividad(actividad)`).<br>- Verificar su habilitación para ingresar: restricción manual y días de atraso contra el umbral (`verificarHabilitacion(fecha, diasBloqueo)`). Es la verificación del CU-A13 incluido.<br>- Calcular los días de atraso de su cuota impaga más vieja (`calcularDiasAtraso(fecha)`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`, `estado` (activo o inactivo), `fechaInscripcion`, `restriccionManual`, `motivoRestriccion`.<br>- Su `Plan` y sus `Cuota`. | - **Sistema:** quien lo recorre, lo busca por id y le pide las verificaciones.<br>- **Plan:** le pregunta si incluye la actividad.<br>- **Cuota:** sus cuotas, para calcular el atraso.<br>- **DetalleAsistencia:** registra su asistencia. |
+| **Hacer:**<br>- Responder si cursa la actividad, delegando en su plan (`cursaActividad(actividad)`).<br>- Verificar su habilitación para ingresar: restricción manual y días de atraso contra el umbral (`verificarHabilitacion(fecha, diasBloqueo)`). Es la verificación del CU incluido Verificar Habilitación para Ingresar a Clase.<br>- Calcular los días de atraso de su cuota impaga más vieja (`calcularDiasAtraso(fecha)`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`, `estado` (activo o inactivo), `fechaInscripcion`, `restriccionManual`, `motivoRestriccion`.<br>- Su `Plan` y sus `Cuota`. | - **Sistema:** quien lo recorre, lo busca por id y le pide las verificaciones.<br>- **Plan:** le pregunta si incluye la actividad.<br>- **Cuota:** sus cuotas, para calcular el atraso.<br>- **DetalleAsistencia:** registra su asistencia. |
 
 ---
 

@@ -19,8 +19,9 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 ## Qué se entrega
 
 - **Actores asignados:** Secretaria y Profesor.
-- **Alcance del diagrama de CU:** los CU de Gestión de Alumnos y Gestión de Personal.
-- **CU realizado:** CU-A06 Gestionar Asistencia Diaria por Clase y Sede (incluye CU-A13).
+- **Alcance del diagrama de CU:** los CU de Secretaria y Profesor que dibujó el grupo en draw.io (incluye kiosco y stock). El diagrama del grupo manda: no se agregan ni se quitan CU sin consultar. Los CU no llevan código (CU-A06, etc.).
+- **CU realizado:** Registrar Asistencia de Alumnos (incluye Verificar Habilitación para Ingresar a Clase).
+- **Descripción adicional:** Registrar Pagos, con su include (Emitir Recibos) y su extend (Aplicar Promociones), en `02-realizacion-cu/1b_descripcion_cu_registrar_pagos.md`.
 - **Orden del PDF:**
   1. descripción (estándar, alternativos y CU incluidos o extendidos);
   2. diagrama de clases;
