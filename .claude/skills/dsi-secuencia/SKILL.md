@@ -31,6 +31,7 @@ El apunte nuevo (`tpi2/apunte.md`) gana sobre lo que dice esta skill más abajo.
 - **Nombres:** `UI<Nombre del CU>` y `CTRL<Nombre del CU>` (ej: `UIRealizarReserva`, `CTRLRealizarReserva`).
 - **Entidad a colección:** un objeto puede pedir colecciones a otro con getters (`a.getCuotas()`).
 - **Listas temporales:** sin retorno tras `create`/`add`, pero **leer** un elemento (`getX()`) sí devuelve el objeto. El `destroy` es lo correcto aunque la profesora dijo que no hace falta en el parcial.
+- **Include y extend:** en el diagrama del CU base se muestran con un `ref over ...` (el extend dentro de un `opt` con la condición de la descripción) y cada uno tiene su propio diagrama de secuencia, con su `UI<CU>` y su `CTRL<CU>`. Los datos del CU base (alumno, monto, etc.) llegan como parámetros.
 - **Orden de trabajo:** primero el diagrama de clases sin métodos ni atributos, después la secuencia, después se completan las clases y al final las tarjetas CRC.
 
 ---

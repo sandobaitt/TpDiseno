@@ -30,6 +30,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 - **Orden de trabajo (apunte actualizado):** clases sin métodos ni atributos → secuencia → completar las clases con lo que salió de la secuencia → tarjetas CRC. Los archivos se numeran en el orden del PDF.
 - **Caminos alternativos:** van **todos** los casos posibles en la descripción. Hay que marcar los 2 más significativos.
 - **Diagrama de secuencia:** cubre **solo el camino estándar**.
+- **Include y extend:** en la secuencia del CU base van con un `ref` (el extend dentro de un `opt`), y cada uno tiene su **propio diagrama de secuencia** (`4b_` y `4c_`), con su UI y su CTRL (`UI<CU>`, `CTRL<CU>`). El diagrama de clases y las tarjetas CRC cubren las clases de los tres.
 - **Arquitectura y patrones:** quedan para después.
 
 ## Reglas de trabajo

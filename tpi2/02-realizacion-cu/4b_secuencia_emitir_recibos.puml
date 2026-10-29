@@ -1,0 +1,77 @@
+@startuml 4b_secuencia_emitir_recibos
+!pragma layout smetana
+autonumber
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+' ==============================================================================
+' REALIZACIÓN DEL CASO DE USO INCLUIDO: Emitir Recibos
+' Lo incluye Registrar Pagos (paso 12), que lo referencia con un ref.
+' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
+'
+' - Solo camino estándar (actor: Secretaria).
+' - Cuando lo incluye Registrar Pagos no interviene la secretaria: el Sistema recibe
+'   el pago ya registrado y ejecuta directamente emitirRecibo(p) (paso 2).
+' - Alta de la entidad: create() y después los sets, siempre desde el Sistema.
+' - El CTRL destruye la UI al finalizar.
+' ==============================================================================
+
+actor "Secretaria" as Actor
+boundary "UIEmitirRecibos" as UI <<Boundary>>
+control "CTRLEmitirRecibos" as CTRLCU <<Control>>
+participant "Sistema" as Sistema <<Sistema>>
+participant "Pagos" as Pagos <<Entity>>
+participant "r: Recibo" as Recibo <<Entity>>
+
+== Paso 1: La secretaria solicita el recibo de un pago registrado ==
+Actor -> UI: solicitarRecibo(idPago)
+activate UI
+UI -> CTRLCU: iniciarEmisionRecibo(idPago)
+activate CTRLCU
+
+CTRLCU -> Sistema: obtenerPago(idPago)
+activate Sistema
+' Búsqueda indexada: un objeto puntual conocido por su id
+Sistema -> Pagos: getPago(idPago)
+activate Pagos
+Pagos --> Sistema: p
+deactivate Pagos
+Sistema --> CTRLCU: p
+deactivate Sistema
+
+== Paso 2: El sistema genera el recibo digital y lo muestra ==
+CTRLCU -> Sistema: emitirRecibo(p)
+activate Sistema
+
+note right of Sistema
+  Desde Registrar Pagos (include) se ejecuta
+  esta parte: Sistema -> Sistema: emitirRecibo(p).
+end note
+
+Sistema -> Sistema: generarNumeroRecibo()
+
+create Recibo
+Sistema -> Recibo: create()
+Sistema -> Recibo: setDatos(datosRecibo)
+Sistema -> Recibo: setPago(p)
+
+note right of Recibo
+  datosRecibo: número y fecha de emisión.
+  El resto (alumno, cuotas, monto total, promoción,
+  medio de pago y secretaria) sale del pago.
+end note
+
+Sistema --> CTRLCU: r
+deactivate Sistema
+
+CTRLCU -> UI: mostrarRecibo(r)
+UI --> Actor: recibo digital
+
+CTRLCU -> UI: destroy()
+destroy UI
+deactivate CTRLCU
+
+@enduml

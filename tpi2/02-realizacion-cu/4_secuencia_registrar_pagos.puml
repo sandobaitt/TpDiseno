@@ -24,7 +24,9 @@ skinparam responseMessageBelowArrow true
 ' - Alta de entidades: create() y después los sets, siempre desde el Sistema.
 ' - Cambio de estado de la cuota con un mensaje de negocio (marcarPagada()).
 ' - La Entidad Bancaria es actor externo: la invoca el Sistema con mensaje asíncrono.
-' - Paso 12 incluye Emitir Recibos (se dibuja en línea).
+' - Include y extend con ref: Emitir Recibos (paso 12) y Aplicar Promociones (paso 7,
+'   camino alternativo 7.a). Cada uno tiene su propio diagrama de secuencia
+'   (4b_secuencia_emitir_recibos y 4c_secuencia_aplicar_promociones).
 ' - El CTRL destruye la UI al finalizar.
 ' ==============================================================================
 
@@ -141,10 +143,13 @@ UI --> Actor: monto total y medios de pago (efectivo, débito, transferencia, QR
 Actor -> UI: seleccionarMedioPago(medioPago)
 UI -> CTRLCU: tomarMedioPago(medioPago)
 
-note over Actor, CTRLCU
-  Camino estándar sin promoción. Si la secretaria pide una promoción
-  se ejecuta Aplicar Promociones (camino alternativo 7.a).
-end note
+' Extend: comportamiento opcional. Camino estándar = sin promoción (camino alternativo 7.a)
+opt la secretaria solicita aplicar una promoción o un cupón
+    ref over CTRLCU, Sistema
+        Aplicar Promociones (extend)
+        Deja la promoción elegida en el Sistema y el monto total recalculado con el descuento
+    end ref
+end
 
 == Paso 8: El sistema muestra el resumen del cobro ==
 CTRLCU -> Sistema: obtenerCuotasSeleccionadas()
@@ -185,6 +190,11 @@ note right of Pago
   y medio de pago.
 end note
 
+' Extend: solo si en el paso 7 se aplicó una promoción
+opt hay una promoción aplicada
+    Sistema -> Pago: setPromocion(promocionAplicada)
+end
+
 loop for each c in LLT[seleccionadas]
     Sistema -> LLTS: getCuota()
     activate LLTS
@@ -201,19 +211,11 @@ Sistema -> Alumno: actualizarEstadoCuenta()
 activate Alumno
 deactivate Alumno
 
-' --- Emitir Recibos (CU incluido) ---
-Sistema -> Sistema: generarNumeroRecibo()
-
-create Recibo
-Sistema -> Recibo: create()
-Sistema -> Recibo: setDatos(datosRecibo)
-Sistema -> Recibo: setPago(p)
-
-note right of Recibo
-  datosRecibo: número y fecha de emisión.
-  El resto (alumno, cuotas, monto, medio,
-  promoción y secretaria) sale del pago.
-end note
+' Include: sin Emitir Recibos el pago no se completa
+ref over Sistema, Recibo
+    Emitir Recibos (include)
+    emitirRecibo(p): el Sistema genera el recibo r del pago p
+end ref
 
 Sistema -> LLTS: destroy()
 destroy LLTS

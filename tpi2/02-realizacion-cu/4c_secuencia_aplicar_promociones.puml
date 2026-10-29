@@ -1,0 +1,105 @@
+@startuml 4c_secuencia_aplicar_promociones
+!pragma layout smetana
+autonumber
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+' ==============================================================================
+' REALIZACIÓN DEL CASO DE USO QUE EXTIENDE: Aplicar Promociones
+' Extiende a Registrar Pagos (paso 7, camino alternativo 7.a), que lo referencia con un ref.
+' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
+'
+' - Solo camino estándar (actor: Secretaria).
+' - Los datos del cobro en curso (alumno a, monto total y medio de pago) llegan desde
+'   Registrar Pagos; se pasan como parámetros.
+' - Recorrido de las promociones: LL[pr]: Promociones; el loop lo hace el Sistema.
+' - Lista temporal LLT[vigentes]: creada, llenada y destruida por el Sistema.
+' - Experto: cada promoción sabe si se cumplen sus condiciones y cuánto descuenta.
+' - Búsqueda indexada de la promoción elegida (getPromocion(idPromocion)), sin loop.
+' - Mensaje reflexivo para recalcular el monto total.
+' - Una sola promoción por cobro: el Sistema guarda la aplicada (promocionAplicada).
+' - El CTRL destruye la UI al finalizar.
+' ==============================================================================
+
+actor "Secretaria" as Actor
+boundary "UIAplicarPromociones" as UI <<Boundary>>
+control "CTRLAplicarPromociones" as CTRLCU <<Control>>
+participant "Sistema" as Sistema <<Sistema>>
+participant "LL[pr]: Promociones" as LLPR <<Entity>>
+participant "pr: Promocion" as Promocion <<Entity>>
+participant "LLT[vigentes]: Promociones" as LLTV
+
+== Paso 1: El sistema muestra las promociones vigentes, indicando cuáles corresponden y el motivo si no ==
+Actor -> UI: solicitarPromocion()
+activate UI
+UI -> CTRLCU: iniciarAplicacionPromocion(a, montoTotal, medioPago)
+activate CTRLCU
+
+CTRLCU -> Sistema: obtenerPromocionesVigentes(a, montoTotal, medioPago)
+activate Sistema
+
+create LLTV
+Sistema -> LLTV: create()
+
+loop for each pr in Promociones
+    Sistema -> LLPR: getPromocion()
+    activate LLPR
+    LLPR --> Sistema: pr
+    deactivate LLPR
+
+    ' Vigente: la fecha actual está dentro de la vigencia de la promoción
+    opt pr.fechaDesde <= fechaActual <= pr.fechaHasta
+        ' Experto: la promoción verifica sus propias condiciones (medio de pago, antigüedad, cuotas, plan familiar)
+        Sistema -> Promocion: verificarCondiciones(a, montoTotal, medioPago)
+        activate Promocion
+        Promocion --> Sistema: resultado
+        deactivate Promocion
+
+        Sistema -> LLTV: add(pr, resultado)
+    end
+end
+
+Sistema --> CTRLCU: LLT[vigentes]
+Sistema -> LLTV: destroy()
+destroy LLTV
+deactivate Sistema
+
+CTRLCU -> UI: mostrarPromocionesVigentes(LLT[vigentes])
+UI --> Actor: promociones vigentes, con el motivo de las que no corresponden
+
+== Paso 2: La secretaria selecciona una promoción ==
+Actor -> UI: seleccionarPromocion(idPromocion)
+UI -> CTRLCU: tomarPromocion(idPromocion)
+
+== Paso 3: El sistema calcula el descuento, recalcula el monto total e informa el nuevo monto ==
+CTRLCU -> Sistema: aplicarPromocion(idPromocion, montoTotal)
+activate Sistema
+
+' Búsqueda indexada: un objeto puntual conocido por su id
+Sistema -> LLPR: getPromocion(idPromocion)
+activate LLPR
+LLPR --> Sistema: pr
+deactivate LLPR
+
+Sistema -> Promocion: calcularDescuento(montoTotal)
+activate Promocion
+Promocion --> Sistema: descuento
+deactivate Promocion
+
+Sistema -> Sistema: recalcularMontoTotal(montoTotal, descuento)
+Sistema -> Sistema: registrarPromocionAplicada(pr)
+
+Sistema --> CTRLCU: montoConDescuento
+deactivate Sistema
+
+CTRLCU -> UI: mostrarNuevoMonto(montoConDescuento)
+UI --> Actor: nuevo monto total con el descuento aplicado
+
+CTRLCU -> UI: destroy()
+destroy UI
+deactivate CTRLCU
+
+@enduml

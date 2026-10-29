@@ -17,8 +17,10 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 | 1. Diagrama de CU | [`01-casos-de-uso/casos_de_uso_secretaria_profesor.puml`](01-casos-de-uso/casos_de_uso_secretaria_profesor.puml) (+ `.svg`) | ✅ Hecho |
 | 2.i Descripción (estándar, alternativos, include y extend) | [`02-realizacion-cu/1_descripcion_cu_registrar_pagos.md`](02-realizacion-cu/1_descripcion_cu_registrar_pagos.md) | ✅ Hecho |
 | 2.ii Diagrama de clases | [`02-realizacion-cu/2_clases_registrar_pagos.puml`](02-realizacion-cu/2_clases_registrar_pagos.puml) (+ `.svg`) | ✅ Hecho |
-| 2.iii Tarjetas CRC (las 9 clases) | [`02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md`](02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md) | ✅ Hecho |
-| 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_registrar_pagos.puml`](02-realizacion-cu/4_secuencia_registrar_pagos.puml) (+ `.svg`) | ✅ Hecho |
+| 2.iii Tarjetas CRC (las 14 clases) | [`02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md`](02-realizacion-cu/3_tarjetas_crc_registrar_pagos.md) | ✅ Hecho |
+| 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_registrar_pagos.puml`](02-realizacion-cu/4_secuencia_registrar_pagos.puml) (+ `.svg`). Referencia con `ref` al include y al extend | ✅ Hecho |
+| 2.iv Secuencia del CU incluido: Emitir Recibos | [`02-realizacion-cu/4b_secuencia_emitir_recibos.puml`](02-realizacion-cu/4b_secuencia_emitir_recibos.puml) (+ `.svg`) | ✅ Hecho |
+| 2.iv Secuencia del CU que extiende: Aplicar Promociones | [`02-realizacion-cu/4c_secuencia_aplicar_promociones.puml`](02-realizacion-cu/4c_secuencia_aplicar_promociones.puml) (+ `.svg`) | ✅ Hecho |
 | 3. Arquitectura (tipo y 2 vistas) | [`03-arquitectura/`](03-arquitectura/) | ⏳ Para después |
 | 4. Patrón aplicado al CU | [`04-patrones/`](04-patrones/) | ⏳ Para después |
 | PDF final | [`entrega/`](entrega/) | ⏳ Al terminar |
@@ -27,7 +29,7 @@ El PDF respeta el orden de la consigna: descripción, diagrama de clases, tarjet
 
 ## Estado del CU
 
-La realización de Registrar Pagos está completa: descripción, clases, tarjetas CRC y secuencia. `verificar.py` confirma que cada mensaje de la secuencia existe en el diagrama de clases y en su tarjeta.
+La realización de Registrar Pagos está completa, con su include (Emitir Recibos) y su extend (Aplicar Promociones): descripción de los tres, un diagrama de clases (14 clases), 14 tarjetas CRC y tres diagramas de secuencia. En la secuencia de Registrar Pagos, el include y el extend se muestran con un `ref` que apunta a su propio diagrama. `verificar.py` confirma que cada mensaje de la secuencia existe en el diagrama de clases y en su tarjeta.
 
 ## Cómo se trabaja
 
