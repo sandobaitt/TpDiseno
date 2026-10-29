@@ -24,13 +24,16 @@ Esta skill define las reglas obligatorias, criterios de corrección y convencion
 
 El apunte nuevo (`tpi2/apunte.md`) gana sobre lo que dice esta skill más abajo. Cambios que afectan al diagrama:
 
-- **Notación de listas:** recorrido `LL[c]: Clientes` (lista de `c` sobre `Clientes`) y lista temporal `LLT[filtrados]: Clientes`. En los ejemplos de abajo, `LTC` se lee `LL[c]` y `LTTC` se lee `LLT[...]`. `verificar.py` acepta las dos notaciones.
+- **Notación de listas:** recorrido `LL[c]: Clientes` (lista de `c` sobre `Clientes`) y lista temporal `LT` + letra que indique de qué es + `[objeto]`: `LTP[c]: Cuotas` = pendientes, `LTS[c]: Cuotas` = seleccionadas, `LTV[pr]: Promociones` = vigentes. En los ejemplos de abajo, `LTC` se lee `LL[c]` y `LTTC` se lee `LT` + letra. `verificar.py` acepta todas las notaciones.
 - **Loop:** `for each c in Clientes`.
 - **Altas:** `create()` seguido de los sets (`setDatos(datos)`, `setAlumno(a)`…), **siempre desde el Sistema**. Con muchos datos: `setDatos(datosX)` y una nota que diga qué contiene. La composición no cambia: la cabecera crea sus partes.
-- **Ingreso múltiple:** el actor nunca envía listas; manda un elemento por vuelta dentro de un `loop` y el sistema responde en cada una. Como el CTRL no tiene atributos, el Sistema acumula lo elegido en una lista temporal.
+- **Ingreso múltiple:** el actor nunca envía listas; manda un elemento por vuelta dentro de un `loop`. En cada vuelta el CTRL le dice a la UI que pregunte si sigue ingresando, la UI se lo pregunta al actor y su respuesta decide si el loop continúa (no hace falta un mensaje de "terminar" aparte; tampoco mostrar el elemento elegido).
+- **Comparar en el loop:** al recorrer una colección, la guarda compara el atributo que corresponde (por ejemplo `c.alumno.dni = dni`), no se arma la lista desde otro objeto.
+- **`Externo`:** va a la izquierda del actor principal (es un extra). Como el CTRL no tiene atributos, el Sistema acumula lo elegido en una lista temporal.
 - **Nombres:** `UI<Nombre del CU>` y `CTRL<Nombre del CU>` (ej: `UIRealizarReserva`, `CTRLRealizarReserva`).
 - **Entidad a colección:** un objeto puede pedir colecciones a otro con getters (`a.getCuotas()`).
 - **Listas temporales:** sin retorno tras `create`/`add`, pero **leer** un elemento (`getX()`) sí devuelve el objeto. El `destroy` es lo correcto aunque la profesora dijo que no hace falta en el parcial.
+- **Inicio y fin (como lo pide la profe):** un participante `Externo` (algo ajeno al CU) le manda `create()` al CTRL; el CTRL le manda `create()` a la UI y después `mostrarOpciones()`; recién ahí la secretaria elige la opción del CU. Al final, el CTRL manda `destroy()` a la UI y **después** el `Externo` manda `destroy()` al CTRL (ese es el último mensaje). Vale para cada CU que tenga su propio CTRL, incluidos el include y el extend.
 - **Include y extend:** en el diagrama del CU base se muestran con un `ref over ...` (el extend dentro de un `opt` con la condición de la descripción) y cada uno tiene su propio diagrama de secuencia, con su `UI<CU>` y su `CTRL<CU>`. Los datos del CU base (alumno, monto, etc.) llegan como parámetros.
 - **Orden de trabajo:** primero el diagrama de clases sin métodos ni atributos, después la secuencia, después se completan las clases y al final las tarjetas CRC.
 

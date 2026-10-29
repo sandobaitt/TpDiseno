@@ -138,9 +138,9 @@ def clasificar(alias, p, creados):
     et = p["etiqueta"]
     clase_txt = et.split(":", 1)[1].strip() if ":" in et else et
     prefijo = et.split(":", 1)[0].strip() if ":" in et else ""
-    # Apunte actualizado: LL[c]: Clientes (recorrido) y LLT[filtrados]: Clientes (lista temporal).
+    # Apunte actualizado: LL[c]: Clientes (recorrido) y LTP[c]: Clientes (lista temporal: LT + letra de qué es + [objeto]).
     # Se sigue aceptando la notación anterior: LTC / LTTC.
-    es_lt = bool(re.match(r"^(LT[A-Z]+|LLT?\[[^\]]+\])$", prefijo))
+    es_lt = bool(re.match(r"^(LT[A-Z]*(\[[^\]]+\])?|LLT?\[[^\]]+\])$", prefijo))
     p["clase_txt"] = clase_txt
     p["es_temporal"] = es_lt and alias in creados
     p["es_coleccion"] = es_lt and alias not in creados

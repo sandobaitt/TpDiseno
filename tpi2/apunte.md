@@ -287,7 +287,7 @@ end
 * La clase **Sistema es la única responsable** de instanciar (`create`) y agregar datos (`add()`) a listas temporales, generalmente dentro de un `loop`.
 * **Regla visual:** no graficar una flecha de retorno desde la lista temporal hacia el Sistema tras agregar elementos (no poner un `return()`): una vez creada, el sistema ya la conoce.
 * Al final del uso de la lista temporal se hace un `destroy()`, mensaje que le envía el Sistema. *(La profe dijo que no hace falta hacerlo en el parcial, pero es lo correcto; queda por si en otro año lo piden.)*
-* **Nomenclatura:** `LLT[filtrados]: Clientes`.
+* **Nomenclatura (corregida el 29/10/2026):** `LT` + una letra que indique de qué es la lista: el formato es `LTP[c]: Cuotas` (sigla, entre corchetes el objeto y después la lista de ese objeto): `LTP[c]: Cuotas` es la lista temporal de las cuotas *pendientes* y `LTS[c]: Cuotas` la de las *seleccionadas*.
 
 Receta que casi siempre se repite:
 
@@ -297,14 +297,14 @@ Receta que casi siempre se repite:
 4. En el `opt` va la condición para almacenarlo en la lista temporal. Si se cumple, va a la lista temporal, que es la que se le devuelve al usuario o se usa en otro paso del CU.
 
 ```plantuml
-create "LLT[filtrados]: Clientes" as LLTF
-Sistema -> LLTF: create()
+create "LTF[c]: Clientes" as LTF
+Sistema -> LTF: create()
 
 loop for each c in Clientes
     Sistema -> LLC: getCliente()
     LLC --> Sistema: c
     opt c.atributo = condicion de filtrado
-        Sistema -> LLTF: add(c)
+        Sistema -> LTF: add(c)
     end
 end
 ```

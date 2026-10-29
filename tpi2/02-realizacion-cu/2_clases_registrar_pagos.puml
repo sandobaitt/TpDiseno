@@ -31,13 +31,14 @@ skinparam NoteBorderColor #BBAA55
 package "Presentación y control" {
 
     class UIRegistrarPagos <<Boundary>> {
+        + mostrarOpciones(): void
         + seleccionarOpcionRegistrarPagos(): void
         + solicitarDniONombre(): void
         + ingresarDni(dni: String): void
         + mostrarEstadoDeCuenta(alumno: Alumno, cuotasPendientes: List): void
         + seleccionarCuota(idCuota: int): void
-        + mostrarCuotaSeleccionada(cuota: Cuota): void
-        + terminarSeleccion(): void
+        + solicitarContinuarSeleccion(): void
+        + indicarContinuar(continuar: boolean): void
         + mostrarMontoYMediosDePago(montoTotal: float): void
         + seleccionarMedioPago(medioPago: String): void
         + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: String): void
@@ -49,12 +50,13 @@ package "Presentación y control" {
         + iniciarRegistroPago(): void
         + tomarDni(dni: String): void
         + tomarCuota(idCuota: int): void
-        + tomarFinSeleccion(): void
+        + tomarContinuar(continuar: boolean): void
         + tomarMedioPago(medioPago: String): void
         + tomarConfirmacion(): void
     }
 
     class UIAplicarPromociones <<Boundary>> {
+        + mostrarOpciones(): void
         + solicitarPromocion(): void
         + mostrarPromocionesVigentes(promociones: List): void
         + seleccionarPromocion(idPromocion: int): void
@@ -67,6 +69,7 @@ package "Presentación y control" {
     }
 
     class UIEmitirRecibos <<Boundary>> {
+        + mostrarOpciones(): void
         + solicitarRecibo(idPago: int): void
         + mostrarRecibo(recibo: Recibo): void
     }
@@ -82,9 +85,9 @@ package "Presentación y control" {
     class Sistema <<Sistema>> {
         - promocionAplicada: Promocion
         + obtenerAlumno(dni: String): Alumno
-        + obtenerCuotasPendientes(alumno: Alumno): List
+        + obtenerCuotasPendientes(dni: String): List
         + iniciarSeleccionCuotas(): void
-        + agregarCuotaSeleccionada(idCuota: int): Cuota
+        + agregarCuotaSeleccionada(idCuota: int): void
         + obtenerMontoTotal(): float
         + obtenerCuotasSeleccionadas(): List
         + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: String, secretaria: Secretaria): Recibo
@@ -108,7 +111,6 @@ package "Dominio" {
         - apellido: String
         - estado: String
         - estadoCuenta: String
-        + getCuotas(): List
         + actualizarEstadoCuenta(): void
     }
 
@@ -175,6 +177,7 @@ CTRLEmitirRecibos "1" --> "1" Sistema : delega operaciones
 
 ' Colecciones que conoce el Sistema (agregación)
 Sistema "1" o-- "*" Alumno : alumnos
+Sistema "1" o-- "*" Cuota : cuotas
 Sistema "1" o-- "*" Pago : pagos
 Sistema "1" o-- "*" Recibo : recibos
 Sistema "1" o-- "*" Promocion : promociones

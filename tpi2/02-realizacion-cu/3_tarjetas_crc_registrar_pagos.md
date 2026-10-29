@@ -14,7 +14,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Recibir la opción de registrar pagos (`seleccionarOpcionRegistrarPagos()`).<br>- Pedir el DNI o el nombre del alumno (`solicitarDniONombre()`).<br>- Recibir el DNI (`ingresarDni(dni)`).<br>- Mostrar el estado de cuenta con las cuotas pendientes (`mostrarEstadoDeCuenta(alumno, cuotasPendientes)`).<br>- Recibir cada cuota elegida (`seleccionarCuota(idCuota)`) y mostrarla como seleccionada (`mostrarCuotaSeleccionada(cuota)`).<br>- Recibir el fin de la selección (`terminarSeleccion()`).<br>- Mostrar el monto total y los medios de pago (`mostrarMontoYMediosDePago(montoTotal)`).<br>- Recibir el medio de pago (`seleccionarMedioPago(medioPago)`).<br>- Mostrar el resumen del cobro (`mostrarResumenCobro(alumno, cuotas, montoTotal, medioPago)`).<br>- Recibir la confirmación (`confirmarPago()`).<br>- Informar el pago registrado con su recibo (`mostrarPagoRegistrado(recibo)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLRegistrarPagos:** le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar. |
+| **Hacer:**<br>- Mostrar las opciones disponibles (`mostrarOpciones()`).<br>- Recibir la opción de registrar pagos (`seleccionarOpcionRegistrarPagos()`).<br>- Pedir el DNI o el nombre del alumno (`solicitarDniONombre()`).<br>- Recibir el DNI (`ingresarDni(dni)`).<br>- Mostrar el estado de cuenta con las cuotas pendientes (`mostrarEstadoDeCuenta(alumno, cuotasPendientes)`).<br>- Recibir cada cuota elegida (`seleccionarCuota(idCuota)`).<br>- Preguntar si sigue ingresando cuotas (`solicitarContinuarSeleccion()`) y recibir la respuesta (`indicarContinuar(continuar)`).<br>- Mostrar el monto total y los medios de pago (`mostrarMontoYMediosDePago(montoTotal)`).<br>- Recibir el medio de pago (`seleccionarMedioPago(medioPago)`).<br>- Mostrar el resumen del cobro (`mostrarResumenCobro(alumno, cuotas, montoTotal, medioPago)`).<br>- Recibir la confirmación (`confirmarPago()`).<br>- Informar el pago registrado con su recibo (`mostrarPagoRegistrado(recibo)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLRegistrarPagos:** le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar. |
 
 ---
 
@@ -28,7 +28,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Iniciar el registro del pago y pedir el DNI (`iniciarRegistroPago()`).<br>- Tomar el DNI, pedir el alumno y sus cuotas pendientes (`tomarDni(dni)`).<br>- Tomar cada cuota elegida y pedirle al Sistema que la agregue (`tomarCuota(idCuota)`).<br>- Tomar el fin de la selección y pedir el monto total (`tomarFinSeleccion()`).<br>- Tomar el medio de pago y pedir el resumen (`tomarMedioPago(medioPago)`).<br>- Tomar la confirmación, obtener la secretaria y pedir el registro del pago (`tomarConfirmacion()`).<br>- Destruir la pantalla al terminar el caso de uso.<br><br>**Saber:**<br>- No tiene atributos. | - **UIRegistrarPagos:** recibe sus eventos y le indica qué mostrar.<br>- **CTRLSesion:** le pide la secretaria logueada.<br>- **Sistema:** le delega las búsquedas, el cálculo y el registro. |
+| **Hacer:**<br>- Crear la pantalla y pedirle que muestre las opciones.<br>- Iniciar el registro del pago y pedir el DNI (`iniciarRegistroPago()`).<br>- Tomar el DNI, pedir el alumno y sus cuotas pendientes (`tomarDni(dni)`).<br>- Tomar cada cuota elegida y pedirle al Sistema que la agregue (`tomarCuota(idCuota)`).<br>- Tomar la respuesta de si sigue ingresando cuotas: si dice que sí, repite la selección; si dice que no, pide el monto total (`tomarContinuar(continuar)`).<br>- Tomar el medio de pago y pedir el resumen (`tomarMedioPago(medioPago)`).<br>- Tomar la confirmación, obtener la secretaria y pedir el registro del pago (`tomarConfirmacion()`).<br>- Destruir la pantalla al terminar el caso de uso.<br><br>**Saber:**<br>- No tiene atributos. | - **UIRegistrarPagos:** recibe sus eventos y le indica qué mostrar.<br>- **CTRLSesion:** le pide la secretaria logueada.<br>- **Sistema:** le delega las búsquedas, el cálculo y el registro. |
 
 ---
 
@@ -56,7 +56,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Buscar un alumno por su DNI (`obtenerAlumno(dni)`).<br>- Obtener las cuotas pendientes de un alumno, armando una lista temporal (`obtenerCuotasPendientes(alumno)`).<br>- Crear la lista temporal de las cuotas del pago en curso (`iniciarSeleccionCuotas()`).<br>- Agregar a esa lista la cuota elegida (`agregarCuotaSeleccionada(idCuota)`).<br>- Informar el monto total de las cuotas elegidas (`obtenerMontoTotal()`) y calcularlo (`calcularTotal()`).<br>- Informar las cuotas elegidas (`obtenerCuotasSeleccionadas()`).<br>- Confirmar el pago: pedir la validación a la Entidad Bancaria, crear el pago (con su promoción, si se aplicó una) y su recibo, marcar las cuotas como pagas y actualizar el estado de cuenta del alumno (`confirmarPago(alumno, montoTotal, medioPago, secretaria)`).<br>- Buscar un pago por su id (`obtenerPago(idPago)`).<br>- Emitir el recibo de un pago (`emitirRecibo(pago)`) y numerarlo (`generarNumeroRecibo()`).<br>- Obtener las promociones vigentes, con el resultado de sus condiciones (`obtenerPromocionesVigentes(alumno, montoTotal, medioPago)`).<br>- Aplicar la promoción elegida (`aplicarPromocion(idPromocion, montoTotal)`): calcular el descuento, recalcular el monto (`recalcularMontoTotal(montoTotal, descuento)`) y recordar la promoción (`registrarPromocionAplicada(promocion)`).<br>- Crear, llenar y destruir las listas temporales.<br><br>**Saber:**<br>- Las colecciones de `Alumno`, `Pago`, `Recibo` y `Promocion`.<br>- `promocionAplicada`: la promoción del pago en curso. | - **CTRLRegistrarPagos**, **CTRLAplicarPromociones** y **CTRLEmitirRecibos:** quienes le piden las operaciones.<br>- **Alumno:** lo busca, le pide sus cuotas y que actualice su estado de cuenta.<br>- **Cuota:** la busca, la agrega a la lista y le pide que se marque como paga.<br>- **Pago:** lo crea, lo busca y le setea sus datos, sus cuotas y su promoción.<br>- **Recibo:** lo crea y le setea sus datos.<br>- **Promocion:** la recorre, le pide verificar condiciones y calcular el descuento.<br>- **Secretaria:** la recibe para registrar quién cobró.<br>- **Entidad Bancaria** (actor externo): le pide validar el pago. |
+| **Hacer:**<br>- Buscar un alumno por su DNI (`obtenerAlumno(dni)`).<br>- Obtener las cuotas pendientes de un alumno, recorriendo las cuotas y comparando el DNI del alumno y el estado de cada una en una lista temporal (`obtenerCuotasPendientes(dni)`).<br>- Crear la lista temporal de las cuotas del pago en curso (`iniciarSeleccionCuotas()`).<br>- Agregar a esa lista la cuota elegida (`agregarCuotaSeleccionada(idCuota)`).<br>- Informar el monto total de las cuotas elegidas (`obtenerMontoTotal()`) y calcularlo (`calcularTotal()`).<br>- Informar las cuotas elegidas (`obtenerCuotasSeleccionadas()`).<br>- Confirmar el pago: pedir la validación a la Entidad Bancaria, crear el pago (con su promoción, si se aplicó una) y su recibo, marcar las cuotas como pagas y actualizar el estado de cuenta del alumno (`confirmarPago(alumno, montoTotal, medioPago, secretaria)`).<br>- Buscar un pago por su id (`obtenerPago(idPago)`).<br>- Emitir el recibo de un pago (`emitirRecibo(pago)`) y numerarlo (`generarNumeroRecibo()`).<br>- Obtener las promociones vigentes, con el resultado de sus condiciones (`obtenerPromocionesVigentes(alumno, montoTotal, medioPago)`).<br>- Aplicar la promoción elegida (`aplicarPromocion(idPromocion, montoTotal)`): calcular el descuento, recalcular el monto (`recalcularMontoTotal(montoTotal, descuento)`) y recordar la promoción (`registrarPromocionAplicada(promocion)`).<br>- Crear, llenar y destruir las listas temporales.<br><br>**Saber:**<br>- Las colecciones de `Alumno`, `Cuota`, `Pago`, `Recibo` y `Promocion`.<br>- `promocionAplicada`: la promoción del pago en curso. | - **CTRLRegistrarPagos**, **CTRLAplicarPromociones** y **CTRLEmitirRecibos:** quienes le piden las operaciones.<br>- **Alumno:** lo busca y le pide que actualice su estado de cuenta.<br>- **Cuota:** la recorre y la busca por id, la agrega a la lista y le pide que se marque como paga.<br>- **Pago:** lo crea, lo busca y le setea sus datos, sus cuotas y su promoción.<br>- **Recibo:** lo crea y le setea sus datos.<br>- **Promocion:** la recorre, le pide verificar condiciones y calcular el descuento.<br>- **Secretaria:** la recibe para registrar quién cobró.<br>- **Entidad Bancaria** (actor externo): le pide validar el pago. |
 
 ---
 
@@ -72,7 +72,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Entregar sus cuotas (`getCuotas()`).<br>- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (`actualizarEstadoCuenta()`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`.<br>- `estado` (activo o inactivo) y `estadoCuenta` (al día, por vencer, deudor o bloqueado).<br>- Sus `Cuota`. | - **Cuota:** sus partes; de ellas calcula el estado de cuenta.<br>- **Sistema:** quien lo busca y le pide las cuotas y la actualización.<br>- **Pago:** los pagos se registran a su nombre.<br>- **Promocion:** evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde. |
+| **Hacer:**<br>- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (`actualizarEstadoCuenta()`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`.<br>- `estado` (activo o inactivo) y `estadoCuenta` (al día, por vencer, deudor o bloqueado).<br>- Sus `Cuota`. | - **Cuota:** sus partes; de ellas calcula el estado de cuenta.<br>- **Sistema:** quien lo busca y le pide las cuotas y la actualización.<br>- **Pago:** los pagos se registran a su nombre.<br>- **Promocion:** evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde. |
 
 ---
 
@@ -158,7 +158,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Recibir el pedido de aplicar una promoción (`solicitarPromocion()`).<br>- Mostrar las promociones vigentes y el motivo de las que no corresponden (`mostrarPromocionesVigentes(promociones)`).<br>- Recibir la promoción elegida (`seleccionarPromocion(idPromocion)`).<br>- Mostrar el nuevo monto total con el descuento (`mostrarNuevoMonto(montoTotal)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLAplicarPromociones:** le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar. |
+| **Hacer:**<br>- Mostrar las opciones disponibles (`mostrarOpciones()`).<br>- Recibir el pedido de aplicar una promoción (`solicitarPromocion()`).<br>- Mostrar las promociones vigentes y el motivo de las que no corresponden (`mostrarPromocionesVigentes(promociones)`).<br>- Recibir la promoción elegida (`seleccionarPromocion(idPromocion)`).<br>- Mostrar el nuevo monto total con el descuento (`mostrarNuevoMonto(montoTotal)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLAplicarPromociones:** le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar. |
 
 ---
 
@@ -172,7 +172,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Iniciar la aplicación de una promoción con los datos del cobro en curso y pedir las promociones vigentes (`iniciarAplicacionPromocion(alumno, montoTotal, medioPago)`).<br>- Tomar la promoción elegida y pedir su aplicación (`tomarPromocion(idPromocion)`).<br>- Destruir la pantalla al terminar.<br><br>**Saber:**<br>- No tiene atributos. | - **UIAplicarPromociones:** recibe sus eventos y le indica qué mostrar.<br>- **Sistema:** le delega la búsqueda de promociones y su aplicación. |
+| **Hacer:**<br>- Crear la pantalla y pedirle que muestre las opciones.<br>- Iniciar la aplicación de una promoción con los datos del cobro en curso y pedir las promociones vigentes (`iniciarAplicacionPromocion(alumno, montoTotal, medioPago)`).<br>- Tomar la promoción elegida y pedir su aplicación (`tomarPromocion(idPromocion)`).<br>- Destruir la pantalla al terminar.<br><br>**Saber:**<br>- No tiene atributos. | - **UIAplicarPromociones:** recibe sus eventos y le indica qué mostrar.<br>- **Sistema:** le delega la búsqueda de promociones y su aplicación. |
 
 ---
 
@@ -186,7 +186,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Recibir el pedido del recibo de un pago (`solicitarRecibo(idPago)`).<br>- Mostrar el recibo digital (`mostrarRecibo(recibo)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLEmitirRecibos:** le reenvía el pedido y recibe de él el recibo a mostrar. |
+| **Hacer:**<br>- Mostrar las opciones disponibles (`mostrarOpciones()`).<br>- Recibir el pedido del recibo de un pago (`solicitarRecibo(idPago)`).<br>- Mostrar el recibo digital (`mostrarRecibo(recibo)`).<br><br>**Saber:**<br>- No tiene atributos. | - **CTRLEmitirRecibos:** le reenvía el pedido y recibe de él el recibo a mostrar. |
 
 ---
 
@@ -200,4 +200,4 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Iniciar la emisión del recibo de un pago: pedir el pago y pedir la emisión (`iniciarEmisionRecibo(idPago)`).<br>- Destruir la pantalla al terminar.<br><br>**Saber:**<br>- No tiene atributos. | - **UIEmitirRecibos:** recibe su evento y le indica qué mostrar.<br>- **Sistema:** le delega la búsqueda del pago y la emisión del recibo. |
+| **Hacer:**<br>- Crear la pantalla y pedirle que muestre las opciones.<br>- Iniciar la emisión del recibo de un pago: pedir el pago y pedir la emisión (`iniciarEmisionRecibo(idPago)`).<br>- Destruir la pantalla al terminar.<br><br>**Saber:**<br>- No tiene atributos. | - **UIEmitirRecibos:** recibe su evento y le indica qué mostrar.<br>- **Sistema:** le delega la búsqueda del pago y la emisión del recibo. |

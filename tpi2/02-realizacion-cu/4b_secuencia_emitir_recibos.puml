@@ -16,9 +16,11 @@ skinparam responseMessageBelowArrow true
 ' - Cuando lo incluye Registrar Pagos no interviene la secretaria: el Sistema recibe
 '   el pago ya registrado y ejecuta directamente emitirRecibo(p) (paso 2).
 ' - Alta de la entidad: create() y después los sets, siempre desde el Sistema.
-' - El CTRL destruye la UI al finalizar.
+' - Inicio y fin: un participante Externo (algo ajeno al CU) le manda create() al CTRL; el CTRL
+'   crea la UI y le pide mostrarOpciones(). Al final el CTRL destruye la UI y el Externo destruye al CTRL.
 ' ==============================================================================
 
+participant "Externo" as Externo
 actor "Secretaria" as Actor
 boundary "UIEmitirRecibos" as UI <<Boundary>>
 control "CTRLEmitirRecibos" as CTRLCU <<Control>>
@@ -26,11 +28,19 @@ participant "Sistema" as Sistema <<Sistema>>
 participant "Pagos" as Pagos <<Entity>>
 participant "r: Recibo" as Recibo <<Entity>>
 
+== Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
+create CTRLCU
+Externo -> CTRLCU: create()
+activate CTRLCU
+create UI
+CTRLCU -> UI: create()
+activate UI
+CTRLCU -> UI: mostrarOpciones()
+UI --> Actor: opciones disponibles
+
 == Paso 1: La secretaria solicita el recibo de un pago registrado ==
 Actor -> UI: solicitarRecibo(idPago)
-activate UI
 UI -> CTRLCU: iniciarEmisionRecibo(idPago)
-activate CTRLCU
 
 CTRLCU -> Sistema: obtenerPago(idPago)
 activate Sistema
@@ -72,6 +82,7 @@ UI --> Actor: recibo digital
 
 CTRLCU -> UI: destroy()
 destroy UI
-deactivate CTRLCU
+Externo -> CTRLCU: destroy()
+destroy CTRLCU
 
 @enduml

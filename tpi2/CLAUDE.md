@@ -30,6 +30,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 - **Orden de trabajo (apunte actualizado):** clases sin métodos ni atributos → secuencia → completar las clases con lo que salió de la secuencia → tarjetas CRC. Los archivos se numeran en el orden del PDF.
 - **Caminos alternativos:** van **todos** los casos posibles en la descripción. Hay que marcar los 2 más significativos.
 - **Diagrama de secuencia:** cubre **solo el camino estándar**.
+- **Inicio y fin de cada secuencia:** un participante `Externo` crea el CTRL (`create()`), el CTRL crea la UI y le pide `mostrarOpciones()`; al final el CTRL destruye la UI y el `Externo` destruye al CTRL. Las UI tienen el método `mostrarOpciones()`.
 - **Include y extend:** en la secuencia del CU base van con un `ref` (el extend dentro de un `opt`), y cada uno tiene su **propio diagrama de secuencia** (`4b_` y `4c_`), con su UI y su CTRL (`UI<CU>`, `CTRL<CU>`). El diagrama de clases y las tarjetas CRC cubren las clases de los tres.
 - **Arquitectura y patrones:** quedan para después.
 
@@ -43,7 +44,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
   - corrección de asistencia hasta 30 días atrás.
   
   Las `specs/` describen lo que ya hace el prototipo.
-- Notación del apunte nuevo: `LL[c]: Clientes` para recorrer y `LLT[filtrados]: Clientes` para listas temporales; `UI<CU>` y `CTRL<CU>`; las clases en singular; `create()` y después los sets, siempre desde el Sistema.
+- Notación del apunte nuevo: `LL[c]: Clientes` para recorrer y `LTP[c]: Cuotas` (LT + letra de qué es, P de pendientes, + `[objeto]: lista de ese objeto`) para listas temporales; `UI<CU>` y `CTRL<CU>`; las clases en singular; `create()` y después los sets, siempre desde el Sistema.
 - Los nombres de los diagramas van en español (clases, métodos, atributos). El código del prototipo está en inglés, pero eso no pasa al diseño.
 - Cada cambio en secuencia, clases o CRC se cierra así:
   1. `tpi2/verificar.py tpi2/02-realizacion-cu` sin observaciones;
