@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram id="tarjetas-crc" name="Tarjetas CRC">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t1" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="0" width="560" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t1">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; UIRegistrarPagos&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Interactuar con la secretaria durante el registro de un pago: recibir lo que indica y mostrarle el estado de cuenta, las cuotas elegidas, el resumen y el resultado. No tiene reglas de negocio." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t1">
+          <mxGeometry x="0" y="26" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t1">
+          <mxGeometry x="0" y="98" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t1">
+          <mxGeometry x="340" y="98" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Recibir la opción de registrar pagos (seleccionarOpcionRegistrarPagos()).&lt;br&gt;- Pedir el DNI o el nombre del alumno (solicitarDniONombre()).&lt;br&gt;- Recibir el DNI (ingresarDni(dni)).&lt;br&gt;- Mostrar el estado de cuenta con las cuotas pendientes (mostrarEstadoDeCuenta(alumno, cuotasPendientes)).&lt;br&gt;- Recibir cada cuota elegida (seleccionarCuota(idCuota)) y mostrarla como seleccionada (mostrarCuotaSeleccionada(cuota)).&lt;br&gt;- Recibir el fin de la selección (terminarSeleccion()).&lt;br&gt;- Mostrar el monto total y los medios de pago (mostrarMontoYMediosDePago(montoTotal)).&lt;br&gt;- Recibir el medio de pago (seleccionarMedioPago(medioPago)).&lt;br&gt;- Mostrar el resumen del cobro (mostrarResumenCobro(alumno, cuotas, montoTotal, medioPago)).&lt;br&gt;- Recibir la confirmación (confirmarPago()).&lt;br&gt;- Informar el pago registrado con su recibo (mostrarPagoRegistrado(recibo)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t1">
+          <mxGeometry x="0" y="124" width="340" height="376" as="geometry" />
+        </mxCell>
+        <mxCell id="t1-colab" value="- &lt;b&gt;CTRLRegistrarPagos:&lt;/b&gt; le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t1">
+          <mxGeometry x="340" y="124" width="220" height="376" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="0" width="560" height="395" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t2">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; CTRLRegistrarPagos&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Coordinar el flujo del caso de uso: recibe las acciones de la pantalla, obtiene la secretaria de la sesión, le pide al Sistema las operaciones de negocio y le indica a la pantalla qué mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t2">
+          <mxGeometry x="0" y="26" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t2">
+          <mxGeometry x="0" y="98" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t2">
+          <mxGeometry x="340" y="98" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Iniciar el registro del pago y pedir el DNI (iniciarRegistroPago()).&lt;br&gt;- Tomar el DNI, pedir el alumno y sus cuotas pendientes (tomarDni(dni)).&lt;br&gt;- Tomar cada cuota elegida y pedirle al Sistema que la agregue (tomarCuota(idCuota)).&lt;br&gt;- Tomar el fin de la selección y pedir el monto total (tomarFinSeleccion()).&lt;br&gt;- Tomar el medio de pago y pedir el resumen (tomarMedioPago(medioPago)).&lt;br&gt;- Tomar la confirmación, obtener la secretaria y pedir el registro del pago (tomarConfirmacion()).&lt;br&gt;- Destruir la pantalla al terminar el caso de uso.&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t2">
+          <mxGeometry x="0" y="124" width="340" height="271" as="geometry" />
+        </mxCell>
+        <mxCell id="t2-colab" value="- &lt;b&gt;UIRegistrarPagos:&lt;/b&gt; recibe sus eventos y le indica qué mostrar.&lt;br&gt;- &lt;b&gt;CTRLSesion:&lt;/b&gt; le pide la secretaria logueada.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; le delega las búsquedas, el cálculo y el registro." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t2">
+          <mxGeometry x="340" y="124" width="220" height="271" as="geometry" />
+        </mxCell>
+        <mxCell id="t3" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="550" width="560" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t3">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; CTRLSesion&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Proveer el contexto de la sesión activa. Es preexistente: el caso de uso no la crea." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t3">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t3">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t3">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Devolver la secretaria que inició sesión (obtenerUsuarioLogueado()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t3">
+          <mxGeometry x="0" y="109" width="340" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="t3-colab" value="- &lt;b&gt;CTRLRegistrarPagos:&lt;/b&gt; quien le pide la secretaria logueada.&lt;br&gt;- &lt;b&gt;Secretaria:&lt;/b&gt; el objeto que devuelve." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t3">
+          <mxGeometry x="340" y="109" width="220" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="t4" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="550" width="560" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t4">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Sistema&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Conocer las colecciones globales (alumnos, pagos, recibos y promociones), buscar en ellas, calcular el monto del cobro, aplicar la promoción elegida, pedir la validación a la Entidad Bancaria y dar de alta el pago y el recibo." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t4">
+          <mxGeometry x="0" y="26" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t4">
+          <mxGeometry x="0" y="98" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t4">
+          <mxGeometry x="340" y="98" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Buscar un alumno por su DNI (obtenerAlumno(dni)).&lt;br&gt;- Obtener las cuotas pendientes de un alumno, armando una lista temporal (obtenerCuotasPendientes(alumno)).&lt;br&gt;- Crear la lista temporal de las cuotas del pago en curso (iniciarSeleccionCuotas()).&lt;br&gt;- Agregar a esa lista la cuota elegida (agregarCuotaSeleccionada(idCuota)).&lt;br&gt;- Informar el monto total de las cuotas elegidas (obtenerMontoTotal()) y calcularlo (calcularTotal()).&lt;br&gt;- Informar las cuotas elegidas (obtenerCuotasSeleccionadas()).&lt;br&gt;- Confirmar el pago: pedir la validación a la Entidad Bancaria, crear el pago (con su promoción, si se aplicó una) y su recibo, marcar las cuotas como pagas y actualizar el estado de cuenta del alumno (confirmarPago(alumno, montoTotal, medioPago, secretaria)).&lt;br&gt;- Buscar un pago por su id (obtenerPago(idPago)).&lt;br&gt;- Emitir el recibo de un pago (emitirRecibo(pago)) y numerarlo (generarNumeroRecibo()).&lt;br&gt;- Obtener las promociones vigentes, con el resultado de sus condiciones (obtenerPromocionesVigentes(alumno, montoTotal, medioPago)).&lt;br&gt;- Aplicar la promoción elegida (aplicarPromocion(idPromocion, montoTotal)): calcular el descuento, recalcular el monto (recalcularMontoTotal(montoTotal, descuento)) y recordar la promoción (registrarPromocionAplicada(promocion)).&lt;br&gt;- Crear, llenar y destruir las listas temporales.&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- Las colecciones de Alumno, Pago, Recibo y Promocion.&lt;br&gt;- promocionAplicada: la promoción del pago en curso." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t4">
+          <mxGeometry x="0" y="124" width="340" height="496" as="geometry" />
+        </mxCell>
+        <mxCell id="t4-colab" value="- &lt;b&gt;CTRLRegistrarPagos&lt;/b&gt;, &lt;b&gt;CTRLAplicarPromociones&lt;/b&gt; y &lt;b&gt;CTRLEmitirRecibos:&lt;/b&gt; quienes le piden las operaciones.&lt;br&gt;- &lt;b&gt;Alumno:&lt;/b&gt; lo busca, le pide sus cuotas y que actualice su estado de cuenta.&lt;br&gt;- &lt;b&gt;Cuota:&lt;/b&gt; la busca, la agrega a la lista y le pide que se marque como paga.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; lo crea, lo busca y le setea sus datos, sus cuotas y su promoción.&lt;br&gt;- &lt;b&gt;Recibo:&lt;/b&gt; lo crea y le setea sus datos.&lt;br&gt;- &lt;b&gt;Promocion:&lt;/b&gt; la recorre, le pide verificar condiciones y calcular el descuento.&lt;br&gt;- &lt;b&gt;Secretaria:&lt;/b&gt; la recibe para registrar quién cobró.&lt;br&gt;- &lt;b&gt;Entidad Bancaria&lt;/b&gt; (actor externo): le pide validar el pago." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t4">
+          <mxGeometry x="340" y="124" width="220" height="496" as="geometry" />
+        </mxCell>
+        <mxCell id="t5" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="1220" width="560" height="275" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t5">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Alumno&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Representar a la persona inscripta en el gimnasio que paga sus cuotas. Conoce sus cuotas y su estado de cuenta." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t5">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t5">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Entregar sus cuotas (getCuotas()).&lt;br&gt;- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (actualizarEstadoCuenta()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idAlumno, dni, nombre, apellido.&lt;br&gt;- estado (activo o inactivo) y estadoCuenta (al día, por vencer, deudor o bloqueado).&lt;br&gt;- Sus Cuota." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
+          <mxGeometry x="0" y="109" width="340" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="t5-colab" value="- &lt;b&gt;Cuota:&lt;/b&gt; sus partes; de ellas calcula el estado de cuenta.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien lo busca y le pide las cuotas y la actualización.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; los pagos se registran a su nombre.&lt;br&gt;- &lt;b&gt;Promocion:&lt;/b&gt; evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
+          <mxGeometry x="340" y="109" width="220" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="t6" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="1220" width="560" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t6">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Cuota&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Representar la cuota mensual de un alumno, con su importe y su vencimiento (el día 5). Sin intereses ni recargos por mora." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t6">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t6">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Pasar a estado pagada cuando se la cobra (marcarPagada()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idCuota, periodo, importe, fechaVencimiento.&lt;br&gt;- estado (pendiente o pagada)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
+          <mxGeometry x="0" y="109" width="340" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="t6-colab" value="- &lt;b&gt;Alumno:&lt;/b&gt; el todo al que pertenece.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; el pago que la cubre.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien la elige y le pide que se marque como paga." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
+          <mxGeometry x="340" y="109" width="220" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="t7" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="1545" width="560" height="305" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t7">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Pago&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Registrar el cobro de una o más cuotas de un alumno, con su fecha, su monto, su medio de pago, quién lo cobró y la promoción aplicada, si la hubo." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t7">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t7">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Crear un pago (create()).&lt;br&gt;- Conocer sus datos: fecha y hora, monto total y medio de pago (setDatos(datosPago)).&lt;br&gt;- Conocer el alumno que paga (setAlumno(alumno)).&lt;br&gt;- Conocer la secretaria que cobra (setSecretaria(secretaria)).&lt;br&gt;- Conocer la promoción aplicada (setPromocion(promocion)).&lt;br&gt;- Conocer las cuotas que cubre (agregarCuota(cuota)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPago, fechaHora, montoTotal, medioPago." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
+          <mxGeometry x="0" y="109" width="340" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t7-colab" value="- &lt;b&gt;Alumno:&lt;/b&gt; quien realiza el pago.&lt;br&gt;- &lt;b&gt;Secretaria:&lt;/b&gt; quien cobra.&lt;br&gt;- &lt;b&gt;Cuota:&lt;/b&gt; las cuotas pagadas (1 o más).&lt;br&gt;- &lt;b&gt;Promocion:&lt;/b&gt; la promoción aplicada (0 o 1).&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien lo crea, lo busca y le setea los datos.&lt;br&gt;- &lt;b&gt;Recibo:&lt;/b&gt; el comprobante que se emite por él." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
+          <mxGeometry x="340" y="109" width="220" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t8" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="1545" width="560" height="245" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t8">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Recibo&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Ser el comprobante digital de un pago. Tiene su número y la fecha de emisión; el resto (alumno, cuotas, monto, medio de pago y secretaria) lo conoce a través del pago." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t8">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t8">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t8">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Crear un recibo (create()).&lt;br&gt;- Conocer su número y su fecha de emisión (setDatos(datosRecibo)).&lt;br&gt;- Conocer el pago al que corresponde (setPago(pago)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- nroRecibo, fechaEmision." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t8">
+          <mxGeometry x="0" y="109" width="340" height="136" as="geometry" />
+        </mxCell>
+        <mxCell id="t8-colab" value="- &lt;b&gt;Pago:&lt;/b&gt; el pago del que es comprobante.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien lo crea y le setea los datos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t8">
+          <mxGeometry x="340" y="109" width="220" height="136" as="geometry" />
+        </mxCell>
+        <mxCell id="t9" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="1900" width="560" height="215" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t9">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Secretaria&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Representar a la usuaria de recepción que cobra las cuotas. Se registra en cada pago para saber quién cobró." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t9">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t9">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t9">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- No tiene métodos propios en este caso de uso: solo aporta sus datos.&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idUsuario, nombre, apellido, legajo." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t9">
+          <mxGeometry x="0" y="109" width="340" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="t9-colab" value="- &lt;b&gt;Pago:&lt;/b&gt; los pagos que cobra.&lt;br&gt;- &lt;b&gt;CTRLSesion:&lt;/b&gt; quien la devuelve como usuaria logueada." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t9">
+          <mxGeometry x="340" y="109" width="220" height="106" as="geometry" />
+        </mxCell>
+        <mxCell id="t10" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="1900" width="560" height="305" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; Promocion&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Representar un descuento vigente que se puede aplicar a un cobro. Sabe si se cumplen sus condiciones y cuánto descuenta." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Verificar si se cumplen sus condiciones para el cobro en curso (medio de pago, antigüedad del alumno, cantidad de cuotas, plan familiar) y devolver &amp;quot;aplica&amp;quot; o el motivo por el que no corresponde (verificarCondiciones(alumno, montoTotal, medioPago)).&lt;br&gt;- Calcular el descuento sobre un monto (calcularDescuento(montoTotal)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPromocion, nombre, porcentajeDescuento.&lt;br&gt;- fechaDesde y fechaHasta (su vigencia)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
+          <mxGeometry x="0" y="109" width="340" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t10-colab" value="- &lt;b&gt;Sistema:&lt;/b&gt; quien la recorre, la busca por id y le pide las verificaciones.&lt;br&gt;- &lt;b&gt;Alumno:&lt;/b&gt; de quien evalúa las condiciones.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; el pago al que se aplica (0 o 1 promoción por pago)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
+          <mxGeometry x="340" y="109" width="220" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t11" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="2255" width="560" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t11">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; UIAplicarPromociones&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Interactuar con la secretaria cuando quiere aplicar una promoción: mostrarle las promociones vigentes, recibir la elegida e informar el nuevo monto. No tiene reglas de negocio." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t11">
+          <mxGeometry x="0" y="26" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t11">
+          <mxGeometry x="0" y="98" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t11">
+          <mxGeometry x="340" y="98" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Recibir el pedido de aplicar una promoción (solicitarPromocion()).&lt;br&gt;- Mostrar las promociones vigentes y el motivo de las que no corresponden (mostrarPromocionesVigentes(promociones)).&lt;br&gt;- Recibir la promoción elegida (seleccionarPromocion(idPromocion)).&lt;br&gt;- Mostrar el nuevo monto total con el descuento (mostrarNuevoMonto(montoTotal)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t11">
+          <mxGeometry x="0" y="124" width="340" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t11-colab" value="- &lt;b&gt;CTRLAplicarPromociones:&lt;/b&gt; le reenvía cada acción de la secretaria y recibe de él lo que tiene que mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t11">
+          <mxGeometry x="340" y="124" width="220" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="t12" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="2255" width="560" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t12">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; CTRLAplicarPromociones&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Coordinar el flujo de Aplicar Promociones: recibe las acciones de la pantalla, le pide al Sistema las promociones vigentes y la aplicación de la elegida, y le indica a la pantalla qué mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t12">
+          <mxGeometry x="0" y="26" width="560" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t12">
+          <mxGeometry x="0" y="98" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t12">
+          <mxGeometry x="340" y="98" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Iniciar la aplicación de una promoción con los datos del cobro en curso y pedir las promociones vigentes (iniciarAplicacionPromocion(alumno, montoTotal, medioPago)).&lt;br&gt;- Tomar la promoción elegida y pedir su aplicación (tomarPromocion(idPromocion)).&lt;br&gt;- Destruir la pantalla al terminar.&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t12">
+          <mxGeometry x="0" y="124" width="340" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="t12-colab" value="- &lt;b&gt;UIAplicarPromociones:&lt;/b&gt; recibe sus eventos y le indica qué mostrar.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; le delega la búsqueda de promociones y su aplicación." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t12">
+          <mxGeometry x="340" y="124" width="220" height="166" as="geometry" />
+        </mxCell>
+        <mxCell id="t13" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="0" y="2625" width="560" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t13">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; UIEmitirRecibos&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Interactuar con la secretaria cuando solicita el recibo de un pago registrado: recibir el pedido y mostrarle el recibo digital. No tiene reglas de negocio." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t13">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t13">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t13">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Recibir el pedido del recibo de un pago (solicitarRecibo(idPago)).&lt;br&gt;- Mostrar el recibo digital (mostrarRecibo(recibo)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t13">
+          <mxGeometry x="0" y="109" width="340" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="t13-colab" value="- &lt;b&gt;CTRLEmitirRecibos:&lt;/b&gt; le reenvía el pedido y recibe de él el recibo a mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t13">
+          <mxGeometry x="340" y="109" width="220" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="t14" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="610" y="2625" width="560" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t14">
+          <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-nombre" value="&lt;b&gt;CLASE:&lt;/b&gt; CTRLEmitirRecibos&lt;br&gt;&lt;b&gt;PROPÓSITO:&lt;/b&gt; Coordinar el flujo de Emitir Recibos: recibe el pedido de la pantalla, le pide al Sistema el pago y la emisión del recibo, y le indica a la pantalla qué mostrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t14">
+          <mxGeometry x="0" y="26" width="560" height="57" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-h-resp" value="Responsabilidad" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t14">
+          <mxGeometry x="0" y="83" width="340" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t14">
+          <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Iniciar la emisión del recibo de un pago: pedir el pago y pedir la emisión (iniciarEmisionRecibo(idPago)).&lt;br&gt;- Destruir la pantalla al terminar.&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- No tiene atributos." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t14">
+          <mxGeometry x="0" y="109" width="340" height="121" as="geometry" />
+        </mxCell>
+        <mxCell id="t14-colab" value="- &lt;b&gt;UIEmitirRecibos:&lt;/b&gt; recibe su evento y le indica qué mostrar.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; le delega la búsqueda del pago y la emisión del recibo." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t14">
+          <mxGeometry x="340" y="109" width="220" height="121" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
