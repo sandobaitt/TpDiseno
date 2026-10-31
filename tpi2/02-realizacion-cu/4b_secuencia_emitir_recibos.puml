@@ -25,7 +25,7 @@ actor "Secretaria" as Actor
 boundary "UIEmitirRecibos" as UI <<Boundary>>
 control "CTRLEmitirRecibos" as CTRLCU <<Control>>
 participant "Sistema" as Sistema <<Sistema>>
-participant "Pagos" as Pagos <<Entity>>
+participant "LL[p]: Pago" as LLP <<Entity>>
 participant "r: Recibo" as Recibo <<Entity>>
 
 == Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
@@ -45,10 +45,10 @@ UI -> CTRLCU: iniciarEmisionRecibo(idPago)
 CTRLCU -> Sistema: obtenerPago(idPago)
 activate Sistema
 ' Búsqueda indexada: un objeto puntual conocido por su id
-Sistema -> Pagos: getPago(idPago)
-activate Pagos
-Pagos --> Sistema: p
-deactivate Pagos
+Sistema -> LLP: getPago(idPago)
+activate LLP
+LLP --> Sistema: p
+deactivate LLP
 Sistema --> CTRLCU: p
 deactivate Sistema
 

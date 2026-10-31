@@ -72,7 +72,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Entregar sus cuotas (`getCuota()`).<br>- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (`actualizarEstadoCuenta()`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`.<br>- `estado` (activo o inactivo) y `estadoCuenta` (al día, por vencer, deudor o bloqueado).<br>- Sus `Cuota`. | - **Cuota:** sus partes; de ellas calcula el estado de cuenta.<br>- **Sistema:** quien lo busca y le pide las cuotas y la actualización.<br>- **Pago:** los pagos se registran a su nombre.<br>- **Promocion:** evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde. |
+| **Hacer:**<br>- Entregar sus cuotas (`getCuota()`).<br>- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (`actualizarEstadoCuenta()`).<br><br>**Saber:**<br>- `idAlumno`, `dni`, `nombre`, `apellido`.<br>- `estado`, del tipo enumerado `EstadoAlumno` (activo o inactivo), y `estadoCuenta`, del tipo enumerado `EstadoCuenta` (al día, por vencer, deudor o bloqueado).<br>- Sus `Cuota`. | - **Cuota:** sus partes; de ellas calcula el estado de cuenta.<br>- **Sistema:** quien lo busca y le pide las cuotas y la actualización.<br>- **Pago:** los pagos se registran a su nombre.<br>- **Promocion:** evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde. |
 
 ---
 
@@ -86,7 +86,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Pasar a estado pagada cuando se la cobra (`marcarPagada()`).<br><br>**Saber:**<br>- `idCuota`, `periodo`, `importe`, `fechaVencimiento`.<br>- `estado` (pendiente o pagada). | - **Alumno:** el todo al que pertenece.<br>- **Pago:** el pago que la cubre.<br>- **Sistema:** quien la elige y le pide que se marque como paga. |
+| **Hacer:**<br>- Pasar a estado pagada cuando se la cobra (`marcarPagada()`).<br><br>**Saber:**<br>- `idCuota`, `periodo`, `importe`, `fechaVencimiento`.<br>- `estado`, del tipo enumerado `EstadoCuota` (pendiente o pagada). | - **Alumno:** el todo al que pertenece.<br>- **Pago:** el pago que la cubre.<br>- **Sistema:** quien la elige y le pide que se marque como paga. |
 
 ---
 
@@ -100,7 +100,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Crear un pago (`create()`).<br>- Conocer sus datos: fecha y hora, monto total y medio de pago (`setDatos(datosPago)`).<br>- Conocer el alumno que paga (`setAlumno(alumno)`).<br>- Conocer la secretaria que cobra (`setSecretaria(secretaria)`).<br>- Conocer la promoción aplicada (`setPromocion(promocion)`).<br>- Conocer las cuotas que cubre (`agregarCuota(cuota)`).<br><br>**Saber:**<br>- `idPago`, `fechaHora`, `montoTotal`, `medioPago`. | - **Alumno:** quien realiza el pago.<br>- **Secretaria:** quien cobra.<br>- **Cuota:** las cuotas pagadas (1 o más).<br>- **Promocion:** la promoción aplicada (0 o 1).<br>- **Sistema:** quien lo crea, lo busca y le setea los datos.<br>- **Recibo:** el comprobante que se emite por él. |
+| **Hacer:**<br>- Crear un pago (`create()`).<br>- Conocer sus datos: fecha y hora, monto total y medio de pago (`setDatos(datosPago)`).<br>- Conocer el alumno que paga (`setAlumno(alumno)`).<br>- Conocer la secretaria que cobra (`setSecretaria(secretaria)`).<br>- Conocer la promoción aplicada (`setPromocion(promocion)`).<br>- Conocer las cuotas que cubre (`agregarCuota(cuota)`).<br><br>**Saber:**<br>- `idPago`, `fechaHora`, `montoTotal`.<br>- `medioPago`, del tipo enumerado `MedioPago` (efectivo, tarjeta de débito, transferencia o QR). | - **Alumno:** quien realiza el pago.<br>- **Secretaria:** quien cobra.<br>- **Cuota:** las cuotas pagadas (1 o más).<br>- **Promocion:** la promoción aplicada (0 o 1).<br>- **Sistema:** quien lo crea, lo busca y le setea los datos.<br>- **Recibo:** el comprobante que se emite por él. |
 
 ---
 

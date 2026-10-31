@@ -90,7 +90,7 @@
           <mxGeometry x="340" y="124" width="220" height="541" as="geometry" />
         </mxCell>
         <mxCell id="t5" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="1295" width="560" height="275" as="geometry" />
+          <mxGeometry x="0" y="1295" width="560" height="290" as="geometry" />
         </mxCell>
         <mxCell id="t5-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t5">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -104,14 +104,14 @@
         <mxCell id="t5-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t5">
           <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="t5-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Entregar sus cuotas (getCuota()).&lt;br&gt;- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (actualizarEstadoCuenta()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idAlumno, dni, nombre, apellido.&lt;br&gt;- estado (activo o inactivo) y estadoCuenta (al día, por vencer, deudor o bloqueado).&lt;br&gt;- Sus Cuota." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
-          <mxGeometry x="0" y="109" width="340" height="166" as="geometry" />
+        <mxCell id="t5-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Entregar sus cuotas (getCuota()).&lt;br&gt;- Recalcular su estado de cuenta a partir de sus cuotas, después de un pago (actualizarEstadoCuenta()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idAlumno, dni, nombre, apellido.&lt;br&gt;- estado, del tipo enumerado EstadoAlumno (activo o inactivo), y estadoCuenta, del tipo enumerado EstadoCuenta (al día, por vencer, deudor o bloqueado).&lt;br&gt;- Sus Cuota." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
+          <mxGeometry x="0" y="109" width="340" height="181" as="geometry" />
         </mxCell>
         <mxCell id="t5-colab" value="- &lt;b&gt;Cuota:&lt;/b&gt; sus partes; de ellas calcula el estado de cuenta.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien lo busca y le pide las cuotas y la actualización.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; los pagos se registran a su nombre.&lt;br&gt;- &lt;b&gt;Promocion:&lt;/b&gt; evalúa sus condiciones (antigüedad, plan familiar) para saber si le corresponde." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t5">
-          <mxGeometry x="340" y="109" width="220" height="166" as="geometry" />
+          <mxGeometry x="340" y="109" width="220" height="181" as="geometry" />
         </mxCell>
         <mxCell id="t6" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="1295" width="560" height="230" as="geometry" />
+          <mxGeometry x="610" y="1295" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t6-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t6">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -125,14 +125,14 @@
         <mxCell id="t6-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t6">
           <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="t6-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Pasar a estado pagada cuando se la cobra (marcarPagada()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idCuota, periodo, importe, fechaVencimiento.&lt;br&gt;- estado (pendiente o pagada)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
-          <mxGeometry x="0" y="109" width="340" height="121" as="geometry" />
+        <mxCell id="t6-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Pasar a estado pagada cuando se la cobra (marcarPagada()).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idCuota, periodo, importe, fechaVencimiento.&lt;br&gt;- estado, del tipo enumerado EstadoCuota (pendiente o pagada)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
+          <mxGeometry x="0" y="109" width="340" height="136" as="geometry" />
         </mxCell>
         <mxCell id="t6-colab" value="- &lt;b&gt;Alumno:&lt;/b&gt; el todo al que pertenece.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; el pago que la cubre.&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien la elige y le pide que se marque como paga." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t6">
-          <mxGeometry x="340" y="109" width="220" height="121" as="geometry" />
+          <mxGeometry x="340" y="109" width="220" height="136" as="geometry" />
         </mxCell>
         <mxCell id="t7" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="1620" width="560" height="305" as="geometry" />
+          <mxGeometry x="0" y="1635" width="560" height="335" as="geometry" />
         </mxCell>
         <mxCell id="t7-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t7">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -146,14 +146,14 @@
         <mxCell id="t7-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t7">
           <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="t7-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Crear un pago (create()).&lt;br&gt;- Conocer sus datos: fecha y hora, monto total y medio de pago (setDatos(datosPago)).&lt;br&gt;- Conocer el alumno que paga (setAlumno(alumno)).&lt;br&gt;- Conocer la secretaria que cobra (setSecretaria(secretaria)).&lt;br&gt;- Conocer la promoción aplicada (setPromocion(promocion)).&lt;br&gt;- Conocer las cuotas que cubre (agregarCuota(cuota)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPago, fechaHora, montoTotal, medioPago." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
-          <mxGeometry x="0" y="109" width="340" height="196" as="geometry" />
+        <mxCell id="t7-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Crear un pago (create()).&lt;br&gt;- Conocer sus datos: fecha y hora, monto total y medio de pago (setDatos(datosPago)).&lt;br&gt;- Conocer el alumno que paga (setAlumno(alumno)).&lt;br&gt;- Conocer la secretaria que cobra (setSecretaria(secretaria)).&lt;br&gt;- Conocer la promoción aplicada (setPromocion(promocion)).&lt;br&gt;- Conocer las cuotas que cubre (agregarCuota(cuota)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPago, fechaHora, montoTotal.&lt;br&gt;- medioPago, del tipo enumerado MedioPago (efectivo, tarjeta de débito, transferencia o QR)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
+          <mxGeometry x="0" y="109" width="340" height="226" as="geometry" />
         </mxCell>
         <mxCell id="t7-colab" value="- &lt;b&gt;Alumno:&lt;/b&gt; quien realiza el pago.&lt;br&gt;- &lt;b&gt;Secretaria:&lt;/b&gt; quien cobra.&lt;br&gt;- &lt;b&gt;Cuota:&lt;/b&gt; las cuotas pagadas (1 o más).&lt;br&gt;- &lt;b&gt;Promocion:&lt;/b&gt; la promoción aplicada (0 o 1).&lt;br&gt;- &lt;b&gt;Sistema:&lt;/b&gt; quien lo crea, lo busca y le setea los datos.&lt;br&gt;- &lt;b&gt;Recibo:&lt;/b&gt; el comprobante que se emite por él." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t7">
-          <mxGeometry x="340" y="109" width="220" height="196" as="geometry" />
+          <mxGeometry x="340" y="109" width="220" height="226" as="geometry" />
         </mxCell>
         <mxCell id="t8" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="1620" width="560" height="245" as="geometry" />
+          <mxGeometry x="610" y="1635" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t8-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t8">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -174,7 +174,7 @@
           <mxGeometry x="340" y="109" width="220" height="136" as="geometry" />
         </mxCell>
         <mxCell id="t9" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="1975" width="560" height="215" as="geometry" />
+          <mxGeometry x="0" y="2020" width="560" height="215" as="geometry" />
         </mxCell>
         <mxCell id="t9-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t9">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -195,7 +195,7 @@
           <mxGeometry x="340" y="109" width="220" height="106" as="geometry" />
         </mxCell>
         <mxCell id="t10" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="1975" width="560" height="305" as="geometry" />
+          <mxGeometry x="610" y="2020" width="560" height="305" as="geometry" />
         </mxCell>
         <mxCell id="t10-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -216,7 +216,7 @@
           <mxGeometry x="340" y="109" width="220" height="196" as="geometry" />
         </mxCell>
         <mxCell id="t11" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="2330" width="560" height="335" as="geometry" />
+          <mxGeometry x="0" y="2375" width="560" height="335" as="geometry" />
         </mxCell>
         <mxCell id="t11-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t11">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -237,7 +237,7 @@
           <mxGeometry x="340" y="124" width="220" height="211" as="geometry" />
         </mxCell>
         <mxCell id="t12" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="2330" width="560" height="305" as="geometry" />
+          <mxGeometry x="610" y="2375" width="560" height="305" as="geometry" />
         </mxCell>
         <mxCell id="t12-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t12">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -258,7 +258,7 @@
           <mxGeometry x="340" y="124" width="220" height="181" as="geometry" />
         </mxCell>
         <mxCell id="t13" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="2715" width="560" height="245" as="geometry" />
+          <mxGeometry x="0" y="2760" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t13-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t13">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -279,7 +279,7 @@
           <mxGeometry x="340" y="109" width="220" height="136" as="geometry" />
         </mxCell>
         <mxCell id="t14" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="2715" width="560" height="245" as="geometry" />
+          <mxGeometry x="610" y="2760" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t14-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t14">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />

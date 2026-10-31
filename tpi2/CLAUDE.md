@@ -45,7 +45,7 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
   - corrección de asistencia hasta 30 días atrás.
   
   Las `specs/` describen lo que ya hace el prototipo.
-- Notación del apunte nuevo: `LL[c]: Clientes` para recorrer y `LTP[c]: Cuotas` (LT + letra de qué es, P de pendientes, + `[objeto]: lista de ese objeto`) para listas temporales; `UI<CU>` y `CTRL<CU>`; las clases en singular; `create()` y después los sets, siempre desde el Sistema.
+- Notación del apunte nuevo: `LL[c]: Cliente` para recorrer y `LTP[c]: Cuota` (LT + letra de qué es, P de pendientes, + `[objeto]: lista de ese objeto`) para listas temporales; `UI<CU>` y `CTRL<CU>`; las clases en singular; `create()` y después los sets, siempre desde el Sistema.
 - Los nombres de los diagramas van en español (clases, métodos, atributos). El código del prototipo está en inglés, pero eso no pasa al diseño.
 - Cada cambio en secuencia, clases o CRC se cierra así:
   1. `tpi2/verificar.py tpi2/02-realizacion-cu` sin observaciones;

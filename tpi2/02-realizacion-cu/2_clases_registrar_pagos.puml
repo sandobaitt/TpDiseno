@@ -39,9 +39,9 @@ package "Presentación y control" {
         + seleccionarCuota(idCuota: int): void
         + solicitarContinuarSeleccion(): void
         + indicarContinuar(continuar: boolean): void
-        + mostrarMontoYMediosDePago(montoTotal: float, mediosPago: List): void
-        + seleccionarMedioPago(medioPago: String): void
-        + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: String): void
+        + mostrarMontoYMediosDePago(montoTotal: float, mediosPago: List<MedioPago>): void
+        + seleccionarMedioPago(medioPago: MedioPago): void
+        + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: MedioPago): void
         + confirmarPago(): void
         + mostrarPagoRegistrado(recibo: Recibo): void
     }
@@ -51,7 +51,7 @@ package "Presentación y control" {
         + tomarDni(dni: String): void
         + tomarCuota(idCuota: int): void
         + tomarContinuar(continuar: boolean): void
-        + tomarMedioPago(medioPago: String): void
+        + tomarMedioPago(medioPago: MedioPago): void
         + tomarConfirmacion(): void
     }
 
@@ -64,7 +64,7 @@ package "Presentación y control" {
     }
 
     class CTRLAplicarPromociones <<Control>> {
-        + iniciarAplicacionPromocion(alumno: Alumno, montoTotal: float, medioPago: String): void
+        + iniciarAplicacionPromocion(alumno: Alumno, montoTotal: float, medioPago: MedioPago): void
         + tomarPromocion(idPromocion: int): void
     }
 
@@ -89,10 +89,10 @@ package "Presentación y control" {
         + iniciarSeleccionCuotas(): void
         + agregarCuotaSeleccionada(idCuota: int): void
         + obtenerMontoTotal(): float
-        + obtenerMediosPago(): List
+        + obtenerMediosPago(): List<MedioPago>
         + obtenerCuotasSeleccionadas(): List
-        + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: String, secretaria: Secretaria): Recibo
-        + obtenerPromocionesVigentes(alumno: Alumno, montoTotal: float, medioPago: String): List
+        + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: MedioPago, secretaria: Secretaria): Recibo
+        + obtenerPromocionesVigentes(alumno: Alumno, montoTotal: float, medioPago: MedioPago): List
         + aplicarPromocion(idPromocion: int, montoTotal: float): float
         + obtenerPago(idPago: int): Pago
         + emitirRecibo(pago: Pago): Recibo
@@ -110,8 +110,8 @@ package "Dominio" {
         - dni: String
         - nombre: String
         - apellido: String
-        - estado: String
-        - estadoCuenta: String
+        - estado: EstadoAlumno
+        - estadoCuenta: EstadoCuenta
         + getCuota(): List
         + actualizarEstadoCuenta(): void
     }
@@ -121,7 +121,7 @@ package "Dominio" {
         - periodo: String
         - importe: float
         - fechaVencimiento: Date
-        - estado: String
+        - estado: EstadoCuota
         + marcarPagada(): void
     }
 
@@ -129,7 +129,7 @@ package "Dominio" {
         - idPago: int
         - fechaHora: DateTime
         - montoTotal: float
-        - medioPago: String
+        - medioPago: MedioPago
         + create(): void
         + setDatos(datosPago: DatosPago): void
         + setAlumno(alumno: Alumno): void
@@ -152,7 +152,7 @@ package "Dominio" {
         - porcentajeDescuento: float
         - fechaDesde: Date
         - fechaHasta: Date
-        + verificarCondiciones(alumno: Alumno, montoTotal: float, medioPago: String): String
+        + verificarCondiciones(alumno: Alumno, montoTotal: float, medioPago: MedioPago): String
         + calcularDescuento(montoTotal: float): float
     }
 
@@ -161,6 +161,32 @@ package "Dominio" {
         - nombre: String
         - apellido: String
         - legajo: int
+    }
+}
+
+package "Tipos enumerados" {
+    enum EstadoAlumno <<enumeration>> {
+        ACTIVO
+        INACTIVO
+    }
+
+    enum EstadoCuenta <<enumeration>> {
+        AL_DIA
+        POR_VENCER
+        DEUDOR
+        BLOQUEADO
+    }
+
+    enum EstadoCuota <<enumeration>> {
+        PENDIENTE
+        PAGADA
+    }
+
+    enum MedioPago <<enumeration>> {
+        EFECTIVO
+        TARJETA_DEBITO
+        TRANSFERENCIA
+        QR
     }
 }
 
@@ -192,11 +218,14 @@ Pago "*" -down-> "1" Secretaria : cobrado por
 Pago "*" -down-> "0..1" Promocion : promoción aplicada
 Promocion ..> Alumno : evalúa condiciones de
 
+Secretaria -[hidden]down- MedioPago
+Cuota -[hidden]down- EstadoCuota
+
 legend bottom
   **Referencias**
-  Alumno.estado: activo o inactivo. Alumno.estadoCuenta: al día, por vencer, deudor o bloqueado.
-  Cuota.estado: pendiente o pagada.
-  Pago.medioPago: efectivo, tarjeta de débito, transferencia o QR.
+  EstadoAlumno (activo o inactivo), EstadoCuenta (al día, por vencer, deudor o bloqueado), EstadoCuota (pendiente o pagada)
+  y MedioPago (efectivo, tarjeta de débito, transferencia o QR) son tipos enumerados.
+  Son tipos y no clases con responsabilidades: no tienen tarjeta CRC.
   DatosPago agrupa fecha y hora, monto total y medio de pago. DatosRecibo agrupa número y fecha de emisión.
   (No son clases del dominio: se usan para setear varios datos de una vez.)
   Promocion.verificarCondiciones devuelve "aplica" o el motivo por el que no corresponde.

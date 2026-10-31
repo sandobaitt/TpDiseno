@@ -14,13 +14,13 @@ skinparam responseMessageBelowArrow true
 ' REGLAS DEL APUNTE ACTUALIZADO APLICADAS:
 ' - Solo camino estándar (actor: Secretaria; pago con tarjeta de débito y con una promoción aplicada).
 ' - UI<CU> y CTRL<CU>. CTRLSesion preexistente (sin create) provee la secretaria logueada.
-' - Búsqueda indexada del alumno por DNI (Alumnos.getAlumno(dni)), sin loop.
+' - Búsqueda indexada del alumno por DNI (LL[a]: Alumno, getAlumno(dni)), sin loop.
 ' - Recorrido de las cuotas: el alumno conoce las suyas (getCuota()) y el loop lo hace el Sistema.
-' - Listas temporales LT + letra (LTP[c]: Cuotas = pendientes, LTS[c]: Cuotas = seleccionadas): creadas, llenadas y destruidas por el Sistema.
+' - Listas temporales LT + letra (LTP[c]: Cuota = pendientes, LTS[c]: Cuota = seleccionadas): creadas, llenadas y destruidas por el Sistema.
 ' - Ingreso múltiple: la secretaria selecciona UNA cuota por vuelta (nunca una lista) y en cada vuelta
 '   responde si sigue ingresando cuotas; esa respuesta decide si el loop continúa.
 '   Como el CTRL no tiene atributos, el Sistema acumula las cuotas elegidas en
-'   LTS[c]: Cuotas (se crea con iniciarSeleccionCuotas()).
+'   LTS[c]: Cuota (se crea con iniciarSeleccionCuotas()).
 ' - Mensaje reflexivo para el cálculo del total (Sistema -> Sistema).
 ' - Alta de entidades: create() y después los sets, siempre desde el Sistema.
 ' - Cambio de estado de la cuota con un mensaje de negocio (marcarPagada()).
@@ -38,12 +38,12 @@ boundary "UIRegistrarPagos" as UI <<Boundary>>
 control "CTRLRegistrarPagos" as CTRLCU <<Control>>
 control "CTRLSesion" as CTRLSesion <<Control>>
 participant "Sistema" as Sistema <<Sistema>>
-participant "Alumnos" as Alumnos <<Entity>>
+participant "LL[a]: Alumno" as LLA <<Entity>>
 participant "a: Alumno" as Alumno <<Entity>>
-participant "LL[c]: Cuotas" as LLC <<Entity>>
+participant "LL[c]: Cuota" as LLC <<Entity>>
 participant "c: Cuota" as Cuota <<Entity>>
-participant "LTP[c]: Cuotas" as LTP
-participant "LTS[c]: Cuotas" as LTS
+participant "LTP[c]: Cuota" as LTP
+participant "LTS[c]: Cuota" as LTS
 participant "p: Pago" as Pago <<Entity>>
 participant "r: Recibo" as Recibo <<Entity>>
 actor "Entidad Bancaria" as Banco
@@ -72,10 +72,10 @@ UI -> CTRLCU: tomarDni(dni)
 CTRLCU -> Sistema: obtenerAlumno(dni)
 activate Sistema
 ' Búsqueda indexada: un objeto puntual conocido por su DNI
-Sistema -> Alumnos: getAlumno(dni)
-activate Alumnos
-Alumnos --> Sistema: a
-deactivate Alumnos
+Sistema -> LLA: getAlumno(dni)
+activate LLA
+LLA --> Sistema: a
+deactivate LLA
 Sistema --> CTRLCU: a
 deactivate Sistema
 
@@ -89,14 +89,14 @@ deactivate Alumno
 
 create LTP
 Sistema --> LTP: create()
-loop for each c in Cuotas
+loop for each c in LL
     Sistema -> LLC: getCuota()
     activate LLC
     LLC --> Sistema: c
     deactivate LLC
 
     ' Cuotas adeudadas y próximas a vencer: las que siguen impagas
-    opt c.estado = pendiente
+    opt c.estado = PENDIENTE
         Sistema -> LTP: add(c)
     end
 end
@@ -205,7 +205,7 @@ end note
 ' Extend: la promoción aplicada en el paso 8
 Sistema -> Pago: setPromocion(promocionAplicada)
 
-loop for each c in LTS[c]
+loop for each c in LTS
     Sistema -> LTS: getCuota()
     activate LTS
     LTS --> Sistema: c

@@ -24,10 +24,12 @@ Esta skill define las reglas obligatorias, criterios de corrección y convencion
 
 El apunte nuevo (`tpi2/apunte.md`) gana sobre lo que dice esta skill más abajo. Cambios que afectan al diagrama:
 
-- **Notación de listas:** recorrido `LL[c]: Clientes` (lista de `c` sobre `Clientes`) y lista temporal `LT` + letra que indique de qué es + `[objeto]`: `LTP[c]: Cuotas` = pendientes, `LTS[c]: Cuotas` = seleccionadas, `LTV[pr]: Promociones` = vigentes. En los ejemplos de abajo, `LTC` se lee `LL[c]` y `LTTC` se lee `LT` + letra. `verificar.py` acepta todas las notaciones.
+- **Notación de listas:** recorrido `LL[c]: Cliente` (lista de `c` sobre la clase `Cliente`; después de los dos puntos va la clase, en singular) y lista temporal `LT` + letra que indique de qué es + `[objeto]`: `LTP[c]: Cuota` = pendientes, `LTS[c]: Cuota` = seleccionadas, `LTV[pr]: Promocion` = vigentes. En los ejemplos de abajo, `LTC` se lee `LL[c]` y `LTTC` se lee `LT` + letra. `verificar.py` acepta todas las notaciones.
 - **Loop:** `for each c in Clientes`.
 - **Altas:** `create()` seguido de los sets (`setDatos(datos)`, `setAlumno(a)`…), **siempre desde el Sistema**. Con muchos datos: `setDatos(datosX)` y una nota que diga qué contiene. La composición no cambia: la cabecera crea sus partes.
 - **Ingreso múltiple:** el actor nunca envía listas; manda un elemento por vuelta dentro de un `loop`. En cada vuelta el CTRL le dice a la UI que pregunte si sigue ingresando, la UI se lo pregunta al actor y su respuesta decide si el loop continúa (no hace falta un mensaje de "terminar" aparte; tampoco mostrar el elemento elegido).
+- **Toda colección lleva su tipo:** también la de una búsqueda indexada: `LL[a]: Alumno` (no `Alumnos`) y `getAlumno(dni)`.
+- **Etiqueta del loop:** `for each c in LL` (o `LTS`, `LTP`): el nombre corto de la lista, no la clase.
 - **Comparar en el loop:** al recorrer una colección, la guarda compara el atributo que corresponde (por ejemplo `c.alumno.dni = dni`), no se arma la lista desde otro objeto.
 - **`Externo`:** va a la izquierda del actor principal (es un extra). Como el CTRL no tiene atributos, el Sistema acumula lo elegido en una lista temporal.
 - **Nombres:** `UI<Nombre del CU>` y `CTRL<Nombre del CU>` (ej: `UIRealizarReserva`, `CTRLRealizarReserva`).

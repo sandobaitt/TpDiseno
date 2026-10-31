@@ -15,8 +15,8 @@ skinparam responseMessageBelowArrow true
 ' - Solo camino estándar (actor: Secretaria).
 ' - Los datos del cobro en curso (alumno a, monto total y medio de pago) llegan desde
 '   Registrar Pagos; se pasan como parámetros.
-' - Recorrido de las promociones: LL[pr]: Promociones; el loop lo hace el Sistema.
-' - Lista temporal LTV[pr]: Promociones: creada, llenada y destruida por el Sistema.
+' - Recorrido de las promociones: LL[pr]: Promocion; el loop lo hace el Sistema.
+' - Lista temporal LTV[pr]: Promocion: creada, llenada y destruida por el Sistema.
 ' - Experto: cada promoción sabe si se cumplen sus condiciones y cuánto descuenta.
 ' - Búsqueda indexada de la promoción elegida (getPromocion(idPromocion)), sin loop.
 ' - Mensaje reflexivo para recalcular el monto total.
@@ -30,9 +30,9 @@ actor "Secretaria" as Actor
 boundary "UIAplicarPromociones" as UI <<Boundary>>
 control "CTRLAplicarPromociones" as CTRLCU <<Control>>
 participant "Sistema" as Sistema <<Sistema>>
-participant "LL[pr]: Promociones" as LLPR <<Entity>>
+participant "LL[pr]: Promocion" as LLPR <<Entity>>
 participant "pr: Promocion" as Promocion <<Entity>>
-participant "LTV[pr]: Promociones" as LTV
+participant "LTV[pr]: Promocion" as LTV
 
 == Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
 create CTRLCU
@@ -53,7 +53,7 @@ activate Sistema
 
 create LTV
 Sistema --> LTV: create()
-loop for each pr in Promociones
+loop for each pr in LL
     Sistema -> LLPR: getPromocion()
     activate LLPR
     LLPR --> Sistema: pr
