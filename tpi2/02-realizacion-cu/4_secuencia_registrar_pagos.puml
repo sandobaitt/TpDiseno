@@ -12,10 +12,10 @@ skinparam responseMessageBelowArrow true
 ' Sistema SquatGym - Cátedra: Diseño de Sistemas (DSI 2026) - TPI, segunda entrega
 '
 ' REGLAS DEL APUNTE ACTUALIZADO APLICADAS:
-' - Solo camino estándar (actor: Secretaria; pago con tarjeta de débito y sin promoción).
+' - Solo camino estándar (actor: Secretaria; pago con tarjeta de débito y con una promoción aplicada).
 ' - UI<CU> y CTRL<CU>. CTRLSesion preexistente (sin create) provee la secretaria logueada.
 ' - Búsqueda indexada del alumno por DNI (Alumnos.getAlumno(dni)), sin loop.
-' - Recorrido de las cuotas: LL[c]: Cuotas; el loop lo hace el Sistema y compara el DNI del alumno.
+' - Recorrido de las cuotas: el alumno conoce las suyas (getCuota()) y el loop lo hace el Sistema.
 ' - Listas temporales LT + letra (LTP[c]: Cuotas = pendientes, LTS[c]: Cuotas = seleccionadas): creadas, llenadas y destruidas por el Sistema.
 ' - Ingreso múltiple: la secretaria selecciona UNA cuota por vuelta (nunca una lista) y en cada vuelta
 '   responde si sigue ingresando cuotas; esa respuesta decide si el loop continúa.
@@ -50,10 +50,10 @@ actor "Entidad Bancaria" as Banco
 
 == Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
 create CTRLCU
-Externo -> CTRLCU: create()
+Externo --> CTRLCU: create()
 activate CTRLCU
 create UI
-CTRLCU -> UI: create()
+CTRLCU --> UI: create()
 activate UI
 CTRLCU -> UI: mostrarOpciones()
 UI --> Actor: opciones disponibles
@@ -79,26 +79,30 @@ deactivate Alumnos
 Sistema --> CTRLCU: a
 deactivate Sistema
 
-CTRLCU -> Sistema: obtenerCuotasPendientes(dni)
+CTRLCU -> Sistema: obtenerCuotasPendientes(a)
 activate Sistema
+' Entidad a colección: el alumno conoce todas sus cuotas
+Sistema -> Alumno: getCuota()
+activate Alumno
+Alumno --> Sistema: LL[c]
+deactivate Alumno
 
 create LTP
-Sistema -> LTP: create()
-
+Sistema --> LTP: create()
 loop for each c in Cuotas
     Sistema -> LLC: getCuota()
     activate LLC
     LLC --> Sistema: c
     deactivate LLC
 
-    ' Cuotas adeudadas y próximas a vencer del alumno: mismo DNI y todavía impagas
-    opt c.alumno.dni = dni y c.estado = pendiente
+    ' Cuotas adeudadas y próximas a vencer: las que siguen impagas
+    opt c.estado = pendiente
         Sistema -> LTP: add(c)
     end
 end
 
 Sistema --> CTRLCU: LTP[c]
-Sistema -> LTP: destroy()
+Sistema --> LTP: destroy()
 destroy LTP
 deactivate Sistema
 
@@ -106,7 +110,7 @@ deactivate Sistema
 CTRLCU -> Sistema: iniciarSeleccionCuotas()
 activate Sistema
 create LTS
-Sistema -> LTS: create()
+Sistema --> LTS: create()
 deactivate Sistema
 
 CTRLCU -> UI: mostrarEstadoDeCuenta(a, LTP[c])
@@ -119,7 +123,7 @@ loop mientras la secretaria responda que quiere seguir ingresando cuotas
 
     CTRLCU -> Sistema: agregarCuotaSeleccionada(idCuota)
     activate Sistema
-    ' Búsqueda indexada sobre las cuotas
+    ' Búsqueda indexada sobre las cuotas del alumno
     Sistema -> LLC: getCuota(idCuota)
     activate LLC
     LLC --> Sistema: c
@@ -141,22 +145,25 @@ Sistema -> Sistema: calcularTotal()
 Sistema --> CTRLCU: montoTotal
 deactivate Sistema
 
-CTRLCU -> UI: mostrarMontoYMediosDePago(montoTotal)
-UI --> Actor: monto total y medios de pago (efectivo, débito, transferencia, QR)
+CTRLCU -> Sistema: obtenerMediosPago()
+activate Sistema
+Sistema --> CTRLCU: mediosPago
+deactivate Sistema
 
-== Paso 7: La secretaria selecciona tarjeta de débito como medio de pago y ninguna promoción ==
+CTRLCU -> UI: mostrarMontoYMediosDePago(montoTotal, mediosPago)
+UI --> Actor: montoTotal, mediosPago
+
+== Paso 7: La secretaria selecciona tarjeta de débito como medio de pago y solicita aplicar una promoción ==
 Actor -> UI: seleccionarMedioPago(medioPago)
 UI -> CTRLCU: tomarMedioPago(medioPago)
 
-' Extend: comportamiento opcional. Camino estándar = sin promoción (camino alternativo 7.a)
-opt la secretaria solicita aplicar una promoción o un cupón
-    ref over CTRLCU, Sistema
-        Aplicar Promociones (extend)
-        Deja la promoción elegida en el Sistema y el monto total recalculado con el descuento
-    end ref
-end
+== Paso 8: El sistema ejecuta Aplicar Promociones, recalcula el monto total y muestra el resumen del cobro ==
+' Extend: se aplica una promoción al total (camino estándar; sin promoción es el camino alternativo 7.a)
+ref over CTRLCU, Sistema
+    Aplicar Promociones (extend)
+    Deja la promoción elegida en el Sistema y el monto total recalculado con el descuento
+end ref
 
-== Paso 8: El sistema muestra el resumen del cobro ==
 CTRLCU -> Sistema: obtenerCuotasSeleccionadas()
 activate Sistema
 Sistema --> CTRLCU: LTS[c]
@@ -185,7 +192,7 @@ deactivate Banco
 
 == Paso 12: El sistema registra el pago, actualiza el estado de cuenta, emite el recibo (incluye Emitir Recibos) e informa ==
 create Pago
-Sistema -> Pago: create()
+Sistema --> Pago: create()
 Sistema -> Pago: setDatos(datosPago)
 Sistema -> Pago: setAlumno(a)
 Sistema -> Pago: setSecretaria(sec)
@@ -195,10 +202,8 @@ note right of Pago
   y medio de pago.
 end note
 
-' Extend: solo si en el paso 7 se aplicó una promoción
-opt hay una promoción aplicada
-    Sistema -> Pago: setPromocion(promocionAplicada)
-end
+' Extend: la promoción aplicada en el paso 8
+Sistema -> Pago: setPromocion(promocionAplicada)
 
 loop for each c in LTS[c]
     Sistema -> LTS: getCuota()
@@ -222,7 +227,7 @@ ref over Sistema, Recibo
     emitirRecibo(p): el Sistema genera el recibo r del pago p
 end ref
 
-Sistema -> LTS: destroy()
+Sistema --> LTS: destroy()
 destroy LTS
 
 Sistema --> CTRLCU: r
@@ -231,9 +236,9 @@ deactivate Sistema
 CTRLCU -> UI: mostrarPagoRegistrado(r)
 UI --> Actor: pago registrado y recibo digital
 
-CTRLCU -> UI: destroy()
+CTRLCU --> UI: destroy()
 destroy UI
-Externo -> CTRLCU: destroy()
+Externo --> CTRLCU: destroy()
 destroy CTRLCU
 
 @enduml

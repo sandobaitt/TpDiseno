@@ -39,7 +39,7 @@ package "Presentación y control" {
         + seleccionarCuota(idCuota: int): void
         + solicitarContinuarSeleccion(): void
         + indicarContinuar(continuar: boolean): void
-        + mostrarMontoYMediosDePago(montoTotal: float): void
+        + mostrarMontoYMediosDePago(montoTotal: float, mediosPago: List): void
         + seleccionarMedioPago(medioPago: String): void
         + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: String): void
         + confirmarPago(): void
@@ -85,10 +85,11 @@ package "Presentación y control" {
     class Sistema <<Sistema>> {
         - promocionAplicada: Promocion
         + obtenerAlumno(dni: String): Alumno
-        + obtenerCuotasPendientes(dni: String): List
+        + obtenerCuotasPendientes(alumno: Alumno): List
         + iniciarSeleccionCuotas(): void
         + agregarCuotaSeleccionada(idCuota: int): void
         + obtenerMontoTotal(): float
+        + obtenerMediosPago(): List
         + obtenerCuotasSeleccionadas(): List
         + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: String, secretaria: Secretaria): Recibo
         + obtenerPromocionesVigentes(alumno: Alumno, montoTotal: float, medioPago: String): List
@@ -111,6 +112,7 @@ package "Dominio" {
         - apellido: String
         - estado: String
         - estadoCuenta: String
+        + getCuota(): List
         + actualizarEstadoCuenta(): void
     }
 
@@ -177,7 +179,6 @@ CTRLEmitirRecibos "1" --> "1" Sistema : delega operaciones
 
 ' Colecciones que conoce el Sistema (agregación)
 Sistema "1" o-- "*" Alumno : alumnos
-Sistema "1" o-- "*" Cuota : cuotas
 Sistema "1" o-- "*" Pago : pagos
 Sistema "1" o-- "*" Recibo : recibos
 Sistema "1" o-- "*" Promocion : promociones

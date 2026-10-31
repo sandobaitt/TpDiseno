@@ -196,7 +196,9 @@ def verificar(sec_path, cls_path, crc_path):
             err(n, f"retorno con la palabra return/retornar: '{texto}'")
 
         texto = re.sub(r"^\d+\.\s*", "", texto)
-        es_retorno = flecha.startswith("--")
+        # create() y destroy() van con línea punteada: no son retornos
+        es_ciclo_vida = re.match(r"(create|destroy)\s*\(", texto) is not None
+        es_retorno = flecha.startswith("--") and not es_ciclo_vida
         if es_retorno:
             if re.search(r"\w\(", texto) and not pd["es_actor"]:
                 err(n, f"flecha de retorno con un método '{texto}' (usar mensaje síncrono '->')")
@@ -253,9 +255,9 @@ def verificar(sec_path, cls_path, crc_path):
             # Sin retorno tras create/add (el Sistema ya la conoce). Leer un elemento (getX) sí devuelve.
             ultimo = None
             for m in mensajes:
-                if m["destino"] == alias and not m["flecha"].startswith("--"):
+                if m["destino"] == alias:
                     mm = re.match(r"(\w+)\s*\(", m["texto"])
-                    ultimo = mm.group(1) if mm else None
+                    ultimo = mm.group(1) if mm else ultimo
                 if m["origen"] == alias and m["flecha"].startswith("--") and m["destino"] == sistema_alias \
                         and ultimo in {"create", "add"}:
                     err(m["linea"], f"retorno desde la lista temporal '{p['etiqueta']}' hacia Sistema")

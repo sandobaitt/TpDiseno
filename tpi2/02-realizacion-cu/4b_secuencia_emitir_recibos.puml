@@ -30,10 +30,10 @@ participant "r: Recibo" as Recibo <<Entity>>
 
 == Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
 create CTRLCU
-Externo -> CTRLCU: create()
+Externo --> CTRLCU: create()
 activate CTRLCU
 create UI
-CTRLCU -> UI: create()
+CTRLCU --> UI: create()
 activate UI
 CTRLCU -> UI: mostrarOpciones()
 UI --> Actor: opciones disponibles
@@ -64,7 +64,7 @@ end note
 Sistema -> Sistema: generarNumeroRecibo()
 
 create Recibo
-Sistema -> Recibo: create()
+Sistema --> Recibo: create()
 Sistema -> Recibo: setDatos(datosRecibo)
 Sistema -> Recibo: setPago(p)
 
@@ -80,9 +80,9 @@ deactivate Sistema
 CTRLCU -> UI: mostrarRecibo(r)
 UI --> Actor: recibo digital
 
-CTRLCU -> UI: destroy()
+CTRLCU --> UI: destroy()
 destroy UI
-Externo -> CTRLCU: destroy()
+Externo --> CTRLCU: destroy()
 destroy CTRLCU
 
 @enduml

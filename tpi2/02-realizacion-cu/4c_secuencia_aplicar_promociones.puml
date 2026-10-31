@@ -36,10 +36,10 @@ participant "LTV[pr]: Promociones" as LTV
 
 == Inicio: algo externo crea el controlador, este crea la pantalla y le pide mostrar las opciones ==
 create CTRLCU
-Externo -> CTRLCU: create()
+Externo --> CTRLCU: create()
 activate CTRLCU
 create UI
-CTRLCU -> UI: create()
+CTRLCU --> UI: create()
 activate UI
 CTRLCU -> UI: mostrarOpciones()
 UI --> Actor: opciones disponibles
@@ -52,8 +52,7 @@ CTRLCU -> Sistema: obtenerPromocionesVigentes(a, montoTotal, medioPago)
 activate Sistema
 
 create LTV
-Sistema -> LTV: create()
-
+Sistema --> LTV: create()
 loop for each pr in Promociones
     Sistema -> LLPR: getPromocion()
     activate LLPR
@@ -73,7 +72,7 @@ loop for each pr in Promociones
 end
 
 Sistema --> CTRLCU: LTV[pr]
-Sistema -> LTV: destroy()
+Sistema --> LTV: destroy()
 destroy LTV
 deactivate Sistema
 
@@ -108,9 +107,9 @@ deactivate Sistema
 CTRLCU -> UI: mostrarNuevoMonto(montoConDescuento)
 UI --> Actor: nuevo monto total con el descuento aplicado
 
-CTRLCU -> UI: destroy()
+CTRLCU --> UI: destroy()
 destroy UI
-Externo -> CTRLCU: destroy()
+Externo --> CTRLCU: destroy()
 destroy CTRLCU
 
 @enduml

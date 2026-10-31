@@ -11,7 +11,7 @@
 
 ### Camino Estándar
 
-El camino estándar se describe con pago en efectivo y sin promoción.
+El camino estándar se describe con pago con tarjeta de débito y con una promoción aplicada al total.
 
 | Paso | Acción / Proceso |
 | :---: | :--- |
@@ -21,8 +21,8 @@ El camino estándar se describe con pago en efectivo y sin promoción.
 | **4** | El sistema busca al alumno y muestra su estado de cuenta: las cuotas adeudadas y las próximas a vencer, con su importe y su vencimiento. Solicita las cuotas a pagar. |
 | **5** | La secretaria selecciona las cuotas a pagar. |
 | **6** | El sistema calcula el monto total de las cuotas seleccionadas y solicita el medio de pago (efectivo, tarjeta de débito, transferencia o QR). |
-| **7** | La secretaria selecciona tarjeta de débito como medio de pago y ninguna promoción. |
-| **8** | El sistema muestra el resumen del cobro (alumno, cuotas, monto total y medio de pago). |
+| **7** | La secretaria selecciona tarjeta de débito como medio de pago y solicita aplicar una promoción. |
+| **8** | El sistema ejecuta el caso de uso *Aplicar Promociones* (extend), recalcula el monto total con el descuento y muestra el resumen del cobro (alumno, cuotas, monto total y medio de pago). |
 | **9** | La secretaria confirma la operación. |
 | **10** | El sistema solicita validación del pago a la Entidad Bancaria. |
 | **11** | La Entidad Bancaria valida el pago. |
@@ -32,9 +32,9 @@ El camino estándar se describe con pago en efectivo y sin promoción.
 
 ### Caminos Alternativos
 
-#### 7.a El actor solicita aplicar una promoción o un cupón
-1. El sistema ejecuta el caso de uso *Aplicar Promociones* (extend).
-2. Retoma en el paso 8, con el monto total recalculado.
+#### 7.a La secretaria no solicita aplicar ninguna promoción
+1. El sistema muestra el resumen del cobro (alumno, cuotas, monto total sin descuento y medio de pago).
+2. Retoma en el paso 9.
 
 #### 11.b La Entidad Bancaria rechaza el pago
 1. El sistema informa que el pago fue rechazado y el motivo informado por la entidad. No registra el pago.
