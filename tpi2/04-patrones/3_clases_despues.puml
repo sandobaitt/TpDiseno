@@ -1,0 +1,86 @@
+@startuml 3_clases_despues
+!pragma layout smetana
+skinparam shadowing false
+' Fuente con las mismas medidas que Arial: así draw.io no desfasa los textos al importar el diagrama
+skinparam defaultFontName Liberation Sans
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 13
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassBorderColor #444444
+skinparam PackageBorderColor #999999
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+
+' ==============================================================================
+' DESPUÉS DEL PATRÓN: State aplicado a Cuota
+' Roles del patrón -> clases del escenario:
+'   Contexto        = Cuota
+'   Estado          = EstadoCuota (clase abstracta)
+'   EstadoConcreto  = EstadoCuotaPendiente y EstadoCuotaPagada
+' El tipo enumerado EstadoCuota desaparece: ahora es una clase.
+' ==============================================================================
+
+title Después: patrón State aplicado a la cuota
+
+class Sistema <<Sistema>> {
+    + obtenerCuotasPendientes(alumno: Alumno): List
+    + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: MedioPago, secretaria: Secretaria): Recibo
+}
+
+class Alumno <<Entity>> {
+    + getCuota(): List
+}
+
+class Cuota <<Entity, Contexto>> {
+    - idCuota: int
+    - periodo: String
+    - importe: float
+    - fechaVencimiento: Date
+    - estado: EstadoCuota
+    + marcarPagada(): void
+    + estaPendiente(): boolean
+    + cambiarEstado(estado: EstadoCuota): void
+}
+
+abstract class EstadoCuota <<State>> {
+    + {abstract} marcarPagada(cuota: Cuota): void
+    + {abstract} estaPendiente(): boolean
+}
+
+class EstadoCuotaPendiente <<EstadoConcreto>> {
+    + marcarPagada(cuota: Cuota): void
+    + estaPendiente(): boolean
+}
+
+class EstadoCuotaPagada <<EstadoConcreto>> {
+    + marcarPagada(cuota: Cuota): void
+    + estaPendiente(): boolean
+}
+
+Sistema "1" o-- "*" Alumno : alumnos
+Alumno "1" *-down- "*" Cuota : cuotas
+Cuota "1" -down-> "1" EstadoCuota : estado
+EstadoCuota <|-down- EstadoCuotaPendiente
+EstadoCuota <|-down- EstadoCuotaPagada
+EstadoCuotaPendiente ..> EstadoCuotaPagada : <<crea>>
+
+note right of EstadoCuotaPendiente
+  marcarPagada(cuota):
+  cuota.cambiarEstado(nuevo EstadoCuotaPagada)
+  estaPendiente(): verdadero
+end note
+
+note right of EstadoCuotaPagada
+  marcarPagada(cuota): no hace nada
+  (la cuota ya estaba pagada)
+  estaPendiente(): falso
+end note
+
+legend bottom
+  **Referencias**
+  La cuota le delega a su estado: marcarPagada() llama a estado.marcarPagada(this) y estaPendiente() llama a estado.estaPendiente().
+  Sin if sobre el estado: cada estado sabe qué hacer. Para un estado nuevo (por ejemplo, anulada) se agrega una clase y no se toca el resto.
+endlegend
+
+@enduml

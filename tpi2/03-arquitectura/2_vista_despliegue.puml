@@ -1,0 +1,80 @@
+@startuml 2_vista_despliegue
+!pragma layout smetana
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontSize 13
+skinparam NodeBackgroundColor #FFFFFF
+skinparam NodeBorderColor #444444
+skinparam DatabaseBackgroundColor #FFFFFF
+skinparam ComponentBackgroundColor #F4F4F4
+skinparam ComponentBorderColor #666666
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+skinparam ArrowColor #333333
+
+' ==============================================================================
+' ARQUITECTURA DE SquatGym - VISTA 2: VISTA FÍSICA (DESPLIEGUE)
+' Dónde corre cada parte: 3 niveles (cliente, servidor de aplicación, base de datos)
+' más los sistemas externos. Todo viaja por internet con HTTPS.
+' ==============================================================================
+
+title Vista de despliegue: dónde corre cada parte de SquatGym
+
+node "Dispositivo del usuario\n(PC, notebook o celular)" as CLI {
+    component "Navegador web" as NAV
+    component "Pantallas (UI)\naplicación web adaptable al tamaño" as UIW
+    component "Borradores guardados\nen el navegador" as BOR
+}
+
+node "Sede Centro y sede Norte\n(red Wi-Fi de cada sede)" as SEDES
+
+node "Servidor de aplicación\n(en internet)" as APP {
+    component "Controladores (CTRL)\ny sesión por rol" as CTRL
+    component "Sistema y Dominio" as SIS
+    component "Acceso a datos y\nregistro de actividad" as DAT
+    component "Adaptadores de\nservicios externos" as ADA
+}
+
+node "Servidor de base de datos" as SBD {
+    database "Base de datos única\n(todas las sedes)" as BD
+}
+
+cloud "Servicios externos" as EXT {
+    node "Entidad Bancaria\n(débito, transferencia, QR)" as BAN
+    node "Mensajería\n(correo / WhatsApp)" as MEN
+    node "Facturación AFIP\n(a futuro)" as AFI
+}
+
+NAV -- UIW
+UIW .. BOR : guarda lo cargado
+SEDES -down- CLI : usan el sistema desde
+
+CLI -down-> APP : HTTPS (pedidos y respuestas)
+CTRL --> SIS
+SIS --> DAT
+SIS ..> ADA
+APP -down-> SBD : red privada
+ADA ..> BAN : valida pagos
+ADA ..> MEN : avisos
+ADA ..> AFI : comprobantes
+
+note right of CLI
+  No se instala nada: se usa desde el navegador.
+  Si se corta el Wi-Fi, lo cargado queda en el equipo
+  y el navegador se reconecta solo.
+end note
+
+note left of SBD
+  Una sola base para las dos sedes:
+  la información está sincronizada
+  y un alumno puede ir a cualquier sede.
+end note
+
+legend bottom
+  **Cómo leerlo**
+  Los cuadros son equipos o servicios donde corre cada parte. Las flechas son las comunicaciones.
+  El cliente es liviano: solo muestra pantallas. Las reglas de negocio corren siempre en el servidor, así que no se pueden saltear desde el navegador.
+  Prototipo actual: solo la parte de pantallas, publicada en Vercel y con datos simulados.
+endlegend
+
+@enduml

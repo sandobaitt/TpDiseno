@@ -1,6 +1,8 @@
 @startuml 2_clases_registrar_pagos
 !pragma layout smetana
 skinparam shadowing false
+' Fuente con las mismas medidas que Arial: así draw.io no desfasa los textos al importar el diagrama
+skinparam defaultFontName Liberation Sans
 skinparam roundcorner 8
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
@@ -28,140 +30,134 @@ skinparam NoteBorderColor #BBAA55
 '   agregación (colecciones del Sistema) y composición (Alumno ◆— Cuota).
 ' ==============================================================================
 
-package "Presentación y control" {
-
-    class UIRegistrarPagos <<Boundary>> {
-        + mostrarOpciones(): void
-        + seleccionarOpcionRegistrarPagos(): void
-        + solicitarDniONombre(): void
-        + ingresarDni(dni: String): void
-        + mostrarEstadoDeCuenta(alumno: Alumno, cuotasPendientes: List): void
-        + seleccionarCuota(idCuota: int): void
-        + solicitarContinuarSeleccion(): void
-        + indicarContinuar(continuar: boolean): void
-        + mostrarMontoYMediosDePago(montoTotal: float, mediosPago: List<MedioPago>): void
-        + seleccionarMedioPago(medioPago: MedioPago): void
-        + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: MedioPago): void
-        + confirmarPago(): void
-        + mostrarPagoRegistrado(recibo: Recibo): void
-    }
-
-    class CTRLRegistrarPagos <<Control>> {
-        + iniciarRegistroPago(): void
-        + tomarDni(dni: String): void
-        + tomarCuota(idCuota: int): void
-        + tomarContinuar(continuar: boolean): void
-        + tomarMedioPago(medioPago: MedioPago): void
-        + tomarConfirmacion(): void
-    }
-
-    class UIAplicarPromociones <<Boundary>> {
-        + mostrarOpciones(): void
-        + solicitarPromocion(): void
-        + mostrarPromocionesVigentes(promociones: List): void
-        + seleccionarPromocion(idPromocion: int): void
-        + mostrarNuevoMonto(montoTotal: float): void
-    }
-
-    class CTRLAplicarPromociones <<Control>> {
-        + iniciarAplicacionPromocion(alumno: Alumno, montoTotal: float, medioPago: MedioPago): void
-        + tomarPromocion(idPromocion: int): void
-    }
-
-    class UIEmitirRecibos <<Boundary>> {
-        + mostrarOpciones(): void
-        + solicitarRecibo(idPago: int): void
-        + mostrarRecibo(recibo: Recibo): void
-    }
-
-    class CTRLEmitirRecibos <<Control>> {
-        + iniciarEmisionRecibo(idPago: int): void
-    }
-
-    class CTRLSesion <<Control>> {
-        + obtenerUsuarioLogueado(): Secretaria
-    }
-
-    class Sistema <<Sistema>> {
-        - promocionAplicada: Promocion
-        + obtenerAlumno(dni: String): Alumno
-        + obtenerCuotasPendientes(alumno: Alumno): List
-        + iniciarSeleccionCuotas(): void
-        + agregarCuotaSeleccionada(idCuota: int): void
-        + obtenerMontoTotal(): float
-        + obtenerMediosPago(): List<MedioPago>
-        + obtenerCuotasSeleccionadas(): List
-        + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: MedioPago, secretaria: Secretaria): Recibo
-        + obtenerPromocionesVigentes(alumno: Alumno, montoTotal: float, medioPago: MedioPago): List
-        + aplicarPromocion(idPromocion: int, montoTotal: float): float
-        + obtenerPago(idPago: int): Pago
-        + emitirRecibo(pago: Pago): Recibo
-        - calcularTotal(): float
-        - recalcularMontoTotal(montoTotal: float, descuento: float): float
-        - registrarPromocionAplicada(promocion: Promocion): void
-        - generarNumeroRecibo(): int
-    }
+class UIRegistrarPagos <<Boundary>> {
+    + mostrarOpciones(): void
+    + seleccionarOpcionRegistrarPagos(): void
+    + solicitarDniONombre(): void
+    + ingresarDni(dni: String): void
+    + mostrarEstadoDeCuenta(alumno: Alumno, cuotasPendientes: List): void
+    + seleccionarCuota(idCuota: int): void
+    + solicitarContinuarSeleccion(): void
+    + indicarContinuar(continuar: boolean): void
+    + mostrarMontoYMediosDePago(montoTotal: float, mediosPago: List<MedioPago>): void
+    + seleccionarMedioPago(medioPago: MedioPago): void
+    + mostrarResumenCobro(alumno: Alumno, cuotas: List, montoTotal: float, medioPago: MedioPago): void
+    + confirmarPago(): void
+    + mostrarPagoRegistrado(recibo: Recibo): void
 }
 
-package "Dominio" {
+class CTRLRegistrarPagos <<Control>> {
+    + iniciarRegistroPago(): void
+    + tomarDni(dni: String): void
+    + tomarCuota(idCuota: int): void
+    + tomarContinuar(continuar: boolean): void
+    + tomarMedioPago(medioPago: MedioPago): void
+    + tomarConfirmacion(): void
+}
 
-    class Alumno <<Entity>> {
-        - idAlumno: int
-        - dni: String
-        - nombre: String
-        - apellido: String
-        - estado: EstadoAlumno
-        - estadoCuenta: EstadoCuenta
-        + getCuota(): List
-        + actualizarEstadoCuenta(): void
-    }
+class UIAplicarPromociones <<Boundary>> {
+    + mostrarOpciones(): void
+    + solicitarPromocion(): void
+    + mostrarPromocionesVigentes(promociones: List): void
+    + seleccionarPromocion(idPromocion: int): void
+    + mostrarNuevoMonto(montoTotal: float): void
+}
 
-    class Cuota <<Entity>> {
-        - idCuota: int
-        - periodo: String
-        - importe: float
-        - fechaVencimiento: Date
-        - estado: EstadoCuota
-        + marcarPagada(): void
-    }
+class CTRLAplicarPromociones <<Control>> {
+    + iniciarAplicacionPromocion(alumno: Alumno, montoTotal: float, medioPago: MedioPago): void
+    + tomarPromocion(idPromocion: int): void
+}
 
-    class Pago <<Entity>> {
-        - idPago: int
-        - fechaHora: DateTime
-        - montoTotal: float
-        - medioPago: MedioPago
-        + create(): void
-        + setDatos(datosPago: DatosPago): void
-        + setAlumno(alumno: Alumno): void
-        + setSecretaria(secretaria: Secretaria): void
-        + setPromocion(promocion: Promocion): void
-        + agregarCuota(cuota: Cuota): void
-    }
+class UIEmitirRecibos <<Boundary>> {
+    + mostrarOpciones(): void
+    + solicitarRecibo(idPago: int): void
+    + mostrarRecibo(recibo: Recibo): void
+}
 
-    class Recibo <<Entity>> {
-        - nroRecibo: int
-        - fechaEmision: DateTime
-        + create(): void
-        + setDatos(datosRecibo: DatosRecibo): void
-        + setPago(pago: Pago): void
-    }
+class CTRLEmitirRecibos <<Control>> {
+    + iniciarEmisionRecibo(idPago: int): void
+}
 
-    class Promocion <<Entity>> {
-        - idPromocion: int
-        - nombre: String
-        - porcentajeDescuento: float
-        - fechaDesde: Date
-        - fechaHasta: Date
-        + verificarCondiciones(alumno: Alumno, montoTotal: float, medioPago: MedioPago): String
-        + calcularDescuento(montoTotal: float): float
-    }
+class CTRLSesion <<Control>> {
+    + obtenerUsuarioLogueado(): Secretaria
+}
 
-    class Secretaria <<Entity>> {
-        - idUsuario: int
-        - nombre: String
-        - apellido: String
-        - legajo: int
-    }
+class Sistema <<Sistema>> {
+    - promocionAplicada: Promocion
+    + obtenerAlumno(dni: String): Alumno
+    + obtenerCuotasPendientes(alumno: Alumno): List
+    + iniciarSeleccionCuotas(): void
+    + agregarCuotaSeleccionada(idCuota: int): void
+    + obtenerMontoTotal(): float
+    + obtenerMediosPago(): List<MedioPago>
+    + obtenerCuotasSeleccionadas(): List
+    + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: MedioPago, secretaria: Secretaria): Recibo
+    + obtenerPromocionesVigentes(alumno: Alumno, montoTotal: float, medioPago: MedioPago): List
+    + aplicarPromocion(idPromocion: int, montoTotal: float): float
+    + obtenerPago(idPago: int): Pago
+    + emitirRecibo(pago: Pago): Recibo
+    - calcularTotal(): float
+    - recalcularMontoTotal(montoTotal: float, descuento: float): float
+    - registrarPromocionAplicada(promocion: Promocion): void
+    - generarNumeroRecibo(): int
+}
+
+class Alumno <<Entity>> {
+    - idAlumno: int
+    - dni: String
+    - nombre: String
+    - apellido: String
+    - estado: EstadoAlumno
+    - estadoCuenta: EstadoCuenta
+    + getCuota(): List
+    + actualizarEstadoCuenta(): void
+}
+
+class Cuota <<Entity>> {
+    - idCuota: int
+    - periodo: String
+    - importe: float
+    - fechaVencimiento: Date
+    - estado: EstadoCuota
+    + marcarPagada(): void
+}
+
+class Pago <<Entity>> {
+    - idPago: int
+    - fechaHora: DateTime
+    - montoTotal: float
+    - medioPago: MedioPago
+    + create(): void
+    + setDatos(datosPago: DatosPago): void
+    + setAlumno(alumno: Alumno): void
+    + setSecretaria(secretaria: Secretaria): void
+    + setPromocion(promocion: Promocion): void
+    + agregarCuota(cuota: Cuota): void
+}
+
+class Recibo <<Entity>> {
+    - nroRecibo: int
+    - fechaEmision: DateTime
+    + create(): void
+    + setDatos(datosRecibo: DatosRecibo): void
+    + setPago(pago: Pago): void
+}
+
+class Promocion <<Entity>> {
+    - idPromocion: int
+    - nombre: String
+    - porcentajeDescuento: float
+    - fechaDesde: Date
+    - fechaHasta: Date
+    + verificarCondiciones(alumno: Alumno, montoTotal: float, medioPago: MedioPago): String
+    + calcularDescuento(montoTotal: float): float
+}
+
+class Secretaria <<Entity>> {
+    - idUsuario: int
+    - nombre: String
+    - apellido: String
+    - legajo: int
 }
 
 package "Tipos enumerados" {
@@ -211,7 +207,7 @@ Sistema "1" o-- "*" Promocion : promociones
 
 ' Dominio (con la dirección de cada flecha, para que el dibujo quede ordenado)
 Pago "*" -left-> "1" Alumno : realizado por
-Recibo "1" -left-> "1" Pago : comprobante de
+Recibo "1" --> "1" Pago : comprobante de
 Alumno "1" *-down- "*" Cuota : cuotas
 Pago "1" -down-> "1..*" Cuota : cuotas pagadas
 Pago "*" -down-> "1" Secretaria : cobrado por

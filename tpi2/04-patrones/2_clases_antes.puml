@@ -1,0 +1,58 @@
+@startuml 2_clases_antes
+!pragma layout smetana
+skinparam shadowing false
+' Fuente con las mismas medidas que Arial: así draw.io no desfasa los textos al importar el diagrama
+skinparam defaultFontName Liberation Sans
+skinparam roundcorner 8
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 13
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassBorderColor #444444
+skinparam PackageBorderColor #999999
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+
+' ==============================================================================
+' ANTES DEL PATRÓN: la cuota guarda su estado en un tipo enumerado
+' (recorte de 2_clases_registrar_pagos.puml: solo lo que toca el patrón)
+' ==============================================================================
+
+title Antes: el estado de la cuota es un valor enumerado
+
+class Sistema <<Sistema>> {
+    + obtenerCuotasPendientes(alumno: Alumno): List
+    + confirmarPago(alumno: Alumno, montoTotal: float, medioPago: MedioPago, secretaria: Secretaria): Recibo
+}
+
+class Alumno <<Entity>> {
+    + getCuota(): List
+}
+
+class Cuota <<Entity>> {
+    - idCuota: int
+    - periodo: String
+    - importe: float
+    - fechaVencimiento: Date
+    - estado: EstadoCuota
+    + marcarPagada(): void
+}
+
+enum EstadoCuota <<enumeration>> {
+    PENDIENTE
+    PAGADA
+}
+
+Sistema "1" o-- "*" Alumno : alumnos
+Alumno "1" *-down- "*" Cuota : cuotas
+Cuota ..> EstadoCuota
+
+note right of Cuota
+  **Problemas**
+  - El Sistema pregunta c.estado = PENDIENTE y mira por dentro de la cuota.
+  - marcarPagada() decide con un if según el valor:
+    si es PENDIENTE pasa a PAGADA; si ya es PAGADA, no hay una regla clara.
+  - Cada estado nuevo (por ejemplo, ANULADA) obliga a
+    tocar ese if y todos los que consultan el estado.
+end note
+
+@enduml

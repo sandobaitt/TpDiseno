@@ -1,0 +1,35 @@
+@startuml 1_maquina_estados_cuota
+!pragma layout smetana
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontSize 13
+skinparam StateBackgroundColor #FFFFFF
+skinparam StateBorderColor #444444
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+
+' ==============================================================================
+' MÁQUINA DE ESTADOS DE LA CUOTA (punto de partida del patrón State)
+' Ciclo finito: nace al generarse la cuota y termina cuando se la paga.
+' Cada estado de este diagrama pasa a ser una clase EstadoConcreto (ver 3_clases_despues).
+' ==============================================================================
+
+title Máquina de estados de Cuota
+
+state "Pendiente" as Pendiente
+state "Pagada" as Pagada
+
+[*] --> Pendiente : generarse la cuota
+Pendiente --> Pagada : marcarPagada() [pago validado]
+Pagada --> [*]
+
+Pagada : marcarPagada() / no hace nada
+Pendiente : estaPendiente() = verdadero
+Pagada : estaPendiente() = falso
+
+note right of Pendiente
+  Incluye las cuotas por vencer y las vencidas:
+  no hay recargos por mora, así que se cobran igual.
+end note
+
+@enduml

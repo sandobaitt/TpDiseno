@@ -1,0 +1,64 @@
+@startuml 4_secuencia_state_marcar_pagada
+!pragma layout smetana
+autonumber
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam sequenceArrowThickness 1.5
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+
+' ==============================================================================
+' PATRÓN STATE EN REGISTRAR PAGOS: las dos partes de la secuencia que cambian
+' (el resto de 4_secuencia_registrar_pagos.puml queda igual).
+'   A) Paso 4: el Sistema filtra las cuotas pendientes preguntándole a cada cuota.
+'   B) Paso 12: el Sistema marca la cuota como pagada y es el estado quien decide qué pasa.
+' ==============================================================================
+
+title Registrar Pagos con State: consulta de pendientes y cambio de estado de la cuota
+
+participant "Sistema" as Sistema <<Sistema>>
+participant "c: Cuota" as Cuota <<Entity>>
+participant "e: EstadoCuotaPendiente" as EP <<EstadoConcreto>>
+participant "n: EstadoCuotaPagada" as EG <<EstadoConcreto>>
+participant "LTP[c]: Cuota" as LTP
+
+== A) Paso 4: antes era "opt c.estado = PENDIENTE"; ahora la cuota responde por su estado ==
+loop for each c in LL
+    Sistema -> Cuota: estaPendiente()
+    activate Cuota
+    Cuota -> EP: estaPendiente()
+    activate EP
+    EP --> Cuota: verdadero
+    deactivate EP
+    Cuota --> Sistema: verdadero
+    deactivate Cuota
+
+    opt estaPendiente = verdadero
+        Sistema -> LTP: add(c)
+    end
+end
+
+== B) Paso 12: el Sistema marca la cuota como pagada; el estado actual hace el cambio ==
+loop for each c in LTS
+    Sistema -> Cuota: marcarPagada()
+    activate Cuota
+    Cuota -> EP: marcarPagada(c)
+    activate EP
+    create EG
+    EP --> EG: create()
+    EP -> Cuota: cambiarEstado(n)
+    activate Cuota
+    deactivate Cuota
+    deactivate EP
+    deactivate Cuota
+end
+
+note over Cuota, EG
+  A partir de acá la cuota apunta a n: EstadoCuotaPagada.
+  Si el Sistema volviera a pedir marcarPagada(), n no hace nada:
+  no se cobra dos veces la misma cuota.
+end note
+
+@enduml

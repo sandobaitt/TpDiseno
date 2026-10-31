@@ -1,0 +1,70 @@
+@startuml 1_vista_logica_capas
+!pragma layout smetana
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontSize 13
+skinparam packageStyle rectangle
+skinparam PackageBorderColor #666666
+skinparam ComponentBackgroundColor #FFFFFF
+skinparam ComponentBorderColor #444444
+skinparam NoteBackgroundColor #FFFBE6
+skinparam NoteBorderColor #BBAA55
+skinparam ArrowColor #333333
+
+' ==============================================================================
+' ARQUITECTURA DE SquatGym - VISTA 1: VISTA LÓGICA (CAPAS)
+' Tipo de arquitectura: cliente-servidor en capas (3 niveles).
+' Cada capa solo le habla a la que tiene debajo.
+' Las clases que aparecen son las del diagrama de clases de Registrar Pagos.
+' ==============================================================================
+
+title Vista lógica: arquitectura en capas de SquatGym
+
+package "Capa de Presentación  (en el navegador: PC, notebook o celular)" as P {
+    component "Pantallas (UI)\nUIRegistrarPagos, UIAplicarPromociones,\nUIEmitirRecibos y las de los demás CU" as UI
+}
+
+package "Capa de Control  (en el servidor de aplicación)" as C {
+    component "Controladores (CTRL)\nCTRLRegistrarPagos, CTRLAplicarPromociones,\nCTRLEmitirRecibos y los de los demás CU" as CTRL
+    component "Sesión y permisos por rol\n(CTRLSesion)" as SES
+}
+
+package "Capa de Negocio" as N {
+    component "Sistema\n(fachada del negocio)" as SIS
+    component "Dominio: Alumno, Cuota, Pago, Recibo,\nPromocion, Secretaria y sus reglas\n(vence el día 5, bloqueo a los 15 días,\nuna promoción por cobro)" as DOM
+}
+
+package "Capa de Acceso a Datos e Integración" as A {
+    component "Repositorios\n(guardan y buscan entidades)" as REP
+    component "Registro de actividad\n(quién, qué y cuándo)" as LOG
+    component "Adaptadores de servicios externos\n(banco, mensajería y AFIP)" as ADX
+}
+
+package "Capa de Datos" as D {
+    database "Base de datos única\nde SquatGym" as BD
+}
+
+cloud "Servicios externos\nEntidad Bancaria, correo / WhatsApp\nAFIP (a futuro)" as EXT
+
+UI -down-> CTRL : pide operaciones
+CTRL -right-> SES : consulta usuario y rol
+CTRL -down-> SIS : delega
+SIS -right-> DOM : usa
+SIS -down-> REP : busca y guarda
+SIS -down-> LOG : registra
+SIS -down-> ADX : valida pagos, envía avisos
+REP -down-> BD
+LOG -down-> BD
+ADX ..down..> EXT
+REP -[hidden]right- LOG
+LOG -[hidden]right- ADX
+
+legend bottom
+  **Cómo leerlo**
+  Las flechas continuas son llamadas entre capas, de arriba hacia abajo. Las punteadas llegan a sistemas de afuera.
+  La Presentación no conoce el negocio ni la base de datos: solo habla con los controladores.
+  Cambiar la base de datos o el banco no obliga a tocar las pantallas ni las reglas.
+  Agregar una sede es agregar datos (la sede es un dato), no cambiar la estructura.
+endlegend
+
+@enduml

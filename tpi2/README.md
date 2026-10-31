@@ -5,7 +5,7 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 | Dato | Valor |
 |---|---|
 | Actores asignados | **Secretaria y Profesor** |
-| Grupo | *(completar con el nombre del grupo en la consigna)* |
+| Grupo | **Grupo 2: Los SOLID** |
 | Alcance del diagrama de CU | Los CU de Secretaria y Profesor del diagrama del grupo (hecho en draw.io y pasado a PlantUML) |
 | CU realizado | **Registrar Pagos** (incluye Emitir Recibos; lo extiende Aplicar Promociones). Descripción escrita por el grupo |
 | Entrega | 04/11/2026, PDF en el Campus Virtual. Coloquios: 25/11 y 02/12 |
@@ -21,9 +21,9 @@ Segunda entrega del TPI de **Diseño de Sistemas de Información** (UTN FRRe, 20
 | 2.iv Diagrama de secuencia (camino estándar) | [`02-realizacion-cu/4_secuencia_registrar_pagos.puml`](02-realizacion-cu/4_secuencia_registrar_pagos.puml) (+ `.svg`). Referencia con `ref` al include y al extend | ✅ Hecho |
 | 2.iv Secuencia del CU incluido: Emitir Recibos | [`02-realizacion-cu/4b_secuencia_emitir_recibos.puml`](02-realizacion-cu/4b_secuencia_emitir_recibos.puml) (+ `.svg`) | ✅ Hecho |
 | 2.iv Secuencia del CU que extiende: Aplicar Promociones | [`02-realizacion-cu/4c_secuencia_aplicar_promociones.puml`](02-realizacion-cu/4c_secuencia_aplicar_promociones.puml) (+ `.svg`) | ✅ Hecho |
-| 3. Arquitectura (tipo y 2 vistas) | [`03-arquitectura/`](03-arquitectura/) | ⏳ Para después |
-| 4. Patrón aplicado al CU | [`04-patrones/`](04-patrones/) | ⏳ Para después |
-| PDF final | [`entrega/`](entrega/) | ⏳ Al terminar |
+| 3. Arquitectura: cliente-servidor en capas, con 2 vistas (lógica y de despliegue) | [`03-arquitectura/arquitectura.md`](03-arquitectura/arquitectura.md), [`1_vista_logica_capas.puml`](03-arquitectura/1_vista_logica_capas.puml) y [`2_vista_despliegue.puml`](03-arquitectura/2_vista_despliegue.puml) (+ `.svg`) | ✅ Hecho |
+| 4. Patrón aplicado al CU: State sobre la cuota | [`04-patrones/patron_state.md`](04-patrones/patron_state.md) con máquina de estados, clases antes y después y secuencia (+ `.svg`) | ✅ Hecho |
+| Documento de entrega | En Claude Docs: https://claude.ai/artifact/4dA719rKSmdUiu8nuhddkk (se exporta a PDF y se guarda en [`entrega/`](entrega/)) | 📝 Armado, falta revisar y exportar |
 
 El PDF respeta el orden de la consigna: descripción, diagrama de clases, tarjetas CRC y diagrama de secuencia. Los archivos de `02-realizacion-cu/` están numerados en ese orden.
 
@@ -40,6 +40,7 @@ tpi2/render.sh tpi2/                         # genera el .svg de todos los .puml
 tpi2/render.sh -w tpi2/                      # modo observador: regenera al guardar
 tpi2/verificar.py tpi2/02-realizacion-cu     # coherencia secuencia ↔ clases ↔ CRC
 tpi2/crc_a_drawio.py                         # pasa las tarjetas CRC del .md a un .drawio
+tpi2/clases_a_drawio.py <archivo.puml>       # pasa el diagrama de clases a un .drawio con clases nativas (necesita el .svg al lado)
 ```
 
 - **Requisitos:** Java y `~/.local/share/plantuml/plantuml.jar` (lo usa `bin/plantuml`) para renderizar, y Python 3 para verificar.
@@ -48,3 +49,4 @@ tpi2/crc_a_drawio.py                         # pasa las tarjetas CRC del .md a u
 - **Nombres de archivo:** `verificar.py` reconoce los archivos por su nombre (`secuencia`, `clases`, `crc`). El `@startuml` de cada diagrama lleva el mismo nombre que el archivo, para que el `.svg` quede con el mismo prefijo.
 
 Las skills, `render.sh`, `verificar.py` y `bin/plantuml` se copiaron de `~/Documents/dsi-2026` el 02/10/2026. Si se mejoran allá, hay que volver a copiarlos acá. En las skills, las rutas se ajustaron a `tpi2/`. El 28/10/2026 se actualizaron con el apunte nuevo (notación `LL[c]`/`LLT[...]`) y `verificar.py` acepta la notación nueva y la anterior; esos cambios **no** están en `dsi-2026`.
+- **Importar a draw.io:** si el diagrama de clases importado desde PlantUML (o su `.svg`) se ve con los textos desfasados dentro de las cajas, no se importa: se abre [`2_clases_registrar_pagos.drawio`](02-realizacion-cu/2_clases_registrar_pagos.drawio), que genera `clases_a_drawio.py` con clases nativas de draw.io y el tamaño de caja calculado para su fuente. Los diagramas de clases también usan la fuente `Liberation Sans` (mismas medidas que Arial). Lo mismo vale para [`2_clases_antes.drawio`](04-patrones/2_clases_antes.drawio) y [`3_clases_despues.drawio`](04-patrones/3_clases_despues.drawio) del patrón. Si cambia un `.puml`, hay que correr `tpi2/render.sh` y después `tpi2/clases_a_drawio.py <archivo.puml>` (cada diagrama tiene su acomodo en `DISPOSICIONES`).

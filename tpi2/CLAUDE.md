@@ -33,7 +33,8 @@ Estas reglas valen solo para esta carpeta. Las reglas del front-end del `CLAUDE.
 - **Inicio y fin de cada secuencia:** un participante `Externo` crea el CTRL (`create()`), el CTRL crea la UI y le pide `mostrarOpciones()`; al final el CTRL destruye la UI y el `Externo` destruye al CTRL. Las UI tienen el método `mostrarOpciones()`.
 - **`create()` y `destroy()`** se dibujan con línea punteada (`-->`).
 - **Include y extend:** en la secuencia del CU base van con un `ref` (el extend dentro de un `opt`), y cada uno tiene su **propio diagrama de secuencia** (`4b_` y `4c_`), con su UI y su CTRL (`UI<CU>`, `CTRL<CU>`). El diagrama de clases y las tarjetas CRC cubren las clases de los tres.
-- **Arquitectura y patrones:** quedan para después.
+- **Arquitectura (`03-arquitectura/`):** cliente-servidor en capas, con dos vistas (lógica y de despliegue). Las clases de las capas son las del diagrama de clases de Registrar Pagos.
+- **Patrón (`04-patrones/`):** State aplicado a `Cuota` (estados pendiente y pagada). Muestra los cambios en carpeta aparte (antes y después); no modifica `02-realizacion-cu/`, que es la versión base. `verificar.py` se corre solo sobre `02-realizacion-cu/`.
 
 ## Reglas de trabajo
 
