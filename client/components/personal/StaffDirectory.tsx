@@ -18,15 +18,23 @@ import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { DetailList } from "@/components/common/DetailList";
 import { FormField, inputClasses } from "@/components/common/FormField";
-import {
-  employeesMock,
-  type Employee,
-  type EmployeeRole,
-  type EmployeeStatus,
-} from "@/data/employees";
+import type { Employee, EmployeeRole, EmployeeStatus } from "@/data/employees";
 import { branchesMock } from "@/data/branches";
-import { formatDate } from "@/lib/dates";
-import { getInitials, matchesPersonSearch } from "@/lib/format";
+import { getUserName } from "@/data/users";
+import {
+  validateEmployee,
+  type EmployeeErrors,
+  type EmployeeForm,
+} from "@/domain/staff";
+import { formatDate, formatDateTime, nowISO } from "@/lib/dates";
+import {
+  cleanText,
+  formatDni,
+  getInitials,
+  matchesPersonSearch,
+} from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { useAppState, useStoreActions } from "@/store/StoreProvider";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -38,26 +46,31 @@ const ROLE_LABELS: Record<EmployeeRole, string> = {
   admin: "Administrativo",
 };
 
-interface EditForm {
-  fullName: string;
-  email: string;
-  dni: string;
-  role: EmployeeRole;
-  branchId: string;
-}
+const emptyForm = (): EmployeeForm => ({
+  fullName: "",
+  email: "",
+  dni: "",
+  role: "reception",
+  branchId: branchesMock[0].id,
+});
 
 /**
- * Gestión del personal administrativo (pantalla anterior del admin, sin los
- * alumnos: ahora tienen su propio menú). Los cambios quedan en esta pantalla.
+ * Gestión del personal administrativo (requisito 3.1.1): alta, modificación
+ * (con el cargo y la sede) y baja lógica. Cada cambio queda en el registro de
+ * actividad. Los alumnos se administran desde su propio menú.
  */
 export function StaffDirectory() {
-  const [staff, setStaff] = React.useState<Employee[]>(employeesMock);
+  const state = useAppState();
+  const actions = useStoreActions();
+  const staff = state.staff;
   const [search, setSearch] = React.useState("");
   const [roleFilter, setRoleFilter] = React.useState("");
   const [page, setPage] = React.useState(1);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [creating, setCreating] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
-  const [form, setForm] = React.useState<EditForm | null>(null);
+  const [form, setForm] = React.useState<EmployeeForm>(emptyForm);
+  const [errors, setErrors] = React.useState<EmployeeErrors>({});
   const [confirmDeactivate, setConfirmDeactivate] = React.useState(false);
 
   const selected = staff.find((e) => e.id === selectedId) ?? null;
@@ -75,6 +88,11 @@ export function StaffDirectory() {
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE,
   );
+  const history = selected
+    ? state.activity.filter(
+        (a) => a.entity === "personal" && a.entityId === selected.id,
+      )
+    : [];
 
   React.useEffect(() => {
     setPage(1);
@@ -82,7 +100,9 @@ export function StaffDirectory() {
 
   function open(employee: Employee) {
     setSelectedId(employee.id);
+    setCreating(false);
     setEditing(false);
+    setErrors({});
     setForm({
       fullName: employee.fullName,
       email: employee.email,
@@ -92,28 +112,55 @@ export function StaffDirectory() {
     });
   }
 
-  function update(id: string, changes: Partial<Employee>) {
-    setStaff((list) =>
-      list.map((e) => (e.id === id ? { ...e, ...changes } : e)),
-    );
+  function openCreate() {
+    setSelectedId(null);
+    setCreating(true);
+    setEditing(true);
+    setErrors({});
+    setForm(emptyForm());
+  }
+
+  function closeDialog() {
+    setSelectedId(null);
+    setCreating(false);
+    setEditing(false);
+  }
+
+  function clean(f: EmployeeForm): EmployeeForm {
+    return {
+      ...f,
+      fullName: cleanText(f.fullName),
+      email: f.email.trim(),
+      dni: formatDni(f.dni),
+    };
   }
 
   function save() {
-    if (!selected || !form) return;
-    if (!form.fullName.trim())
-      return toast.error("El nombre no puede quedar vacío.");
-    update(selected.id, {
-      ...form,
-      fullName: form.fullName.trim(),
-      email: form.email.trim(),
-    });
+    const found = validateEmployee(form, staff, selected?.id);
+    setErrors(found);
+    if (Object.keys(found).length > 0)
+      return toast.error("Revisá los datos marcados.");
+    if (creating) {
+      const employee: Employee = {
+        id: `em_${Date.now().toString(36)}`,
+        ...clean(form),
+        status: "active",
+        createdAt: nowISO(),
+      };
+      actions.registerEmployee(employee);
+      toast.success(`${employee.fullName} quedó dado de alta.`);
+      closeDialog();
+      return;
+    }
+    if (!selected) return;
+    actions.updateEmployee(selected.id, clean(form));
     setEditing(false);
     toast.success("Datos actualizados.");
   }
 
   function setStatus(status: EmployeeStatus) {
     if (!selected) return;
-    update(selected.id, { status });
+    actions.setEmployeeStatus(selected.id, status);
     toast.success(
       status === "inactive"
         ? "Baja registrada. Se conserva el historial."
@@ -121,11 +168,27 @@ export function StaffDirectory() {
     );
   }
 
+  const field = (key: keyof EmployeeForm) => ({
+    value: form[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+      setForm({ ...form, [key]: e.target.value }),
+  });
+
   return (
     <div className="flex flex-col gap-5 px-7 pb-7 max-sm:px-4">
       <PageHeader
         title="Gestión de personal"
-        subtitle="Datos del personal administrativo de las sedes. Los alumnos se administran desde «Alumnos»."
+        subtitle="Alta, modificación y baja del personal administrativo de las sedes. Los alumnos se administran desde «Alumnos»."
+        actions={
+          <Button
+            type="button"
+            onClick={openCreate}
+            className="h-10 rounded-xl font-bold"
+          >
+            <i className="ti ti-user-plus text-base" aria-hidden="true" />
+            Dar de alta
+          </Button>
+        }
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -144,7 +207,10 @@ export function StaffDirectory() {
             label: ROLE_LABELS[role],
           }))}
         />
-        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
+        <span
+          className="ml-auto text-xs text-muted-foreground"
+          aria-live="polite"
+        >
           {filtered.length} {filtered.length === 1 ? "persona" : "personas"}
         </span>
       </div>
@@ -200,102 +266,95 @@ export function StaffDirectory() {
         onPageChange={setPage}
       />
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelectedId(null)}>
+      <Dialog
+        open={!!selected || creating}
+        onOpenChange={(o) => !o && closeDialog()}
+      >
         <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
-          {selected && form && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-lg font-extrabold">
-                  {selected.fullName}
-                </DialogTitle>
-                <DialogDescription>
-                  {ROLE_LABELS[selected.role]} ·{" "}
-                  {selected.status === "active" ? "Activo" : "Inactivo"}
-                </DialogDescription>
-              </DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="text-lg font-extrabold">
+              {creating ? "Dar de alta en el personal" : selected?.fullName}
+            </DialogTitle>
+            <DialogDescription>
+              {creating
+                ? "Completá los datos y elegí el cargo y la sede."
+                : selected
+                  ? `${ROLE_LABELS[selected.role]} · ${selected.status === "active" ? "Activo" : "Inactivo"}`
+                  : ""}
+            </DialogDescription>
+          </DialogHeader>
 
-              {editing ? (
-                <div className="flex flex-col gap-3">
-                  <FormField label="Nombre y apellido" required>
-                    {(id) => (
-                      <input
-                        id={id}
-                        value={form.fullName}
-                        onChange={(e) =>
-                          setForm({ ...form, fullName: e.target.value })
-                        }
-                        className={inputClasses}
-                      />
+          {editing ? (
+            <div className="flex flex-col gap-3">
+              <FormField
+                label="Nombre y apellido"
+                required
+                error={errors.fullName}
+              >
+                {(id) => (
+                  <input
+                    id={id}
+                    {...field("fullName")}
+                    className={cn(
+                      inputClasses,
+                      errors.fullName && "border-danger",
                     )}
-                  </FormField>
-                  <FormField label="Email">
-                    {(id) => (
-                      <input
-                        id={id}
-                        type="email"
-                        value={form.email}
-                        onChange={(e) =>
-                          setForm({ ...form, email: e.target.value })
-                        }
-                        className={inputClasses}
-                      />
+                  />
+                )}
+              </FormField>
+              <FormField label="Email" required error={errors.email}>
+                {(id) => (
+                  <input
+                    id={id}
+                    type="email"
+                    {...field("email")}
+                    className={cn(
+                      inputClasses,
+                      errors.email && "border-danger",
                     )}
-                  </FormField>
-                  <FormField label="DNI">
-                    {(id) => (
-                      <input
-                        id={id}
-                        value={form.dni}
-                        onChange={(e) =>
-                          setForm({ ...form, dni: e.target.value })
-                        }
-                        className={inputClasses}
-                      />
-                    )}
-                  </FormField>
-                  <FormField label="Cargo">
-                    {(id) => (
-                      <select
-                        id={id}
-                        value={form.role}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            role: e.target.value as EmployeeRole,
-                          })
-                        }
-                        className={inputClasses}
-                      >
-                        {(Object.keys(ROLE_LABELS) as EmployeeRole[]).map(
-                          (r) => (
-                            <option key={r} value={r}>
-                              {ROLE_LABELS[r]}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                    )}
-                  </FormField>
-                  <FormField label="Sede">
-                    {(id) => (
-                      <select
-                        id={id}
-                        value={form.branchId}
-                        onChange={(e) =>
-                          setForm({ ...form, branchId: e.target.value })
-                        }
-                        className={inputClasses}
-                      >
-                        {branchesMock.map((b) => (
-                          <option key={b.id} value={b.id}>
-                            {b.name}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </FormField>
-                </div>
-              ) : (
+                  />
+                )}
+              </FormField>
+              <FormField label="DNI" required error={errors.dni}>
+                {(id) => (
+                  <input
+                    id={id}
+                    inputMode="numeric"
+                    {...field("dni")}
+                    className={cn(inputClasses, errors.dni && "border-danger")}
+                  />
+                )}
+              </FormField>
+              <FormField label="Cargo" required>
+                {(id) => (
+                  <select id={id} {...field("role")} className={inputClasses}>
+                    {(Object.keys(ROLE_LABELS) as EmployeeRole[]).map((r) => (
+                      <option key={r} value={r}>
+                        {ROLE_LABELS[r]}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </FormField>
+              <FormField label="Sede" required error={errors.branchId}>
+                {(id) => (
+                  <select
+                    id={id}
+                    {...field("branchId")}
+                    className={inputClasses}
+                  >
+                    {branchesMock.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </FormField>
+            </div>
+          ) : (
+            selected && (
+              <>
                 <DetailList
                   items={[
                     { label: "Email", value: selected.email, icon: "ti-mail" },
@@ -314,72 +373,95 @@ export function StaffDirectory() {
                     },
                   ]}
                 />
-              )}
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Historial de cambios
+                  </h3>
+                  {history.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Todavía no hay cambios registrados.
+                    </p>
+                  ) : (
+                    <ul className="flex flex-col gap-1.5">
+                      {history.map((a) => (
+                        <li key={a.id} className="text-sm text-foreground/80">
+                          <span className="text-foreground">{a.summary}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {formatDateTime(a.at)} · {getUserName(a.userId)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </>
+            )
+          )}
 
-              <DialogFooter className="gap-2">
-                {editing ? (
-                  <>
+          <DialogFooter className="gap-2">
+            {editing ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => (creating ? closeDialog() : setEditing(false))}
+                  className="rounded-xl"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  onClick={save}
+                  className="rounded-xl font-bold"
+                >
+                  {creating ? "Dar de alta" : "Guardar cambios"}
+                </Button>
+              </>
+            ) : (
+              selected && (
+                <>
+                  {selected.status === "active" ? (
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setEditing(false)}
-                      className="rounded-xl"
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={save}
-                      className="rounded-xl font-bold"
-                    >
-                      Guardar cambios
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    {selected.status === "active" ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setConfirmDeactivate(true)}
-                        className="rounded-xl border-danger/40 text-danger hover:bg-danger/10 hover:text-danger"
-                      >
-                        <i
-                          className="ti ti-user-off text-base"
-                          aria-hidden="true"
-                        />
-                        Dar de baja
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setStatus("active")}
-                        className="rounded-xl"
-                      >
-                        <i
-                          className="ti ti-user-check text-base"
-                          aria-hidden="true"
-                        />
-                        Reactivar
-                      </Button>
-                    )}
-                    <Button
-                      type="button"
-                      onClick={() => setEditing(true)}
-                      className="rounded-xl font-bold"
+                      onClick={() => setConfirmDeactivate(true)}
+                      className="rounded-xl border-danger/40 text-danger hover:bg-danger/10 hover:text-danger"
                     >
                       <i
-                        className="ti ti-pencil text-base"
+                        className="ti ti-user-off text-base"
                         aria-hidden="true"
                       />
-                      Editar
+                      Dar de baja
                     </Button>
-                  </>
-                )}
-              </DialogFooter>
-            </>
-          )}
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setStatus("active")}
+                      className="rounded-xl"
+                    >
+                      <i
+                        className="ti ti-user-check text-base"
+                        aria-hidden="true"
+                      />
+                      Reactivar
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setErrors({});
+                      setEditing(true);
+                    }}
+                    className="rounded-xl font-bold"
+                  >
+                    <i className="ti ti-pencil text-base" aria-hidden="true" />
+                    Editar
+                  </Button>
+                </>
+              )
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import type { Payment } from "@/data/payments";
 import {
+  branchInconsistencies,
   branchEnrollmentHistory,
   buildClientFromDraft,
   dniError,
@@ -281,6 +283,66 @@ describe("inscripciones por sede (CU 12)", () => {
     ).toEqual([
       { period: "2026-09", enrolled: 1, deactivated: 1 },
       { period: "2026-10", enrolled: 1, deactivated: 0 },
+    ]);
+  });
+});
+
+describe("inconsistencias de la sede (3.1.6c)", () => {
+  const alumno = (over: Partial<Client>): Client =>
+    ({
+      id: "c1",
+      fullName: "Ana Paz",
+      dni: "40.000.000",
+      email: "ana@mail.com",
+      phone: "3624000000",
+      branchId: "br_001",
+      planId: "pl_libre",
+      enrolledAt: "2026-10-01",
+      status: "active",
+      health: { signedAt: "2026-10-01" },
+      ...over,
+    }) as Client;
+  const pago = (over: Partial<Payment>): Payment => ({
+    id: "p1",
+    receiptNumber: "R-000001",
+    clientId: "c1",
+    branchId: "br_001",
+    createdAt: "2026-10-02T10:00:00",
+    periods: ["2026-10"],
+    concept: "membership",
+    subtotalArs: 1000,
+    discountArs: 0,
+    amountArs: 1000,
+    method: "cash",
+    status: "approved",
+    processedBy: "us",
+    ...over,
+  });
+
+  it("no marca nada si la ficha y los pagos están completos", () => {
+    expect(
+      branchInconsistencies([alumno({})], [pago({})], "2026-11-02"),
+    ).toEqual([]);
+  });
+
+  it("marca DDJJ, contacto, alta sin pagar y pagos que no cierran", () => {
+    const kinds = branchInconsistencies(
+      [
+        alumno({ health: undefined, phone: "" }),
+        alumno({ id: "c2", fullName: "Sin pago" }),
+      ],
+      [
+        pago({ discountArs: 100, amountArs: 900 }),
+        pago({ id: "p2", amountArs: 500 }),
+      ],
+      "2026-11-02",
+    ).map((i) => i.kind);
+    expect(kinds).toEqual([
+      "ddjj",
+      "contacto",
+      "alta_impaga",
+      "pago_descuento",
+      "pago_monto",
     ]);
   });
 });

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
@@ -19,7 +20,12 @@ import type { Client } from "@/data/clients";
 import { getPlan, plansMock } from "@/data/plans";
 import { branchesMock } from "@/data/branches";
 import { getMockSession, getUserName } from "@/data/users";
-import { branchEnrollmentHistory } from "@/domain/enrollment";
+import {
+  branchEnrollmentHistory,
+  branchInconsistencies,
+} from "@/domain/enrollment";
+import { SegmentedTabs } from "@/components/common/SegmentedTabs";
+import { BranchPayments } from "./BranchPayments";
 import {
   addMonths,
   formatDate,
@@ -45,9 +51,12 @@ const shortMonth = (period: string) =>
     .toLocaleDateString("es-AR", { month: "short" })
     .replace(".", "");
 
+type TabId = "inscripciones" | "pagos" | "revisar";
+
 /**
- * Inscripciones de la sede del encargado (CU 12): solo consulta. Altas y bajas
- * por mes, por plan y el detalle de cada alumno inscripto.
+ * Inscripciones y pagos de la sede del encargado (CU 12 y requisito 3.1.6):
+ * solo consulta. Altas y bajas por mes, por plan y el detalle de cada alumno;
+ * los pagos que registró secretaría; y lo que no cierra o falta, para revisar.
  */
 export function BranchEnrollments() {
   const state = useAppState();
@@ -58,8 +67,19 @@ export function BranchEnrollments() {
     addMonths(toPeriod(today), -i),
   );
   const [period, setPeriod] = React.useState(periods[0]);
+  const [params, setParams] = useSearchParams();
+  const tabParam = params.get("tab");
+  const tab: TabId =
+    tabParam === "pagos" || tabParam === "revisar" ? tabParam : "inscripciones";
+  const setTab = (id: TabId) =>
+    setParams(id === "inscripciones" ? {} : { tab: id }, { replace: true });
 
   const ofBranch = state.clients.filter((c) => c.branchId === branchId);
+  const toReview = branchInconsistencies(
+    ofBranch,
+    state.payments.filter((p) => p.branchId === branchId),
+    today,
+  );
   const enrolled = ofBranch
     .filter((c) => toPeriod(c.enrolledAt) === period)
     .sort((a, b) => b.enrolledAt.localeCompare(a.enrolledAt));
@@ -130,8 +150,8 @@ export function BranchEnrollments() {
   return (
     <div className="flex flex-col gap-5 px-7 pb-7 max-sm:px-4">
       <PageHeader
-        title="Inscripciones de mi sede"
-        subtitle={`${branch?.name ?? "Sede"}: altas y bajas de alumnos por mes. Es solo de consulta.`}
+        title="Inscripciones y pagos"
+        subtitle={`${branch?.name ?? "Sede"}: altas y bajas de alumnos, pagos registrados y lo que hay que revisar. Es solo de consulta.`}
         actions={
           <div className="flex items-center gap-2">
             <label
@@ -156,140 +176,210 @@ export function BranchEnrollments() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
-        <StatCard
-          icon="ti-user-plus"
-          value={selected.enrolled}
-          label={`Inscripciones de ${shortMonth(period)}`}
-          tone="success"
-        />
-        <StatCard
-          icon="ti-user-minus"
-          value={selected.deactivated}
-          label={`Bajas de ${shortMonth(period)}`}
-          tone="danger"
-        />
-        <StatCard
-          icon="ti-users"
-          value={active}
-          label="Alumnos activos hoy"
-          className="col-span-2 lg:col-span-1"
-        />
-      </div>
+      <SegmentedTabs<TabId>
+        label="Secciones"
+        value={tab}
+        onChange={setTab}
+        items={[
+          { id: "inscripciones", label: "Inscripciones", icon: "ti-user-plus" },
+          { id: "pagos", label: "Pagos", icon: "ti-receipt" },
+          {
+            id: "revisar",
+            label: "Para revisar",
+            icon: "ti-alert-triangle",
+            count: toReview.length,
+          },
+        ]}
+      />
 
-      <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.4fr_1fr]">
-        <SectionCard title="Últimos 6 meses" icon="ti-chart-bar">
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-64 w-full"
-            aria-hidden="true"
-          >
-            <BarChart data={history} margin={{ left: 0, right: 8 }}>
-              <CartesianGrid vertical={false} />
-              <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis
-                allowDecimals={false}
-                width={28}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar
-                dataKey="enrolled"
-                isAnimationActive={false}
-                fill="var(--color-enrolled)"
-                radius={4}
-              />
-              <Bar
-                dataKey="deactivated"
-                isAnimationActive={false}
-                fill="var(--color-deactivated)"
-                radius={4}
-              />
-            </BarChart>
-          </ChartContainer>
-          {/* Los mismos datos en una tabla (accesible para lectores de pantalla). */}
-          <table className="w-full text-left text-sm">
-            <caption className="sr-only">
-              Inscripciones y bajas de los últimos 6 meses
-            </caption>
-            <thead>
-              <tr className="text-xs text-muted-foreground">
-                <th scope="col" className="py-1 font-semibold">
-                  Mes
-                </th>
-                <th scope="col" className="py-1 font-semibold">
-                  Inscripciones
-                </th>
-                <th scope="col" className="py-1 font-semibold">
-                  Bajas
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((m) => (
-                <tr
-                  key={m.period}
-                  className="border-t border-border text-foreground/80"
-                >
-                  <th scope="row" className="py-1.5 font-medium text-foreground">
-                    {formatPeriod(m.period)}
-                  </th>
-                  <td className="py-1.5">{m.enrolled}</td>
-                  <td className="py-1.5">{m.deactivated}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </SectionCard>
+      {tab === "pagos" && (
+        <BranchPayments branchId={branchId} period={period} />
+      )}
 
+      {tab === "revisar" && (
         <SectionCard
-          title={`Por plan en ${formatPeriod(period)}`}
-          icon="ti-barbell"
+          title="Inconsistencias y datos faltantes"
+          icon="ti-alert-triangle"
         >
-          {byPlan.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No hubo inscripciones ese mes.
-            </p>
+          {toReview.length === 0 ? (
+            <EmptyState
+              icon="ti-circle-check"
+              title="No hay nada para revisar"
+              description="Las inscripciones y los pagos de la sede están completos."
+            />
           ) : (
             <ul className="flex flex-col gap-2">
-              {byPlan.map(({ plan, count }) => (
+              {toReview.map((item) => (
                 <li
-                  key={plan.id}
-                  className="flex items-center justify-between rounded-xl bg-secondary/40 px-4 py-3"
+                  key={item.id}
+                  className="flex items-start gap-3 rounded-xl bg-warning/10 px-4 py-3"
                 >
-                  <span className="text-sm text-foreground">{plan.name}</span>
-                  <span className="text-sm font-bold text-primary">
-                    {count} {count === 1 ? "alumno" : "alumnos"}
-                  </span>
+                  <i
+                    className={cn(
+                      "ti mt-0.5 text-lg text-warning",
+                      item.paymentId ? "ti-receipt" : "ti-user-exclamation",
+                    )}
+                    aria-hidden="true"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">
+                      {item.title}
+                    </p>
+                    <p className="text-sm text-foreground/80">{item.detail}</p>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
+          <p className="text-xs text-muted-foreground">
+            Secretaría lo completa desde la ficha del alumno o desde Cobros.
+          </p>
         </SectionCard>
-      </div>
+      )}
 
-      <SectionCard
-        title={`Alumnos inscriptos en ${formatPeriod(period)}`}
-        icon="ti-list"
-      >
-        {enrolled.length === 0 ? (
-          <EmptyState
-            icon="ti-user-off"
-            title="No hubo inscripciones ese mes"
-            description="Probá con otro mes."
-          />
-        ) : (
-          <DataTable<Client>
-            columns={columns}
-            data={enrolled}
-            getRowKey={(c) => c.id}
-            gridTemplateClass="grid-cols-[minmax(0,_2fr)_1fr_1fr_1.2fr_1.3fr]"
-            label="Alumnos inscriptos"
-          />
-        )}
-      </SectionCard>
+      {tab === "inscripciones" && (
+        <>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 lg:gap-4">
+            <StatCard
+              icon="ti-user-plus"
+              value={selected.enrolled}
+              label={`Inscripciones de ${shortMonth(period)}`}
+              tone="success"
+            />
+            <StatCard
+              icon="ti-user-minus"
+              value={selected.deactivated}
+              label={`Bajas de ${shortMonth(period)}`}
+              tone="danger"
+            />
+            <StatCard
+              icon="ti-users"
+              value={active}
+              label="Alumnos activos hoy"
+              className="col-span-2 lg:col-span-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1.4fr_1fr]">
+            <SectionCard title="Últimos 6 meses" icon="ti-chart-bar">
+              <ChartContainer
+                config={chartConfig}
+                className="aspect-auto h-64 w-full"
+                aria-hidden="true"
+              >
+                <BarChart data={history} margin={{ left: 0, right: 8 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+                  <YAxis
+                    allowDecimals={false}
+                    width={28}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar
+                    dataKey="enrolled"
+                    isAnimationActive={false}
+                    fill="var(--color-enrolled)"
+                    radius={4}
+                  />
+                  <Bar
+                    dataKey="deactivated"
+                    isAnimationActive={false}
+                    fill="var(--color-deactivated)"
+                    radius={4}
+                  />
+                </BarChart>
+              </ChartContainer>
+              {/* Los mismos datos en una tabla (accesible para lectores de pantalla). */}
+              <table className="w-full text-left text-sm">
+                <caption className="sr-only">
+                  Inscripciones y bajas de los últimos 6 meses
+                </caption>
+                <thead>
+                  <tr className="text-xs text-muted-foreground">
+                    <th scope="col" className="py-1 font-semibold">
+                      Mes
+                    </th>
+                    <th scope="col" className="py-1 font-semibold">
+                      Inscripciones
+                    </th>
+                    <th scope="col" className="py-1 font-semibold">
+                      Bajas
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((m) => (
+                    <tr
+                      key={m.period}
+                      className="border-t border-border text-foreground/80"
+                    >
+                      <th
+                        scope="row"
+                        className="py-1.5 font-medium text-foreground"
+                      >
+                        {formatPeriod(m.period)}
+                      </th>
+                      <td className="py-1.5">{m.enrolled}</td>
+                      <td className="py-1.5">{m.deactivated}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </SectionCard>
+
+            <SectionCard
+              title={`Por plan en ${formatPeriod(period)}`}
+              icon="ti-barbell"
+            >
+              {byPlan.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No hubo inscripciones ese mes.
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {byPlan.map(({ plan, count }) => (
+                    <li
+                      key={plan.id}
+                      className="flex items-center justify-between rounded-xl bg-secondary/40 px-4 py-3"
+                    >
+                      <span className="text-sm text-foreground">
+                        {plan.name}
+                      </span>
+                      <span className="text-sm font-bold text-primary">
+                        {count} {count === 1 ? "alumno" : "alumnos"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </SectionCard>
+          </div>
+
+          <SectionCard
+            title={`Alumnos inscriptos en ${formatPeriod(period)}`}
+            icon="ti-list"
+          >
+            {enrolled.length === 0 ? (
+              <EmptyState
+                icon="ti-user-off"
+                title="No hubo inscripciones ese mes"
+                description="Probá con otro mes."
+              />
+            ) : (
+              <DataTable<Client>
+                columns={columns}
+                data={enrolled}
+                getRowKey={(c) => c.id}
+                gridTemplateClass="grid-cols-[minmax(0,_2fr)_1fr_1fr_1.2fr_1.3fr]"
+                label="Alumnos inscriptos"
+              />
+            )}
+          </SectionCard>
+        </>
+      )}
     </div>
   );
 }

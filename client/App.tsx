@@ -48,6 +48,9 @@ const ProfesorReemplazosPage = lazy(
 const ProfesorCronogramaPage = lazy(
   () => import("./pages/ProfesorCronogramaPage"),
 );
+const SecretariaCronogramaPage = lazy(
+  () => import("./pages/SecretariaCronogramaPage"),
+);
 const ProfesorHorasPage = lazy(() => import("./pages/ProfesorHorasPage"));
 const AdminAsistenciaPage = lazy(() => import("./pages/AdminAsistenciaPage"));
 const AdminPersonalPage = lazy(() => import("./pages/AdminPersonalPage"));
@@ -168,6 +171,10 @@ const App = () => (
               />
               <Route path="/secretaria/cobros" element={<PaymentsPage />} />
               <Route path="/secretaria/novedades" element={<NovedadesPage />} />
+              <Route
+                path="/secretaria/cronograma"
+                element={<SecretariaCronogramaPage />}
+              />
               <Route
                 path="/secretaria/observaciones"
                 element={<ObservacionesPage />}

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  debtNotifications,
+  frequentAbsenceNotifications,
+  promotionNotifications,
+  scheduleNotifications,
+  teacherAbsenceNotifications,
   managerNotifications,
   secretaryNotifications,
   studentNotifications,
@@ -283,5 +288,100 @@ describe("avisos de novedades y del encargado (CU 7 de Personal)", () => {
         "Reemplazo rechazado: la clase quedó sin cubrir",
       ].sort(),
     );
+  });
+});
+
+describe("avisos nuevos para encargado y secretaría", () => {
+  it("promociones: avisa las vencidas hace poco y las que vencen pronto", () => {
+    const promos = [
+      {
+        id: "v",
+        name: "Vencida",
+        description: "",
+        percent: 10,
+        active: true,
+        validTo: "2026-10-20",
+      },
+      {
+        id: "vieja",
+        name: "Muy vieja",
+        description: "",
+        percent: 10,
+        active: true,
+        validTo: "2026-08-01",
+      },
+      {
+        id: "pronto",
+        name: "Pronto",
+        description: "",
+        percent: 10,
+        active: true,
+        validTo: "2026-11-05",
+      },
+      {
+        id: "lejos",
+        name: "Lejos",
+        description: "",
+        percent: 10,
+        active: true,
+        validTo: "2026-12-30",
+      },
+    ];
+    const ids = promotionNotifications({
+      promotions: promos,
+      today: "2026-11-02",
+    }).map((n) => n.id);
+    expect(ids.sort()).toEqual(["promo-por-vencer-pronto", "promo-vencida-v"]);
+  });
+
+  it("inasistencias frecuentes: un solo aviso con los nombres", () => {
+    const [n] = frequentAbsenceNotifications({
+      students: [{ clientId: "a", name: "Ana", count: 4 }],
+      today: "2026-11-02",
+      prefix: "sec",
+    });
+    expect(n.title).toBe("1 alumno con inasistencias frecuentes");
+    expect(n.detail).toContain("Ana (4)");
+    expect(
+      frequentAbsenceNotifications({
+        students: [],
+        today: "2026-11-02",
+        prefix: "sec",
+      }),
+    ).toEqual([]);
+  });
+
+  it("cronograma: superposiciones y reemplazos confirmados", () => {
+    const list = scheduleNotifications({
+      changes: [{ id: "rp1", detail: "HIIT", date: "2026-11-01T10:00:00" }],
+      overlaps: [{ id: "x", detail: "Tomás tiene dos clases" }],
+      today: "2026-11-02",
+    });
+    expect(list.map((n) => n.title)).toEqual([
+      "Superposición en el cronograma",
+      "Cambio en el cronograma: reemplazo confirmado",
+    ]);
+  });
+
+  it("ausencias de profesores y deudores del encargado", () => {
+    expect(
+      teacherAbsenceNotifications({
+        absences: [{ id: "a1", detail: "x", date: "2026-11-01" }],
+      })[0].id,
+    ).toBe("ausencia-profe-a1");
+    const clients = [
+      { id: "c1", status: "active" },
+      { id: "c2", status: "active" },
+    ] as Client[];
+    const ids = debtNotifications({
+      branchClients: clients,
+      statusOf: (c) => (c.id === "c1" ? "deudor" : "bloqueado"),
+      today: "2026-11-02",
+      prefix: "enc",
+    }).map((n) => n.id);
+    expect(ids).toEqual([
+      "enc-deudores-2026-11-02-1",
+      "enc-bloqueados-2026-11-02-1",
+    ]);
   });
 });

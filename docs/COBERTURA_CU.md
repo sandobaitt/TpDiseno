@@ -1,6 +1,6 @@
 # Matriz de cobertura de casos de uso
 
-Actualizada al **02/10/2026**, al terminar la Fase 3 (etapas E0 a E15).
+Actualizada al **02/11/2026**: Fase 3 (etapas E0 a E15) y E24, que completó los requisitos del escenario que faltaban (ver la tabla al final).
 
 **Estados:**
 - ✅ **Completo:** cumple el CU de punta a punta, con el actor correcto, dentro de lo que permite un prototipo sin backend.
@@ -30,15 +30,15 @@ El detalle de lo que faltaba en cada CU al empezar está en la versión de este 
 | 1 | Registrar inscripción | Secretaria | ✅ | `/secretaria/alumnos/nuevo` (y `/admin/alumnos/nuevo`) | **Inscripción en 5 pasos:** datos personales, contacto, salud, plan y sede, y confirmación.<br>• DNI y email sin duplicados; avisa apenas se escriben.<br>• Si es menor, pide adulto responsable y autorización firmada.<br>• Peso, estatura, condiciones, antecedentes y DDJJ; certificado opcional.<br>• Muestra la cuota de alta proporcional.<br>• Guarda borrador y registra quién inscribió. | E6 |
 | 2 | Completar DDJJ de salud | Alumno | ✅ | `/alumno` (Mi perfil) | Usa el mismo formulario de la inscripción. El certificado subido queda "Pendiente de revisión": secretaría recibe el aviso y lo marca como revisado en la ficha. | E6, E9 |
 | 3 | Consultar estado de cuenta | Alumno / Secretaria | ✅ | `/alumno/pagos`; ficha del alumno; `/secretaria/cobros` | El estado se calcula desde los pagos y nunca se guarda (`domain/billing.ts`). Muestra:<br>• monto adeudado y fecha límite;<br>• cuotas del mes (proporcionales cuando corresponde);<br>• recibos. | E3, E7, E9 |
-| 4 | Registrar pago de cuota | Secretaria | ✅ | Cobros, ficha y Control de acceso | Cobro sin recargo:<br>• cuotas de la más vieja a la más nueva, con adelanto de hasta 6;<br>• 4 medios de pago;<br>• recibo digital imprimible.<br>El estado cambia en todas las pantallas y queda quién cobró. | E4, E7 |
+| 4 | Registrar pago de cuota | Secretaria | ✅ | Cobros, ficha y Control de acceso | Cobro sin recargo, igual que la realización de Registrar Pagos del TPI 2:<br>• las cuotas se eligen una por una, con adelanto de hasta 6;<br>• 4 medios de pago; con débito, transferencia o QR valida la Entidad Bancaria (puede rechazar: no se registra y se elige otro medio);<br>• recibo digital imprimible.<br>El estado cambia en todas las pantallas y queda quién cobró. | E4, E7, E24 |
 | 5 | Restricción de acceso por deuda | Sistema / Secretaria | ✅ | Ficha (Habilitación) y Control de acceso | **Automática:** bloqueo con 15 días de atraso (constante en `data/rules.ts`).<br>**Manual:** con motivo y registro de quién la aplicó; se ve como "Restringido" en la lista. | E3, E7 |
 | 6 | Gestionar asistencia por clase y sede | Secretaria / Profesor | ✅ | `/secretaria/asistencia`, `/profesor/asistencia` | Lista por clase (día, sede y clase del cronograma):<br>• los bloqueados no se pueden marcar presentes;<br>• se guarda con "último registro";<br>• se corrige hasta 30 días atrás.<br>El profesor ve solo sus clases. | E8 |
 | 7 | Consultar historial de asistencia | Alumno | ✅ | `/alumno` (Mi asistencia) | Muestra asistió, ausencia justificada y ausencia sin justificar, con resumen del mes. Se exporta a CSV o se imprime. | E8 |
 | 8 | Consultar cronograma y plan | Alumno | ✅ | `/alumno/cronograma` | Plan con sus clases. Cronograma semanal con las clases incluidas resaltadas, filtro por sede y "solo mis clases". | E8 |
-| 9 | Aplicar promoción o descuento | Secretaria / Administrador | ✅ | Diálogo de cobro | Promos vigentes, cupones con código y plan familiar, con sus condiciones (efectivo, antigüedad, semestral) y el motivo cuando no aplican. Se aplica una por cobro. La configuración de promos es del grupo de Finanzas (ver notas). | E7 |
+| 9 | Aplicar promoción o descuento | Secretaria / Administrador | ✅ | Diálogo de cobro (también en el pago online del alumno) | Promos vigentes, cupones con código y plan familiar, con sus condiciones (efectivo, antigüedad, semestral) y el motivo cuando no aplican. Se aplica una por cobro. La configuración de promos es del grupo de Finanzas (ver notas). | E7 |
 | 10 | Enviar alerta de vencimiento | Sistema | ✅ | Campana del alumno y `/alumno/ajustes` | Avisos calculados con el estado de cuenta: por vencer, vencida y acceso suspendido. Se marcan como leídos y las preferencias se guardan. | E9 |
 | 11 | Alta, baja y modificación de alumno | Administrador | ✅ | `/admin/alumnos` | Alta con el formulario de inscripción y modificación validada. Baja lógica con motivo y confirmación. Al reactivar no se cobran los meses de baja. | E10 |
-| 12 | Consultar inscripciones por sede | Encargado | ✅ | `/encargado/inscripciones` | Altas y bajas por mes, gráfico de 6 meses (con tabla accesible), detalle por plan y quién inscribió. Solo consulta. | E10 |
+| 12 | Consultar inscripciones por sede | Encargado | ✅ | `/encargado/inscripciones` | Altas y bajas por mes, gráfico de 6 meses (con tabla accesible), detalle por plan y quién inscribió. Pestañas Pagos (los de la sede) y Para revisar (inconsistencias). Solo consulta. | E10, E24 |
 | 13 | Verificar habilitación para clase | Sistema / Secretaria | ✅ | `/secretaria/acceso` y asistencia por clase | Se busca por DNI o nombre, con una clase de hoy opcional. El resultado se ve en grande, con texto e ícono: si puede entrar y por qué no (deuda, restricción, baja o clase fuera del plan). | E7, E8 |
 | 14 | Enviar notificación a alumnos | Secretaria | ✅ | `/secretaria/comunicaciones` | Plantillas y destinatarios (todos, sede, plan, por vencer, deudores o un alumno), con vista previa y cantidad. El mensaje llega con el nombre de cada alumno; tiene historial con destinatarios y borrador. | E9 |
 
@@ -58,6 +58,26 @@ El detalle de lo que faltaba en cada CU al empezar está en la versión de este 
 | 10 | Detectar diferencias con el cronograma | Sistema | ✅ | `/profesor/horas` y asistencia docente | El profesor ve un aviso cuando le faltan horas. El encargado y el admin ven "Horas por profesor", con una insignia si hay diferencia. | E12 |
 
 ---
+
+## Requisitos del escenario (sección 3.1)
+
+Además de los CU, se controlaron uno por uno los requisitos del escenario que le tocan al grupo. Los pasos para mostrar cada uno en la web están en [`docs/guia-requisitos.html`](guia-requisitos.html).
+
+| Requisito | Actor | Dónde | Qué se agregó en E24 |
+|---|---|---|---|
+| 3.1.1 Altas, bajas y modificaciones de usuarios | Administrador | `/admin/alumnos`, `/admin/personal` | Alta de personal, validación y registro de actividad |
+| 3.1.6 Inscripciones y pagos de la sede | Encargado | `/encargado/inscripciones` | Pestañas Pagos y Para revisar, con aviso |
+| 3.1.7 Asistencia de profesores | Encargado | `/encargado/asistencia` | Aviso de ausencias sin justificar |
+| 3.1.8 Alertas al encargado | Encargado | Campana | Deudores, promociones vencidas, reemplazos confirmados y superposiciones |
+| 3.1.9 Novedades internas | Encargado / Secretaria | `/encargado/novedades` | — |
+| 3.1.11 a 3.1.14 Inscripción, asistencia, cobro y estado de cuenta | Secretaria | Gestión de alumnos, Asistencia, Cobros | Cobro alineado con el TPI 2 (cuotas de a una, Entidad Bancaria) |
+| 3.1.16 Observaciones de turno | Secretaria | `/secretaria/observaciones` | Carga por turno, área y persona; aviso al encargado y al admin |
+| 3.1.17 Cronogramas | Secretaria | `/secretaria/cronograma` | Pantalla nueva con detalle de clase, cambios y superposiciones |
+| 3.1.18 Notificaciones a alumnos | Secretaria | `/secretaria/comunicaciones` | — |
+| 3.1.19 a 3.1.23 Cronograma, asistencia, reemplazos, observaciones y horas | Profesor | Menú del profesor | Aviso de superposición al aceptar un reemplazo; aviso de inasistencias frecuentes |
+| 3.1.24 a 3.1.28 Cuenta y pago, plan, alertas, asistencia y DDJJ | Alumno | Menú del alumno | Promociones en el pago online |
+
+Fuera del alcance del grupo: 3.1.2 a 3.1.5 (configuración de promociones, estadísticas, auditoría y reglas, del panel del admin), 3.1.10, 3.1.15 y 3.1.8c (kiosco y stock).
 
 ## Limitaciones del prototipo (se aclaran en la defensa)
 

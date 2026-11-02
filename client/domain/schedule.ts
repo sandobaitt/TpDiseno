@@ -66,3 +66,25 @@ export function sessionsBetween(
 export function weekDates(weekStart: string): string[] {
   return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 }
+
+/**
+ * Superposiciones del cronograma: un mismo profesor con dos clases que se pisan
+ * el mismo día (por ejemplo, al aceptar un reemplazo en el horario de una clase
+ * propia). Devuelve cada par una sola vez.
+ */
+export function findOverlaps(sessions: Session[]): [Session, Session][] {
+  const sorted = [...sessions].sort((a, b) =>
+    (a.date + a.start).localeCompare(b.date + b.start),
+  );
+  const pairs: [Session, Session][] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = i + 1; j < sorted.length; j++) {
+      const a = sorted[i];
+      const b = sorted[j];
+      if (b.date !== a.date) break;
+      if (a.teacherId === b.teacherId && b.start < a.end && a.start < b.end)
+        pairs.push([a, b]);
+    }
+  }
+  return pairs;
+}

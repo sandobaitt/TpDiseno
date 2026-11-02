@@ -1,8 +1,16 @@
-import { ADULT_AGE } from "@/data/rules";
+import { ADULT_AGE, ENROLLMENT_GRACE_DAYS } from "@/data/rules";
+import type { Payment } from "@/data/payments";
 import type { Attachment, Client } from "@/data/clients";
 import type { HealthConditionId } from "@/data/health";
 import type { Plan } from "@/data/plans";
-import { addDays, ageOn, daysInPeriod, toPeriod } from "@/lib/dates";
+import {
+  addDays,
+  ageOn,
+  daysInPeriod,
+  diffDays,
+  formatDate,
+  toPeriod,
+} from "@/lib/dates";
 import type { FileMeta } from "@/lib/files";
 import { cleanText, formatDni, normalizeText, onlyDigits } from "@/lib/format";
 import { dueDateFor, proratedAmount } from "./billing";
@@ -474,4 +482,103 @@ export function branchEnrollmentHistory(
       (c) => !!c.deactivatedAt && toPeriod(c.deactivatedAt) === period,
     ).length,
   }));
+}
+
+/** Algo que no cierra en una inscripción o un pago de la sede (requisito 3.1.6c). */
+export interface Inconsistency {
+  id: string;
+  kind:
+    | "ddjj"
+    | "autorizacion"
+    | "alta_impaga"
+    | "contacto"
+    | "pago_descuento"
+    | "pago_monto";
+  clientId: string;
+  paymentId?: string;
+  title: string;
+  detail: string;
+}
+
+/**
+ * Inconsistencias o datos faltantes en las inscripciones y los pagos de una
+ * sede, para el encargado (requisito 3.1.6c). Recibe los alumnos y los pagos
+ * de esa sede.
+ */
+export function branchInconsistencies(
+  clients: Client[],
+  payments: Payment[],
+  today: string,
+): Inconsistency[] {
+  const list: Inconsistency[] = [];
+  const paidClients = new Set(
+    payments
+      .filter((p) => p.status === "approved" && p.concept === "membership")
+      .map((p) => p.clientId),
+  );
+  for (const c of clients) {
+    if (c.status !== "active") continue;
+    if (!c.health?.signedAt)
+      list.push({
+        id: `ddjj-${c.id}`,
+        kind: "ddjj",
+        clientId: c.id,
+        title: "Falta la declaración jurada de salud",
+        detail: `${c.fullName} todavía no la firmó.`,
+      });
+    if (
+      isMinor(c.birthDate, today) &&
+      !(c.attachments ?? []).some((d) => d.kind === "autorizacion")
+    )
+      list.push({
+        id: `autorizacion-${c.id}`,
+        kind: "autorizacion",
+        clientId: c.id,
+        title: "Menor sin autorización del adulto responsable",
+        detail: `${c.fullName} es menor de edad y no tiene la autorización firmada.`,
+      });
+    if (
+      !paidClients.has(c.id) &&
+      diffDays(c.enrolledAt, today) > ENROLLMENT_GRACE_DAYS
+    )
+      list.push({
+        id: `alta-${c.id}`,
+        kind: "alta_impaga",
+        clientId: c.id,
+        title: "Inscripción sin la cuota de alta pagada",
+        detail: `${c.fullName} empezó el ${formatDate(c.enrolledAt)} y no registra ningún pago (el plazo es de ${ENROLLMENT_GRACE_DAYS} días).`,
+      });
+    if (!c.phone?.trim())
+      list.push({
+        id: `contacto-${c.id}`,
+        kind: "contacto",
+        clientId: c.id,
+        title: "Falta el celular de contacto",
+        detail: `La ficha de ${c.fullName} no tiene celular.`,
+      });
+  }
+  const nameOf = (id: string) =>
+    clients.find((c) => c.id === id)?.fullName ?? "un alumno";
+  for (const p of payments) {
+    if (p.status !== "approved") continue;
+    if (p.discountArs > 0 && !p.promoId)
+      list.push({
+        id: `pago-descuento-${p.id}`,
+        kind: "pago_descuento",
+        clientId: p.clientId,
+        paymentId: p.id,
+        title: "Pago con descuento sin promoción",
+        detail: `El recibo ${p.receiptNumber} de ${nameOf(p.clientId)} tiene un descuento que no corresponde a ninguna promoción.`,
+      });
+    if (p.amountArs !== p.subtotalArs - p.discountArs)
+      list.push({
+        id: `pago-monto-${p.id}`,
+        kind: "pago_monto",
+        clientId: p.clientId,
+        paymentId: p.id,
+        title: "El total del pago no coincide",
+        detail: `En el recibo ${p.receiptNumber} de ${nameOf(p.clientId)}, el total no es el subtotal menos el descuento.`,
+      });
+  }
+  return list;
 }

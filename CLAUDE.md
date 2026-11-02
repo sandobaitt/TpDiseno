@@ -156,6 +156,9 @@ La migración por módulo terminó en E14: ya no quedan carpetas viejas.
 | `components/alumnos/StudentsDashboard` + `profile/StudentProfile` | Lista y ficha del alumno. Se reusan para secretaría (`variant="secretaria"`) y admin (`variant="admin"`); lo que se puede hacer sale de `studentCapabilities(rol)`. |
 | `components/personal/attendance/` | `ShiftRegister` (registrar turnos de profesores) y `TeacherAttendanceBoard` (semana programada contra registrada, con confirmar y corregir). Reglas en `domain/teacherAttendance.ts`. |
 | `components/personal/` | Novedades (`novedades/`), horas del profesor (`hours/MyHours`), observaciones (`observations/`) y asistencia de profesores (`attendance/`). |
+| `components/cronograma/StaffSchedule` | Cronograma de la sede para el personal (secretaría): filtros, detalle de clase, cambios y superposiciones. Usa `findOverlaps` de `domain/schedule.ts`. |
+| `domain/bank.ts` | Validación del pago con la Entidad Bancaria (medios digitales), como en Registrar Pagos del TPI 2. La usa `CheckoutPanel`. |
+| `domain/staff.ts` | Validación del personal (alta y modificación) en Gestión de personal. |
 | `domain/enrollment.ts` | Validaciones de alumno (DNI, email, celular, fecha de nacimiento, DDJJ), duplicados, menores, cuota de alta y estado del legajo. Se usan en la inscripción y al editar. |
 | `lib/dates.ts` | `toLocalISODate`, `todayISO` y `nowISO`. No usar `toISOString()` para fechas sin hora. |
 | `hooks/use-draft.ts` | Borradores de formularios guardados en el navegador: `useDraft` para pantallas y `dialogDraft` para diálogos que se abren y cierran. |

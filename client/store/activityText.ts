@@ -37,6 +37,13 @@ export const activityText = {
     `Anuló la novedad sobre ${entityName}: ${reason}`,
   sendCommunication: (subject: string, count: number) =>
     `Envió «${subject}» a ${count} ${count === 1 ? "alumno" : "alumnos"}`,
+  paymentRejected: (
+    name: string,
+    amountArs: number,
+    method: Payment["method"],
+    reason: string,
+  ) =>
+    `La entidad bancaria rechazó el pago de ${name}: ${formatARS(amountArs)} (${PAYMENT_METHOD_LABELS[method]}). Motivo: ${reason}. No se registró`,
   payment: (payment: Payment, name: string) =>
     `${payment.status === "approved" ? "Registró el pago" : "Pago rechazado"} ${payment.receiptNumber} de ${name}: ${formatARS(payment.amountArs)} (${PAYMENT_METHOD_LABELS[payment.method]})`,
 };

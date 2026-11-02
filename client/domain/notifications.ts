@@ -3,6 +3,14 @@ import type { Communication } from "@/data/communications";
 import type { Payment } from "@/data/payments";
 import type { Novedad } from "@/data/novedades";
 import type { Replacement } from "@/data/replacements";
+import type { Promotion } from "@/data/promotions";
+import {
+  DEBT_BLOCK_DAYS,
+  FREQUENT_ABSENCES,
+  FREQUENT_ABSENCES_WINDOW_DAYS,
+  PROMO_EXPIRED_ALERT_DAYS,
+  PROMO_EXPIRING_ALERT_DAYS,
+} from "@/data/rules";
 import type { AccountSummary } from "./billing";
 import { personalize } from "./communications";
 import { diffDays, formatDate, toPeriod } from "@/lib/dates";
@@ -38,6 +46,11 @@ const RECENT_PAYMENT_DAYS = 7;
 
 const byNewest = (a: AppNotification, b: AppNotification) =>
   b.date.localeCompare(a.date);
+
+/** Ordena avisos de distintas fuentes: el más nuevo primero. */
+export function sortNotifications(list: AppNotification[]): AppNotification[] {
+  return [...list].sort(byNewest);
+}
 
 /** Avisos del alumno: cuota (por vencer, vencida, acceso suspendido), legajo, pagos y comunicaciones. */
 export function studentNotifications(input: {
@@ -163,32 +176,19 @@ export function secretaryNotifications(input: {
   const { branchClients, statusOf, novedades, today } = input;
   const list: AppNotification[] = [];
   const active = branchClients.filter((c) => c.status === "active");
-  const overdue = active.filter((c) => statusOf(c) === "deudor").length;
-  const blocked = active.filter((c) => statusOf(c) === "bloqueado").length;
   const pendingDocs = active.filter((c) =>
     c.attachments?.some((d) => d.status === "pending"),
   );
 
-  if (overdue > 0)
-    list.push({
-      id: `sec-deudores-${today}-${overdue}`,
-      tone: "warning",
-      icon: "ti-alert-triangle",
-      title: `${overdue} ${overdue === 1 ? "alumno con la cuota vencida" : "alumnos con la cuota vencida"} en tu sede`,
-      detail: "Todavía pueden ingresar. Se bloquean a los 15 días de atraso.",
-      date: today,
+  list.push(
+    ...debtNotifications({
+      branchClients,
+      statusOf,
+      today,
+      prefix: "sec",
       link: "/secretaria/cobros",
-    });
-  if (blocked > 0)
-    list.push({
-      id: `sec-bloqueados-${today}-${blocked}`,
-      tone: "danger",
-      icon: "ti-lock",
-      title: `${blocked} ${blocked === 1 ? "alumno bloqueado" : "alumnos bloqueados"} por deuda`,
-      detail: "No pueden ingresar hasta que paguen.",
-      date: today,
-      link: "/secretaria/cobros",
-    });
+    }),
+  );
   for (const client of pendingDocs) {
     list.push({
       id: `sec-documento-${client.id}`,
@@ -202,6 +202,188 @@ export function secretaryNotifications(input: {
   }
   list.push(...novedadNotifications(novedades, "/secretaria/novedades"));
   return list.sort(byNewest);
+}
+
+/**
+ * Alumnos con la cuota vencida o bloqueados de una sede (secretaría y, por el
+ * requisito 3.1.8a, también el encargado).
+ */
+export function debtNotifications(input: {
+  branchClients: Client[];
+  statusOf: (client: Client) => AccountSummary["status"];
+  today: string;
+  /** Prefijo del id del aviso (cada rol lo marca como leído por separado). */
+  prefix: string;
+  link?: string;
+}): AppNotification[] {
+  const { branchClients, statusOf, today, prefix, link } = input;
+  const active = branchClients.filter((c) => c.status === "active");
+  const overdue = active.filter((c) => statusOf(c) === "deudor").length;
+  const blocked = active.filter((c) => statusOf(c) === "bloqueado").length;
+  const list: AppNotification[] = [];
+  if (overdue > 0)
+    list.push({
+      id: `${prefix}-deudores-${today}-${overdue}`,
+      tone: "warning",
+      icon: "ti-alert-triangle",
+      title: `${overdue} ${overdue === 1 ? "alumno con la cuota vencida" : "alumnos con la cuota vencida"} en tu sede`,
+      detail: `Todavía pueden ingresar. Se bloquean a los ${DEBT_BLOCK_DAYS} días de atraso.`,
+      date: today,
+      link,
+    });
+  if (blocked > 0)
+    list.push({
+      id: `${prefix}-bloqueados-${today}-${blocked}`,
+      tone: "danger",
+      icon: "ti-lock",
+      title: `${blocked} ${blocked === 1 ? "alumno bloqueado" : "alumnos bloqueados"} por deuda`,
+      detail: "No pueden ingresar hasta que paguen.",
+      date: today,
+      link,
+    });
+  return list;
+}
+
+/**
+ * Alumnos que faltan seguido sin justificar (requisito 3.1.20c): un solo aviso
+ * con los nombres, para secretaría y el encargado de la sede.
+ */
+export function frequentAbsenceNotifications(input: {
+  students: { clientId: string; name: string; count: number }[];
+  today: string;
+  prefix: string;
+  link?: string;
+}): AppNotification[] {
+  const { students, today, prefix, link } = input;
+  if (students.length === 0) return [];
+  const names = students
+    .slice(0, 4)
+    .map((s) => `${s.name} (${s.count})`)
+    .join(", ");
+  const more = students.length > 4 ? ` y ${students.length - 4} más` : "";
+  return [
+    {
+      id: `${prefix}-inasistencias-${today}-${students.map((s) => s.clientId).join("-")}`,
+      tone: "warning",
+      icon: "ti-user-exclamation",
+      title: `${students.length} ${students.length === 1 ? "alumno con inasistencias frecuentes" : "alumnos con inasistencias frecuentes"}`,
+      detail: `${names}${more}: faltaron sin justificar ${FREQUENT_ABSENCES} veces o más en los últimos ${FREQUENT_ABSENCES_WINDOW_DAYS} días.`,
+      date: today,
+      link,
+    },
+  ];
+}
+
+/**
+ * Cambios en el cronograma (requisitos 3.1.8b y 3.1.17c): reemplazos
+ * confirmados y superposiciones de horario de un profesor.
+ */
+export function scheduleNotifications(input: {
+  /** Reemplazos confirmados de clases que todavía no se dieron. */
+  changes: { id: string; detail: string; date: string }[];
+  /** Un mismo profesor con dos clases a la vez. */
+  overlaps: { id: string; detail: string }[];
+  today: string;
+  link?: string;
+}): AppNotification[] {
+  const { changes, overlaps, today, link } = input;
+  return [
+    ...overlaps.map((o) => ({
+      id: `superposicion-${o.id}`,
+      tone: "danger" as const,
+      icon: "ti-alert-triangle",
+      title: "Superposición en el cronograma",
+      detail: o.detail,
+      date: today,
+      link,
+    })),
+    ...changes.map((c) => ({
+      id: `cambio-${c.id}`,
+      tone: "info" as const,
+      icon: "ti-arrows-exchange",
+      title: "Cambio en el cronograma: reemplazo confirmado",
+      detail: c.detail,
+      date: c.date,
+      link,
+    })),
+  ].sort(byNewest);
+}
+
+/**
+ * Promociones vencidas hace poco o por vencer (requisito 3.1.8a), para que el
+ * encargado lo sepa antes de que la secretaría intente aplicarlas.
+ */
+export function promotionNotifications(input: {
+  promotions: Promotion[];
+  today: string;
+  link?: string;
+}): AppNotification[] {
+  const { promotions, today, link } = input;
+  const list: AppNotification[] = [];
+  for (const p of promotions) {
+    if (!p.active || !p.validTo) continue;
+    const left = diffDays(today, p.validTo);
+    const label = p.code ? `${p.name} (${p.code})` : p.name;
+    if (left < 0 && -left <= PROMO_EXPIRED_ALERT_DAYS)
+      list.push({
+        id: `promo-vencida-${p.id}`,
+        tone: "neutral",
+        icon: "ti-discount-off",
+        title: `Promoción vencida: ${label}`,
+        detail: `Venció el ${formatDate(p.validTo)}. Ya no se ofrece al cobrar.`,
+        date: p.validTo,
+        link,
+      });
+    else if (left >= 0 && left <= PROMO_EXPIRING_ALERT_DAYS)
+      list.push({
+        id: `promo-por-vencer-${p.id}`,
+        tone: "warning",
+        icon: "ti-discount",
+        title: `Promoción por vencer: ${label}`,
+        detail: `Vence el ${formatDate(p.validTo)}.`,
+        date: today,
+        link,
+      });
+  }
+  return list.sort(byNewest);
+}
+
+/** Inconsistencias o datos faltantes en inscripciones y pagos (requisito 3.1.6c). */
+export function inconsistencyNotifications(input: {
+  count: number;
+  today: string;
+  link?: string;
+}): AppNotification[] {
+  if (input.count === 0) return [];
+  return [
+    {
+      id: `inconsistencias-${input.today}-${input.count}`,
+      tone: "warning",
+      icon: "ti-file-alert",
+      title: `${input.count} ${input.count === 1 ? "dato para revisar" : "datos para revisar"} en inscripciones y pagos`,
+      detail: "Fichas incompletas o pagos que no cierran en tu sede.",
+      date: input.today,
+      link: input.link,
+    },
+  ];
+}
+
+/** Ausencias de profesores sin justificar (requisito 3.1.7c), para el encargado. */
+export function teacherAbsenceNotifications(input: {
+  absences: { id: string; detail: string; date: string }[];
+  link?: string;
+}): AppNotification[] {
+  return input.absences
+    .map((a) => ({
+      id: `ausencia-profe-${a.id}`,
+      tone: "danger" as const,
+      icon: "ti-user-off",
+      title: "Ausencia de un profesor sin justificar",
+      detail: a.detail,
+      date: a.date,
+      link: input.link,
+    }))
+    .sort(byNewest);
 }
 
 /** Novedades en curso (secretaría, encargado y admin). */
@@ -283,6 +465,34 @@ export function teacherNotifications(input: {
 }
 
 /**
+ * Observaciones recientes (de profesores o de secretaría) para el encargado de
+ * la sede y, las que lo piden, para el administrador (requisito 3.1.16c).
+ */
+export function observationNotifications(input: {
+  observations: {
+    id: string;
+    title: string;
+    teacherName: string;
+    date: string;
+  }[];
+  today: string;
+  link: string;
+}): AppNotification[] {
+  return input.observations
+    .filter((o) => diffDays(o.date.slice(0, 10), input.today) <= RECENT_DAYS)
+    .map((o) => ({
+      id: `observacion-${o.id}`,
+      tone: "info" as const,
+      icon: "ti-notes",
+      title: `Observación de ${o.teacherName}`,
+      detail: o.title,
+      date: o.date,
+      link: input.link,
+    }))
+    .sort(byNewest);
+}
+
+/**
  * Avisos del encargado de su sede: novedades en curso, reemplazos rechazados
  * (la clase quedó sin cubrir), observaciones nuevas y turnos para confirmar.
  */
@@ -313,18 +523,13 @@ export function managerNotifications(input: {
       link: "/encargado/asistencia",
     });
   }
-  for (const o of observations) {
-    if (diffDays(o.date.slice(0, 10), today) > RECENT_DAYS) continue;
-    list.push({
-      id: `observacion-${o.id}`,
-      tone: "info",
-      icon: "ti-notes",
-      title: `Observación de ${o.teacherName}`,
-      detail: o.title,
-      date: o.date,
+  list.push(
+    ...observationNotifications({
+      observations,
+      today,
       link: "/encargado/observaciones",
-    });
-  }
+    }),
+  );
   if (toConfirm > 0)
     list.push({
       id: `turnos-para-confirmar-${today}-${toConfirm}`,

@@ -9,6 +9,7 @@ import { replacementsMock, type Replacement } from "@/data/replacements";
 import { novedadesMock, type Novedad } from "@/data/novedades";
 import { bitacorasMock, type Bitacora } from "@/data/bitacoras";
 import { communicationsMock, type Communication } from "@/data/communications";
+import { employeesMock, type Employee } from "@/data/employees";
 import type { ActivityEntry } from "./actions";
 import { activityText } from "./activityText";
 
@@ -25,6 +26,8 @@ export interface AppState {
   novedades: Novedad[];
   bitacoras: Bitacora[];
   communications: Communication[];
+  /** Personal administrativo (secretaría y encargados): lo administra el admin (3.1.1). */
+  staff: Employee[];
   /** Avisos que cada usuario ya marcó como leídos (id de usuario → ids de aviso). */
   notificationReads: Record<string, string[]>;
   /** Registro de actividad: quién hizo qué y cuándo (en memoria). */
@@ -147,6 +150,7 @@ export function createSeedState(): AppState {
     replacements: [...replacementsMock],
     novedades: [...novedadesMock],
     bitacoras: [...bitacorasMock],
+    staff: [...employeesMock],
     communications: [...communicationsMock],
     notificationReads: {},
     activity: seedActivity(clientsMock, paymentsMock, communicationsMock),

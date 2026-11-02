@@ -1,5 +1,7 @@
 import type { TeacherAttendance } from "@/data/teacherAttendance";
 import type { Session } from "./schedule";
+import { TEACHER_ABSENCE_ALERT_DAYS } from "@/data/rules";
+import { diffDays } from "@/lib/dates";
 
 /**
  * Asistencia de profesores por turno (CU 1 a 3 de Personal): lo programado en
@@ -18,6 +20,9 @@ export const SHIFT_STATE_LABELS: Record<ShiftState, string> = {
   sin_registrar: "Sin registrar",
   programada: "Programada",
 };
+
+/** Motivo que queda cuando se marca una ausencia sin decir por qué (ausencia sin justificar). */
+export const NO_REASON = "Sin motivo";
 
 export const ABSENCE_REASONS = [
   "Enfermedad",
@@ -72,4 +77,21 @@ export function shiftStats(rows: ShiftRow[]): ShiftStats {
     unregistered: rows.filter((r) => r.state === "sin_registrar").length,
     toConfirm: rows.filter((r) => r.record && !r.record.confirmedAt).length,
   };
+}
+
+/**
+ * Ausencias de profesores sin justificar de los últimos días (requisito
+ * 3.1.7c): se le avisan al encargado de la sede.
+ */
+export function unjustifiedTeacherAbsences(
+  records: TeacherAttendance[],
+  today: string,
+  days = TEACHER_ABSENCE_ALERT_DAYS,
+): TeacherAttendance[] {
+  return records.filter((r) => {
+    if (r.status !== "absent") return false;
+    if (r.reason && r.reason !== NO_REASON) return false;
+    const ago = diffDays(r.date, today);
+    return ago >= 0 && ago <= days;
+  });
 }

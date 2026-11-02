@@ -51,7 +51,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
         id: "schedule",
         label: "Cronogramas",
         iconClassName: "ti ti-calendar",
-        disabled: true,
+        to: "/secretaria/cronograma",
       },
       {
         id: "news",
@@ -90,7 +90,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
       },
       {
         id: "enrollments",
-        label: "Inscripciones de mi sede",
+        label: "Inscripciones y pagos",
         iconClassName: "ti ti-user-plus",
         to: "/encargado/inscripciones",
       },
@@ -132,7 +132,7 @@ const roleNavigation: Record<AppUserRole, RoleNavConfig> = {
       },
       {
         id: "observations",
-        label: "Observaciones de profesores",
+        label: "Observaciones",
         iconClassName: "ti ti-notes",
         to: "/admin/observaciones",
       },

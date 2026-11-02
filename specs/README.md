@@ -5,7 +5,7 @@ Cada archivo describe **una funcionalidad** que se construyó y verificó durant
 - **dónde está**: ruta, página, componentes, reglas de negocio, datos y acciones del store;
 - **cómo se verificó**: tests automáticos, pruebas en el navegador y cómo probarla a mano.
 
-Estado al **02/10/2026**: todas verificadas. Las rutas y los archivos citados se controlaron contra el código (ver "Cómo se mantiene", al final).
+Estado al **02/11/2026**: todas verificadas (E24 sumó lo que faltaba de los requisitos del escenario). Las rutas y los archivos citados se controlaron contra el código (ver "Cómo se mantiene", al final).
 
 Los usuarios de prueba están en el [README](../README.md). La matriz por caso de uso está en [`docs/COBERTURA_CU.md`](../docs/COBERTURA_CU.md).
 
@@ -24,7 +24,7 @@ Los usuarios de prueba están en el [README](../README.md). La matriz por caso d
 | [Promociones](alumnos/09-promociones.md) | 9 | Diálogo de cobro | ✅ |
 | [Alertas de vencimiento](alumnos/10-alertas-de-vencimiento.md) | 10 | Campana del alumno, `/alumno/ajustes` | ✅ |
 | [Alta, baja y modificación](alumnos/11-abm-de-alumnos.md) | 11 | `/admin/alumnos` | ✅ |
-| [Inscripciones por sede](alumnos/12-inscripciones-por-sede.md) | 12 | `/encargado/inscripciones` | ✅ |
+| [Inscripciones y pagos por sede](alumnos/12-inscripciones-por-sede.md) | 12 (y 3.1.6) | `/encargado/inscripciones` | ✅ |
 | [Comunicaciones](alumnos/14-comunicaciones.md) | 14 | `/secretaria/comunicaciones` | ✅ |
 
 ## Gestión de Personal
@@ -35,8 +35,8 @@ Los usuarios de prueba están en el [README](../README.md). La matriz por caso d
 | [Novedades internas](personal/04-novedades.md) | 4 y 5 | `/encargado/novedades`, `/secretaria/novedades`, `/admin/novedades` | ✅ |
 | [Horas y diferencias](personal/06-horas-y-diferencias.md) | 6 y 10 | `/profesor/horas`; asistencia docente | ✅ |
 | [Reemplazos y avisos](personal/07-reemplazos.md) | 7 y 8 | `/profesor/reemplazos`, `/profesor/cronograma` | ✅ |
-| [Observaciones de jornada](personal/09-observaciones.md) | 9 | `/profesor/asistencia`; `/encargado/observaciones`, `/admin/observaciones` | ✅ |
-| [Directorio de personal](personal/directorio-de-personal.md) | — (pantalla heredada) | `/admin/personal` | ⚪ Sin cambios |
+| [Observaciones de jornada y de turno](personal/09-observaciones.md) | 9 (y 3.1.16) | `/profesor/asistencia`, `/secretaria/observaciones`; `/encargado/observaciones`, `/admin/observaciones` | ✅ |
+| [Gestión de personal](personal/directorio-de-personal.md) | Requisito 3.1.1 | `/admin/personal` | ✅ |
 
 ## Transversales
 
@@ -46,6 +46,7 @@ Los usuarios de prueba están en el [README](../README.md). La matriz por caso d
 | [Store y registro de actividad](transversal/store-y-registro-de-actividad.md) | Flujos conectados; quién, qué y cuándo | ✅ |
 | [Datos de demo y reglas](transversal/datos-de-demo-y-reglas.md) | Datos coherentes y constantes configurables | ✅ |
 | [Centro de avisos](transversal/centro-de-avisos.md) | Campana para todos los roles | ✅ |
+| [Cronogramas de la sede](transversal/cronogramas.md) | Secretaría consulta horarios, profesores, detalle de clase, cambios y superposiciones (3.1.17) | ✅ |
 | [Conexión y borradores](transversal/conexion-y-borradores.md) | Wi-Fi inestable | ✅ |
 | [Diseño y accesibilidad](transversal/diseno-y-accesibilidad.md) | Tema, componentes compartidos, celular y accesibilidad | ✅ |
 | [Rendimiento y calidad](transversal/rendimiento-y-calidad.md) | Carga por pantalla, ESLint y tests | ✅ |

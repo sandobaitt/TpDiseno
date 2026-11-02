@@ -8,6 +8,7 @@ import type {
 import type { Novedad } from "@/data/novedades";
 import type { Bitacora } from "@/data/bitacoras";
 import type { Communication } from "@/data/communications";
+import type { Employee, EmployeeStatus } from "@/data/employees";
 
 /** Tipo de registro afectado (para el registro de actividad). */
 export type ActivityEntity =
@@ -18,7 +19,8 @@ export type ActivityEntity =
   | "reemplazo"
   | "novedad"
   | "observacion"
-  | "comunicacion";
+  | "comunicacion"
+  | "personal";
 
 /** Una línea del registro de actividad: quién, qué y cuándo. */
 export interface ActivityEntry {
@@ -51,6 +53,8 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "client/addAttachment"; clientId: string; attachment: Attachment }
   | { type: "client/reviewAttachment"; clientId: string; attachmentId: string }
   | { type: "payment/register"; payment: Payment }
+  /** La entidad bancaria rechazó el pago: no se registra, solo queda en el registro de actividad. */
+  | { type: "payment/reject"; clientId: string }
   | { type: "attendance/save"; records: StudentAttendance[] }
   | { type: "teacherAttendance/save"; records: TeacherAttendance[] }
   | { type: "teacherAttendance/confirm"; id: string }
@@ -67,5 +71,8 @@ export type StoreAction = { meta: ActionMeta } & (
   | { type: "novedad/annul"; id: string; reason: string }
   | { type: "bitacora/add"; bitacora: Bitacora }
   | { type: "communication/send"; communication: Communication }
+  | { type: "staff/register"; employee: Employee }
+  | { type: "staff/update"; id: string; changes: Partial<Employee> }
+  | { type: "staff/setStatus"; id: string; status: EmployeeStatus }
   | { type: "notification/markRead"; userId: string; ids: string[] }
 );

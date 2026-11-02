@@ -2,11 +2,11 @@
 
 | Módulo | CU | Actores | Etapas | Estado |
 |---|---|---|---|---|
-| Gestión de Alumnos | CU 9 | Secretaria, Administrador | E7, E16 | ✅ Verificado (02/10/2026) |
+| Gestión de Alumnos | CU 9 (Aplicar Promociones del TPI 2) | Secretaria, Administrador (y el alumno al pagar online) | E7, E16, E24 | ✅ Verificado (02/11/2026) |
 
 ## Qué hace
 
-Al cobrar se puede aplicar **una** promoción:
+Al cobrar se puede aplicar **una** promoción. También al pagar el alumno desde la app (requisito 3.1.26b): ve las promociones activas, con el motivo de las que no le corresponden.
 - **promos vigentes:** pago en efectivo, alumno con más de un año, cuota semestral, promo de temporada, etc.;
 - **plan familiar:** si otro integrante de la familia está activo;
 - **cupones con código:** por ejemplo `TRAEUNAMIGO`. Un cupón vencido (`INVIERNO`) se rechaza y se dice por qué.
@@ -33,4 +33,5 @@ Cada promo que no aplica aparece deshabilitada **con el motivo**, por ejemplo "S
 
 - **Tests:** `client/domain/promotions.spec.ts` ("condiciones de las promociones", "cupones y lista").
 - **Navegador:** cobro con "Pago en efectivo" (10 %); al pasar a QR la promo se deshabilita con su motivo; cupón válido e inválido.
+- **Navegador (02/11/2026):** `alumno2@email.com` → "Pagos" → "Pagar": aparecen las promociones; "Pago en efectivo" figura con "Solo pagando en efectivo".
 - **Para probarlo a mano:** cobrá a cualquier deudor y escribí el cupón `TRAEUNAMIGO`, y después `INVIERNO`.

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { sessionsBetween, weekDates } from "./schedule";
+import {
+  findOverlaps,
+  sessionsBetween,
+  weekDates,
+  type Session,
+} from "./schedule";
 import type { ClassSlot } from "@/data/schedule";
 import type { Replacement } from "@/data/replacements";
 
@@ -102,5 +107,40 @@ describe("cronograma semanal", () => {
       "2026-10-03",
       "2026-10-04",
     ]);
+  });
+});
+
+describe("superposiciones del cronograma", () => {
+  const base: Session = {
+    slotId: "x",
+    date: "2026-11-06",
+    start: "08:00",
+    end: "10:00",
+    durationMin: 120,
+    activityId: "ac_musc",
+    branchId: "br_001",
+    capacity: 25,
+    teacherId: "tc_a",
+    originalTeacherId: "tc_a",
+  };
+
+  it("detecta a un profesor con dos clases que se pisan el mismo día", () => {
+    const reemplazo = {
+      ...base,
+      slotId: "y",
+      start: "09:00",
+      end: "09:45",
+      branchId: "br_002",
+      originalTeacherId: "tc_b",
+      replacementId: "rp_1",
+    };
+    expect(findOverlaps([base, reemplazo])).toEqual([[base, reemplazo]]);
+  });
+
+  it("no marca clases seguidas, de otro día o de otro profesor", () => {
+    const seguida = { ...base, slotId: "y", start: "10:00", end: "11:00" };
+    const otroDia = { ...base, slotId: "z", date: "2026-11-07" };
+    const otroProfe = { ...base, slotId: "w", teacherId: "tc_b" };
+    expect(findOverlaps([base, seguida, otroDia, otroProfe])).toEqual([]);
   });
 });

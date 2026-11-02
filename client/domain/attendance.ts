@@ -2,6 +2,8 @@ import type { Client } from "@/data/clients";
 import type { Plan } from "@/data/plans";
 import type { StudentAttendance } from "@/data/attendance";
 import type { Session } from "./schedule";
+import { FREQUENT_ABSENCES, FREQUENT_ABSENCES_WINDOW_DAYS } from "@/data/rules";
+import { diffDays } from "@/lib/dates";
 
 /**
  * Asistencia por clase (CU 6) e historial del alumno (CU 7). Funciones puras.
@@ -88,4 +90,27 @@ function csvCell(value: string): string {
 export function toCsv(header: string[], rows: string[][]): string {
   const lines = [header, ...rows].map((row) => row.map(csvCell).join(";"));
   return `\uFEFF${lines.join("\r\n")}`;
+}
+
+/**
+ * Alumnos con inasistencias frecuentes (requisito 3.1.20c): ausencias sin
+ * justificar en los últimos días. De más a menos ausencias.
+ */
+export function frequentAbsences(
+  records: StudentAttendance[],
+  today: string,
+  threshold = FREQUENT_ABSENCES,
+  windowDays = FREQUENT_ABSENCES_WINDOW_DAYS,
+): { clientId: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const r of records) {
+    if (r.status !== "absent" || r.justified) continue;
+    const ago = diffDays(r.date, today);
+    if (ago < 0 || ago > windowDays) continue;
+    counts.set(r.clientId, (counts.get(r.clientId) ?? 0) + 1);
+  }
+  return [...counts]
+    .filter(([, count]) => count >= threshold)
+    .map(([clientId, count]) => ({ clientId, count }))
+    .sort((a, b) => b.count - a.count);
 }

@@ -1,0 +1,435 @@
+<title>Requisitos en SquatGym</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap">
+<style>
+/* Layout: una columna de lectura; arriba cómo entrar y el resumen, después un requisito por tarjeta y al final la coherencia con el TPI 2. */
+:root {
+  --bg: #f7f8f4;
+  --surface: #ffffff;
+  --surface-2: #f0f2ea;
+  --fg: #16180f;
+  --muted: #5b6052;
+  --line: #dfe3d4;
+  --brand: #3f6212;
+  --brand-soft: #ecf3dc;
+  --ok: #166534; --ok-soft: #e3f3e8;
+  --warn: #9a4a07; --warn-soft: #fbefdf;
+  --bad: #b42318; --bad-soft: #fbe6e3;
+  --display: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121410; --surface: #1a1d16; --surface-2: #22261d; --fg: #eef1e7; --muted: #a3a996; --line: #2f3428;
+    --brand: #a3e635; --brand-soft: #253113;
+    --ok: #6ee7a0; --ok-soft: #13291c; --warn: #fbbf5c; --warn-soft: #2d2210; --bad: #fb8b7e; --bad-soft: #321613;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121410; --surface: #1a1d16; --surface-2: #22261d; --fg: #eef1e7; --muted: #a3a996; --line: #2f3428;
+  --brand: #a3e635; --brand-soft: #253113;
+  --ok: #6ee7a0; --ok-soft: #13291c; --warn: #fbbf5c; --warn-soft: #2d2210; --bad: #fb8b7e; --bad-soft: #321613;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 920px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 36px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 40px); font-weight: 800; }
+h2 { font-size: 22px; font-weight: 800; }
+h3 { font-size: 17px; font-weight: 700; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--brand); }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); }
+.lead { color: var(--muted); font-size: 16px; }
+header { display: flex; flex-direction: column; gap: 10px; }
+section { display: flex; flex-direction: column; gap: 14px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+code, .k { font-family: var(--mono); font-size: 13px; background: var(--surface-2); padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+
+.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.stat b { font-family: var(--display); font-size: 30px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 13px; }
+.stat.ok b { color: var(--ok); } .stat.warn b { color: var(--warn); } .stat.bad b { color: var(--bad); }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.filters .lbl { font-size: 13px; color: var(--muted); margin-right: 4px; }
+.chip { font: inherit; font-size: 13px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 6px 12px; border-radius: 999px; cursor: pointer; min-height: 34px; }
+.chip[aria-pressed="true"] { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+.chip:focus-visible, button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.req { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 16px; }
+.req.parcial { border-left: 4px solid var(--warn); }
+.req.falta { border-left: 4px solid var(--bad); }
+.req-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; justify-content: space-between; }
+.req-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.req-id { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.parcial { background: var(--warn-soft); color: var(--warn); }
+.badge.falta { background: var(--bad-soft); color: var(--bad); }
+.badge.actor { background: var(--surface-2); color: var(--muted); }
+.badge.e2e { background: var(--brand-soft); color: var(--brand); }
+.login { font-size: 13px; color: var(--muted); }
+.cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 18px; }
+.cols h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+ol.steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+ol.steps li::marker { color: var(--brand); font-weight: 700; }
+ul.see { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+ul.see li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 4px; font-size: 14px; }
+ul.see .m { font-weight: 700; }
+ul.see .m.ok { color: var(--ok); } ul.see .m.no { color: var(--bad); } ul.see .m.half { color: var(--warn); }
+.gap { background: var(--warn-soft); color: var(--fg); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.req.falta .gap { background: var(--bad-soft); }
+.gap b { color: var(--warn); } .req.falta .gap b { color: var(--bad); }
+.ui { font-weight: 600; }
+.note { font-size: 13px; color: var(--muted); }
+.diff td:first-child { white-space: nowrap; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.mk { font-weight: 700; white-space: nowrap; }
+.mk.ok { color: var(--ok); } .mk.warn { color: var(--warn); } .mk.bad { color: var(--bad); }
+.empty { color: var(--muted); font-size: 14px; }
+.reqs { display: flex; flex-direction: column; gap: 14px; }
+
+@media (max-width: 720px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .summary { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .stat b { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Gestión de Alumnos y Gestión de Personal · Grupo 2, Los SOLID</span>
+    <h1>Requisitos en SquatGym</h1>
+    <p class="lead">Cada requisito del escenario que le toca a nuestro grupo, con su estado en el prototipo y los pasos exactos para mostrarlo en la web. Verificado en el navegador el 02/11/2026, después de completar lo que faltaba.</p>
+  </header>
+
+  <section aria-labelledby="entrar">
+    <h2 id="entrar">Cómo entrar</h2>
+    <div class="panel">
+      <p>Abrí <a href="https://tp-diseno.vercel.app/" target="_blank" rel="noopener">tp-diseno.vercel.app</a>, tocá <span class="ui">Ingresar</span> y escribí el usuario y la contraseña. Para entrar más rápido, hacé triple clic en <span class="ui">Ingresar</span>: aparece un acceso rápido por rol.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Rol</th><th>Usuario</th><th>Contraseña</th></tr></thead>
+          <tbody>
+            <tr><td>Administrador (Valeria Montes)</td><td><code>admin1@squatgym.com</code></td><td><code>admin123</code></td></tr>
+            <tr><td>Encargado, sede Centro</td><td><code>encargado1@squatgym.com</code></td><td><code>encargado123</code></td></tr>
+            <tr><td>Encargada, sede Norte</td><td><code>encargado2@squatgym.com</code></td><td><code>encargado123</code></td></tr>
+            <tr><td>Secretaría, sede Centro</td><td><code>secre1@squatgym.com</code></td><td><code>secre123</code></td></tr>
+            <tr><td>Profesor</td><td><code>profe1@squatgym.com</code></td><td><code>profe123</code></td></tr>
+            <tr><td>Alumno al día</td><td><code>alumno1@email.com</code></td><td><code>alumno123</code></td></tr>
+            <tr><td>Alumna bloqueada (Laura Gómez)</td><td><code>alumno2@email.com</code></td><td><code>alumno123</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Los datos son simulados y viven en memoria: recargar la página reinicia la demo. Para pasar de un rol a otro sin perder lo que hiciste, cerrá sesión desde el menú del perfil y no recargues.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="resumen">
+    <h2 id="resumen">Resumen</h2>
+    <div class="summary" id="summary"></div>
+    <p class="note">Los requisitos de otros grupos (kiosco y stock, configuración de promociones, reportes, auditoría y reglas de acceso) están al final. Los marcados <span class="badge e2e">probado de punta a punta</span> se recorrieron haciendo clics en el navegador, no solo mirando la pantalla.</p>
+  </section>
+
+  <section aria-labelledby="lista">
+    <h2 id="lista">Requisitos, paso a paso</h2>
+    <div class="filters" role="group" aria-label="Filtrar por actor">
+      <span class="lbl">Actor</span>
+      <button class="chip" data-actor="todos" aria-pressed="true">Todos</button>
+      <button class="chip" data-actor="Administrador" aria-pressed="false">Administrador</button>
+      <button class="chip" data-actor="Encargado" aria-pressed="false">Encargado</button>
+      <button class="chip" data-actor="Secretaria" aria-pressed="false">Secretaria</button>
+      <button class="chip" data-actor="Profesor" aria-pressed="false">Profesor</button>
+      <button class="chip" data-actor="Alumno" aria-pressed="false">Alumno</button>
+    </div>
+    <div class="filters" role="group" aria-label="Filtrar por estado">
+      <span class="lbl">Estado</span>
+      <button class="chip" data-status="todos" aria-pressed="true">Todos</button>
+      <button class="chip" data-status="ok" aria-pressed="false">Cumple</button>
+      <button class="chip" data-status="parcial" aria-pressed="false">Parcial</button>
+      <button class="chip" data-status="falta" aria-pressed="false">Falta</button>
+    </div>
+    <div id="reqs" class="reqs"></div>
+    <p class="empty" id="empty" hidden>No hay requisitos con esos filtros.</p>
+  </section>
+
+  <section aria-labelledby="tpi2">
+    <h2 id="tpi2">Coherencia con el TPI 2</h2>
+    <p>Comparé el prototipo con el diagrama de casos de uso de Secretaria y Profesor y con la realización de <span class="ui">Registrar Pagos</span>, que incluye <span class="ui">Emitir Recibos</span> y la extiende <span class="ui">Aplicar Promociones</span>. El diagrama de secuencia no se tocó: la web se adaptó para que coincida.</p>
+
+    <div class="panel">
+      <h3>Diagrama de casos de uso contra el prototipo</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Caso de uso del diagrama</th><th>Actor</th><th>En el prototipo</th></tr></thead>
+          <tbody>
+            <tr><td>Registrar Pagos (+ Emitir Recibos, Aplicar Promociones)</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Cobros y facturación (3.1.13)</td></tr>
+            <tr><td>Registrar Alumnos</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Inscribir alumno (3.1.11)</td></tr>
+            <tr><td>Editar Datos de Alumnos</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Ficha → Editar datos</td></tr>
+            <tr><td>Restringir Acceso al Alumno</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Ficha → Restringir acceso (3.1.14)</td></tr>
+            <tr><td>Visualizar Estado del Alumno</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Ficha → Resumen y Pagos</td></tr>
+            <tr><td>Gestionar Asistencia Profesor</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Control de asistencia → Profesores</td></tr>
+            <tr><td>Enviar Notificaciones</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Comunicaciones (3.1.18)</td></tr>
+            <tr><td>Registrar Asistencia de Alumnos (+ Verificar Habilitación)</td><td>Secretaria y Profesor</td><td><span class="mk ok">✓ Sí</span> · Control de asistencia y Control de acceso (3.1.12, 3.1.20)</td></tr>
+            <tr><td>Cargar Observaciones</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Observaciones → Nueva observación (3.1.16)</td></tr>
+            <tr><td>Consultar Cronograma (+ Consultar Detalle de Clase)</td><td>Secretaria</td><td><span class="mk ok">✓ Sí</span> · Cronogramas; tocar una clase abre su detalle (3.1.17)</td></tr>
+            <tr><td>Registrar Ventas Kiosco · Actualizar Stock</td><td>Secretaria</td><td>Otro grupo: "Kiosco" está deshabilitado en el menú</td></tr>
+            <tr><td>Visualizar Cronograma de Clases</td><td>Profesor</td><td><span class="mk ok">✓ Sí</span> · Cronograma (3.1.19)</td></tr>
+            <tr><td>Recibir Notificaciones sobre Cambios o Reemplazos</td><td>Profesor</td><td><span class="mk ok">✓ Sí</span> · Campana y Reemplazos (3.1.21)</td></tr>
+            <tr><td>Realizar Observaciones sobre Alumnos o Jornada</td><td>Profesor</td><td><span class="mk ok">✓ Sí</span> · Asistencia y alumnos → Observaciones (3.1.22)</td></tr>
+            <tr><td>Consultar Historial de Horas Trabajadas</td><td>Profesor</td><td><span class="mk ok">✓ Sí</span> · Mis horas (3.1.23)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Registrar Pagos: descripción del caso de uso contra el prototipo</h3>
+      <div class="scroll">
+        <table class="diff">
+          <thead><tr><th>Paso</th><th>Qué dice la descripción</th><th>Qué hace el prototipo</th><th>Coincide</th></tr></thead>
+          <tbody>
+            <tr><td>1–3</td><td>La secretaria elige registrar el pago e ingresa el DNI o el nombre del alumno.</td><td>Cobros y facturación → buscador por nombre o DNI → tocar al alumno.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>4</td><td>Se muestra el estado de cuenta con las cuotas adeudadas y las próximas a vencer, con importe y vencimiento.</td><td>El diálogo <span class="ui">Cobrar cuota</span> muestra el estado (Deudor, Bloqueado…) y cada cuota con importe y vencimiento.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>5</td><td>La secretaria selecciona las cuotas a pagar, <b>una por una</b> (en la secuencia: <code>seleccionarCuota(idCuota)</code> en un loop).</td><td>Cada cuota tiene su casilla: se eligen una por una (las vencidas aparecen primero).</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>6</td><td>El sistema calcula el total y pide el medio de pago (efectivo, débito, transferencia o QR).</td><td>Total actualizado al instante y los 4 medios de pago.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>7–8 (extend)</td><td>Aplicar Promociones: muestra las vigentes con el motivo cuando no corresponden; se elige una y se recalcula.</td><td>Lista de promociones con el motivo de las que no aplican (por ejemplo "Solo pagando en efectivo"). Una por cobro.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>8–9</td><td>Resumen del cobro y confirmación.</td><td>Diálogo <span class="ui">¿Confirmar el cobro?</span> con alumno, cuotas, medio, promoción y total.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>10–11</td><td>El sistema pide a la Entidad Bancaria que valide el pago y esta lo valida.</td><td>Con débito, transferencia o QR aparece "Validando el pago con la entidad bancaria…" y la entidad aprueba. Con efectivo no pasa por el banco.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>11.b</td><td>La Entidad Bancaria rechaza el pago: se informa el motivo y se vuelve al paso 6.</td><td>"La entidad bancaria rechazó el pago" con el motivo; no se registra y "Elegir otro medio de pago" vuelve al paso 6. Para la demo se fuerza con la casilla "(DEMO)".</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>12 (include)</td><td>Se registra el pago, se actualiza el estado de cuenta y se emite el recibo con número, fecha, alumno, cuotas, total, promoción, medio y secretaria.</td><td><span class="ui">Pago registrado</span> con recibo R-00…: alumno, cuotas, subtotal, descuento con el nombre de la promoción, total, medio, fecha y "Registrado por". El estado cambia en todas las pantallas.</td><td><span class="mk ok">Sí</span></td></tr>
+            <tr><td>Emitir Recibos 1–2, 2.a</td><td>Pedir el recibo de un pago registrado; opción de imprimirlo.</td><td>Pagos de hoy → <span class="ui">Recibo</span>, o Ficha → Pagos → <span class="ui">Recibo</span>; botón <span class="ui">Imprimir recibo</span>.</td><td><span class="mk ok">Sí</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Además, en el diseño <code>Alumno.estadoCuenta</code> es un atributo que se actualiza con <code>actualizarEstadoCuenta()</code>. En el prototipo el estado se calcula cada vez desde los pagos. Es la misma idea y se puede defender así: el diseño muestra la responsabilidad del alumno y el prototipo la resuelve calculando.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="otros">
+    <h2 id="otros">Requisitos de otros grupos</h2>
+    <div class="panel">
+      <p>No son parte de nuestro alcance y no se construyeron: 3.1.2 configurar promociones y planes (nosotros solo las aplicamos al cobrar), 3.1.3 estadísticas consolidadas, 3.1.4 auditoría, 3.1.5 reglas de acceso y alertas, 3.1.10 y 3.1.15 kiosco y stock, 3.1.8c alertas de stock, y del 3.1.30 al 3.1.32 reportes, alertas configurables e integración real con medios de pago.</p>
+      <p class="note">Los requisitos generales 3.1.29 (navegador y cualquier pantalla), 3.1.33 (datos compartidos entre sedes: un alumno puede ir a cualquier sede) y 3.1.34 (las sedes son un dato) se cumplen en todo el prototipo.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const S = { ok: "Cumple", parcial: "Parcial", falta: "Falta" };
+const U = {
+  admin: "admin1@squatgym.com · admin123",
+  enc: "encargado1@squatgym.com · encargado123",
+  enc2: "encargado2@squatgym.com · encargado123",
+  sec: "secre1@squatgym.com · secre123",
+  prof: "profe1@squatgym.com · profe123",
+  alu: "alumno1@email.com · alumno123",
+  alu2: "alumno2@email.com · alumno123 (Laura Gómez, bloqueada)",
+};
+// see: [marca, texto]. Marca: "ok" cumple, "half" parcial, "no" falta.
+const REQS = [
+  { id: "3.1.1", actor: "Administrador", title: "Gestionar altas, bajas y modificaciones de usuarios", status: "ok", user: U.admin, e2e: true,
+    steps: [
+      "Alumnos: menú <b>Alumnos</b> → <b>Dar de alta</b>. Completá los 5 pasos (Datos personales, Contacto, Salud, Plan y sede, Confirmar) y tocá <b>Registrar inscripción</b>.",
+      "Para modificar un alumno: tocalo en la lista → <b>Editar datos</b> → <b>Guardar cambios</b>. Para la baja: <b>Dar de baja</b> → motivo → confirmá (queda <b>Inactivo</b> y conserva su historial). Para volver: <b>Reactivar</b>.",
+      "En la ficha del alumno, pestaña <b>Historial</b>: quién hizo cada cosa y cuándo.",
+      "Personal: menú <b>Gestión de personal</b> → <b>Dar de alta</b> → nombre, email, DNI, <b>Cargo</b> (rol) y <b>Sede</b> → <b>Dar de alta</b>. Si el email o el DNI ya existen, avisa.",
+      "Tocá a la persona → <b>Editar</b> (cambiá el cargo o la sede) → <b>Guardar cambios</b>; o <b>Dar de baja</b> → confirmá.",
+      "En su ficha, <b>Historial de cambios</b> muestra cada alta, cambio o baja con fecha y quién lo hizo.",
+    ],
+    see: [["ok", "a. Pantallas para dar de alta, modificar y dar de baja alumnos y personal."], ["ok", "b. Crear, editar y dar de baja, con asignación del cargo (rol) y la sede."], ["ok", "c. Cada acción queda en el registro de actividad y se ve en la ficha."]] },
+  { id: "3.1.6", actor: "Encargado", title: "Consultar inscripciones y pagos de su sede", status: "ok", user: U.enc2, e2e: true,
+    steps: [
+      "Menú <b>Inscripciones y pagos</b>. Elegí el <b>Mes</b> arriba a la derecha.",
+      "Pestaña <b>Inscripciones</b>: altas y bajas del mes, gráfico de 6 meses, por plan y la lista con quién inscribió a cada alumno.",
+      "Pestaña <b>Pagos</b>: total cobrado, cantidad de pagos y cuántos tuvieron promoción. Filtrá por alumno, plan o medio de pago. Tocá un pago para ver su recibo.",
+      "Pestaña <b>Para revisar</b>: lo que no cierra o falta. En Norte aparece la inscripción de Malena Acosta sin la cuota de alta pagada.",
+      "La campana avisa <b>datos para revisar en inscripciones y pagos</b> y lleva a esa pestaña.",
+    ],
+    see: [["ok", "a. Inscripciones y pagos de su sede."], ["ok", "b. Ordenados por fecha, con filtros por alumno y plan (tipo de actividad)."], ["ok", "c. Alertas de inconsistencias y datos faltantes."]] },
+  { id: "3.1.7", actor: "Encargado", title: "Visualizar y controlar la asistencia de profesores", status: "ok", user: U.enc, e2e: true,
+    steps: [
+      "Para tener un turno registrado: entrá como secretaría (<code>secre1</code>) → <b>Control de asistencia</b> → pestaña <b>Profesores</b> → <b>Ausente</b> (el motivo arranca en <b>Sin justificar</b>) → <b>Guardar asistencia</b>. Cerrá sesión desde el menú (no recargues).",
+      "Entrá como encargado. En la <b>campana</b> aparece <b>Ausencia de un profesor sin justificar</b>.",
+      "Menú <b>Asistencia docente</b> → <b>Semana de la sede</b>: indicadores, <b>Horas por profesor</b> y los turnos de cada día. Filtrá por profesor o por empleado/contratado; con <b>Semana anterior</b> ves el historial.",
+      "En el turno registrado: <b>Confirmar</b>, o <b>Confirmar lo registrado</b> para todos.",
+      "Para corregir: <b>Corregir</b> → estado → motivo → guardá (se conserva el valor anterior). Para un turno sin registrar: <b>Registrar</b>.",
+    ],
+    see: [["ok", "a. Cronograma contra asistencia registrada de cada profesor."], ["ok", "b. Confirmar y corregir, con motivo."], ["ok", "c. Avisa las ausencias sin justificar y los cambios de turno (novedades)."]] },
+  { id: "3.1.8", actor: "Encargado", title: "Recibir alertas de deudores, clases reprogramadas o productos agotados", status: "ok", user: U.enc, e2e: true,
+    steps: [
+      "Entrá como encargado y tocá la <b>campana</b> de arriba a la derecha.",
+      "Mirá los avisos: alumnos con la cuota vencida o bloqueados de la sede, <b>Promoción vencida</b> o por vencer, novedades en curso y turnos para confirmar.",
+      "Para ver un cambio de clase: el profesor acepta un reemplazo (3.1.21) → al encargado de esa sede le llega <b>Cambio en el cronograma: reemplazo confirmado</b>; si se pisa con otra clase, <b>Superposición en el cronograma</b>. Si lo rechaza: <b>la clase quedó sin cubrir</b>.",
+    ],
+    see: [["ok", "a. Alumnos con deuda y promociones vencidas."], ["ok", "b. Cambios de clase y reemplazos (confirmados, rechazados y superposiciones)."], ["", "c. Stock del kiosco: es de otro grupo."]] },
+  { id: "3.1.9", actor: "Encargado", title: "Registrar novedades internas", status: "ok", user: U.enc, e2e: false,
+    steps: [
+      "Menú <b>Novedades</b>.",
+      "Elegí el tipo: <b>Ausencia</b>, <b>Incidente</b>, <b>Cambio de turno</b> o <b>General</b>.",
+      "En <b>¿Sobre quién o qué clase?</b> elegí un profesor o una clase de la sede.",
+      "Fecha y hora arrancan en ahora; escribí el <b>Detalle</b>. Si elegiste un profesor, podés marcar <b>Avisarle a …</b> y le llega a su campana.",
+      "Tocá <b>Registrar novedad</b>. Aparece en el historial de abajo, con filtros por tipo, estado y fechas.",
+      "Desde el historial: <b>Marcar resuelta</b>, o <b>Anular</b> con motivo (no se borra).",
+      "Como administrador: menú <b>Historial de novedades</b> (todas las sedes).",
+    ],
+    see: [["ok", "a. Sección para registrar las novedades del día."], ["ok", "b. Se vinculan a un profesor o a una clase."], ["ok", "c. El administrador ve el historial."]] },
+  { id: "3.1.11", actor: "Secretaria", title: "Registrar la inscripción con datos personales y DDJJ de salud", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Gestión de alumnos</b> → <b>Inscribir alumno</b>.",
+      "Paso <b>1 Datos personales</b>: nombre, apellido, DNI y fecha de nacimiento. Probá el DNI <code>34567890</code>: avisa que ya existe. Si es menor de edad, pide el adulto responsable y la autorización firmada. → <b>Siguiente</b>.",
+      "Paso <b>2 Contacto</b>: celular y email (también avisa si el email ya existe). → <b>Siguiente</b>.",
+      "Paso <b>3 Salud</b>: peso, estatura, condiciones, antecedentes y aceptación de la declaración jurada. Podés adjuntar un certificado. → <b>Siguiente</b>.",
+      "Paso <b>4 Plan y sede</b>: plan, sede y fecha de inicio. Muestra la cuota del primer mes proporcional. → <b>Siguiente</b>.",
+      "Paso <b>5 Confirmar</b>: revisá y tocá <b>Registrar inscripción</b>, o <b>Registrar e ir a cobrar</b>.",
+    ],
+    see: [["ok", "a. Datos personales e historial de salud."], ["ok", "b. La declaración jurada queda firmada y guardada en la ficha (Salud y documentos)."], ["ok", "c. Avisa si el DNI o el email ya existen."]] },
+  { id: "3.1.12", actor: "Secretaria", title: "Gestionar la asistencia diaria de alumnos y profesores", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Control de asistencia</b> → pestaña <b>Alumnos por clase</b>.",
+      "Elegí <b>Día</b>, <b>Sede</b> y <b>Clase</b>.",
+      "Marcá <b>Presente</b> o <b>Ausente</b> en cada alumno, o tocá <b>Marcar presentes a los habilitados</b>. Los bloqueados figuran como tales y no se pueden marcar presentes.",
+      "Tocá <b>Guardar asistencia</b>. Queda \"Último registro: quién y cuándo\". Podés corregir clases de hasta 30 días atrás cambiando el día.",
+      "Profesores: pestaña <b>Profesores</b> → <b>Presente</b> o <b>Ausente</b> (motivo, o <b>Sin justificar</b>) → <b>Guardar asistencia</b>.",
+      "Ingreso: menú <b>Control de acceso</b> → escribí <code>38123456</code> → aparece <b>No puede ingresar</b> (Laura Gómez, bloqueada por deuda), con el botón para cobrar.",
+    ],
+    see: [["ok", "a. Listas por clase y horario."], ["ok", "b. Registrar y corregir a mano."], ["ok", "c. No deja ingresar ni marcar presentes a los no habilitados."]] },
+  { id: "3.1.13", actor: "Secretaria", title: "Registrar pagos, emitir recibos y aplicar promociones", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Cobros y facturación</b>.",
+      "En el buscador escribí el nombre o el DNI (por ejemplo, <code>Malena</code>) y tocá al alumno.",
+      "En <b>Cuotas a cobrar</b> marcá una por una las cuotas que paga (las vencidas aparecen primero). Con <b>Ver más meses para adelantar</b> podés sumar cuotas futuras.",
+      "En <b>Promoción</b>: elegí una. Las que no corresponden muestran el motivo.",
+      "En <b>Medio de pago</b>: <b>Efectivo</b>, <b>Débito</b>, <b>Transferencia</b> o <b>QR</b>. El total se actualiza.",
+      "Tocá <b>Cobrar $…</b> → revisá <b>¿Confirmar el cobro?</b> → <b>Confirmar</b>.",
+      "Con débito, transferencia o QR aparece <b>Validando el pago con la entidad bancaria…</b>. Si aprueba: <b>Pago registrado</b> con el recibo (<b>Imprimir recibo</b> o <b>Listo</b>).",
+      "Para mostrar el rechazo: antes de confirmar, marcá <b>Simular que la entidad rechaza el pago (DEMO)</b>. Aparece el motivo, no se registra nada y <b>Elegir otro medio de pago</b> vuelve al cobro.",
+      "Para ver recibos después: pestaña <b>Pagos de hoy</b> → <b>Recibo</b>.",
+    ],
+    see: [["ok", "a. Pagos en efectivo, débito, transferencia o QR, validados por la entidad bancaria cuando son digitales."], ["ok", "b. Recibo digital con número, fecha, monto, medio y quién cobró."], ["ok", "c. Promociones y cupones, una por cobro, con el motivo cuando no aplican."]] },
+  { id: "3.1.14", actor: "Secretaria", title: "Ver el estado de cuenta y aplicar restricciones por deuda", status: "ok", user: U.sec,
+    steps: [
+      "Menú <b>Gestión de alumnos</b> → tocá a <b>Laura Gómez</b>.",
+      "Pestaña <b>Resumen</b>: estado de cuenta (Bloqueado, monto y días de atraso) y <b>Habilitación para ingresar</b>.",
+      "Pestaña <b>Pagos</b>: historial de pagos con su <b>Recibo</b>.",
+      "Restricción manual: <b>Restringir acceso</b> → escribí el motivo → confirmá. En la lista aparece como \"Restringido\".",
+      "Alertas: volvé a <b>Gestión de alumnos</b> → <b>Enviar alerta a deudores</b>. Les llega a la campana a los que deben.",
+    ],
+    see: [["ok", "a. Historial de pagos por alumno."], ["ok", "b. Estado calculado: al día, por vencer, deudor o bloqueado (a los 15 días de atraso)."], ["ok", "c. Alertas a los alumnos con pagos pendientes."]] },
+  { id: "3.1.16", actor: "Secretaria", title: "Cargar observaciones diarias y comunicarlas al encargado o administrador", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Observaciones</b> → <b>Nueva observación</b>.",
+      "Elegí el <b>Turno</b> (arranca en el actual), el <b>Área</b> y, si es sobre alguien, la <b>Persona</b> (un profesor o un alumno).",
+      "Escribí el <b>Título</b> y la <b>Observación</b>. Si querés que también lo sepa el administrador, marcá <b>Avisarle también al administrador</b>.",
+      "Tocá <b>Guardar observación</b>. Aparece en la lista como \"Secretaría · Nicolás Ferreyra\".",
+      "Al encargado de la sede le llega a la campana (\"Observación de Nicolás Ferreyra (secretaría)\") y la ve en su menú <b>Observaciones</b>; si marcaste el aviso, también al administrador.",
+    ],
+    see: [["ok", "a. Panel para cargar observaciones por turno."], ["ok", "b. Cada una se asocia a un área o a una persona."], ["ok", "c. Avisa automáticamente al encargado (y al administrador si se pide)."]] },
+  { id: "3.1.17", actor: "Secretaria", title: "Consultar cronogramas de clases, profesores y turnos", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Cronogramas</b>.",
+      "Mirá la semana: cada clase con horario, profesor, sede y cupo. Usá las flechas para cambiar de semana.",
+      "Filtrá por <b>sede</b> (arranca en la tuya), <b>profesor</b> o <b>actividad</b> para ver la disponibilidad de cada día.",
+      "Tocá una clase para ver el <b>detalle</b>: duración, profesor (y a quién reemplaza), cupo, alumnos que la tienen en su plan, asistencia y novedades.",
+      "Para ver una superposición: el profesor (<code>profe1</code>) acepta el reemplazo de HIIT del viernes en Norte (a esa hora tiene Musculación en Centro). En Cronogramas aparece en <b>Cambios y superposiciones de la semana</b> y en la tarjeta de la clase; también llega a la campana.",
+    ],
+    see: [["ok", "a. Horarios y profesores de cada clase."], ["ok", "b. Disponibilidad por día y sede."], ["ok", "c. Avisa superposiciones y cambios (reemplazos y cambios de turno)."]] },
+  { id: "3.1.18", actor: "Secretaria", title: "Enviar notificaciones por cambios, promociones y vencimientos", status: "ok", user: U.sec, e2e: true,
+    steps: [
+      "Menú <b>Comunicaciones</b>.",
+      "Elegí una <b>Plantilla</b>: vencimiento de cuota, cambio de clase o reemplazo, promoción vigente, comunicado general o mensaje libre.",
+      "En <b>Destinatarios</b>: todos, los de una sede, los de un plan, cuota por vencer, cuota vencida o bloqueados, o un alumno. Te muestra a cuántos y a quiénes les llega.",
+      "Revisá el <b>Asunto</b> y el <b>Mensaje</b>. <code>{nombre}</code> se reemplaza por el nombre de cada alumno; mirá la vista previa. Podés marcar que también vaya por email.",
+      "Tocá <b>Enviar</b> → confirmá.",
+      "Abajo, en <b>Enviadas</b>, queda cada comunicación con sus destinatarios.",
+    ],
+    see: [["ok", "a. Mensajes masivos o personalizados."], ["ok", "b. Plantillas para los avisos frecuentes."], ["ok", "c. Registro de quiénes recibieron cada mensaje."]] },
+  { id: "3.1.19", actor: "Profesor", title: "Ver el cronograma de sus clases", status: "ok", user: U.prof,
+    steps: ["Menú <b>Cronograma</b>.", "Mirá la semana: cada día con sus clases, horario, duración y sede.", "Usá <b>Semana anterior</b> y <b>Semana siguiente</b>.", "Si aceptás un reemplazo (3.1.21), la clase aparece sola en el cronograma."],
+    see: [["ok", "a. Calendario por día, con la sede de cada clase."], ["ok", "b. Los reemplazos asignados llegan a la campana."], ["ok", "c. El cronograma se actualiza al aceptar un reemplazo."]] },
+  { id: "3.1.20", actor: "Profesor", title: "Registrar la asistencia en sus clases", status: "ok", user: U.prof,
+    steps: ["Menú <b>Asistencia y alumnos</b>.", "Elegí el <b>Día</b> y la clase (solo aparecen las suyas, incluidos los reemplazos).", "Marcá <b>Presente</b> o <b>Ausente</b>, o <b>Marcar presentes a los habilitados</b>. Los bloqueados no se pueden marcar presentes.", "Tocá <b>Guardar asistencia</b>.", "Las inasistencias frecuentes (3 o más sin justificar en 30 días) le llegan a secretaría y al encargado de la sede: entrá con <code>secre1</code> y mirá la campana (\"alumnos con inasistencias frecuentes\")."],
+    see: [["ok", "a. Lista de alumnos con su habilitación."], ["ok", "b. Registro en el momento."], ["ok", "c. Avisa a secretaría y al encargado las inasistencias frecuentes."]] },
+  { id: "3.1.21", actor: "Profesor", title: "Recibir avisos de cambios y reemplazos, y responderlos", status: "ok", user: U.prof, e2e: true,
+    steps: ["Tocá la <b>campana</b>: aparece <b>Te pidieron un reemplazo</b>.", "Menú <b>Reemplazos</b> → pestaña <b>Pendientes</b>.", "En un pedido tocá <b>Confirmar</b>. Si se pisa con una clase tuya, la confirmación te lo avisa. Tocá <b>Sí, acepto</b> (o <b>Rechazar</b>).", "Pasa a <b>Historial</b>. Si aceptaste, la clase aparece en tu cronograma; si rechazaste, le llega el aviso al encargado de la sede."],
+    see: [["ok", "a. Avisos automáticos de cambios en su agenda."], ["ok", "b. Le llega al profesor reemplazante."], ["ok", "c. Confirmar o rechazar desde su pantalla."]] },
+  { id: "3.1.22", actor: "Profesor", title: "Dejar observaciones sobre alumnos o la jornada", status: "ok", user: U.prof,
+    steps: ["Menú <b>Asistencia y alumnos</b> → sección <b>Observaciones</b> → <b>Nueva</b>.", "Completá <b>Título</b>, <b>Clase</b>, <b>Alumno (opcional)</b> y <b>Observación</b>.", "Tocá <b>Guardar observación</b>.", "La ve el encargado de esa sede (menú <b>Observaciones</b>) y el administrador (menú <b>Observaciones de profesores</b>)."],
+    see: [["ok", "a. Notas sobre las clases dictadas."], ["ok", "b. Se asocian a un alumno o a la clase."], ["ok", "c. Historial para el encargado y la administración."]] },
+  { id: "3.1.23", actor: "Profesor", title: "Consultar su historial de horas trabajadas", status: "ok", user: U.prof,
+    steps: ["Menú <b>Mis horas</b>.", "Elegí el período: <b>Esta semana</b>, <b>Este mes</b> o <b>Mes anterior</b>.", "Filtrá por sede y por clase.", "Mirá las horas dictadas contra las programadas, cada clase con su duración y el aviso de diferencia con el cronograma."],
+    see: [["ok", "a. Clases dictadas con su duración."], ["ok", "b. Filtros por período, sede y clase."], ["ok", "c. Avisa las diferencias con el cronograma."]] },
+  { id: "3.1.24", actor: "Alumno", title: "Consultar su estado de cuenta y pagar desde el sistema", status: "ok", user: U.alu2, e2e: true,
+    steps: ["Menú <b>Pagos</b>: estado (Bloqueado), monto adeudado, fecha límite y cuotas.", "Tocá <b>Pagar</b>.", "Marcá las cuotas, elegí una promoción si te corresponde y el medio: <b>Débito</b>, <b>Transferencia</b> o <b>QR</b> (en línea no hay efectivo).", "Tocá <b>Pagar $…</b> → <b>Confirmar</b>. La entidad bancaria valida el pago.", "Aparece <b>Pago registrado</b> con el recibo, y el estado pasa a <b>Al día</b>."],
+    see: [["ok", "a. Monto, fecha límite y medios de pago."], ["ok", "b. Tarjeta de débito, QR y transferencia."], ["ok", "c. Confirma el pago y actualiza el estado de cuenta."]] },
+  { id: "3.1.25", actor: "Alumno", title: "Ver el cronograma y su plan contratado", status: "ok", user: U.alu,
+    steps: ["Menú <b>Mi plan y cronograma</b>.", "Arriba: el plan, el precio, las clases incluidas y las sedes donde puede entrenar.", "Abajo: la semana. Cada clase dice <b>En tu plan</b> o <b>No incluida</b>.", "Activá <b>Ver solo las clases de mi plan</b> y filtrá por sede.", "Se puede usar desde el celular: la vista se adapta."],
+    see: [["ok", "a. Días, horarios y clases habilitadas por su plan."], ["ok", "b. Las clases fuera del plan están marcadas, y en el ingreso (Control de acceso) no se le permite entrar."], ["ok", "c. Funciona en celular y navegador."]] },
+  { id: "3.1.26", actor: "Alumno", title: "Recibir alertas de vencimiento, promociones o cambios de clase", status: "ok", user: U.alu2, e2e: true,
+    steps: ["Tocá la <b>campana</b> o el menú <b>Ajustes y alertas</b>.", "En <b>Mis avisos</b>: cuota vencida, acceso suspendido y los mensajes de secretaría (vencimientos, promociones vigentes, cambios de clase). Tocá <b>Marcar como leído</b>.", "Al pagar (menú <b>Pagos</b> → <b>Pagar</b>) aparecen las <b>promociones activas</b>, con el motivo de las que no le corresponden.", "En <b>Preferencias</b>: recordatorio de vencimiento, <b>Avisos también por email</b>, promociones y novedades."],
+    see: [["ok", "a. Avisos en la web; el email se puede elegir (en el prototipo no se envía)."], ["ok", "b. Promociones activas al momento del pago."], ["ok", "c. Preferencias de notificación guardadas."]] },
+  { id: "3.1.27", actor: "Alumno", title: "Consultar su historial de asistencia", status: "ok", user: U.alu,
+    steps: ["Menú <b>Mi perfil y asistencia</b> → <b>Mi asistencia</b>.", "Elegí el <b>Mes</b> o todo el historial.", "Mirá los totales (asistencias, ausencias justificadas, ausencias sin justificar) y la tabla con fecha, clase, sede, profesor y estado.", "Tocá <b>Exportar CSV</b> o <b>Imprimir</b>."],
+    see: [["ok", "a. Tabla con fechas y clases."], ["ok", "b. Marca las ausencias sin justificar."], ["ok", "c. Exportar el historial."]] },
+  { id: "3.1.28", actor: "Alumno", title: "Completar la declaración jurada de salud digital", status: "ok", user: U.alu,
+    steps: ["Menú <b>Mi perfil y asistencia</b> → <b>Declaración jurada de salud</b> → <b>Actualizar</b>.", "Completá el formulario (es el mismo de la inscripción) → <b>Guardar declaración</b>.", "En <b>Certificados</b>: <b>Elegir archivo</b> (PDF, JPG o PNG de hasta 5 MB). Queda <b>Pendiente de revisión</b>.", "Secretaría recibe el aviso: en la ficha del alumno → <b>Salud y documentos</b> → <b>Marcar como revisado</b>."],
+    see: [["ok", "a. Formulario digital editable."], ["ok", "b. Adjuntar certificados o autorizaciones."], ["ok", "c. Queda guardado en el perfil del alumno."]] },
+];
+
+const reqsEl = document.getElementById("reqs");
+const emptyEl = document.getElementById("empty");
+const counts = { ok: 0, parcial: 0, falta: 0 };
+REQS.forEach((r) => counts[r.status]++);
+document.getElementById("summary").innerHTML =
+  `<div class="stat ok"><b>${counts.ok}</b><span>cumplen</span></div>` +
+  `<div class="stat warn"><b>${counts.parcial}</b><span>parciales</span></div>` +
+  `<div class="stat bad"><b>${counts.falta}</b><span>faltan</span></div>`;
+
+const mark = { ok: "✓", half: "≈", no: "✗", "": "—" };
+reqsEl.innerHTML = REQS.map((r) => `
+  <article class="req ${r.status}" id="r${r.id.replace(/\./g, "-")}" data-actor="${r.actor}" data-status="${r.status}">
+    <div class="req-head">
+      <div class="req-title"><span class="req-id">${r.id}</span><h3>${r.title}</h3></div>
+      <div class="badges">
+        <span class="badge actor">${r.actor}</span>
+        <span class="badge ${r.status}">${S[r.status]}</span>
+        ${r.e2e ? '<span class="badge e2e">probado de punta a punta</span>' : ""}
+      </div>
+    </div>
+    <p class="login">Entrá con <code>${r.user}</code></p>
+    <div class="cols">
+      <div><h4>Pasos</h4><ol class="steps">${r.steps.map((s) => `<li>${s}</li>`).join("")}</ol></div>
+      <div><h4>Qué tenés que ver</h4><ul class="see">${r.see.map(([m, t]) => `<li><span class="m ${m}" aria-hidden="true">${mark[m]}</span><span>${t}</span></li>`).join("")}</ul></div>
+    </div>
+    ${r.gap ? `<p class="gap"><b>${r.status === "falta" ? "Falta:" : "Lo que falta:"}</b> ${r.gap}</p>` : ""}
+  </article>`).join("");
+
+let actor = "todos", status = "todos";
+function apply() {
+  let shown = 0;
+  reqsEl.querySelectorAll(".req").forEach((el) => {
+    const ok = (actor === "todos" || el.dataset.actor === actor) && (status === "todos" || el.dataset.status === status);
+    el.hidden = !ok; if (ok) shown++;
+  });
+  emptyEl.hidden = shown > 0;
+}
+document.querySelectorAll(".chip").forEach((btn) => btn.addEventListener("click", () => {
+  const group = btn.dataset.actor ? "actor" : "status";
+  document.querySelectorAll(`.chip[data-${group}]`).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+  if (group === "actor") actor = btn.dataset.actor; else status = btn.dataset.status;
+  apply();
+}));
+</script>

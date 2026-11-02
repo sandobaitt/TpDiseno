@@ -119,6 +119,8 @@ function applyAction(state: AppState, action: StoreAction): AppState {
     }
     case "payment/register":
       return { ...state, payments: [action.payment, ...state.payments] };
+    case "payment/reject":
+      return state;
     case "attendance/save":
       return {
         ...state,
@@ -235,6 +237,22 @@ function applyAction(state: AppState, action: StoreAction): AppState {
       return {
         ...state,
         communications: [action.communication, ...state.communications],
+      };
+    case "staff/register":
+      return { ...state, staff: [action.employee, ...state.staff] };
+    case "staff/update":
+      return {
+        ...state,
+        staff: state.staff.map((e) =>
+          e.id === action.id ? { ...e, ...action.changes } : e,
+        ),
+      };
+    case "staff/setStatus":
+      return {
+        ...state,
+        staff: state.staff.map((e) =>
+          e.id === action.id ? { ...e, status: action.status } : e,
+        ),
       };
     case "notification/markRead": {
       const current = state.notificationReads[action.userId] ?? [];

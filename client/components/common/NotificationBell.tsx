@@ -32,7 +32,8 @@ const ALL_LINK: Partial<Record<AppUserRole, { to: string; label: string }>> = {
   profesor: { to: "/profesor/reemplazos", label: "Ver reemplazos" },
 };
 
-const MAX_ITEMS = 6;
+/** La lista tiene desplazamiento: se muestran hasta 15, primero los no leídos. */
+const MAX_ITEMS = 15;
 
 /**
  * Centro de avisos (para todos los roles): un contador discreto y la lista,
@@ -56,7 +57,9 @@ export function NotificationBell() {
           <span
             className={cn(
               "block text-sm",
-              n.read ? "font-medium text-foreground/80" : "font-bold text-foreground",
+              n.read
+                ? "font-medium text-foreground/80"
+                : "font-bold text-foreground",
             )}
           >
             {!n.read && <span className="sr-only">Nuevo: </span>}
@@ -125,34 +128,39 @@ export function NotificationBell() {
               className="ti ti-bell-off text-2xl text-muted-foreground"
               aria-hidden="true"
             />
-            <p className="text-sm text-muted-foreground">No tenés avisos por ahora.</p>
+            <p className="text-sm text-muted-foreground">
+              No tenés avisos por ahora.
+            </p>
           </div>
         ) : (
           <ul className="flex max-h-[60vh] flex-col divide-y divide-border overflow-y-auto">
-            {items.slice(0, MAX_ITEMS).map((n) => (
-              <li key={n.id}>
-                {n.link ? (
-                  <Link
-                    to={n.link}
-                    onClick={() => {
-                      markRead(n.id);
-                      setOpen(false);
-                    }}
-                    className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.04]"
-                  >
-                    {itemContent(n)}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => markRead(n.id)}
-                    className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
-                  >
-                    {itemContent(n)}
-                  </button>
-                )}
-              </li>
-            ))}
+            {[...items]
+              .sort((a, b) => Number(a.read) - Number(b.read))
+              .slice(0, MAX_ITEMS)
+              .map((n) => (
+                <li key={n.id}>
+                  {n.link ? (
+                    <Link
+                      to={n.link}
+                      onClick={() => {
+                        markRead(n.id);
+                        setOpen(false);
+                      }}
+                      className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.04]"
+                    >
+                      {itemContent(n)}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => markRead(n.id)}
+                      className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
+                    >
+                      {itemContent(n)}
+                    </button>
+                  )}
+                </li>
+              ))}
           </ul>
         )}
 

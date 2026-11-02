@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { shiftRows, shiftStats } from "./teacherAttendance";
+import {
+  NO_REASON,
+  shiftRows,
+  shiftStats,
+  unjustifiedTeacherAbsences,
+} from "./teacherAttendance";
 import type { Session } from "./schedule";
 import type { TeacherAttendance } from "@/data/teacherAttendance";
 
@@ -75,5 +80,36 @@ describe("turnos de profesores", () => {
       unregistered: 2,
       toConfirm: 1,
     });
+  });
+});
+
+describe("ausencias de profesores sin justificar (3.1.7c)", () => {
+  const registro = (
+    id: string,
+    date: string,
+    status: "present" | "absent",
+    reason?: string,
+  ): TeacherAttendance => ({
+    id,
+    slotId: "sl",
+    date,
+    teacherId: "tc",
+    status,
+    reason,
+    recordedBy: "us",
+    recordedAt: `${date}T20:00:00`,
+  });
+
+  it("toma las ausencias sin motivo de la última semana", () => {
+    const records = [
+      registro("a", "2026-11-01", "absent", NO_REASON),
+      registro("b", "2026-11-01", "absent"),
+      registro("c", "2026-11-01", "absent", "Enfermedad"),
+      registro("d", "2026-11-01", "present"),
+      registro("e", "2026-10-01", "absent", NO_REASON),
+    ];
+    expect(
+      unjustifiedTeacherAbsences(records, "2026-11-02", 7).map((r) => r.id),
+    ).toEqual(["a", "b"]);
   });
 });

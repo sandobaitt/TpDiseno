@@ -19,6 +19,9 @@ import {
 } from "@/data/payments";
 import { getPromotion, promotionsMock } from "@/data/promotions";
 import { describeAccount, upcomingCharges } from "@/domain/billing";
+import { needsBankValidation, validateWithBank } from "@/domain/bank";
+import { BANK_VALIDATION_MS } from "@/data/rules";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   checkPromotion,
   findCoupon,
@@ -42,17 +45,21 @@ const MAX_ADVANCE = 6;
 
 interface CheckoutPanelProps {
   clientId: string;
-  /** "online": lo paga el alumno desde la app (sin efectivo ni promociones). */
+  /** "online": lo paga el alumno desde la app (sin efectivo). */
   mode?: "staff" | "online";
   /** Cerrar (después de pagar o al cancelar). */
   onClose: () => void;
 }
 
 /**
- * Cobro de cuotas (CU 4) con promociones (CU 9): elige cuántas cuotas, el
- * medio de pago y una promoción o cupón. Al confirmar se registra el pago, se
+ * Registrar Pagos (CU 4), con Aplicar Promociones (CU 9) y Emitir Recibos:
+ * se eligen las cuotas una por una, el medio de pago y una promoción o cupón.
+ * Si el medio es digital, la entidad bancaria valida el pago (y puede
+ * rechazarlo: no se registra y se vuelve a elegir el medio). Al registrarse se
  * emite el recibo y el estado del alumno cambia en todas las pantallas.
  */
+type ConfirmPhase = "review" | "validating" | "rejected";
+
 export function CheckoutPanel({
   clientId,
   mode = "staff",
@@ -70,11 +77,17 @@ export function CheckoutPanel({
   const unpaidCount = account?.unpaid.length ?? 0;
 
   const [method, setMethod] = React.useState<PaymentMethod>(methods[0]);
-  const [count, setCount] = React.useState(Math.max(1, unpaidCount));
+  /** Cuotas elegidas (`null` = todavía no tocó nada: van las impagas). */
+  const [chosen, setChosen] = React.useState<string[] | null>(null);
   const [promoId, setPromoId] = React.useState("");
   const [couponId, setCouponId] = React.useState("");
   const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [paid, setPaid] = React.useState<Payment | null>(null);
+  const [phase, setPhase] = React.useState<ConfirmPhase>("review");
+  const [simulateRejection, setSimulateRejection] = React.useState(false);
+  const [rejectionReason, setRejectionReason] = React.useState("");
+  const bankTimer = React.useRef<number | undefined>(undefined);
+  React.useEffect(() => () => window.clearTimeout(bankTimer.current), []);
 
   if (!client || !account) return null;
   if (!plan) {
@@ -91,7 +104,11 @@ export function CheckoutPanel({
     ...account.unpaid,
     ...upcomingCharges(client, plan, account, state.payments, MAX_ADVANCE),
   ];
-  const selected = available.slice(0, count);
+  const defaultPeriods = (
+    account.unpaid.length > 0 ? account.unpaid : available.slice(0, 1)
+  ).map((c) => c.period);
+  const chosenSet = new Set(chosen ?? defaultPeriods);
+  const selected = available.filter((c) => chosenSet.has(c.period));
   const periods = selected.map((c) => c.period);
   const subtotal = selected.reduce((sum, c) => sum + c.amount, 0);
 
@@ -102,12 +119,10 @@ export function CheckoutPanel({
     periods,
     today,
   };
-  const options = online
-    ? []
-    : listedPromotions(promotionsMock, today).map((promo) => ({
-        promo,
-        check: checkPromotion(promo, promoContext),
-      }));
+  const options = listedPromotions(promotionsMock, today).map((promo) => ({
+    promo,
+    check: checkPromotion(promo, promoContext),
+  }));
   const applied = getPromotion(couponId || promoId);
   const appliedCheck = applied
     ? checkPromotion(applied, promoContext)
@@ -127,7 +142,37 @@ export function CheckoutPanel({
     return null;
   }
 
+  function toggleCharge(period: string, checked: boolean) {
+    const next = new Set(chosenSet);
+    if (checked) next.add(period);
+    else next.delete(period);
+    setChosen(available.map((c) => c.period).filter((p) => next.has(p)));
+  }
+
+  /** Confirmar: si el medio es digital, primero valida la entidad bancaria (pasos 10 y 11). */
   function confirm() {
+    if (!needsBankValidation(method)) return register();
+    setPhase("validating");
+    bankTimer.current = window.setTimeout(() => {
+      const result = validateWithBank({
+        method,
+        amountArs: total,
+        simulateRejection,
+      });
+      if (result.approved) return register();
+      // Camino alternativo 11.b: no se registra el pago y se vuelve a elegir el medio.
+      actions.rejectPayment({
+        clientId: client!.id,
+        amountArs: total,
+        method,
+        reason: result.reason ?? "Sin motivo informado",
+      });
+      setRejectionReason(result.reason ?? "Sin motivo informado");
+      setPhase("rejected");
+    }, BANK_VALIDATION_MS);
+  }
+
+  function register() {
     const payment = actions.registerPayment({
       clientId: client!.id,
       periods,
@@ -139,6 +184,13 @@ export function CheckoutPanel({
       description: `${periods.length > 1 ? "Cuotas" : "Cuota"} ${periods.map(formatPeriod).join(", ")} · ${plan!.name}`,
     });
     setPaid(payment);
+    setPhase("review");
+  }
+
+  function closeConfirm() {
+    setConfirmOpen(false);
+    setPhase("review");
+    setSimulateRejection(false);
   }
 
   return (
@@ -172,27 +224,25 @@ export function CheckoutPanel({
             <ChargesPicker
               available={available}
               unpaidCount={unpaidCount}
-              count={count}
-              onCountChange={setCount}
+              selected={periods}
+              onToggle={toggleCharge}
               today={today}
             />
           </SectionCard>
 
-          {!online && (
-            <SectionCard title="Promoción" icon="ti-discount">
-              <PromotionPicker
-                options={options}
-                selectedId={promoId}
-                onSelect={(id) => {
-                  setPromoId(id);
-                  setCouponId("");
-                }}
-                coupon={couponId ? getPromotion(couponId) : undefined}
-                onApplyCoupon={applyCoupon}
-                onRemoveCoupon={() => setCouponId("")}
-              />
-            </SectionCard>
-          )}
+          <SectionCard title="Promoción" icon="ti-discount">
+            <PromotionPicker
+              options={options}
+              selectedId={promoId}
+              onSelect={(id) => {
+                setPromoId(id);
+                setCouponId("");
+              }}
+              coupon={couponId ? getPromotion(couponId) : undefined}
+              onApplyCoupon={applyCoupon}
+              onRemoveCoupon={() => setCouponId("")}
+            />
+          </SectionCard>
         </div>
 
         <div className="flex flex-col gap-5">
@@ -208,7 +258,8 @@ export function CheckoutPanel({
             <dl className="flex flex-col gap-2 text-sm">
               <div className="flex justify-between gap-3">
                 <dt className="text-muted-foreground">
-                  Subtotal ({count} {count === 1 ? "cuota" : "cuotas"})
+                  Subtotal ({periods.length}{" "}
+                  {periods.length === 1 ? "cuota" : "cuotas"})
                 </dt>
                 <dd className="text-foreground">{formatARS(subtotal)}</dd>
               </div>
@@ -242,13 +293,16 @@ export function CheckoutPanel({
             <Button
               type="button"
               onClick={() => setConfirmOpen(true)}
+              disabled={periods.length === 0}
               className="h-12 rounded-xl text-base font-extrabold"
             >
               <i className="ti ti-circle-check text-lg" aria-hidden="true" />
               {online ? "Pagar" : "Cobrar"} {formatARS(total)}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
-              Al confirmar se emite el recibo digital.
+              {needsBankValidation(method)
+                ? "Al confirmar, la entidad bancaria valida el pago y se emite el recibo digital."
+                : "Al confirmar se emite el recibo digital."}
             </p>
           </SectionCard>
         </div>
@@ -257,13 +311,55 @@ export function CheckoutPanel({
       <AlertDialog
         open={confirmOpen}
         onOpenChange={(open) => {
-          if (open) return;
-          setConfirmOpen(false);
+          // Mientras responde el banco no se puede cerrar.
+          if (open || phase === "validating") return;
+          closeConfirm();
           if (paid) onClose();
         }}
       >
         <AlertDialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
-          {!paid ? (
+          {!paid && phase === "validating" ? (
+            <div
+              className="flex flex-col items-center gap-4 py-6 text-center"
+              role="status"
+              aria-live="polite"
+            >
+              <i
+                className="ti ti-loader-2 animate-spin text-4xl text-primary motion-reduce:animate-none"
+                aria-hidden="true"
+              />
+              <AlertDialogTitle className="text-lg font-extrabold">
+                Validando el pago con la entidad bancaria…
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {PAYMENT_METHOD_LABELS[method]} · {formatARS(total)}. No cierres
+                esta ventana.
+              </AlertDialogDescription>
+            </div>
+          ) : !paid && phase === "rejected" ? (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2 text-lg font-extrabold">
+                  <i
+                    className="ti ti-circle-x text-2xl text-danger"
+                    aria-hidden="true"
+                  />
+                  La entidad bancaria rechazó el pago
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Motivo: {rejectionReason}. El pago no se registró y la deuda
+                  sigue igual. Elegí otro medio de pago para intentar de nuevo.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <Button
+                type="button"
+                onClick={closeConfirm}
+                className="h-11 rounded-xl font-bold"
+              >
+                Elegir otro medio de pago
+              </Button>
+            </>
+          ) : !paid ? (
             <>
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-lg font-extrabold">
@@ -295,11 +391,30 @@ export function CheckoutPanel({
                   { label: "Total", value: formatARS(total) },
                 ]}
               />
+              {needsBankValidation(method) && (
+                <div className="flex flex-col gap-2 rounded-xl bg-secondary/60 p-3">
+                  <p className="flex items-start gap-2 text-xs text-foreground/80">
+                    <i
+                      className="ti ti-building-bank mt-0.5 text-sm"
+                      aria-hidden="true"
+                    />
+                    Con {PAYMENT_METHOD_LABELS[method].toLowerCase()} el pago lo
+                    valida la entidad bancaria antes de registrarse.
+                  </p>
+                  <label className="flex min-h-[40px] cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+                    <Checkbox
+                      checked={simulateRejection}
+                      onCheckedChange={(v) => setSimulateRejection(v === true)}
+                    />
+                    Simular que la entidad rechaza el pago (DEMO)
+                  </label>
+                </div>
+              )}
               <div className="flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setConfirmOpen(false)}
+                  onClick={closeConfirm}
                   className="flex-1 rounded-xl"
                 >
                   Cancelar
@@ -324,6 +439,9 @@ export function CheckoutPanel({
                   Pago registrado
                 </AlertDialogTitle>
                 <AlertDialogDescription>
+                  {needsBankValidation(paid.method)
+                    ? "La entidad bancaria aprobó el pago. "
+                    : ""}
                   El estado de {client.fullName} ya se actualizó en todas las
                   pantallas.
                 </AlertDialogDescription>
@@ -342,7 +460,7 @@ export function CheckoutPanel({
                 <Button
                   type="button"
                   onClick={() => {
-                    setConfirmOpen(false);
+                    closeConfirm();
                     onClose();
                   }}
                   className="flex-1 rounded-xl font-bold"

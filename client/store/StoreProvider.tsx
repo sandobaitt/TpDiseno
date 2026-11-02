@@ -14,6 +14,7 @@ import {
 import type { Novedad } from "@/data/novedades";
 import type { Bitacora } from "@/data/bitacoras";
 import type { Communication } from "@/data/communications";
+import type { Employee, EmployeeStatus } from "@/data/employees";
 import { getMockSession } from "@/data/users";
 import { getSlot } from "@/data/schedule";
 import { getActivityName } from "@/data/activities";
@@ -260,6 +261,29 @@ export function useStoreActions() {
         });
         return payment;
       },
+      /** Registra (solo en la actividad) que la entidad bancaria rechazó un pago. */
+      rejectPayment(input: {
+        clientId: string;
+        amountArs: number;
+        method: PaymentMethod;
+        reason: string;
+      }) {
+        dispatch({
+          type: "payment/reject",
+          clientId: input.clientId,
+          meta: meta(
+            activityText.paymentRejected(
+              clientName(input.clientId),
+              input.amountArs,
+              input.method,
+              input.reason,
+            ),
+            // Va a la ficha del alumno: el pago rechazado no existe como pago.
+            "alumno",
+            input.clientId,
+          ),
+        });
+      },
       saveAttendance(
         records: StudentAttendance[],
         slotId: string,
@@ -408,6 +432,45 @@ export function useStoreActions() {
           ),
         });
       },
+      registerEmployee(employee: Employee) {
+        dispatch({
+          type: "staff/register",
+          employee,
+          meta: meta(
+            `Dio de alta a ${employee.fullName} en el personal`,
+            "personal",
+            employee.id,
+          ),
+        });
+      },
+      updateEmployee(id: string, changes: Partial<Employee>) {
+        const name =
+          stateRef.current.staff.find((e) => e.id === id)?.fullName ??
+          "una persona";
+        dispatch({
+          type: "staff/update",
+          id,
+          changes,
+          meta: meta(`Modificó los datos de ${name}`, "personal", id),
+        });
+      },
+      setEmployeeStatus(id: string, status: EmployeeStatus) {
+        const name =
+          stateRef.current.staff.find((e) => e.id === id)?.fullName ??
+          "una persona";
+        dispatch({
+          type: "staff/setStatus",
+          id,
+          status,
+          meta: meta(
+            status === "inactive"
+              ? `Dio de baja a ${name} (personal)`
+              : `Reactivó a ${name} (personal)`,
+            "personal",
+            id,
+          ),
+        });
+      },
       markNotificationsRead(ids: string[]) {
         const userId = getMockSession()?.id;
         if (!userId || ids.length === 0) return;
@@ -423,7 +486,9 @@ export function useStoreActions() {
           type: "bitacora/add",
           bitacora,
           meta: meta(
-            `Registró una observación: ${bitacora.title}`,
+            bitacora.authorUserId
+              ? `Registró una observación de turno (${bitacora.area ?? "general"}): ${bitacora.title}`
+              : `Registró una observación: ${bitacora.title}`,
             "observacion",
             bitacora.id,
           ),

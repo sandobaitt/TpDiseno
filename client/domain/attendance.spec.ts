@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { classRoster, markOf, summarizeAttendance, toCsv } from "./attendance";
+import {
+  classRoster,
+  frequentAbsences,
+  markOf,
+  summarizeAttendance,
+  toCsv,
+} from "./attendance";
 import type { Client } from "@/data/clients";
 import type { Plan } from "@/data/plans";
 import type { StudentAttendance } from "@/data/attendance";
@@ -129,5 +135,38 @@ describe("exportar a CSV", () => {
     expect(csv.slice(1)).toBe(
       'Fecha;Clase\r\n02/10/2026;"Yoga ""suave""; nivel 1"',
     );
+  });
+});
+
+describe("inasistencias frecuentes (3.1.20c)", () => {
+  const falta = (
+    clientId: string,
+    date: string,
+    justified = false,
+  ): StudentAttendance => ({
+    id: `${clientId}_${date}`,
+    clientId,
+    slotId: "sl",
+    date,
+    branchId: "br_001",
+    status: "absent",
+    justified,
+    recordedBy: "us",
+    recordedAt: `${date}T10:00:00`,
+  });
+
+  it("cuenta solo las ausencias sin justificar de los últimos 30 días", () => {
+    const records = [
+      falta("a", "2026-11-01"),
+      falta("a", "2026-10-20"),
+      falta("a", "2026-10-10"),
+      falta("a", "2026-09-01"), // fuera de la ventana
+      falta("b", "2026-11-01"),
+      falta("b", "2026-10-25", true), // justificada
+      falta("b", "2026-10-20"),
+    ];
+    expect(frequentAbsences(records, "2026-11-02", 3, 30)).toEqual([
+      { clientId: "a", count: 3 },
+    ]);
   });
 });

@@ -15,7 +15,11 @@ import type {
   TeacherAttendanceStatus,
 } from "@/data/teacherAttendance";
 import { sessionsBetween } from "@/domain/schedule";
-import { ABSENCE_REASONS, shiftRows } from "@/domain/teacherAttendance";
+import {
+  ABSENCE_REASONS,
+  NO_REASON,
+  shiftRows,
+} from "@/domain/teacherAttendance";
 import { ATTENDANCE_CORRECTION_DAYS } from "@/domain/attendance";
 import { addDays, formatDate, nowISO, todayISO } from "@/lib/dates";
 import { cn } from "@/lib/utils";
@@ -143,7 +147,7 @@ function ShiftList({
         teacherId: r.session.teacherId,
         status: mark.status,
         reason:
-          mark.status === "absent" ? (mark.reason ?? "Sin motivo") : undefined,
+          mark.status === "absent" ? (mark.reason || NO_REASON) : undefined,
         recordedBy: userId,
         recordedAt: at,
       };
@@ -210,8 +214,7 @@ function ShiftList({
                           status: value as TeacherAttendanceStatus,
                           reason:
                             value === "absent"
-                              ? (m[session.slotId]?.reason ??
-                                ABSENCE_REASONS[0])
+                              ? (m[session.slotId]?.reason ?? NO_REASON)
                               : undefined,
                         },
                       }))
@@ -251,6 +254,7 @@ function ShiftList({
                       }
                       className={cn(inputClasses, "h-10 w-auto py-0")}
                     >
+                      <option value={NO_REASON}>Sin justificar</option>
                       {ABSENCE_REASONS.map((r) => (
                         <option key={r} value={r}>
                           {r}

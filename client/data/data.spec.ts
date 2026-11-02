@@ -67,8 +67,11 @@ describe("los datos de demo son coherentes entre sí", () => {
     }
     for (const n of novedadesMock)
       expect(activeBranchIds.has(n.branchId)).toBe(true);
-    for (const b of bitacorasMock)
-      expect(teacherIds.has(b.teacherId)).toBe(true);
+    for (const b of bitacorasMock) {
+      // Cada observación la escribió un profesor o alguien de secretaría.
+      if (b.teacherId) expect(teacherIds.has(b.teacherId)).toBe(true);
+      else expect(appUsersMock.some((u) => u.id === b.authorUserId)).toBe(true);
+    }
   });
 
   it("los usuarios vinculados apuntan a alumnos, profesores y sedes reales", () => {

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Pagination } from "@/components/common/Pagination";
 import { isUrgent } from "@/data/replacements";
-import { getSlot } from "@/data/schedule";
+import { getSlot, scheduleMock } from "@/data/schedule";
+import { findOverlaps, sessionsBetween } from "@/domain/schedule";
 import { getActivityName } from "@/data/activities";
 import { getTeacher } from "@/data/teachers";
 import { getMockSession } from "@/data/users";
@@ -108,6 +109,31 @@ export default function ProfesorReemplazosPage() {
   const pendingRequest = requests.find((r) => r.id === pending?.id);
   const handleConfirm = (id: string) => setPending({ id, accept: true });
   const handleReject = (id: string) => setPending({ id, accept: false });
+
+  // Si el reemplazo se pisa con una clase propia, se avisa antes de aceptar (superposición).
+  const overlapWarning = React.useMemo(() => {
+    if (!pending?.accept) return "";
+    const r = state.replacements.find((x) => x.id === pending.id);
+    if (!r) return "";
+    const day = sessionsBetween(
+      r.date,
+      r.date,
+      scheduleMock,
+      state.replacements,
+    );
+    const target = day.find((s) => s.slotId === r.slotId);
+    if (!target) return "";
+    const mine = day.filter(
+      (s) => s.teacherId === teacherId && s.slotId !== r.slotId,
+    );
+    const pair = findOverlaps([
+      { ...target, teacherId: teacherId ?? "" },
+      ...mine,
+    ]).find(([a, b]) => a.slotId === r.slotId || b.slotId === r.slotId);
+    if (!pair) return "";
+    const own = pair[0].slotId === r.slotId ? pair[1] : pair[0];
+    return ` Atención: a esa hora tenés ${getActivityName(own.activityId)} en ${branchName(own.branchId)} (${own.start}–${own.end}). Si aceptás, queda marcado como superposición en el cronograma.`;
+  }, [pending, state.replacements, teacherId]);
 
   // Aceptar cambia el cronograma y suma las horas al reemplazante (lo calcula domain/schedule y domain/hours).
   function respond() {
@@ -216,7 +242,7 @@ export default function ProfesorReemplazosPage() {
                 pending?.accept
                   ? "La clase pasa a tu cronograma y se te suman las horas."
                   : "La clase queda sin cubrir y se le avisa al encargado."
-              }`
+              }${overlapWarning}`
             : undefined
         }
         confirmLabel={pending?.accept ? "Sí, acepto" : "Sí, rechazo"}
@@ -277,7 +303,9 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
           <span className="text-primary text-xl font-extrabold leading-none">
             {r.dateLabel}
           </span>
-          <span className="text-muted-foreground text-xs mt-1">{r.timeLabel}</span>
+          <span className="text-muted-foreground text-xs mt-1">
+            {r.timeLabel}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">

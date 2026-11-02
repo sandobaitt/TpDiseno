@@ -30,10 +30,10 @@ Después abrí http://localhost:3000.
 
 | Rol | Usuario | Contraseña | Qué mirar |
 |---|---|---|---|
-| Administrador | admin1@squatgym.com | admin123 | Alumnos (alta, baja con motivo, reactivación), asistencia de todas las sedes y observaciones. |
-| Encargado, sede Centro | encargado1@squatgym.com | encargado123 | Asistencia docente (confirmar o corregir), novedades, observaciones e inscripciones de la sede. |
-| Encargado, sede Norte | encargado2@squatgym.com | encargado123 | Lo mismo para Norte. Ahí llegan los reemplazos rechazados de la demo. |
-| Secretaría, sede Centro | secre1@squatgym.com | secre123 | Inscripción, ficha, cobros, control de acceso, asistencia y comunicaciones. |
+| Administrador | admin1@squatgym.com | admin123 | Alumnos (alta, baja con motivo, reactivación), Gestión de personal (alta, cambios y baja), asistencia de todas las sedes y observaciones. |
+| Encargado, sede Centro | encargado1@squatgym.com | encargado123 | Asistencia docente (confirmar o corregir), novedades, observaciones, inscripciones y pagos de la sede, y los avisos de la campana. |
+| Encargado, sede Norte | encargado2@squatgym.com | encargado123 | Lo mismo para Norte. Ahí llegan los reemplazos rechazados de la demo y "Para revisar" muestra una inscripción sin el alta pagada. |
+| Secretaría, sede Centro | secre1@squatgym.com | secre123 | Inscripción, ficha, cobros (con validación bancaria y rechazo de demo), control de acceso, asistencia, cronogramas, observaciones de turno y comunicaciones. |
 | Secretaría, sede Norte | secre2@squatgym.com | secre123 | Lo mismo para Norte. |
 | Profesor | profe1@squatgym.com | profe123 | Asistencia de sus clases, reemplazos pendientes, cronograma y horas. |
 | Profesora | profe2@squatgym.com | profe123 | Otra agenda; recibe avisos de novedades. |
@@ -49,6 +49,7 @@ Para cambiar de rol sin perder lo que hiciste, cerrá sesión desde el menú (no
 | Archivo | Qué tiene |
 |---|---|
 | [`docs/COBERTURA_CU.md`](docs/COBERTURA_CU.md) | Cómo se cumple cada caso de uso y en qué pantalla. |
+| [`docs/guia-requisitos.html`](docs/guia-requisitos.html) | Cada requisito del escenario con los pasos para mostrarlo en la web. |
 | [`docs/GUION_DEFENSA.md`](docs/GUION_DEFENSA.md) | Recorrido sugerido para la presentación. |
 | [`tpi2/`](tpi2/README.md) | Segunda entrega del TPI: diagrama de casos de uso y realización de Registrar Pagos. |
 | [`specs/`](specs/README.md) | Una spec por funcionalidad: qué hace, dónde está en el código y cómo se verificó. |
