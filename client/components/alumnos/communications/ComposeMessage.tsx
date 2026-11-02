@@ -152,7 +152,7 @@ export function ComposeMessage() {
   return (
     <SectionCard title="Nueva comunicación" icon="ti-send">
       {draft.restored && (
-        <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+        <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-foreground">
           <i className="ti ti-history text-warning" aria-hidden="true" />
           Recuperamos un mensaje que quedó sin enviar.
           <Button
@@ -168,7 +168,7 @@ export function ComposeMessage() {
       )}
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-xs font-semibold text-gray-300">
+        <legend className="mb-2 text-xs font-semibold text-foreground/80">
           Plantilla
         </legend>
         <RadioGroup
@@ -183,8 +183,8 @@ export function ComposeMessage() {
               className={cn(
                 "flex cursor-pointer flex-col items-start gap-1.5 rounded-xl border p-3 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
                 form.templateId === t.id
-                  ? "border-primary/60 bg-primary/10 text-white"
-                  : "border-white/[0.07] text-gray-300 hover:border-zinc-500",
+                  ? "border-primary/60 bg-primary/10 text-foreground"
+                  : "border-border text-foreground/80 hover:border-muted-foreground/60",
               )}
             >
               <RadioGroupItem
@@ -196,7 +196,7 @@ export function ComposeMessage() {
                 className={cn(
                   "ti text-xl",
                   t.icon,
-                  form.templateId === t.id ? "text-primary" : "text-gray-400",
+                  form.templateId === t.id ? "text-primary" : "text-muted-foreground",
                 )}
                 aria-hidden="true"
               />
@@ -283,12 +283,12 @@ export function ComposeMessage() {
       </div>
 
       <p
-        className="rounded-xl bg-neutral-800/50 px-4 py-3 text-sm text-gray-300"
+        className="rounded-xl bg-secondary/50 px-4 py-3 text-sm text-foreground/80"
         aria-live="polite"
       >
         <i className="ti ti-users mr-1.5 text-primary" aria-hidden="true" />
         Le llega a{" "}
-        <span className="font-bold text-white">{recipients.length}</span>{" "}
+        <span className="font-bold text-foreground">{recipients.length}</span>{" "}
         {recipients.length === 1 ? "alumno" : "alumnos"}
         {recipients.length > 0 &&
           `: ${recipients
@@ -332,7 +332,7 @@ export function ComposeMessage() {
 
       <label
         htmlFor={`${id}-email`}
-        className="flex min-h-[40px] cursor-pointer items-center gap-3 text-sm text-gray-200"
+        className="flex min-h-[40px] cursor-pointer items-center gap-3 text-sm text-foreground"
       >
         <Checkbox
           id={`${id}-email`}
@@ -344,14 +344,14 @@ export function ComposeMessage() {
       </label>
 
       {recipients[0] && cleanText(form.body) && (
-        <div className="rounded-xl border border-white/[0.06] p-4">
+        <div className="rounded-xl border border-border p-4">
           <p className="mb-1 text-xs font-semibold text-muted-foreground">
             Vista previa para {recipients[0].fullName}
           </p>
-          <p className="text-sm font-bold text-white">
+          <p className="text-sm font-bold text-foreground">
             {form.subject || "(sin asunto)"}
           </p>
-          <p className="mt-1 text-sm text-gray-300">
+          <p className="mt-1 text-sm text-foreground/80">
             {personalize(form.body, recipients[0])}
           </p>
         </div>

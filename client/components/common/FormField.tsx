@@ -27,7 +27,7 @@ export function FormField({
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-xs font-semibold text-gray-300">
+      <label htmlFor={id} className="text-xs font-semibold text-foreground/80">
         {label}
         {required && <span className="text-danger"> *</span>}
       </label>
@@ -53,4 +53,4 @@ export function FormField({
 
 /** Clases comunes para inputs, selects y textareas de formularios. */
 export const inputClasses =
-  "w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-white placeholder:text-gray-500 outline-none transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/30 aria-[invalid=true]:border-danger/60";
+  "w-full rounded-xl border border-input bg-secondary px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-primary/50 focus:ring-1 focus:ring-primary/30 aria-[invalid=true]:border-danger/60";

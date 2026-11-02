@@ -17,7 +17,7 @@ const TONE: Record<NotificationTone, { bar: string; text: string }> = {
   warning: { bar: "bg-warning", text: "text-warning" },
   info: { bar: "bg-info", text: "text-info" },
   success: { bar: "bg-success", text: "text-success" },
-  neutral: { bar: "bg-gray-500", text: "text-gray-300" },
+  neutral: { bar: "bg-muted-foreground", text: "text-foreground/80" },
 };
 
 interface Preferences {
@@ -107,8 +107,8 @@ export function MyAlerts() {
                 <li
                   key={n.id}
                   className={cn(
-                    "relative flex items-start gap-3 overflow-hidden rounded-xl border border-white/[0.06] py-4 pl-5 pr-4",
-                    n.read ? "bg-neutral-900" : "bg-neutral-800/60",
+                    "relative flex items-start gap-3 overflow-hidden rounded-xl border border-border py-4 pl-5 pr-4",
+                    n.read ? "bg-card" : "bg-secondary/60",
                   )}
                 >
                   <span
@@ -132,18 +132,18 @@ export function MyAlerts() {
                         className={cn(
                           "text-sm",
                           n.read
-                            ? "font-semibold text-gray-200"
-                            : "font-bold text-white",
+                            ? "font-semibold text-foreground"
+                            : "font-bold text-foreground",
                         )}
                       >
                         {!n.read && <span className="sr-only">Nuevo: </span>}
                         {n.title}
                       </p>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {formatRelativeDate(n.date, today)}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-gray-300">{n.detail}</p>
+                    <p className="mt-1 text-sm text-foreground/80">{n.detail}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {n.link && (
                         <Button
@@ -165,7 +165,7 @@ export function MyAlerts() {
                           size="sm"
                           variant="ghost"
                           onClick={() => markRead(n.id)}
-                          className="rounded-lg text-gray-300"
+                          className="rounded-lg text-foreground/80"
                         >
                           Marcar como leído
                         </Button>
@@ -179,17 +179,17 @@ export function MyAlerts() {
         </SectionCard>
 
         <SectionCard title="Preferencias" icon="ti-adjustments">
-          <ul className="flex flex-col divide-y divide-white/[0.05]">
+          <ul className="flex flex-col divide-y divide-border">
             <li className="flex items-center gap-3 py-3">
               <i
                 className="ti ti-device-mobile text-lg text-primary"
                 aria-hidden="true"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   Avisos en la app
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Siempre activos: es donde ves tu cuenta.
                 </p>
               </div>
@@ -204,10 +204,10 @@ export function MyAlerts() {
                   htmlFor={`pref-${pref.key}`}
                   className="min-w-0 flex-1 cursor-pointer"
                 >
-                  <span className="block text-sm font-semibold text-white">
+                  <span className="block text-sm font-semibold text-foreground">
                     {pref.label}
                   </span>
-                  <span className="block text-xs text-gray-400">
+                  <span className="block text-xs text-muted-foreground">
                     {pref.detail}
                   </span>
                 </label>

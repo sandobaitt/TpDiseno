@@ -13,10 +13,10 @@ export function EnrollmentChargeBox({ charge }: { charge: EnrollmentCharge }) {
         <p className="text-xs font-semibold text-muted-foreground">
           Cuota de alta
         </p>
-        <p className="text-2xl font-extrabold text-white">
+        <p className="text-2xl font-extrabold text-foreground">
           {formatARS(charge.amount)}
         </p>
-        <p className="text-xs text-gray-300">
+        <p className="text-xs text-foreground/80">
           {charge.prorated
             ? `Proporcional: ${charge.daysCharged} de ${charge.daysInMonth} días de ${formatPeriod(charge.period)} (precio del mes: ${formatARS(charge.fullPrice)}).`
             : `Mes completo de ${formatPeriod(charge.period)}.`}{" "}

@@ -41,7 +41,7 @@ export function PaymentMethodPicker({
               "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border px-3 py-5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
               selected
                 ? "border-primary/70 bg-primary/10"
-                : "border-white/[0.07] bg-neutral-900 hover:border-zinc-600",
+                : "border-border bg-card hover:border-muted-foreground/60",
             )}
           >
             <RadioGroupItem
@@ -53,14 +53,14 @@ export function PaymentMethodPicker({
               className={cn(
                 "ti text-2xl",
                 METHOD_ICONS[method],
-                selected ? "text-primary" : "text-gray-400",
+                selected ? "text-primary" : "text-muted-foreground",
               )}
               aria-hidden="true"
             />
             <span
               className={cn(
                 "text-sm",
-                selected ? "font-bold text-white" : "font-medium text-gray-300",
+                selected ? "font-bold text-foreground" : "font-medium text-foreground/80",
               )}
             >
               {PAYMENT_METHOD_LABELS[method]}

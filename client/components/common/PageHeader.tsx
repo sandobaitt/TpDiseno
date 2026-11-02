@@ -19,12 +19,12 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] pb-5",
+        "flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5",
         className,
       )}
     >
       <div className="min-w-0">
-        <h1 className="text-3xl font-black uppercase leading-none tracking-tight text-white md:text-4xl">
+        <h1 className="text-3xl font-black uppercase leading-none tracking-tight text-foreground md:text-4xl">
           {title}
         </h1>
         {subtitle && (

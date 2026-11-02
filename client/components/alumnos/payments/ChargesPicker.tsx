@@ -28,7 +28,7 @@ export function ChargesPicker({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-foreground/80">
           Se cobran de la más vieja a la más nueva.
         </p>
         <div className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export function ChargesPicker({
             <i className="ti ti-minus text-sm" aria-hidden="true" />
           </Button>
           <span
-            className="min-w-[88px] text-center text-sm font-bold text-white"
+            className="min-w-[88px] text-center text-sm font-bold text-foreground"
             aria-live="polite"
           >
             {count} {count === 1 ? "cuota" : "cuotas"}
@@ -63,7 +63,7 @@ export function ChargesPicker({
         </div>
       </div>
 
-      <ul className="flex flex-col divide-y divide-white/[0.05] rounded-xl border border-white/[0.06]">
+      <ul className="flex flex-col divide-y divide-border rounded-xl border border-border">
         {visible.map((charge, index) => {
           const included = index < count;
           const isAdvance = index >= unpaidCount;
@@ -81,15 +81,15 @@ export function ChargesPicker({
                   "ti text-lg",
                   included
                     ? "ti-square-check text-primary"
-                    : "ti-square text-gray-500",
+                    : "ti-square text-muted-foreground",
                 )}
                 aria-hidden="true"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-foreground">
                   Cuota de {formatPeriod(charge.period)}
                   {charge.prorated && (
-                    <span className="font-normal text-gray-400">
+                    <span className="font-normal text-muted-foreground">
                       {" "}
                       (proporcional)
                     </span>
@@ -101,7 +101,7 @@ export function ChargesPicker({
                 <p
                   className={cn(
                     "text-xs",
-                    !isAdvance && late > 0 ? "text-warning" : "text-gray-400",
+                    !isAdvance && late > 0 ? "text-warning" : "text-muted-foreground",
                   )}
                 >
                   {isAdvance
@@ -111,7 +111,7 @@ export function ChargesPicker({
                       : `Vence el ${formatDate(charge.dueDate)}`}
                 </p>
               </div>
-              <span className="shrink-0 text-sm font-bold text-white">
+              <span className="shrink-0 text-sm font-bold text-foreground">
                 {formatARS(charge.amount)}
               </span>
             </li>

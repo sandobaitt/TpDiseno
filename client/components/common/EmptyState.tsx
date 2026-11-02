@@ -24,8 +24,8 @@ export function EmptyState({
         className,
       )}
     >
-      <i className={cn("ti text-3xl text-gray-500", icon)} aria-hidden="true" />
-      <p className="text-sm font-semibold text-gray-200">{title}</p>
+      <i className={cn("ti text-3xl text-muted-foreground", icon)} aria-hidden="true" />
+      <p className="text-sm font-semibold text-foreground">{title}</p>
       {description && (
         <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
       )}

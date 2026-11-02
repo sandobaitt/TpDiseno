@@ -39,17 +39,17 @@ export function MessageHistory() {
                 type="button"
                 variant="ghost"
                 onClick={() => setSelected(m)}
-                className="h-auto w-full flex-col items-start gap-0.5 whitespace-normal rounded-xl border border-white/[0.06] bg-neutral-800/40 px-4 py-3 text-left font-normal"
+                className="h-auto w-full flex-col items-start gap-0.5 whitespace-normal rounded-xl border border-border bg-secondary/40 px-4 py-3 text-left font-normal"
               >
-                <span className="text-sm font-bold text-white">
+                <span className="text-sm font-bold text-foreground">
                   {m.subject}
                 </span>
-                <span className="text-xs text-gray-300">
+                <span className="text-xs text-foreground/80">
                   {m.audienceLabel} · {m.recipientIds.length}{" "}
                   {m.recipientIds.length === 1 ? "alumno" : "alumnos"}
                   {m.byEmail && " · app y email"}
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {getUserName(m.sentBy)} · {formatDateTime(m.sentAt)}
                 </span>
               </Button>
@@ -62,7 +62,7 @@ export function MessageHistory() {
         open={!!selected}
         onOpenChange={(open) => !open && setSelected(null)}
       >
-        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto rounded-2xl border-border bg-card text-foreground">
           {selected && (
             <>
               <DialogHeader>
@@ -75,7 +75,7 @@ export function MessageHistory() {
                   {selected.byEmail ? "app y email" : "solo app"}
                 </DialogDescription>
               </DialogHeader>
-              <p className="rounded-xl bg-neutral-800/50 p-4 text-sm text-gray-200">
+              <p className="rounded-xl bg-secondary/50 p-4 text-sm text-foreground">
                 {selected.body}
               </p>
               <div>
@@ -87,7 +87,7 @@ export function MessageHistory() {
                   {selected.recipientIds.map((id) => (
                     <li
                       key={id}
-                      className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-gray-300"
+                      className="rounded-md bg-secondary px-2 py-0.5 text-xs text-foreground/80"
                     >
                       {nameOf(id)}
                     </li>

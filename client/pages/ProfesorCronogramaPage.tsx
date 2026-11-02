@@ -58,19 +58,19 @@ export default function ProfesorCronogramaPage() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-neutral-900 glass-border rounded-2xl p-3 sm:p-4 flex items-center gap-3 shadow-card"
+            className="bg-card glass-border rounded-2xl p-3 sm:p-4 flex items-center gap-3 shadow-card"
           >
-            <div className="hidden sm:flex w-9 h-9 rounded-xl bg-lime-400/10 items-center justify-center shrink-0">
+            <div className="hidden sm:flex w-9 h-9 rounded-xl bg-primary/10 items-center justify-center shrink-0">
               <i
-                className={`ti ${stat.icon} text-lime-400 text-base`}
+                className={`ti ${stat.icon} text-primary text-base`}
                 aria-hidden="true"
               />
             </div>
             <div>
-              <p className="text-white text-xl sm:text-2xl font-extrabold leading-tight">
+              <p className="text-foreground text-xl sm:text-2xl font-extrabold leading-tight">
                 {stat.value}
               </p>
-              <p className="text-gray-400 text-[11px] font-semibold tracking-wider">
+              <p className="text-muted-foreground text-[11px] font-semibold tracking-wider">
                 {stat.label}
               </p>
             </div>

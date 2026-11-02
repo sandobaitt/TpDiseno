@@ -24,7 +24,7 @@ export function ConnectionStatus() {
     <div
       role="status"
       aria-live="polite"
-      className="sticky top-0 z-20 flex items-center justify-center gap-2 border-b border-warning/30 bg-warning/10 px-4 py-2 text-center text-sm text-gray-100"
+      className="sticky top-0 z-20 flex items-center justify-center gap-2 border-b border-warning/30 bg-warning/10 px-4 py-2 text-center text-sm text-foreground"
     >
       <i className="ti ti-wifi-off text-base text-warning" aria-hidden="true" />
       Sin conexión. Podés seguir: lo que cargues queda guardado en este equipo.

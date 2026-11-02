@@ -62,7 +62,7 @@ export function SecretaryAttendance() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-1 gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border sm:grid-cols-3 max-sm:p-4">
+      <div className="grid grid-cols-1 gap-4 rounded-2xl bg-card p-5 shadow-card glass-border sm:grid-cols-3 max-sm:p-4">
         <FormField
           label="Día"
           hint={`Podés corregir hasta ${ATTENDANCE_CORRECTION_DAYS} días para atrás.`}
@@ -131,7 +131,7 @@ export function SecretaryAttendance() {
           icon="ti-calendar-off"
           title="No hay clases ese día en esta sede"
           description="Elegí otro día u otra sede."
-          className="rounded-2xl border border-dashed border-white/10"
+          className="rounded-2xl border border-dashed border-border"
         />
       )}
     </div>

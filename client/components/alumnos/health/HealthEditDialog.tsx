@@ -116,7 +116,7 @@ export function HealthEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-lg font-extrabold">
             Declaración jurada de salud
@@ -132,7 +132,7 @@ export function HealthEditDialog({
           className="flex flex-col gap-5"
         >
           {restored && (
-            <p className="flex flex-wrap items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+            <p className="flex flex-wrap items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-foreground">
               <i className="ti ti-history text-warning" aria-hidden="true" />
               Recuperamos lo que habías cargado y no se guardó.
               <Button

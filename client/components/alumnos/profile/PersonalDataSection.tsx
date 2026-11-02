@@ -65,13 +65,13 @@ export function PersonalDataSection({
   return (
     <div className="flex flex-col gap-5">
       {client.status === "inactive" && (
-        <div className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <div className="flex items-start gap-3 rounded-xl border border-border bg-foreground/[0.03] p-4">
           <i
-            className="ti ti-user-off text-xl text-gray-300"
+            className="ti ti-user-off text-xl text-foreground/80"
             aria-hidden="true"
           />
-          <p className="text-sm text-gray-300">
-            <span className="font-semibold text-white">
+          <p className="text-sm text-foreground/80">
+            <span className="font-semibold text-foreground">
               Inscripción dada de baja
             </span>
             {client.deactivatedAt && ` el ${formatDate(client.deactivatedAt)}`}

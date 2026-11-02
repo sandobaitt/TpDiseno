@@ -181,13 +181,13 @@ export default function ProfesorReemplazosPage() {
           {history.map((r) => (
             <li
               key={r.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/60 p-4 shadow-card glass-border"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-card p-4 shadow-card glass-border"
             >
               <div className="min-w-0">
-                <p className="text-sm font-bold text-white first-letter:uppercase">
+                <p className="text-sm font-bold text-foreground first-letter:uppercase">
                   {replacementTitle(r)}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Titular: {getTeacher(r.originalTeacherId)?.fullName ?? "-"}
                 </p>
               </div>
@@ -240,33 +240,33 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
   const r = request;
 
   return (
-    <div className="bg-black/60 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 hover:bg-black/70 transition-all duration-150 shadow-card glass-border hover:border-white/[0.08]">
+    <div className="bg-card rounded-2xl p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-5 hover:bg-secondary transition-all duration-150 shadow-card glass-border hover:border-border">
       {/* Left */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           <span
-            className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wider ${"bg-zinc-700/60 text-white"}`}
+            className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wider ${"bg-accent/60 text-foreground"}`}
           >
             {r.category}
           </span>
           {r.isUrgent && (
-            <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider bg-red-950/60 text-red-400">
+            <span className="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider bg-danger/15 text-danger">
               URGENTE
             </span>
           )}
         </div>
 
-        <h2 className="text-white text-lg md:text-xl font-extrabold">
+        <h2 className="text-foreground text-lg md:text-xl font-extrabold">
           {r.title}
         </h2>
 
         <div className="flex items-center gap-2">
-          <i className="ti ti-user-circle text-gray-400 text-sm" />
-          <span className="text-gray-400 text-[11px] font-semibold tracking-wider">
+          <i className="ti ti-user-circle text-muted-foreground text-sm" />
+          <span className="text-muted-foreground text-[11px] font-semibold tracking-wider">
             PROFESOR A REEMPLAZAR
           </span>
         </div>
-        <p className="text-white text-sm font-bold -mt-1">
+        <p className="text-foreground text-sm font-bold -mt-1">
           {r.professorToReplace}
         </p>
       </div>
@@ -274,22 +274,22 @@ function RequestCard({ request, onConfirm, onReject }: RequestCardProps) {
       {/* Right */}
       <div className="flex md:flex-col items-center md:items-end gap-4 md:gap-3 shrink-0">
         <div className="flex flex-col items-center md:items-end">
-          <span className="text-lime-400 text-xl font-extrabold leading-none">
+          <span className="text-primary text-xl font-extrabold leading-none">
             {r.dateLabel}
           </span>
-          <span className="text-gray-400 text-xs mt-1">{r.timeLabel}</span>
+          <span className="text-muted-foreground text-xs mt-1">{r.timeLabel}</span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => onReject(r.id)}
-            className="px-4 py-2 rounded-xl bg-black border border-zinc-800 text-gray-300 text-[11px] font-bold hover:border-red-500/30 hover:text-red-400 transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-card border border-border text-foreground/80 text-[11px] font-bold hover:border-danger/30 hover:text-danger transition-all cursor-pointer"
           >
             Rechazar
           </button>
           <button
             onClick={() => onConfirm(r.id)}
-            className="px-4 py-2 rounded-xl bg-lime-400 text-black text-[11px] font-bold hover:brightness-110 active:scale-[0.97] transition-all duration-150 shadow-btn-lime cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-[11px] font-bold hover:brightness-110 active:scale-[0.97] transition-all duration-150 shadow-btn-lime cursor-pointer"
           >
             Confirmar
           </button>

@@ -25,25 +25,25 @@ export function ClassCard({ classItem: c }: ClassCardProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl p-4 flex flex-col gap-2 bg-neutral-900 shadow-card glass-border",
+        "rounded-2xl p-4 flex flex-col gap-2 bg-card shadow-card glass-border",
         c.inPlan && "ring-1 ring-primary/50",
         excluded && "opacity-60",
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-white text-sm font-bold">
+        <span className="text-foreground text-sm font-bold">
           {c.start}–{c.end}
         </span>
-        <span className="text-lime-400 text-[11px] font-bold tracking-wider">
+        <span className="text-primary text-[11px] font-bold tracking-wider">
           {c.durationMin} MIN
         </span>
       </div>
 
-      <h4 className="text-white text-base font-extrabold leading-tight">
+      <h4 className="text-foreground text-base font-extrabold leading-tight">
         {c.title}
       </h4>
 
-      <div className="flex flex-col gap-1 text-gray-400 text-xs">
+      <div className="flex flex-col gap-1 text-muted-foreground text-xs">
         <span className="flex items-center gap-1.5">
           <i className="ti ti-user-circle text-sm" aria-hidden="true" />
           {c.teacherName}
@@ -60,7 +60,7 @@ export function ClassCard({ classItem: c }: ClassCardProps) {
             "flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold",
             c.inPlan
               ? "bg-primary/10 text-primary"
-              : "bg-white/[0.06] text-gray-300",
+              : "bg-foreground/[0.06] text-foreground/80",
           )}
         >
           <i
@@ -75,13 +75,13 @@ export function ClassCard({ classItem: c }: ClassCardProps) {
       )}
 
       {c.replacementNote && (
-        <span className="w-fit rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+        <span className="w-fit rounded-md bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
           {c.replacementNote}
         </span>
       )}
 
-      <div className="flex items-center pt-2 border-t border-zinc-800/50 mt-auto">
-        <span className="text-gray-400 text-[11px] font-medium">
+      <div className="flex items-center pt-2 border-t border-border/50 mt-auto">
+        <span className="text-muted-foreground text-[11px] font-medium">
           Cupo: {c.capacity} personas
         </span>
       </div>

@@ -1,12 +1,14 @@
 import { Toaster as Sonner } from "sonner";
+import { useAppliedTheme } from "@/hooks/use-theme";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-/** Avisos (toasts) en el tema oscuro de la app. */
+/** Avisos (toasts): siguen el tema claro u oscuro que eligió el usuario. */
 const Toaster = ({ ...props }: ToasterProps) => {
+  const theme = useAppliedTheme();
   return (
     <Sonner
-      theme="dark"
+      theme={theme}
       className="toaster group"
       toastOptions={{
         classNames: {

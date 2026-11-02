@@ -194,13 +194,13 @@ export function TeacherAttendanceBoard({
             {byTeacher.map((t) => (
               <li
                 key={t.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-neutral-800/40 px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-secondary/40 px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     {getTeacher(t.id)?.fullName ?? "Profesor"}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {formatMinutes(t.worked)} registradas de{" "}
                     {formatMinutes(t.scheduled)} programadas
                   </p>
@@ -224,7 +224,7 @@ export function TeacherAttendanceBoard({
         <EmptyState
           icon="ti-calendar-off"
           title="No hay clases con esos filtros"
-          className="rounded-2xl border border-dashed border-white/10"
+          className="rounded-2xl border border-dashed border-border"
         />
       ) : (
         days.map((day) => (
@@ -233,7 +233,7 @@ export function TeacherAttendanceBoard({
             aria-label={formatDateLong(day)}
             className="flex flex-col gap-2"
           >
-            <h2 className="text-sm font-bold text-gray-200">
+            <h2 className="text-sm font-bold text-foreground">
               {capitalizeFirst(formatDateLong(day))}
               {day === today && (
                 <span className="ml-2 text-xs font-semibold normal-case text-primary">
@@ -241,7 +241,7 @@ export function TeacherAttendanceBoard({
                 </span>
               )}
             </h2>
-            <ul className="flex flex-col divide-y divide-white/[0.05] rounded-2xl bg-neutral-900 shadow-card glass-border">
+            <ul className="flex flex-col divide-y divide-border rounded-2xl bg-card shadow-card glass-border">
               {rows
                 .filter((r) => r.session.date === day)
                 .map((row) => {
@@ -254,11 +254,11 @@ export function TeacherAttendanceBoard({
                       className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-bold text-white">
+                        <p className="text-sm font-bold text-foreground">
                           {session.start} ·{" "}
                           {getActivityName(session.activityId)}
                           {!branchId && (
-                            <span className="font-normal text-gray-400">
+                            <span className="font-normal text-muted-foreground">
                               {" "}
                               ·{" "}
                               {
@@ -269,7 +269,7 @@ export function TeacherAttendanceBoard({
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-muted-foreground">
                           {teacher?.fullName ?? "Sin profesor"}
                           {teacher &&
                             ` · ${CONTRACT_TYPE_LABELS[teacher.contractType]}`}
@@ -293,7 +293,7 @@ export function TeacherAttendanceBoard({
                         </StatusBadge>
                         {record &&
                           (record.confirmedAt ? (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-muted-foreground">
                               Confirmada por {getUserName(record.confirmedBy)}{" "}
                               el {formatDate(record.confirmedAt)}
                             </span>

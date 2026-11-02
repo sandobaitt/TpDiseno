@@ -18,8 +18,8 @@ export function ActionButton({
 
   const variantClasses =
     variant === "primary"
-      ? "bg-lime-400 rounded-xl text-stone-950 shadow-btn-lime hover:brightness-105"
-      : "text-lime-400 rounded-xl border border-lime-400/30 hover:border-lime-400/60 hover:bg-lime-400/5";
+      ? "bg-primary rounded-xl text-primary-foreground shadow-btn-lime hover:brightness-105"
+      : "text-primary rounded-xl border border-primary/30 hover:border-primary/60 hover:bg-primary/5";
 
   return (
     <button className={`${baseClasses} ${variantClasses}`} onClick={onClick}>

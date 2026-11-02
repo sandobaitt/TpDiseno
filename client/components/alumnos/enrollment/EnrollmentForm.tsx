@@ -160,7 +160,7 @@ export function EnrollmentForm({
         title="Inscribir alumno"
         subtitle="Lo que cargás se guarda solo como borrador en este equipo hasta que registres la inscripción."
         actions={
-          <Button asChild variant="ghost" className="rounded-xl text-gray-300">
+          <Button asChild variant="ghost" className="rounded-xl text-foreground/80">
             <Link to={basePath}>
               <i className="ti ti-arrow-left text-base" aria-hidden="true" />
               Volver a alumnos
@@ -172,7 +172,7 @@ export function EnrollmentForm({
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
         {draft.restored && (
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-warning/25 bg-warning/5 px-4 py-3">
-            <p className="flex items-center gap-2 text-sm text-gray-200">
+            <p className="flex items-center gap-2 text-sm text-foreground">
               <i
                 className="ti ti-history text-base text-warning"
                 aria-hidden="true"
@@ -198,13 +198,13 @@ export function EnrollmentForm({
 
         <div
           ref={contentRef}
-          className="flex flex-col gap-5 rounded-2xl bg-neutral-900 p-6 shadow-card glass-border max-sm:p-4"
+          className="flex flex-col gap-5 rounded-2xl bg-card p-6 shadow-card glass-border max-sm:p-4"
         >
           <div>
             <h2
               ref={headingRef}
               tabIndex={-1}
-              className="text-lg font-extrabold text-white outline-none"
+              className="text-lg font-extrabold text-foreground outline-none"
             >
               {form.step}. {stepInfo.label}
             </h2>
@@ -236,7 +236,7 @@ export function EnrollmentForm({
             />
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
             <Button
               type="button"
               variant="outline"

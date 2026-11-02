@@ -31,7 +31,7 @@ export function AccountCard({ account, onCollect }: AccountCardProps) {
                 ? "text-success"
                 : account.status === "bloqueado" || account.status === "deudor"
                   ? "text-danger"
-                  : "text-white",
+                  : "text-foreground",
             )}
           >
             {formatARS(account.owedAmount)}
@@ -39,10 +39,10 @@ export function AccountCard({ account, onCollect }: AccountCardProps) {
         </div>
         <AccountStatusBadge status={account.status} />
       </div>
-      <p className="text-sm text-gray-300">{describeAccount(account)}</p>
+      <p className="text-sm text-foreground/80">{describeAccount(account)}</p>
 
       {account.unpaid.length > 0 && (
-        <ul className="divide-y divide-white/[0.05] rounded-xl border border-white/[0.06]">
+        <ul className="divide-y divide-border rounded-xl border border-border">
           {account.unpaid.map((charge) => {
             const late = diffDays(charge.dueDate, today);
             return (
@@ -51,10 +51,10 @@ export function AccountCard({ account, onCollect }: AccountCardProps) {
                 className="flex items-center justify-between gap-3 px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     Cuota de {formatPeriod(charge.period)}
                     {charge.prorated && (
-                      <span className="font-normal text-gray-400">
+                      <span className="font-normal text-muted-foreground">
                         {" "}
                         (proporcional)
                       </span>
@@ -63,7 +63,7 @@ export function AccountCard({ account, onCollect }: AccountCardProps) {
                   <p
                     className={cn(
                       "text-xs",
-                      late > 0 ? "text-warning" : "text-gray-400",
+                      late > 0 ? "text-warning" : "text-muted-foreground",
                     )}
                   >
                     {late > 0
@@ -71,7 +71,7 @@ export function AccountCard({ account, onCollect }: AccountCardProps) {
                       : `Vence el ${formatDate(charge.dueDate)}`}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-bold text-white">
+                <span className="shrink-0 text-sm font-bold text-foreground">
                   {formatARS(charge.amount)}
                 </span>
               </li>

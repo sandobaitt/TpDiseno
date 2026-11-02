@@ -8,7 +8,7 @@ const ICON_TONES: Record<StatusTone, string> = {
   warning: "bg-warning/10 text-warning",
   danger: "bg-danger/10 text-danger",
   info: "bg-info/10 text-info",
-  neutral: "bg-white/[0.06] text-gray-300",
+  neutral: "bg-foreground/[0.06] text-foreground/80",
 };
 
 const VALUE_TONES: Partial<Record<StatusTone, string>> = {
@@ -41,9 +41,9 @@ export function StatCard({
 }: StatCardProps) {
   // En el celular el ícono va arriba, así el rótulo tiene todo el ancho y no se corta.
   const classes = cn(
-    "relative flex flex-col items-start gap-3 rounded-2xl bg-neutral-900 p-4 shadow-card glass-border sm:flex-row sm:items-center sm:gap-4 sm:p-5",
+    "relative flex flex-col items-start gap-3 rounded-2xl bg-card p-4 shadow-card glass-border sm:flex-row sm:items-center sm:gap-4 sm:p-5",
     onClick &&
-      "w-full text-left transition-colors hover:bg-neutral-800/80 cursor-pointer",
+      "w-full text-left transition-colors hover:bg-secondary/80 cursor-pointer",
     pressed && "ring-2 ring-primary/70",
     className,
   );
@@ -61,7 +61,7 @@ export function StatCard({
       <div className="min-w-0">
         <p
           className={cn(
-            "text-2xl font-extrabold leading-tight text-white",
+            "text-2xl font-extrabold leading-tight text-foreground",
             VALUE_TONES[tone],
           )}
         >
@@ -74,7 +74,7 @@ export function StatCard({
         <i
           className={cn(
             "ti absolute right-3 top-3 text-base sm:static sm:ml-auto",
-            pressed ? "ti-filter-off text-primary" : "ti-filter text-gray-500",
+            pressed ? "ti-filter-off text-primary" : "ti-filter text-muted-foreground",
           )}
           aria-hidden="true"
         />

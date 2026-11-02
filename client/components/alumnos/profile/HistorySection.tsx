@@ -29,7 +29,7 @@ export function HistorySection({ attendance, activity }: HistorySectionProps) {
             title="Todavía no tiene asistencias registradas"
           />
         ) : (
-          <ul className="flex flex-col divide-y divide-white/[0.05]">
+          <ul className="flex flex-col divide-y divide-border">
             {recent.map((record) => {
               const slot = getSlot(record.slotId);
               const branch = branchesMock.find((b) => b.id === record.branchId);
@@ -39,16 +39,16 @@ export function HistorySection({ attendance, activity }: HistorySectionProps) {
                   className="flex flex-wrap items-center justify-between gap-2 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-foreground">
                       {slot ? getActivityName(slot.activityId) : "Clase"}
                       {slot && (
-                        <span className="font-normal text-gray-400">
+                        <span className="font-normal text-muted-foreground">
                           {" "}
                           · {slot.start} h
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {formatDate(record.date)} · {branch?.name ?? "—"}
                     </p>
                   </div>
@@ -87,8 +87,8 @@ export function HistorySection({ attendance, activity }: HistorySectionProps) {
                   aria-hidden="true"
                 />
                 <div className="min-w-0">
-                  <p className="text-sm text-white">{entry.summary}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm text-foreground">{entry.summary}</p>
+                  <p className="text-xs text-muted-foreground">
                     {getUserName(entry.userId)} · {formatDateTime(entry.at)}
                   </p>
                 </div>

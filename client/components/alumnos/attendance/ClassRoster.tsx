@@ -106,7 +106,7 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
       <EmptyState
         icon="ti-users-minus"
         title="Ningún alumno tiene esta clase en su plan"
-        className="rounded-2xl border border-dashed border-white/10"
+        className="rounded-2xl border border-dashed border-border"
       />
     );
   }
@@ -132,13 +132,13 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
           <i className="ti ti-checks text-base" aria-hidden="true" />
           Marcar presentes a los habilitados
         </Button>
-        <p className="ml-auto text-xs text-gray-400" aria-live="polite">
+        <p className="ml-auto text-xs text-muted-foreground" aria-live="polite">
           {presentCount} presentes · {absentCount} ausentes ·{" "}
           {roster.length - marked.length} sin marcar
         </p>
       </div>
 
-      <ul className="flex flex-col divide-y divide-white/[0.05] rounded-2xl bg-neutral-900 shadow-card glass-border">
+      <ul className="flex flex-col divide-y divide-border rounded-2xl bg-card shadow-card glass-border">
         {visible.map(({ client, access, account }) => {
           const mark = marks[client.id];
           const otherBranch = client.branchId !== session.branchId;
@@ -148,7 +148,7 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
               className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center"
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary">
                   <span className="text-xs font-bold text-primary">
                     {getInitials(client.fullName)}
                   </span>
@@ -157,16 +157,16 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
                   {profilePath ? (
                     <Link
                       to={profilePath(client.id)}
-                      className="block truncate text-sm font-semibold text-white hover:underline"
+                      className="block truncate text-sm font-semibold text-foreground hover:underline"
                     >
                       {client.fullName}
                     </Link>
                   ) : (
-                    <p className="truncate text-sm font-semibold text-white">
+                    <p className="truncate text-sm font-semibold text-foreground">
                       {client.fullName}
                     </p>
                   )}
-                  <p className="truncate text-xs text-gray-400">
+                  <p className="truncate text-xs text-muted-foreground">
                     DNI {client.dni} ·{" "}
                     {getPlan(client.planId)?.name ?? "Sin plan"}
                     {otherBranch &&
@@ -223,7 +223,7 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
                 {mark && mark !== "present" && (
                   <label
                     htmlFor={`just-${client.id}`}
-                    className="flex min-h-[40px] cursor-pointer items-center gap-2 text-xs text-gray-300"
+                    className="flex min-h-[40px] cursor-pointer items-center gap-2 text-xs text-foreground/80"
                   >
                     <Checkbox
                       id={`just-${client.id}`}
@@ -253,8 +253,8 @@ export function ClassRoster({ session, profilePath }: ClassRosterProps) {
         )}
       </ul>
 
-      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-neutral-900/95 px-4 py-3 shadow-card backdrop-blur">
-        <p className="text-xs text-gray-400">
+      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 px-4 py-3 shadow-card backdrop-blur">
+        <p className="text-xs text-muted-foreground">
           {dirty ? (
             <span className="font-semibold text-warning">
               <i className="ti ti-pencil mr-1" aria-hidden="true" />

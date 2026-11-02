@@ -41,7 +41,7 @@ export function Pagination({
         <button
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
-          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 transition-colors hover:bg-white/[0.04] hover:text-gray-200"
+          className="rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
         >
           ← Anterior
         </button>
@@ -54,7 +54,7 @@ export function Pagination({
           p === -1 ? (
             <span
               key={`e-${i}`}
-              className="px-1 text-xs text-gray-400"
+              className="px-1 text-xs text-muted-foreground"
               aria-hidden="true"
             >
               …
@@ -70,7 +70,7 @@ export function Pagination({
                 "flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold transition-colors",
                 p === currentPage
                   ? "bg-primary/10 text-primary"
-                  : "text-gray-400 hover:bg-white/[0.04] hover:text-gray-200",
+                  : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
               )}
             >
               {p}
@@ -83,7 +83,7 @@ export function Pagination({
         <button
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
-          className="rounded-lg px-3 py-2 text-xs font-semibold text-gray-400 transition-colors hover:bg-white/[0.04] hover:text-gray-200"
+          className="rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
         >
           Siguiente →
         </button>

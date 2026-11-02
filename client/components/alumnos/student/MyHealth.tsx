@@ -75,7 +75,7 @@ export function MyHealth({ client }: { client: Client }) {
             >
               Firmada el {formatDate(health.signedAt)}
             </StatusBadge>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-foreground/80">
               {conditions.length > 0
                 ? `Declaraste: ${conditions.map((c) => c.label.toLowerCase()).join(", ")}.`
                 : "No declaraste condiciones de salud."}
@@ -98,13 +98,13 @@ export function MyHealth({ client }: { client: Client }) {
             {client.attachments!.map((doc) => (
               <li
                 key={doc.id}
-                className="flex flex-wrap items-center gap-2 rounded-xl bg-neutral-800/40 px-3 py-2.5"
+                className="flex flex-wrap items-center gap-2 rounded-xl bg-secondary/40 px-3 py-2.5"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     {ATTACHMENT_KIND_LABELS[doc.kind]}
                   </p>
-                  <p className="truncate text-xs text-gray-400">
+                  <p className="truncate text-xs text-muted-foreground">
                     {doc.fileName} · {formatFileSize(doc.sizeKb)} ·{" "}
                     {formatDate(doc.uploadedAt)}
                   </p>

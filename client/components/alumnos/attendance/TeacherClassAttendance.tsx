@@ -39,7 +39,7 @@ export function TeacherClassAttendance({ teacherId }: { teacherId?: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border max-sm:p-4">
+      <div className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card glass-border max-sm:p-4">
         <FormField
           label="Día"
           hint={`Podés corregir clases de hasta ${ATTENDANCE_CORRECTION_DAYS} días atrás.`}
@@ -82,18 +82,18 @@ export function TeacherClassAttendance({ teacherId }: { teacherId?: string }) {
                     "h-auto flex-col items-start gap-0 rounded-xl px-4 py-2.5 text-left",
                     active
                       ? "border-primary/60 bg-primary/10 hover:bg-primary/15"
-                      : "border-white/[0.07]",
+                      : "border-border",
                   )}
                 >
                   <span
                     className={cn(
                       "text-sm font-bold",
-                      active ? "text-primary" : "text-white",
+                      active ? "text-primary" : "text-foreground",
                     )}
                   >
                     {s.start} · {getActivityName(s.activityId)}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-muted-foreground">
                     {branchName(s.branchId)}
                     {s.replacementId && " · reemplazo"}
                   </span>
@@ -117,7 +117,7 @@ export function TeacherClassAttendance({ teacherId }: { teacherId?: string }) {
           icon="ti-calendar-off"
           title="No tenés clases este día"
           description="Elegí otro día para ver o corregir la asistencia."
-          className="rounded-2xl border border-dashed border-white/10"
+          className="rounded-2xl border border-dashed border-border"
         />
       )}
     </div>

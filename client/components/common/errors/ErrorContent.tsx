@@ -19,7 +19,7 @@ export function ErrorContent() {
   return (
     <section className="flex flex-col flex-1 justify-center items-center px-6">
       <div className="flex flex-col items-center">
-        <h1 className="italic font-black tracking-normal leading-none text-white text-[220px] max-md:text-9xl max-sm:text-8xl">
+        <h1 className="italic font-black tracking-normal leading-none text-foreground text-[220px] max-md:text-9xl max-sm:text-8xl">
           404
         </h1>
 
@@ -27,12 +27,12 @@ export function ErrorContent() {
           <ErrorBadge>PÁGINA NO ENCONTRADA</ErrorBadge>
         </div>
 
-        <header className="mb-5 text-5xl font-black tracking-normal leading-none text-center text-white uppercase max-md:text-4xl max-sm:text-3xl">
-          <h2 className="italic font-black text-white">ESTA PÁGINA</h2>
+        <header className="mb-5 text-5xl font-black tracking-normal leading-none text-center text-foreground uppercase max-md:text-4xl max-sm:text-3xl">
+          <h2 className="italic font-black text-foreground">ESTA PÁGINA</h2>
           <h2 className="italic font-black text-primary">NO EXISTE</h2>
         </header>
 
-        <p className="mb-12 text-base leading-relaxed text-center max-w-[480px] text-neutral-400 max-sm:text-sm">
+        <p className="mb-12 text-base leading-relaxed text-center max-w-[480px] text-muted-foreground max-sm:text-sm">
           La página que buscás no existe o cambió de lugar. Volvé al inicio para
           seguir.
         </p>

@@ -43,7 +43,7 @@ export function ConfirmDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="max-w-sm rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <AlertDialogContent className="max-w-sm rounded-2xl border-border bg-card text-foreground">
         <AlertDialogHeader className="items-center text-center sm:items-start sm:text-left">
           {iconClassName && (
             <div
@@ -57,17 +57,17 @@ export function ConfirmDialog({
               <i className={cn(iconClassName, "text-2xl")} aria-hidden="true" />
             </div>
           )}
-          <AlertDialogTitle className="text-lg font-extrabold text-white">
+          <AlertDialogTitle className="text-lg font-extrabold text-foreground">
             {title}
           </AlertDialogTitle>
           {description && (
-            <AlertDialogDescription className="text-sm leading-relaxed text-gray-400">
+            <AlertDialogDescription className="text-sm leading-relaxed text-muted-foreground">
               {description}
             </AlertDialogDescription>
           )}
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2 sm:gap-0">
-          <AlertDialogCancel className="rounded-xl border-zinc-700 bg-neutral-800 text-gray-200 hover:bg-neutral-700 hover:text-white">
+          <AlertDialogCancel className="rounded-xl border-input bg-secondary text-foreground hover:bg-accent hover:text-foreground">
             {cancelLabel}
           </AlertDialogCancel>
           <AlertDialogAction
@@ -76,7 +76,7 @@ export function ConfirmDialog({
               "rounded-xl font-bold",
               // Texto oscuro sobre rojo claro: contraste AA.
               isDanger
-                ? "bg-danger text-neutral-950 hover:bg-danger/90"
+                ? "bg-danger text-danger-foreground hover:bg-danger/90"
                 : "bg-primary text-primary-foreground hover:bg-primary/90",
             )}
           >

@@ -45,7 +45,7 @@ export function ShiftRegister({
   const [branch, setBranch] = React.useState(branchId);
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border sm:grid-cols-2 max-sm:p-4">
+      <div className="grid grid-cols-1 gap-4 rounded-2xl bg-card p-5 shadow-card glass-border sm:grid-cols-2 max-sm:p-4">
         <FormField
           label="Día"
           hint={`Se puede completar hasta ${ATTENDANCE_CORRECTION_DAYS} días atrás.`}
@@ -159,7 +159,7 @@ function ShiftList({
       <EmptyState
         icon="ti-calendar-off"
         title="No hay clases ese día en esta sede"
-        className="rounded-2xl border border-dashed border-white/10"
+        className="rounded-2xl border border-dashed border-border"
       />
     );
   }
@@ -169,7 +169,7 @@ function ShiftList({
       aria-label={`Turnos del ${formatDate(date)}`}
       className="flex flex-col gap-3"
     >
-      <ul className="flex flex-col divide-y divide-white/[0.05] rounded-2xl bg-neutral-900 shadow-card glass-border">
+      <ul className="flex flex-col divide-y divide-border rounded-2xl bg-card shadow-card glass-border">
         {rows.map(({ session, record }) => {
           const teacher = getTeacher(session.teacherId);
           const mark = marks[session.slotId];
@@ -180,11 +180,11 @@ function ShiftList({
               className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-white">
+                <p className="text-sm font-bold text-foreground">
                   {session.start} a {session.end} ·{" "}
                   {getActivityName(session.activityId)}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   {teacher?.fullName ?? "Sin profesor"}
                   {teacher &&
                     ` · ${CONTRACT_TYPE_LABELS[teacher.contractType]}`}
@@ -264,8 +264,8 @@ function ShiftList({
           );
         })}
       </ul>
-      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.08] bg-neutral-900/95 px-4 py-3 shadow-card backdrop-blur">
-        <p className="text-xs text-gray-400">
+      <div className="sticky bottom-3 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/95 px-4 py-3 shadow-card backdrop-blur">
+        <p className="text-xs text-muted-foreground">
           {changed.length > 0 ? (
             <span className="font-semibold text-warning">
               {changed.length}{" "}

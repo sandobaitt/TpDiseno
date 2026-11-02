@@ -21,7 +21,7 @@ export function CheckoutDialog({
 }: CheckoutDialogProps) {
   return (
     <Dialog open={!!clientId} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[92vh] max-w-5xl overflow-y-auto rounded-2xl border-white/[0.08] bg-background p-5 text-white sm:p-6">
+      <DialogContent className="max-h-[92vh] max-w-5xl overflow-y-auto rounded-2xl border-border bg-background p-5 text-foreground sm:p-6">
         <DialogTitle className="text-lg font-extrabold">
           {mode === "online" ? "Pagar cuota" : "Cobrar cuota"}
         </DialogTitle>

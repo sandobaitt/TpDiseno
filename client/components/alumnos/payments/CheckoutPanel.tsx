@@ -145,23 +145,23 @@ export function CheckoutPanel({
     <>
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1.35fr_1fr]">
         <div className="flex flex-col gap-5">
-          <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border">
+          <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-card p-5 shadow-card glass-border">
             <div
-              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-lg font-bold text-primary"
+              className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-secondary text-lg font-bold text-primary"
               aria-hidden="true"
             >
               {getInitials(client.fullName)}
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-foreground">
                 {client.fullName}
               </h2>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 DNI {client.dni} · {plan.name}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <AccountStatusBadge status={account.status} />
-                <span className="text-sm text-gray-300">
+                <span className="text-sm text-foreground/80">
                   {describeAccount(account)}
                 </span>
               </div>
@@ -207,10 +207,10 @@ export function CheckoutPanel({
           <SectionCard title="Total" icon="ti-calculator">
             <dl className="flex flex-col gap-2 text-sm">
               <div className="flex justify-between gap-3">
-                <dt className="text-gray-400">
+                <dt className="text-muted-foreground">
                   Subtotal ({count} {count === 1 ? "cuota" : "cuotas"})
                 </dt>
-                <dd className="text-white">{formatARS(subtotal)}</dd>
+                <dd className="text-foreground">{formatARS(subtotal)}</dd>
               </div>
               {discount > 0 && applied && (
                 <div className="flex justify-between gap-3">
@@ -218,11 +218,11 @@ export function CheckoutPanel({
                   <dd className="text-primary">− {formatARS(discount)}</dd>
                 </div>
               )}
-              <div className="mt-1 flex items-end justify-between gap-3 border-t border-white/[0.06] pt-3">
-                <dt className="text-xs font-bold uppercase tracking-widest text-gray-400">
+              <div className="mt-1 flex items-end justify-between gap-3 border-t border-border pt-3">
+                <dt className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {online ? "Total a pagar" : "Total a cobrar"}
                 </dt>
-                <dd className="text-3xl font-extrabold text-white">
+                <dd className="text-3xl font-extrabold text-foreground">
                   {formatARS(total)}
                 </dd>
               </div>
@@ -262,7 +262,7 @@ export function CheckoutPanel({
           if (paid) onClose();
         }}
       >
-        <AlertDialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <AlertDialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
           {!paid ? (
             <>
               <AlertDialogHeader>

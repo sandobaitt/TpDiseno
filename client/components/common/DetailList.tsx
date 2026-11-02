@@ -27,11 +27,11 @@ export function DetailList({ items, twoColumns, className }: DetailListProps) {
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex items-start gap-3 border-b border-white/[0.05] py-3"
+          className="flex items-start gap-3 border-b border-border py-3"
         >
           {item.icon && (
             <i
-              className={cn("ti mt-0.5 text-base text-gray-400", item.icon)}
+              className={cn("ti mt-0.5 text-base text-muted-foreground", item.icon)}
               aria-hidden="true"
             />
           )}
@@ -39,7 +39,7 @@ export function DetailList({ items, twoColumns, className }: DetailListProps) {
             <dt className="text-xs font-semibold text-muted-foreground">
               {item.label}
             </dt>
-            <dd className="mt-0.5 break-words text-sm font-medium text-white">
+            <dd className="mt-0.5 break-words text-sm font-medium text-foreground">
               {item.value}
             </dd>
           </div>

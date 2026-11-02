@@ -50,16 +50,16 @@ const activePlans = plansMock.filter((p) => p.status === "active");
 function NameCell({ name, dni }: { name: string; dni: string }) {
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary">
         <span className="text-xs font-bold text-primary">
           {getInitials(name)}
         </span>
       </div>
       <div className="flex min-w-0 flex-col">
-        <span className="truncate text-sm font-semibold text-white">
+        <span className="truncate text-sm font-semibold text-foreground">
           {name}
         </span>
-        <span className="text-xs text-gray-400">DNI {dni}</span>
+        <span className="text-xs text-muted-foreground">DNI {dni}</span>
       </div>
     </div>
   );
@@ -142,7 +142,7 @@ export function CollectionsBoard() {
         <span
           className={cn(
             "text-sm font-bold",
-            r.overdueDays > 0 ? "text-danger" : "text-white",
+            r.overdueDays > 0 ? "text-danger" : "text-foreground",
           )}
         >
           {formatARS(r.owed)}
@@ -158,7 +158,7 @@ export function CollectionsBoard() {
             {r.overdueDays} {r.overdueDays === 1 ? "día" : "días"} de atraso
           </span>
         ) : (
-          <span className="text-sm text-gray-300">
+          <span className="text-sm text-foreground/80">
             Vence el {formatDate(r.dueDate)}
             {diffDays(today, r.dueDate) <= 3 && " (pronto)"}
           </span>
@@ -178,7 +178,7 @@ export function CollectionsBoard() {
       key: "due",
       header: "PRÓXIMO VENCIMIENTO",
       render: (r) => (
-        <span className="text-sm text-gray-300">{formatDate(r.dueDate)}</span>
+        <span className="text-sm text-foreground/80">{formatDate(r.dueDate)}</span>
       ),
     },
     debtorColumns[4],
@@ -190,10 +190,10 @@ export function CollectionsBoard() {
       header: "ALUMNO",
       render: (p) => (
         <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-semibold text-white">
+          <span className="truncate text-sm font-semibold text-foreground">
             {clientName(p.clientId)}
           </span>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-muted-foreground">
             {p.receiptNumber} · {p.createdAt.slice(11, 16)} h
           </span>
         </div>
@@ -203,7 +203,7 @@ export function CollectionsBoard() {
       key: "periods",
       header: "CUOTAS",
       render: (p) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {p.periods.map(formatPeriod).join(", ")}
         </span>
       ),
@@ -212,7 +212,7 @@ export function CollectionsBoard() {
       key: "method",
       header: "MEDIO",
       render: (p) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {PAYMENT_METHOD_LABELS[p.method]}
         </span>
       ),
@@ -221,7 +221,7 @@ export function CollectionsBoard() {
       key: "amount",
       header: "TOTAL",
       render: (p) => (
-        <span className="text-sm font-bold text-white">
+        <span className="text-sm font-bold text-foreground">
           {formatARS(p.amountArs)}
         </span>
       ),
@@ -230,7 +230,7 @@ export function CollectionsBoard() {
       key: "by",
       header: "REGISTRÓ",
       render: (p) => (
-        <span className="truncate text-sm text-gray-300">
+        <span className="truncate text-sm text-foreground/80">
           {getUserName(p.processedBy)}
         </span>
       ),
@@ -322,18 +322,18 @@ export function CollectionsBoard() {
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="rounded-lg text-xs text-gray-300"
+              className="rounded-lg text-xs text-foreground/80"
             >
               Limpiar filtros
             </Button>
           )}
-          <span className="ml-auto text-xs text-gray-400" aria-live="polite">
+          <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
             {listRows.length} {listRows.length === 1 ? "alumno" : "alumnos"}
           </span>
         </div>
       )}
 
-      <div className="rounded-2xl bg-neutral-900 p-5 shadow-card glass-border max-sm:p-3">
+      <div className="rounded-2xl bg-card p-5 shadow-card glass-border max-sm:p-3">
         {tab === "today" ? (
           todayPayments.length === 0 ? (
             <EmptyState

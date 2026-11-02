@@ -83,10 +83,10 @@ export function BranchEnrollments() {
       header: "ALUMNO",
       render: (c) => (
         <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-semibold text-white">
+          <span className="truncate text-sm font-semibold text-foreground">
             {c.fullName}
           </span>
-          <span className="text-xs text-gray-400">DNI {c.dni}</span>
+          <span className="text-xs text-muted-foreground">DNI {c.dni}</span>
         </div>
       ),
     },
@@ -94,7 +94,7 @@ export function BranchEnrollments() {
       key: "plan",
       header: "PLAN",
       render: (c) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {getPlan(c.planId)?.name ?? "Sin plan"}
         </span>
       ),
@@ -103,7 +103,7 @@ export function BranchEnrollments() {
       key: "date",
       header: "ALTA",
       render: (c) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {formatDate(c.enrolledAt)}
         </span>
       ),
@@ -120,7 +120,7 @@ export function BranchEnrollments() {
       header: "INSCRIPTO POR",
       hideOnMobile: true,
       render: (c) => (
-        <span className="truncate text-sm text-gray-300">
+        <span className="truncate text-sm text-foreground/80">
           {getUserName(c.createdBy)}
         </span>
       ),
@@ -136,7 +136,7 @@ export function BranchEnrollments() {
           <div className="flex items-center gap-2">
             <label
               htmlFor="inscripciones-mes"
-              className="text-xs font-semibold text-gray-300"
+              className="text-xs font-semibold text-foreground/80"
             >
               Mes
             </label>
@@ -231,9 +231,9 @@ export function BranchEnrollments() {
               {history.map((m) => (
                 <tr
                   key={m.period}
-                  className="border-t border-white/[0.05] text-gray-300"
+                  className="border-t border-border text-foreground/80"
                 >
-                  <th scope="row" className="py-1.5 font-medium text-white">
+                  <th scope="row" className="py-1.5 font-medium text-foreground">
                     {formatPeriod(m.period)}
                   </th>
                   <td className="py-1.5">{m.enrolled}</td>
@@ -257,9 +257,9 @@ export function BranchEnrollments() {
               {byPlan.map(({ plan, count }) => (
                 <li
                   key={plan.id}
-                  className="flex items-center justify-between rounded-xl bg-neutral-800/40 px-4 py-3"
+                  className="flex items-center justify-between rounded-xl bg-secondary/40 px-4 py-3"
                 >
-                  <span className="text-sm text-white">{plan.name}</span>
+                  <span className="text-sm text-foreground">{plan.name}</span>
                   <span className="text-sm font-bold text-primary">
                     {count} {count === 1 ? "alumno" : "alumnos"}
                   </span>

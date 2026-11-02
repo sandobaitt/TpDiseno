@@ -43,7 +43,7 @@ export function SegmentedTabs<T extends string>({
               "flex items-center gap-2 whitespace-nowrap rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors",
               active
                 ? "border-primary/60 bg-primary/10 text-primary"
-                : "border-transparent text-gray-400 hover:bg-white/[0.04] hover:text-gray-200",
+                : "border-transparent text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground",
             )}
           >
             {item.icon && (
@@ -56,7 +56,7 @@ export function SegmentedTabs<T extends string>({
                   "rounded-md px-1.5 py-0.5 text-[11px] font-bold",
                   active
                     ? "bg-primary/20 text-primary"
-                    : "bg-zinc-800 text-gray-400",
+                    : "bg-secondary text-muted-foreground",
                 )}
               >
                 {item.count}

@@ -81,10 +81,10 @@ export function AccessResult({
             {access.allowed ? "Puede ingresar" : "No puede ingresar"}
             {className && ` · ${className}`}
           </p>
-          <h2 className="text-2xl font-black leading-tight text-white sm:text-3xl">
+          <h2 className="text-2xl font-black leading-tight text-foreground sm:text-3xl">
             {access.title}
           </h2>
-          <p className="mt-1 text-sm text-gray-200">{access.detail}</p>
+          <p className="mt-1 text-sm text-foreground">{access.detail}</p>
         </div>
       </div>
 
@@ -98,8 +98,8 @@ export function AccessResult({
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-neutral-900/70 px-4 py-3 text-sm text-gray-300">
-        <span className="font-semibold text-white">{client.fullName}</span>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-card/70 px-4 py-3 text-sm text-foreground/80">
+        <span className="font-semibold text-foreground">{client.fullName}</span>
         <span>DNI {client.dni}</span>
         <span aria-hidden="true">·</span>
         <span>{plan?.name ?? "Sin plan"}</span>
@@ -152,7 +152,7 @@ export function AccessResult({
           type="button"
           variant="ghost"
           onClick={onReset}
-          className="rounded-xl text-gray-300"
+          className="rounded-xl text-foreground/80"
         >
           Nueva búsqueda
         </Button>

@@ -20,7 +20,7 @@ const TONE_TEXT: Record<NotificationTone, string> = {
   warning: "text-warning",
   info: "text-info",
   success: "text-success",
-  neutral: "text-gray-300",
+  neutral: "text-foreground/80",
 };
 
 /** Dónde ver todos los avisos de cada rol. */
@@ -56,16 +56,16 @@ export function NotificationBell() {
           <span
             className={cn(
               "block text-sm",
-              n.read ? "font-medium text-gray-300" : "font-bold text-white",
+              n.read ? "font-medium text-foreground/80" : "font-bold text-foreground",
             )}
           >
             {!n.read && <span className="sr-only">Nuevo: </span>}
             {n.title}
           </span>
-          <span className="line-clamp-2 block text-xs text-gray-400">
+          <span className="line-clamp-2 block text-xs text-muted-foreground">
             {n.detail}
           </span>
-          <span className="mt-0.5 block text-xs text-gray-500">
+          <span className="mt-0.5 block text-xs text-muted-foreground">
             {formatRelativeDate(n.date, today)}
           </span>
         </span>
@@ -87,12 +87,12 @@ export function NotificationBell() {
           aria-label={
             unreadCount > 0 ? `Avisos: ${unreadCount} sin leer` : "Avisos"
           }
-          className="relative flex h-9 w-9 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-gray-200"
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
         >
           <i className="ti ti-bell text-lg" aria-hidden="true" />
           {unreadCount > 0 && (
             <span
-              className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold text-neutral-950"
+              className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-bold text-danger-foreground"
               aria-hidden="true"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -102,9 +102,9 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-2xl border-white/[0.08] bg-neutral-900 p-0 text-white"
+        className="w-[22rem] max-w-[calc(100vw-2rem)] rounded-2xl border-border bg-card p-0 text-foreground"
       >
-        <div className="flex items-center justify-between gap-2 border-b border-white/[0.06] px-4 py-3">
+        <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
           <p className="text-sm font-bold">Avisos</p>
           {unreadCount > 0 && (
             <Button
@@ -122,13 +122,13 @@ export function NotificationBell() {
         {items.length === 0 ? (
           <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
             <i
-              className="ti ti-bell-off text-2xl text-gray-500"
+              className="ti ti-bell-off text-2xl text-muted-foreground"
               aria-hidden="true"
             />
-            <p className="text-sm text-gray-400">No tenés avisos por ahora.</p>
+            <p className="text-sm text-muted-foreground">No tenés avisos por ahora.</p>
           </div>
         ) : (
-          <ul className="flex max-h-[60vh] flex-col divide-y divide-white/[0.05] overflow-y-auto">
+          <ul className="flex max-h-[60vh] flex-col divide-y divide-border overflow-y-auto">
             {items.slice(0, MAX_ITEMS).map((n) => (
               <li key={n.id}>
                 {n.link ? (
@@ -138,7 +138,7 @@ export function NotificationBell() {
                       markRead(n.id);
                       setOpen(false);
                     }}
-                    className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-white/[0.04]"
+                    className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-foreground/[0.04]"
                   >
                     {itemContent(n)}
                   </Link>
@@ -146,7 +146,7 @@ export function NotificationBell() {
                   <button
                     type="button"
                     onClick={() => markRead(n.id)}
-                    className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.04]"
+                    className="flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-foreground/[0.04]"
                   >
                     {itemContent(n)}
                   </button>
@@ -157,11 +157,11 @@ export function NotificationBell() {
         )}
 
         {allLink && (
-          <div className="border-t border-white/[0.06] p-2">
+          <div className="border-t border-border p-2">
             <Link
               to={allLink.to}
               onClick={() => setOpen(false)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-gray-300 transition-colors hover:bg-white/[0.05]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-foreground/80 transition-colors hover:bg-foreground/[0.05]"
             >
               {allLink.label}
               <i className="ti ti-arrow-right text-sm" aria-hidden="true" />

@@ -132,11 +132,11 @@ export function PersonalStep({
 
       {minor && (
         <fieldset className="flex flex-col gap-4 rounded-xl border border-info/25 bg-info/5 p-4">
-          <legend className="flex items-center gap-2 px-1 text-sm font-bold text-white">
+          <legend className="flex items-center gap-2 px-1 text-sm font-bold text-foreground">
             <i className="ti ti-user-shield text-info" aria-hidden="true" />
             Adulto responsable
           </legend>
-          <p className="-mt-2 text-xs text-gray-300">
+          <p className="-mt-2 text-xs text-foreground/80">
             Por ser menor de edad, necesita la autorización firmada de un adulto
             responsable.
           </p>

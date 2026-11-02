@@ -14,7 +14,7 @@ const TONES: Record<StatusTone, string> = {
   warning: "border-warning/30 bg-warning/10 text-warning",
   danger: "border-danger/30 bg-danger/10 text-danger",
   info: "border-info/30 bg-info/10 text-info",
-  neutral: "border-white/10 bg-white/[0.04] text-gray-300",
+  neutral: "border-border bg-foreground/[0.04] text-foreground/80",
   primary: "border-primary/30 bg-primary/10 text-primary",
 };
 

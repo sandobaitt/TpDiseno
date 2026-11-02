@@ -15,11 +15,11 @@ function getInitials(fullName: string): string {
 }
 
 const ROLE_STYLE: Record<AppUserRole, { bg: string; text: string }> = {
-  admin: { bg: "bg-lime-400/10", text: "text-lime-400" },
-  encargado: { bg: "bg-amber-400/10", text: "text-amber-400" },
-  secretario: { bg: "bg-violet-400/10", text: "text-violet-400" },
-  profesor: { bg: "bg-blue-400/10", text: "text-blue-400" },
-  alumno: { bg: "bg-gray-400/10", text: "text-gray-500 dark:text-gray-300" },
+  admin: { bg: "bg-primary/10", text: "text-primary" },
+  encargado: { bg: "bg-warning/10", text: "text-warning" },
+  secretario: { bg: "bg-violet-500/10", text: "text-violet-700 dark:text-violet-400" },
+  profesor: { bg: "bg-info/10", text: "text-info" },
+  alumno: { bg: "bg-muted-foreground/10", text: "text-muted-foreground" },
 };
 
 interface HeaderProps {
@@ -131,7 +131,7 @@ export function Header({
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-red-500 hover:text-red-600 dark:text-red-400/70 dark:hover:text-red-400 hover:bg-red-500/[0.07] text-xs font-bold transition-colors cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-danger hover:bg-danger/[0.07] text-xs font-bold transition-colors cursor-pointer"
                 >
                   <i className="ti ti-logout text-sm" />
                   Cerrar sesión
@@ -146,7 +146,7 @@ export function Header({
           <button
             onClick={onMenuClick}
             aria-label="Abrir menú"
-            className="flex items-center justify-center w-9 h-9 rounded-xl text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] transition-all duration-150 cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-xl text-muted-foreground hover:text-foreground hover:bg-foreground/[0.06] transition-all duration-150 cursor-pointer"
           >
             <i className="ti ti-menu-2 text-xl" />
           </button>

@@ -30,25 +30,25 @@ export function DayColumn<T>({
       className={cn(
         "relative flex w-full min-w-[170px] flex-col gap-3 rounded-2xl p-3 transition-all",
         active
-          ? "border border-primary/40 bg-neutral-800/60 shadow-card"
-          : "bg-neutral-900/50 glass-border",
+          ? "border border-primary/40 bg-secondary/60 shadow-card"
+          : "bg-card/50 glass-border",
       )}
     >
       <button
         type="button"
         onClick={() => onSelect?.(day.dayAbbr)}
         aria-pressed={!!active}
-        className="flex flex-col items-center gap-0.5 rounded-lg border-b border-zinc-800/40 pb-2 pt-1"
+        className="flex flex-col items-center gap-0.5 rounded-lg border-b border-border/40 pb-2 pt-1"
       >
         <span
           className={cn(
             "text-xs font-bold tracking-widest",
-            active ? "text-primary" : "text-gray-400",
+            active ? "text-primary" : "text-muted-foreground",
           )}
         >
           {day.dayAbbr}
         </span>
-        <span className="text-[11px] font-medium text-gray-400">
+        <span className="text-[11px] font-medium text-muted-foreground">
           {day.date} {day.month || ""}
         </span>
       </button>
@@ -57,7 +57,7 @@ export function DayColumn<T>({
         {items.length > 0 ? (
           items.map(renderItem)
         ) : (
-          <div className="flex flex-col items-center justify-center gap-2 py-8 text-gray-400">
+          <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
             <i className="ti ti-calendar-off text-xl" aria-hidden="true" />
             <span className="max-w-[120px] text-center text-xs font-medium leading-tight">
               {emptyMessage}

@@ -28,9 +28,9 @@ function Section({
   onEditStep: (step: number) => void;
 }) {
   return (
-    <section className="rounded-xl border border-white/[0.06] p-4">
+    <section className="rounded-xl border border-border p-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-bold text-white">{title}</h3>
+        <h3 className="text-sm font-bold text-foreground">{title}</h3>
         <Button
           type="button"
           variant="ghost"

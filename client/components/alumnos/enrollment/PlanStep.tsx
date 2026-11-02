@@ -35,7 +35,7 @@ export function PlanStep({
   return (
     <div className="flex flex-col gap-5">
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-xs font-semibold text-gray-300">
+        <legend className="mb-2 text-xs font-semibold text-foreground/80">
           Plan <span className="text-danger">*</span>
         </legend>
         <RadioGroup
@@ -55,7 +55,7 @@ export function PlanStep({
                   "flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors",
                   selected
                     ? "border-primary/60 bg-primary/10"
-                    : "border-zinc-700 bg-neutral-800/40 hover:border-zinc-500",
+                    : "border-input bg-secondary/40 hover:border-muted-foreground/60",
                 )}
               >
                 <RadioGroupItem
@@ -68,12 +68,12 @@ export function PlanStep({
                     <span
                       className={cn(
                         "font-bold",
-                        selected ? "text-primary" : "text-white",
+                        selected ? "text-primary" : "text-foreground",
                       )}
                     >
                       {plan.name}
                     </span>
-                    <span className="font-extrabold text-white">
+                    <span className="font-extrabold text-foreground">
                       {formatARS(plan.monthlyPriceArs)}
                       <span className="text-xs font-medium text-muted-foreground">
                         {" "}
@@ -82,7 +82,7 @@ export function PlanStep({
                     </span>
                   </div>
                   {plan.description && (
-                    <p className="mt-0.5 text-xs text-gray-400">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       {plan.description}
                     </p>
                   )}
@@ -93,7 +93,7 @@ export function PlanStep({
                     {plan.activityIds.map((activityId) => (
                       <li
                         key={activityId}
-                        className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-gray-300"
+                        className="rounded-md bg-secondary px-2 py-0.5 text-xs text-foreground/80"
                       >
                         {getActivityName(activityId)}
                       </li>

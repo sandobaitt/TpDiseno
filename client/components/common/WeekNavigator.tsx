@@ -11,17 +11,17 @@ interface WeekNavigatorProps {
 export function WeekNavigator({ weekStart, onChange }: WeekNavigatorProps) {
   const currentWeek = startOfWeek(todayISO());
   return (
-    <div className="flex items-center gap-1 rounded-xl border border-white/[0.07] bg-neutral-900 p-1 shadow-card">
+    <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1 shadow-card">
       <button
         type="button"
         onClick={() => onChange(addDays(weekStart, -7))}
         aria-label="Semana anterior"
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
       >
         <i className="ti ti-chevron-left text-sm" aria-hidden="true" />
       </button>
       <span
-        className="flex items-center gap-2 whitespace-nowrap px-2 text-xs font-bold tracking-wider text-white"
+        className="flex items-center gap-2 whitespace-nowrap px-2 text-xs font-bold tracking-wider text-foreground"
         aria-live="polite"
       >
         <i className="ti ti-calendar text-sm text-primary" aria-hidden="true" />
@@ -31,7 +31,7 @@ export function WeekNavigator({ weekStart, onChange }: WeekNavigatorProps) {
         type="button"
         onClick={() => onChange(addDays(weekStart, 7))}
         aria-label="Semana siguiente"
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+        className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
       >
         <i className="ti ti-chevron-right text-sm" aria-hidden="true" />
       </button>

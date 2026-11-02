@@ -95,21 +95,21 @@ export function MyAttendance({ clientId }: { clientId?: string }) {
       key: "date",
       header: "FECHA",
       render: (r) => (
-        <span className="text-sm text-gray-200">{formatDate(r.date)}</span>
+        <span className="text-sm text-foreground">{formatDate(r.date)}</span>
       ),
     },
     {
       key: "className",
       header: "CLASE",
       render: (r) => (
-        <span className="text-sm font-semibold text-white">{r.className}</span>
+        <span className="text-sm font-semibold text-foreground">{r.className}</span>
       ),
     },
     {
       key: "branch",
       header: "SEDE",
       render: (r) => (
-        <span className="text-sm text-gray-300">{branchName(r.branchId)}</span>
+        <span className="text-sm text-foreground/80">{branchName(r.branchId)}</span>
       ),
     },
     { key: "teacher", header: "PROFESOR", hideOnMobile: true },
@@ -172,7 +172,7 @@ export function MyAttendance({ clientId }: { clientId?: string }) {
           <div className="flex flex-wrap items-center gap-3">
             <label
               htmlFor="mi-asistencia-mes"
-              className="text-xs font-semibold text-gray-300"
+              className="text-xs font-semibold text-foreground/80"
             >
               Mes
             </label>

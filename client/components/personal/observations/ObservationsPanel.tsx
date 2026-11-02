@@ -156,10 +156,10 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                 type="button"
                 variant="ghost"
                 onClick={() => setSelected(b)}
-                className="h-auto w-full flex-col items-start gap-1 whitespace-normal rounded-xl border border-white/[0.06] bg-neutral-800/40 px-3 py-3 text-left font-normal"
+                className="h-auto w-full flex-col items-start gap-1 whitespace-normal rounded-xl border border-border bg-secondary/40 px-3 py-3 text-left font-normal"
               >
-                <span className="text-sm font-bold text-white">{b.title}</span>
-                <span className="line-clamp-2 text-xs text-gray-300">
+                <span className="text-sm font-bold text-foreground">{b.title}</span>
+                <span className="line-clamp-2 text-xs text-foreground/80">
                   {b.content}
                 </span>
                 {classLabel(b.slotId, b.date) && (
@@ -167,7 +167,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                     {classLabel(b.slotId, b.date)}
                   </span>
                 )}
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {formatDateTime(b.createdAt)}
                   {b.studentName && ` · ${b.studentName}`}
                 </span>
@@ -181,7 +181,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
         open={!!selected}
         onOpenChange={(open) => !open && setSelected(null)}
       >
-        <DialogContent className="max-w-lg rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <DialogContent className="max-w-lg rounded-2xl border-border bg-card text-foreground">
           {selected && (
             <>
               <DialogHeader>
@@ -195,7 +195,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
                   {selected.studentName && ` · ${selected.studentName}`}
                 </DialogDescription>
               </DialogHeader>
-              <p className="text-sm leading-relaxed text-gray-200">
+              <p className="text-sm leading-relaxed text-foreground">
                 {selected.content}
               </p>
             </>
@@ -204,7 +204,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
       </Dialog>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <DialogContent className="max-w-lg rounded-2xl border-border bg-card text-foreground">
           <DialogHeader>
             <DialogTitle className="text-lg font-extrabold">
               Nueva observación
@@ -215,7 +215,7 @@ export function ObservationsPanel({ teacherId }: ObservationsPanelProps) {
           </DialogHeader>
           <form onSubmit={save} noValidate className="flex flex-col gap-4">
             {restored && (
-              <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+              <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-foreground">
                 <i className="ti ti-history text-warning" aria-hidden="true" />
                 Recuperamos una observación que no se guardó.
               </p>

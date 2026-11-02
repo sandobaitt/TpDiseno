@@ -48,9 +48,9 @@ export function RecordChecklistCard({
           return (
             <li
               key={item.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-neutral-800/40 px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-secondary/40 px-4 py-3"
             >
-              <span className="text-sm text-white">{item.label}</span>
+              <span className="text-sm text-foreground">{item.label}</span>
               <StatusBadge tone={style.tone} icon={style.icon}>
                 {item.detail}
               </StatusBadge>

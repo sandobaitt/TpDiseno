@@ -106,7 +106,7 @@ export function StudentProfile({ clientId, basePath }: StudentProfileProps) {
     <Button
       asChild
       variant="ghost"
-      className="self-start rounded-xl text-gray-300"
+      className="self-start rounded-xl text-foreground/80"
     >
       <Link to={basePath}>
         <i className="ti ti-arrow-left text-base" aria-hidden="true" />

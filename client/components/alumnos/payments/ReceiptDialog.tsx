@@ -24,7 +24,7 @@ export function ReceiptDialog({
 }: ReceiptDialogProps) {
   return (
     <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
         {payment && (
           <>
             <DialogHeader>

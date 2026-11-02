@@ -144,7 +144,7 @@ export function StaffDirectory() {
             label: ROLE_LABELS[role],
           }))}
         />
-        <span className="ml-auto text-xs text-gray-400" aria-live="polite">
+        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "persona" : "personas"}
         </span>
       </div>
@@ -162,16 +162,16 @@ export function StaffDirectory() {
                 type="button"
                 variant="ghost"
                 onClick={() => open(e)}
-                className="h-auto w-full justify-start gap-4 whitespace-normal rounded-2xl bg-neutral-900 p-5 text-left font-normal shadow-card glass-border hover:bg-neutral-800/80"
+                className="h-auto w-full justify-start gap-4 whitespace-normal rounded-2xl bg-card p-5 text-left font-normal shadow-card glass-border hover:bg-secondary/80"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-xs font-bold text-primary">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-xs font-bold text-primary">
                   {getInitials(e.fullName)}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-bold text-white">
+                  <span className="block truncate text-sm font-bold text-foreground">
                     {e.fullName}
                   </span>
-                  <span className="block truncate text-xs text-gray-400">
+                  <span className="block truncate text-xs text-muted-foreground">
                     {ROLE_LABELS[e.role]} ·{" "}
                     {branchesMock.find((b) => b.id === e.branchId)?.name ??
                       "Sin sede"}
@@ -186,7 +186,7 @@ export function StaffDirectory() {
                   {e.status === "active" ? "Activo" : "Inactivo"}
                 </StatusBadge>
                 <i
-                  className="ti ti-chevron-right text-gray-400"
+                  className="ti ti-chevron-right text-muted-foreground"
                   aria-hidden="true"
                 />
               </Button>
@@ -201,7 +201,7 @@ export function StaffDirectory() {
       />
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelectedId(null)}>
-        <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
           {selected && form && (
             <>
               <DialogHeader>

@@ -80,8 +80,8 @@ export function AccessCard({
           aria-hidden="true"
         />
         <div className="min-w-0">
-          <p className="font-bold text-white">{access.title}</p>
-          <p className="text-sm text-gray-300">{access.detail}</p>
+          <p className="font-bold text-foreground">{access.title}</p>
+          <p className="text-sm text-foreground/80">{access.detail}</p>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export function AccessCard({
             {plan.activityIds.map((activityId) => (
               <li
                 key={activityId}
-                className="rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-gray-300"
+                className="rounded-md bg-secondary px-2 py-0.5 text-xs text-foreground/80"
               >
                 {getActivityName(activityId)}
               </li>

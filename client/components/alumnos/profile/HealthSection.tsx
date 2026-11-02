@@ -168,17 +168,17 @@ export function HealthSection({
             {documents.map((doc) => (
               <li
                 key={doc.id}
-                className="flex flex-wrap items-center gap-3 rounded-xl bg-neutral-800/40 px-4 py-3"
+                className="flex flex-wrap items-center gap-3 rounded-xl bg-secondary/40 px-4 py-3"
               >
                 <i
-                  className="ti ti-file-text text-xl text-gray-400"
+                  className="ti ti-file-text text-xl text-muted-foreground"
                   aria-hidden="true"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     {ATTACHMENT_KIND_LABELS[doc.kind]}
                   </p>
-                  <p className="break-words text-xs text-gray-400">
+                  <p className="break-words text-xs text-muted-foreground">
                     {doc.fileName} · {formatFileSize(doc.sizeKb)} · subido el{" "}
                     {formatDate(doc.uploadedAt)}
                     {doc.uploadedBy && ` por ${getUserName(doc.uploadedBy)}`}

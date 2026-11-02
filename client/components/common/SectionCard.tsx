@@ -23,18 +23,18 @@ export function SectionCard({
     <section
       aria-labelledby={id}
       className={cn(
-        "flex flex-col gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border max-sm:p-4",
+        "flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-card glass-border max-sm:p-4",
         className,
       )}
     >
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id={id}
-          className="flex items-center gap-2 text-base font-bold text-white"
+          className="flex items-center gap-2 text-base font-bold text-foreground"
         >
           {icon && (
             <i
-              className={cn("ti text-lg text-gray-400", icon)}
+              className={cn("ti text-lg text-muted-foreground", icon)}
               aria-hidden="true"
             />
           )}

@@ -31,7 +31,10 @@ export default {
         /* Estados semánticos (ver tokens en client/global.css) */
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
-        danger: "hsl(var(--danger))",
+        danger: {
+          DEFAULT: "hsl(var(--danger))",
+          foreground: "hsl(var(--danger-foreground))",
+        },
         info: "hsl(var(--info))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

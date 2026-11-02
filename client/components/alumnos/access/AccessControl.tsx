@@ -163,13 +163,13 @@ export function AccessControl() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="acceso-busqueda"
-                className="text-xs font-semibold text-gray-300"
+                className="text-xs font-semibold text-foreground/80"
               >
                 DNI o nombre del alumno
               </label>
               <div className="relative">
                 <i
-                  className="ti ti-id pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"
+                  className="ti ti-id pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-muted-foreground"
                   aria-hidden="true"
                 />
                 <input
@@ -232,13 +232,13 @@ export function AccessControl() {
                       type="button"
                       variant="ghost"
                       onClick={() => select(c.id)}
-                      className="h-auto w-full justify-between gap-3 whitespace-normal rounded-xl border border-white/[0.06] bg-neutral-800/40 px-4 py-3 text-left font-normal hover:border-zinc-500"
+                      className="h-auto w-full justify-between gap-3 whitespace-normal rounded-xl border border-border bg-secondary/40 px-4 py-3 text-left font-normal hover:border-muted-foreground/60"
                     >
                       <span className="min-w-0">
-                        <span className="block truncate text-sm font-semibold text-white">
+                        <span className="block truncate text-sm font-semibold text-foreground">
                           {c.fullName}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-muted-foreground">
                           DNI {c.dni}
                         </span>
                       </span>
@@ -279,7 +279,7 @@ export function AccessControl() {
               icon="ti-door-enter"
               title="Esperando un DNI o un nombre"
               description="El resultado aparece acá, en grande: si puede ingresar y por qué."
-              className="rounded-2xl border border-dashed border-white/10"
+              className="rounded-2xl border border-dashed border-border"
             />
           )}
         </div>
@@ -303,10 +303,10 @@ export function AccessControl() {
                     className="h-auto w-full justify-between gap-2 whitespace-normal rounded-xl px-3 py-2 text-left font-normal"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-white">
+                      <span className="block truncate text-sm text-foreground">
                         {h.name}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-muted-foreground">
                         {h.time} h · {h.title}
                       </span>
                     </span>

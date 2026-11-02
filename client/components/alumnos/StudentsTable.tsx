@@ -117,16 +117,16 @@ export function StudentsTable({
       header: "ALUMNO",
       render: (row) => (
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-800">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary">
             <span className="text-xs font-bold text-primary">
               {getInitials(row.name)}
             </span>
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-semibold text-white">
+            <span className="truncate text-sm font-semibold text-foreground">
               {row.name}
             </span>
-            <span className="truncate text-xs text-gray-400">{row.email}</span>
+            <span className="truncate text-xs text-muted-foreground">{row.email}</span>
           </div>
         </div>
       ),
@@ -137,8 +137,8 @@ export function StudentsTable({
       header: "PLAN Y SEDE",
       render: (row) => (
         <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm text-white">{row.planName}</span>
-          <span className="text-xs text-gray-400">{row.branchCode}</span>
+          <span className="truncate text-sm text-foreground">{row.planName}</span>
+          <span className="text-xs text-muted-foreground">{row.branchCode}</span>
         </div>
       ),
     },
@@ -198,17 +198,17 @@ export function StudentsTable({
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="rounded-lg text-xs text-gray-300"
+            className="rounded-lg text-xs text-foreground/80"
           >
             Limpiar filtros
           </Button>
         )}
-        <span className="ml-auto text-xs text-gray-400" aria-live="polite">
+        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "alumno" : "alumnos"}
         </span>
       </div>
 
-      <div className="rounded-2xl bg-neutral-900 p-5 shadow-card glass-border max-sm:p-3">
+      <div className="rounded-2xl bg-card p-5 shadow-card glass-border max-sm:p-3">
         {filtered.length === 0 ? (
           <EmptyState
             icon="ti-search-off"

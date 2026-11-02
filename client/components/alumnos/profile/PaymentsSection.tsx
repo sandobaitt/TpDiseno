@@ -45,7 +45,7 @@ export function PaymentsSection({
           title="Todavía no tiene pagos registrados"
         />
       ) : (
-        <ul className="flex flex-col divide-y divide-white/[0.05]">
+        <ul className="flex flex-col divide-y divide-border">
           {payments.map((payment) => {
             const status = STATUS[payment.status];
             return (
@@ -54,16 +54,16 @@ export function PaymentsSection({
                 className="flex flex-wrap items-center gap-3 py-3"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">
+                  <p className="text-sm font-semibold text-foreground">
                     Cuota de {periodsLabel(payment)}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted-foreground">
                     {formatDateTime(payment.createdAt)} ·{" "}
                     {PAYMENT_METHOD_LABELS[payment.method]} ·{" "}
                     {getUserName(payment.processedBy)}
                   </p>
                 </div>
-                <span className="text-sm font-bold text-white">
+                <span className="text-sm font-bold text-foreground">
                   {formatARS(payment.amountArs)}
                 </span>
                 <StatusBadge tone={status.tone} icon={status.icon}>

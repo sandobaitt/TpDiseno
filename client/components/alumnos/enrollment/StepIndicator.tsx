@@ -43,7 +43,7 @@ export function StepIndicator({ current, onGoTo }: StepIndicatorProps) {
                       "border-2 border-primary bg-primary/15 text-primary",
                     !done &&
                       !active &&
-                      "border border-zinc-700 bg-zinc-800 text-gray-400",
+                      "border border-input bg-secondary text-muted-foreground",
                   )}
                 >
                   {done ? (
@@ -55,7 +55,7 @@ export function StepIndicator({ current, onGoTo }: StepIndicatorProps) {
                 <span
                   className={cn(
                     "hidden text-xs font-semibold lg:block",
-                    active ? "text-primary" : "text-gray-400",
+                    active ? "text-primary" : "text-muted-foreground",
                   )}
                 >
                   {step.label}
@@ -66,7 +66,7 @@ export function StepIndicator({ current, onGoTo }: StepIndicatorProps) {
                   aria-hidden="true"
                   className={cn(
                     "h-px flex-1",
-                    done ? "bg-primary/50" : "bg-zinc-800",
+                    done ? "bg-primary/50" : "bg-secondary",
                   )}
                 />
               )}

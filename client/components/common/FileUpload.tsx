@@ -90,7 +90,7 @@ export function FileUpload({
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <p className="text-xs font-semibold text-gray-300">
+      <p className="text-xs font-semibold text-foreground/80">
         {label}
         {required && <span className="text-danger"> *</span>}
       </p>
@@ -102,7 +102,7 @@ export function FileUpload({
             aria-hidden="true"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-white">
+            <p className="truncate text-sm font-semibold text-foreground">
               {value.fileName}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -120,7 +120,7 @@ export function FileUpload({
                 onChange(null);
               }}
               aria-label={`Quitar ${value.fileName}`}
-              className="rounded-xl text-gray-300"
+              className="rounded-xl text-foreground/80"
             >
               Quitar
             </Button>
@@ -138,14 +138,14 @@ export function FileUpload({
               ? "border-primary bg-primary/5"
               : shownError
                 ? "border-danger/50 bg-danger/5"
-                : "border-zinc-700 bg-zinc-800/50",
+                : "border-input bg-secondary/50",
           )}
         >
           <i
-            className="ti ti-file-upload text-2xl text-gray-400"
+            className="ti ti-file-upload text-2xl text-muted-foreground"
             aria-hidden="true"
           />
-          <p className="flex-1 text-sm text-gray-300">
+          <p className="flex-1 text-sm text-foreground/80">
             Arrastrá el archivo acá o elegilo desde el equipo.
             <span className="block text-xs text-muted-foreground">
               PDF, JPG o PNG de hasta {maxMb} MB.

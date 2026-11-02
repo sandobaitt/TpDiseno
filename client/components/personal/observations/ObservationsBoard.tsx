@@ -86,7 +86,7 @@ export function ObservationsBoard() {
             />
           )}
         </FormField>
-        <span className="ml-auto text-xs text-gray-400" aria-live="polite">
+        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
           {observations.length}{" "}
           {observations.length === 1 ? "observación" : "observaciones"}
         </span>
@@ -102,16 +102,16 @@ export function ObservationsBoard() {
           {observations.map((b) => (
             <li
               key={b.id}
-              className="flex flex-col gap-2 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border"
+              className="flex flex-col gap-2 rounded-2xl bg-card p-5 shadow-card glass-border"
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-base font-bold text-white">{b.title}</h2>
-                <span className="text-xs text-gray-400">
+                <h2 className="text-base font-bold text-foreground">{b.title}</h2>
+                <span className="text-xs text-muted-foreground">
                   {formatDateTime(b.createdAt)}
                 </span>
               </div>
-              <p className="text-sm text-gray-200">{b.content}</p>
-              <p className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400">
+              <p className="text-sm text-foreground">{b.content}</p>
+              <p className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 <span>
                   <i className="ti ti-user-circle mr-1" aria-hidden="true" />
                   {getTeacher(b.teacherId)?.fullName ?? "Profesor"}

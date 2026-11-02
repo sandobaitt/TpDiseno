@@ -76,7 +76,7 @@ export function AttachmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-w-lg rounded-2xl border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-lg font-extrabold">
             Adjuntar documento
@@ -88,7 +88,7 @@ export function AttachmentDialog({
 
         {kinds.length > 1 && (
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold text-gray-300">
+            <legend className="mb-1 text-xs font-semibold text-foreground/80">
               ¿Qué documento es?
             </legend>
             <RadioGroup
@@ -99,7 +99,7 @@ export function AttachmentDialog({
                 <label
                   key={k}
                   htmlFor={`${id}-${k}`}
-                  className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-xl border border-zinc-700 px-3 text-sm text-gray-200 hover:border-zinc-500"
+                  className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-xl border border-input px-3 text-sm text-foreground hover:border-muted-foreground/60"
                 >
                   <RadioGroupItem
                     id={`${id}-${k}`}

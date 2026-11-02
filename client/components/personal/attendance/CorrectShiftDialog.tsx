@@ -97,7 +97,7 @@ export function CorrectShiftDialog({ row, onClose }: CorrectShiftDialogProps) {
 
   return (
     <Dialog open={!!row} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-lg font-extrabold">
             {isCorrection ? "Corregir asistencia" : "Registrar asistencia"}
@@ -114,7 +114,7 @@ export function CorrectShiftDialog({ row, onClose }: CorrectShiftDialogProps) {
           className="flex flex-col gap-4"
         >
           <fieldset className="flex flex-col gap-2">
-            <legend className="mb-1 text-xs font-semibold text-gray-300">
+            <legend className="mb-1 text-xs font-semibold text-foreground/80">
               ¿Dio la clase?
             </legend>
             <RadioGroup
@@ -130,8 +130,8 @@ export function CorrectShiftDialog({ row, onClose }: CorrectShiftDialogProps) {
                     className={cn(
                       "flex min-h-[44px] cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm",
                       status === value
-                        ? "border-primary/60 bg-primary/10 text-white"
-                        : "border-zinc-700 text-gray-300",
+                        ? "border-primary/60 bg-primary/10 text-foreground"
+                        : "border-input text-foreground/80",
                     )}
                   >
                     <RadioGroupItem

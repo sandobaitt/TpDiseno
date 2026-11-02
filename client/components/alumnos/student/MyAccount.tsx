@@ -62,16 +62,16 @@ export function MyAccount({ clientId }: { clientId?: string }) {
 
       <section
         aria-label="Resumen de tu cuenta"
-        className="grid grid-cols-1 gap-4 rounded-2xl bg-neutral-900 p-5 shadow-card glass-border sm:grid-cols-[1fr_auto] sm:items-center"
+        className="grid grid-cols-1 gap-4 rounded-2xl bg-card p-5 shadow-card glass-border sm:grid-cols-[1fr_auto] sm:items-center"
       >
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <AccountStatusBadge status={account.status} />
             {plan && (
-              <span className="text-sm text-gray-300">Plan {plan.name}</span>
+              <span className="text-sm text-foreground/80">Plan {plan.name}</span>
             )}
           </div>
-          <p className="text-sm text-gray-300">{describeAccount(account)}</p>
+          <p className="text-sm text-foreground/80">{describeAccount(account)}</p>
           <div className="flex flex-wrap gap-6 pt-1">
             <div>
               <p className="text-xs font-semibold text-muted-foreground">
@@ -80,7 +80,7 @@ export function MyAccount({ clientId }: { clientId?: string }) {
               <p
                 className={cn(
                   "text-2xl font-extrabold",
-                  owes ? "text-danger" : "text-white",
+                  owes ? "text-danger" : "text-foreground",
                 )}
               >
                 {formatARS(account.owedAmount)}
@@ -90,7 +90,7 @@ export function MyAccount({ clientId }: { clientId?: string }) {
               <p className="text-xs font-semibold text-muted-foreground">
                 {owes ? "Fecha límite" : "Próximo vencimiento"}
               </p>
-              <p className="text-2xl font-extrabold text-white">
+              <p className="text-2xl font-extrabold text-foreground">
                 {formatDate(account.nextDueDate)}
               </p>
             </div>
@@ -115,7 +115,7 @@ export function MyAccount({ clientId }: { clientId?: string }) {
             title="Todavía no tenés cuotas generadas"
           />
         ) : (
-          <ul className="flex flex-col divide-y divide-white/[0.05]">
+          <ul className="flex flex-col divide-y divide-border">
             {pageMonths.map((m) => {
               const payment = m.paymentId
                 ? state.payments.find((p) => p.id === m.paymentId)
@@ -136,16 +136,16 @@ export function MyAccount({ clientId }: { clientId?: string }) {
                     aria-hidden="true"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-foreground">
                       Cuota de {formatPeriod(m.period)}
                       {m.prorated && (
-                        <span className="font-normal text-gray-400">
+                        <span className="font-normal text-muted-foreground">
                           {" "}
                           (proporcional)
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted-foreground">
                       {m.paid && payment
                         ? `${PAYMENT_METHOD_LABELS[payment.method]} · ${formatARS(payment.amountArs)} · ${formatDate(payment.createdAt.slice(0, 10))}`
                         : late > 0

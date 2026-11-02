@@ -182,7 +182,7 @@ export function StudentEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-lg font-extrabold">
             Editar datos de {client.fullName}
@@ -246,7 +246,7 @@ export function StudentEditDialog({
 
           {minor && (
             <fieldset className="flex flex-col gap-4 rounded-xl border border-info/25 bg-info/5 p-4">
-              <legend className="px-1 text-sm font-bold text-white">
+              <legend className="px-1 text-sm font-bold text-foreground">
                 Adulto responsable
               </legend>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

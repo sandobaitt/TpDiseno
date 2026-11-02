@@ -61,12 +61,12 @@ export function MyPlanSchedule({ clientId }: { clientId?: string }) {
         <SectionCard title="Mi plan" icon="ti-barbell">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-2xl font-black text-white">{plan.name}</p>
+              <p className="text-2xl font-black text-foreground">{plan.name}</p>
               {plan.description && (
-                <p className="mt-1 text-sm text-gray-300">{plan.description}</p>
+                <p className="mt-1 text-sm text-foreground/80">{plan.description}</p>
               )}
             </div>
-            <p className="text-xl font-extrabold text-white">
+            <p className="text-xl font-extrabold text-foreground">
               {formatARS(plan.monthlyPriceArs)}
               <span className="text-sm font-medium text-muted-foreground">
                 {" "}
@@ -92,12 +92,12 @@ export function MyPlanSchedule({ clientId }: { clientId?: string }) {
               ))}
             </ul>
           </div>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-foreground/80">
             <i className="ti ti-map-pin mr-1 text-primary" aria-hidden="true" />
             Podés entrenar en cualquier sede:{" "}
             {branches.map((b) => b.name).join(" y ")}.
           </p>
-          <div className="flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3 text-sm text-gray-300">
+          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3 text-sm text-foreground/80">
             <AccountStatusBadge
               status={selectAccount(state, client, today).status}
             />
@@ -122,7 +122,7 @@ export function MyPlanSchedule({ clientId }: { clientId?: string }) {
         {plan && (
           <label
             htmlFor="solo-mis-clases"
-            className="flex min-h-[40px] cursor-pointer items-center gap-2 text-sm text-gray-200"
+            className="flex min-h-[40px] cursor-pointer items-center gap-2 text-sm text-foreground"
           >
             <Switch
               id="solo-mis-clases"

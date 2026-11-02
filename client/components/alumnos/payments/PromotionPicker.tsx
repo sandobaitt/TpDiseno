@@ -58,9 +58,9 @@ export function PromotionPicker({
               key={value}
               htmlFor={itemId}
               className={cn(
-                "flex items-start gap-3 rounded-xl border border-white/[0.06] px-3 py-2.5",
+                "flex items-start gap-3 rounded-xl border border-border px-3 py-2.5",
                 check.ok
-                  ? "cursor-pointer hover:border-zinc-600"
+                  ? "cursor-pointer hover:border-muted-foreground/60"
                   : "cursor-not-allowed opacity-60",
               )}
             >
@@ -72,7 +72,7 @@ export function PromotionPicker({
               />
               <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-baseline justify-between gap-x-2">
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-foreground">
                     {promo ? promo.name : "Sin promoción"}
                   </span>
                   {promo && (
@@ -85,7 +85,7 @@ export function PromotionPicker({
                   <span
                     className={cn(
                       "block text-xs",
-                      check.ok ? "text-gray-400" : "text-warning",
+                      check.ok ? "text-muted-foreground" : "text-warning",
                     )}
                   >
                     {check.ok
@@ -101,7 +101,7 @@ export function PromotionPicker({
 
       {coupon ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3">
-          <p className="text-sm text-white">
+          <p className="text-sm text-foreground">
             <i
               className="ti ti-ticket mr-1.5 text-primary"
               aria-hidden="true"
@@ -114,7 +114,7 @@ export function PromotionPicker({
             variant="ghost"
             size="sm"
             onClick={onRemoveCoupon}
-            className="rounded-lg text-gray-300"
+            className="rounded-lg text-foreground/80"
           >
             Quitar
           </Button>
@@ -123,7 +123,7 @@ export function PromotionPicker({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={`${id}-coupon`}
-            className="text-xs font-semibold text-gray-300"
+            className="text-xs font-semibold text-foreground/80"
           >
             ¿Tiene un cupón?
           </label>

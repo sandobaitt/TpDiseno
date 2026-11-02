@@ -87,8 +87,8 @@ export function HealthDeclarationFields({
         </FormField>
       </div>
 
-      <fieldset className="flex flex-col gap-1 rounded-xl border border-white/[0.06] bg-neutral-800/40 p-4">
-        <legend className="px-1 text-xs font-semibold text-gray-300">
+      <fieldset className="flex flex-col gap-1 rounded-xl border border-border bg-secondary/40 p-4">
+        <legend className="px-1 text-xs font-semibold text-foreground/80">
           ¿Tiene o tuvo alguna de estas condiciones?
         </legend>
         <p className="mb-2 text-xs text-muted-foreground">
@@ -104,8 +104,8 @@ export function HealthDeclarationFields({
                 key={condition.id}
                 htmlFor={checkboxId}
                 className={cn(
-                  "flex min-h-[44px] cursor-pointer items-center gap-3 rounded-lg px-2 text-sm transition-colors hover:bg-white/[0.04]",
-                  checked ? "text-white" : "text-gray-300",
+                  "flex min-h-[44px] cursor-pointer items-center gap-3 rounded-lg px-2 text-sm transition-colors hover:bg-foreground/[0.04]",
+                  checked ? "text-foreground" : "text-foreground/80",
                 )}
               >
                 <Checkbox
@@ -141,7 +141,7 @@ export function HealthDeclarationFields({
       </FormField>
 
       <div className="flex flex-col gap-3 rounded-xl border border-warning/25 bg-warning/5 p-4">
-        <p className="flex gap-2 text-xs leading-relaxed text-gray-300">
+        <p className="flex gap-2 text-xs leading-relaxed text-foreground/80">
           <i
             className="ti ti-file-certificate mt-0.5 text-base text-warning"
             aria-hidden="true"
@@ -151,7 +151,7 @@ export function HealthDeclarationFields({
         </p>
         <label
           htmlFor={`${id}-accepted`}
-          className="flex min-h-[44px] cursor-pointer items-center gap-3 text-sm font-semibold text-white"
+          className="flex min-h-[44px] cursor-pointer items-center gap-3 text-sm font-semibold text-foreground"
         >
           <Checkbox
             id={`${id}-accepted`}

@@ -140,7 +140,7 @@ export function NovedadForm() {
   return (
     <SectionCard title="Registrar novedad" icon="ti-speakerphone">
       {draft.restored && (
-        <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-gray-200">
+        <p className="flex items-center gap-2 rounded-xl border border-warning/25 bg-warning/5 px-3 py-2 text-sm text-foreground">
           <i className="ti ti-history text-warning" aria-hidden="true" />
           Recuperamos una novedad sin guardar.
           <Button
@@ -156,7 +156,7 @@ export function NovedadForm() {
       )}
       <form onSubmit={submit} noValidate className="flex flex-col gap-4">
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-1 text-xs font-semibold text-gray-300">
+          <legend className="mb-1 text-xs font-semibold text-foreground/80">
             Tipo <span className="text-danger">*</span>
           </legend>
           <RadioGroup
@@ -173,8 +173,8 @@ export function NovedadForm() {
                 className={cn(
                   "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
                   form.type === t.id
-                    ? "border-primary/60 bg-primary/10 text-white"
-                    : "border-white/[0.07] text-gray-300 hover:border-zinc-500",
+                    ? "border-primary/60 bg-primary/10 text-foreground"
+                    : "border-border text-foreground/80 hover:border-muted-foreground/60",
                 )}
               >
                 <RadioGroupItem
@@ -186,7 +186,7 @@ export function NovedadForm() {
                   className={cn(
                     "ti text-lg",
                     t.icon,
-                    form.type === t.id ? "text-primary" : "text-gray-400",
+                    form.type === t.id ? "text-primary" : "text-muted-foreground",
                   )}
                   aria-hidden="true"
                 />
@@ -304,7 +304,7 @@ export function NovedadForm() {
         {linkedTeacher && (
           <label
             htmlFor={`${id}-notify`}
-            className="flex min-h-[40px] cursor-pointer items-center gap-3 text-sm text-gray-200"
+            className="flex min-h-[40px] cursor-pointer items-center gap-3 text-sm text-foreground"
           >
             <Checkbox
               id={`${id}-notify`}

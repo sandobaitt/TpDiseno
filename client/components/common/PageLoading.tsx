@@ -3,7 +3,7 @@ export function PageLoading() {
   return (
     <div
       role="status"
-      className="flex flex-1 items-center justify-center gap-3 py-24 text-sm text-gray-300"
+      className="flex flex-1 items-center justify-center gap-3 py-24 text-sm text-foreground/80"
     >
       <i
         className="ti ti-loader-2 animate-spin text-2xl text-primary"

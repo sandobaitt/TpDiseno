@@ -104,7 +104,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-white text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 focus:border-lime-400/40 transition-all"
+        className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-input text-white text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 focus:border-lime-400/40 transition-all"
       />
     </div>
   );
@@ -394,7 +394,7 @@ function TabFinanzas() {
             />
 
             {/* Active toggle */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-800 border border-zinc-700">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-800 border border-input">
               <div>
                 <p className="text-white text-sm font-semibold">Estado inicial</p>
                 <p className="text-gray-500 text-xs">¿El descuento estará disponible de inmediato?</p>
@@ -436,7 +436,7 @@ function TabFinanzas() {
           <div className="flex gap-3 mt-2">
             <button
               onClick={() => { setForm(EMPTY_DESCUENTO); setModalOpen(false); }}
-              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-zinc-700 text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-input text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
             >
               Cancelar
             </button>
@@ -467,7 +467,7 @@ function TabFinanzas() {
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => setDeleteId(null)}
-              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-zinc-700 text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-input text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
             >
               Cancelar
             </button>
@@ -513,7 +513,7 @@ export default function AdminPanel() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-zinc-800/50">
+      <div className="flex gap-6 border-b border-border/50">
         {TABS.map((tab) => (
           <button
             key={tab.id}

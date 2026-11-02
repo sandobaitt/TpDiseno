@@ -72,7 +72,7 @@ export function DeactivateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+      <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
         <DialogHeader>
           <DialogTitle className="text-lg font-extrabold">
             Dar de baja a {client.fullName}
@@ -135,7 +135,7 @@ export function DeactivateDialog({
             </Button>
             <Button
               type="submit"
-              className="rounded-xl bg-danger font-bold text-neutral-950 hover:bg-danger/90"
+              className="rounded-xl bg-danger font-bold text-danger-foreground hover:bg-danger/90"
             >
               Dar de baja
             </Button>

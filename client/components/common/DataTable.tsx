@@ -73,14 +73,14 @@ export function DataTable<T>({
           <div role="rowgroup">
             <div
               role="row"
-              className={`${template} mb-1 gap-4 border-b border-white/[0.06] pb-3`}
+              className={`${template} mb-1 gap-4 border-b border-border pb-3`}
             >
               {columns.map((column) => (
                 <div
                   key={column.key}
                   role="columnheader"
                   className={cn(
-                    "min-w-0 text-[11px] font-semibold uppercase tracking-widest text-gray-400",
+                    "min-w-0 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground",
                     column.headerClassName,
                   )}
                 >
@@ -96,8 +96,8 @@ export function DataTable<T>({
                 {...interactiveProps(row)}
                 className={cn(
                   template,
-                  "items-center gap-4 border-b border-white/[0.04] py-3.5 transition-colors duration-100",
-                  onRowClick && "cursor-pointer hover:bg-white/[0.03]",
+                  "items-center gap-4 border-b border-border py-3.5 transition-colors duration-100",
+                  onRowClick && "cursor-pointer hover:bg-foreground/[0.03]",
                   rowClassName,
                 )}
               >
@@ -106,7 +106,7 @@ export function DataTable<T>({
                     key={column.key}
                     role="cell"
                     className={cn(
-                      "min-w-0 text-sm text-gray-300",
+                      "min-w-0 text-sm text-foreground/80",
                       column.cellClassName,
                     )}
                   >
@@ -126,12 +126,12 @@ export function DataTable<T>({
             <div
               {...interactiveProps(row)}
               className={cn(
-                "flex flex-col gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4",
-                onRowClick && "cursor-pointer active:bg-white/[0.05]",
+                "flex flex-col gap-3 rounded-xl border border-border bg-foreground/[0.02] p-4",
+                onRowClick && "cursor-pointer active:bg-foreground/[0.05]",
               )}
             >
               {first && (
-                <div className="min-w-0 text-sm text-gray-200">
+                <div className="min-w-0 text-sm text-foreground">
                   {cellContent(first, row)}
                 </div>
               )}
@@ -140,10 +140,10 @@ export function DataTable<T>({
                   .filter((column) => !column.hideOnMobile && column.header)
                   .map((column) => (
                     <React.Fragment key={column.key}>
-                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                      <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                         {column.header}
                       </dt>
-                      <dd className="min-w-0 text-sm text-gray-300">
+                      <dd className="min-w-0 text-sm text-foreground/80">
                         {cellContent(column, row)}
                       </dd>
                     </React.Fragment>

@@ -173,12 +173,12 @@ export function NovedadesHistory({
             variant="ghost"
             size="sm"
             onClick={clear}
-            className="rounded-lg text-gray-300"
+            className="rounded-lg text-foreground/80"
           >
             Limpiar filtros
           </Button>
         )}
-        <span className="ml-auto text-xs text-gray-400" aria-live="polite">
+        <span className="ml-auto text-xs text-muted-foreground" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "novedad" : "novedades"}
         </span>
       </div>
@@ -201,7 +201,7 @@ export function NovedadesHistory({
               <li
                 key={n.id}
                 className={cn(
-                  "flex flex-col gap-2 rounded-xl border border-white/[0.06] bg-neutral-800/40 p-4",
+                  "flex flex-col gap-2 rounded-xl border border-border bg-secondary/40 p-4",
                   n.annulled && "opacity-60",
                 )}
               >
@@ -209,11 +209,11 @@ export function NovedadesHistory({
                   <StatusBadge tone={typeStyle.tone} icon={typeStyle.icon}>
                     {NOVEDAD_TYPE_LABELS[n.type]}
                   </StatusBadge>
-                  <span className="text-sm font-bold text-white">
+                  <span className="text-sm font-bold text-foreground">
                     {n.entityName}
                   </span>
                   {showBranch && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       · {branchesMock.find((b) => b.id === n.branchId)?.name}
                     </span>
                   )}
@@ -232,14 +232,14 @@ export function NovedadesHistory({
                     )}
                   </span>
                 </div>
-                <p className="text-sm text-gray-200">{n.detail}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-sm text-foreground">{n.detail}</p>
+                <p className="text-xs text-muted-foreground">
                   {formatDateTime(n.timestamp)} · registró{" "}
                   {getUserName(n.createdBy)}
                   {n.notifyTeacher && " · se avisó al profesor"}
                 </p>
                 {n.annulled && (
-                  <p className="text-xs text-gray-300">
+                  <p className="text-xs text-foreground/80">
                     Anulada por {getUserName(n.annulled.by)} el{" "}
                     {formatDateTime(n.annulled.at)}: {n.annulled.reason}
                   </p>
@@ -273,7 +273,7 @@ export function NovedadesHistory({
                         setReason("");
                         setReasonError(undefined);
                       }}
-                      className="rounded-lg text-gray-300"
+                      className="rounded-lg text-foreground/80"
                     >
                       <i className="ti ti-ban text-sm" aria-hidden="true" />
                       Anular
@@ -290,7 +290,7 @@ export function NovedadesHistory({
         open={!!annulling}
         onOpenChange={(open) => !open && setAnnulling(null)}
       >
-        <DialogContent className="max-w-md rounded-2xl border-white/[0.08] bg-neutral-900 text-white">
+        <DialogContent className="max-w-md rounded-2xl border-border bg-card text-foreground">
           <DialogHeader>
             <DialogTitle className="text-lg font-extrabold">
               Anular la novedad

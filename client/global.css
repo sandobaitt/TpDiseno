@@ -25,15 +25,15 @@ html {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    /* Verde de marca de la app (lime-400) */
-    --primary: 83 78% 45%;
-    --primary-foreground: 94 100% 6%;
+    /* Verde de marca: en claro es más oscuro para que el texto verde se lea sobre blanco (AA) */
+    --primary: 84 81% 25%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
 
     --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted-foreground: 240 4% 40%;
 
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
@@ -42,25 +42,27 @@ html {
     --destructive-foreground: 0 0% 98%;
 
     /* Estados */
-    --success: 142 69% 40%;
-    --warning: 38 92% 50%;
-    --danger: 0 84% 60%;
-    --info: 213 94% 50%;
+    /* Tonos oscuros: el texto de estado tiene que leerse sobre blanco (AA) */
+    --success: 142 72% 27%;
+    --warning: 28 90% 33%;
+    --danger: 0 72% 45%;
+    --danger-foreground: 0 0% 100%;
+    --info: 213 90% 42%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 83 78% 45%;
+    --ring: 84 81% 30%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 83 78% 45%;
-    --sidebar-primary-foreground: 94 100% 6%;
+    --sidebar-primary: 84 81% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 83 78% 45%;
+    --sidebar-ring: 84 81% 30%;
   }
 
   .dark {
@@ -94,6 +96,7 @@ html {
     --success: 142 69% 58%;
     --warning: 46 97% 65%;
     --danger: 0 91% 71%;
+    --danger-foreground: 0 0% 4%;
     --info: 213 94% 68%;
 
     --border: 0 0% 18%;
@@ -153,24 +156,35 @@ html {
 @layer utilities {
   .shadow-card {
     box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .dark .shadow-card {
+    box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .shadow-btn-lime {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+  .dark .shadow-btn-lime {
     box-shadow:
       0 0 20px rgba(149, 253, 0, 0.2),
       0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
   .glass-border {
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid hsl(var(--border));
+  }
+  .dark .glass-border {
+    border-color: rgba(255, 255, 255, 0.07);
   }
 
-  /* Thin scrollbar for dark panels */
+  /* Barra de desplazamiento fina (se adapta al tema) */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: hsl(var(--foreground) / 0.15) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
@@ -179,7 +193,7 @@ html {
     background: transparent;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: hsl(var(--foreground) / 0.15);
     border-radius: 2px;
   }
 }

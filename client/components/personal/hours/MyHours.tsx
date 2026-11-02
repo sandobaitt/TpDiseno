@@ -100,7 +100,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
       key: "date",
       header: "FECHA",
       render: (r) => (
-        <span className="text-sm text-gray-200">
+        <span className="text-sm text-foreground">
           {formatDate(r.session.date)}
         </span>
       ),
@@ -109,7 +109,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
       key: "class",
       header: "CLASE",
       render: (r) => (
-        <span className="text-sm font-semibold text-white">
+        <span className="text-sm font-semibold text-foreground">
           {getActivityName(r.session.activityId)} · {r.session.start}
           {r.session.replacementId && (
             <span className="font-normal text-warning"> (reemplazo)</span>
@@ -121,7 +121,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
       key: "branch",
       header: "SEDE",
       render: (r) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {branchesMock
             .find((b) => b.id === r.session.branchId)
             ?.name.replace("SquatGym ", "")}
@@ -132,7 +132,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
       key: "duration",
       header: "DURACIÓN",
       render: (r) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {formatMinutes(r.session.durationMin)}
         </span>
       ),
@@ -142,7 +142,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
       header: "ALUMNOS",
       hideOnMobile: true,
       render: (r) => (
-        <span className="text-sm text-gray-300">
+        <span className="text-sm text-foreground/80">
           {r.state === "dictada" ? studentsIn(r) : "—"}
         </span>
       ),
@@ -235,7 +235,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
 
       {summary.differenceMin < 0 && (
         <p
-          className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-gray-200"
+          className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-foreground"
           role="status"
         >
           <i
@@ -260,7 +260,7 @@ export function MyHours({ teacherId }: { teacherId?: string }) {
         </p>
       )}
 
-      <div className="rounded-2xl bg-neutral-900 p-5 shadow-card glass-border max-sm:p-3">
+      <div className="rounded-2xl bg-card p-5 shadow-card glass-border max-sm:p-3">
         {records.length === 0 ? (
           <EmptyState
             icon="ti-calendar-off"
