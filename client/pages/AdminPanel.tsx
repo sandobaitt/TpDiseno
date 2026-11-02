@@ -19,15 +19,15 @@ const TABS: { id: TabId; label: string }[] = [
 /* ─── Novedades helpers ─────────────────────────────── */
 
 const TYPE_CONFIG = {
-  incident: { label: "Incidente",    dot: "bg-red-400",   text: "text-red-400"   },
-  change:   { label: "Cambio turno", dot: "bg-amber-400", text: "text-amber-400" },
-  normal:   { label: "Novedad",      dot: "bg-blue-400",  text: "text-blue-400"  },
+  incident: { label: "Incidente",    dot: "bg-danger",   text: "text-danger"   },
+  change:   { label: "Cambio turno", dot: "bg-warning", text: "text-warning" },
+  normal:   { label: "Novedad",      dot: "bg-info",  text: "text-info"  },
 };
 
 const STATUS_CONFIG = {
-  resolved:    { label: "Resuelto", color: "text-green-400" },
-  in_progress: { label: "En curso", color: "text-amber-400" },
-  closed:      { label: "Cerrado",  color: "text-gray-500"  },
+  resolved:    { label: "Resuelto", color: "text-success" },
+  in_progress: { label: "En curso", color: "text-warning" },
+  closed:      { label: "Cerrado",  color: "text-muted-foreground"  },
 };
 
 function timeAgo(iso: string): string {
@@ -97,14 +97,14 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="w-full px-4 py-2.5 rounded-xl bg-zinc-800 border border-input text-white text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-lime-400/30 focus:border-lime-400/40 transition-all"
+        className="w-full px-4 py-2.5 rounded-xl bg-secondary border border-input text-foreground text-sm placeholder-muted-foreground outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all"
       />
     </div>
   );
@@ -118,17 +118,17 @@ function TabInformacion() {
       {/* Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {metricsMock.map((m) => (
-          <div key={m.id} className="bg-[#171717] rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border">
+          <div key={m.id} className="bg-card rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border">
             <div className="flex items-center justify-between">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${m.warning ? "bg-red-500/10" : "bg-lime-400/10"}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${m.warning ? "bg-danger/10" : "bg-primary/10"}`}>
                 <i className={`${m.icon} text-lg ${m.iconColor}`} />
               </div>
-              {m.variation && !m.warning && <span className="text-lime-400 text-[10px] font-bold">{m.variation}</span>}
-              {m.warning && <span className="text-red-400 text-[10px] font-bold">Action Req</span>}
+              {m.variation && !m.warning && <span className="text-primary text-[10px] font-bold">{m.variation}</span>}
+              {m.warning && <span className="text-danger text-[10px] font-bold">Action Req</span>}
             </div>
             <div>
-              <p className="text-gray-500 text-[10px] font-semibold tracking-widest">{m.label}</p>
-              <p className="text-white text-2xl font-extrabold mt-0.5">{m.value}</p>
+              <p className="text-muted-foreground text-[10px] font-semibold tracking-widest">{m.label}</p>
+              <p className="text-foreground text-2xl font-extrabold mt-0.5">{m.value}</p>
             </div>
           </div>
         ))}
@@ -138,19 +138,19 @@ function TabInformacion() {
       <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6 items-start">
         {/* News */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-white text-sm font-extrabold tracking-wider">NOVEDADES</h2>
+          <h2 className="text-foreground text-sm font-extrabold tracking-wider">NOVEDADES</h2>
           <div className="flex flex-col gap-3">
             {newsMock.map((ev) => (
-              <div key={ev.id} className="bg-[#171717] rounded-2xl p-4 flex items-center gap-4 hover:bg-[#1c1c1c] transition-all duration-150 relative overflow-hidden shadow-card glass-border">
-                {ev.urgent && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500/50 rounded-l-2xl" />}
+              <div key={ev.id} className="bg-card rounded-2xl p-4 flex items-center gap-4 hover:bg-secondary transition-all duration-150 relative overflow-hidden shadow-card glass-border">
+                {ev.urgent && <div className="absolute left-0 top-0 bottom-0 w-1 bg-danger/50 rounded-l-2xl" />}
                 <div className={`w-9 h-9 rounded-xl ${ev.iconBg} flex items-center justify-center shrink-0`}>
                   <i className={`${ev.icon} text-base ${ev.iconColor}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-bold">{ev.title}</p>
-                  <p className="text-gray-500 text-xs mt-0.5">{ev.description}</p>
+                  <p className="text-foreground text-sm font-bold">{ev.title}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5">{ev.description}</p>
                 </div>
-                <span className="text-gray-600 text-[10px] whitespace-nowrap shrink-0">{ev.timestamp}</span>
+                <span className="text-muted-foreground text-[10px] whitespace-nowrap shrink-0">{ev.timestamp}</span>
               </div>
             ))}
           </div>
@@ -158,31 +158,31 @@ function TabInformacion() {
 
         {/* History */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-white text-sm font-extrabold tracking-wider">HISTORIAL</h2>
-          <div className="bg-[#171717] rounded-2xl shadow-card glass-border flex flex-col overflow-hidden">
-            <div className="flex flex-col divide-y divide-white/[0.04]">
+          <h2 className="text-foreground text-sm font-extrabold tracking-wider">HISTORIAL</h2>
+          <div className="bg-card rounded-2xl shadow-card glass-border flex flex-col overflow-hidden">
+            <div className="flex flex-col divide-y divide-border">
               {recentNovedades.map((nov) => {
                 const type = TYPE_CONFIG[nov.type];
                 const status = STATUS_CONFIG[nov.status];
                 return (
-                  <div key={nov.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.02] transition-colors">
+                  <div key={nov.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-foreground/[0.02] transition-colors">
                     <div className={`w-2 h-2 rounded-full shrink-0 ${type.dot}`} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-xs font-semibold truncate">{nov.entityName}</p>
-                      <p className="text-gray-600 text-[10px]">{type.label}</p>
+                      <p className="text-foreground text-xs font-semibold truncate">{nov.entityName}</p>
+                      <p className="text-muted-foreground text-[10px]">{type.label}</p>
                     </div>
                     <div className="flex flex-col items-end gap-0.5 shrink-0">
                       <span className={`text-[10px] font-bold ${status.color}`}>{status.label}</span>
-                      <span className="text-gray-600 text-[9px]">{timeAgo(nov.timestamp)}</span>
+                      <span className="text-muted-foreground text-[9px]">{timeAgo(nov.timestamp)}</span>
                     </div>
                   </div>
                 );
               })}
             </div>
-            <div className="p-4 border-t border-white/[0.04]">
+            <div className="p-4 border-t border-border">
               <Link
                 to="/admin/novedades"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-lime-400 text-black text-xs font-extrabold tracking-wider hover:brightness-110 active:scale-[0.97] transition-all shadow-btn-lime"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold tracking-wider hover:brightness-110 active:scale-[0.97] transition-all shadow-btn-lime"
               >
                 <i className="ti ti-clock-history text-sm" />
                 CONSULTAR HISTORIAL
@@ -198,12 +198,12 @@ function TabInformacion() {
 function TabPlaceholder({ icon, label }: { icon: string; label: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
-      <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center">
-        <i className={`${icon} text-3xl text-gray-600`} />
+      <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center">
+        <i className={`${icon} text-3xl text-muted-foreground`} />
       </div>
       <div className="text-center">
-        <p className="text-white text-sm font-bold">{label}</p>
-        <p className="text-gray-600 text-xs mt-1">Esta sección está en desarrollo.</p>
+        <p className="text-foreground text-sm font-bold">{label}</p>
+        <p className="text-muted-foreground text-xs mt-1">Esta sección está en desarrollo.</p>
       </div>
     </div>
   );
@@ -253,17 +253,17 @@ function TabFinanzas() {
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { icon: "ti ti-tag",         color: "text-lime-400",   bg: "bg-lime-400/10",   label: "DESCUENTOS ACTIVOS",   value: activos   },
-          { icon: "ti ti-tag-off",      color: "text-gray-500",   bg: "bg-zinc-800",      label: "DESCUENTOS INACTIVOS", value: inactivos },
-          { icon: "ti ti-list-details", color: "text-violet-400", bg: "bg-violet-400/10", label: "TOTAL REGISTRADOS",    value: descuentos.length },
+          { icon: "ti ti-tag",         color: "text-primary",   bg: "bg-primary/10",   label: "DESCUENTOS ACTIVOS",   value: activos   },
+          { icon: "ti ti-tag-off",      color: "text-muted-foreground",   bg: "bg-secondary",      label: "DESCUENTOS INACTIVOS", value: inactivos },
+          { icon: "ti ti-list-details", color: "text-violet-700 dark:text-violet-400", bg: "bg-violet-500/10", label: "TOTAL REGISTRADOS",    value: descuentos.length },
         ].map((s) => (
-          <div key={s.label} className="bg-[#171717] rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border">
+          <div key={s.label} className="bg-card rounded-2xl p-5 flex flex-col gap-3 shadow-card glass-border">
             <div className={`w-9 h-9 rounded-xl ${s.bg} flex items-center justify-center`}>
               <i className={`${s.icon} text-lg ${s.color}`} />
             </div>
             <div>
-              <p className="text-gray-500 text-[10px] font-semibold tracking-widest">{s.label}</p>
-              <p className="text-white text-3xl font-extrabold mt-0.5">{s.value}</p>
+              <p className="text-muted-foreground text-[10px] font-semibold tracking-widest">{s.label}</p>
+              <p className="text-foreground text-3xl font-extrabold mt-0.5">{s.value}</p>
             </div>
           </div>
         ))}
@@ -273,12 +273,12 @@ function TabFinanzas() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-white text-sm font-extrabold tracking-wider">TIPOS DE DESCUENTO</h2>
-            <p className="text-gray-600 text-xs mt-0.5">Descuentos disponibles al momento de cobrar una cuota.</p>
+            <h2 className="text-foreground text-sm font-extrabold tracking-wider">TIPOS DE DESCUENTO</h2>
+            <p className="text-muted-foreground text-xs mt-0.5">Descuentos disponibles al momento de cobrar una cuota.</p>
           </div>
           <button
             onClick={() => setModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-lime-400 text-squat-ink text-xs font-extrabold tracking-wider hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer shadow-btn-lime"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-extrabold tracking-wider hover:brightness-105 active:scale-[0.98] transition-all cursor-pointer shadow-btn-lime"
           >
             <i className="ti ti-plus text-sm" />
             AGREGAR DESCUENTO
@@ -289,36 +289,36 @@ function TabFinanzas() {
           {descuentos.map((d) => (
             <div
               key={d.id}
-              className={`bg-[#171717] rounded-2xl px-5 py-4 flex items-center gap-4 shadow-card glass-border transition-opacity ${d.activo ? "" : "opacity-60"}`}
+              className={`bg-card rounded-2xl px-5 py-4 flex items-center gap-4 shadow-card glass-border transition-opacity ${d.activo ? "" : "opacity-60"}`}
             >
               {/* Percentage circle */}
-              <div className="w-12 h-12 rounded-xl bg-lime-400/10 flex flex-col items-center justify-center shrink-0">
-                <span className="text-lime-400 text-lg font-extrabold leading-none">{d.porcentaje}%</span>
-                <span className="text-lime-400/60 text-[8px] font-bold">OFF</span>
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
+                <span className="text-primary text-lg font-extrabold leading-none">{d.porcentaje}%</span>
+                <span className="text-primary/60 text-[8px] font-bold">OFF</span>
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white text-sm font-bold">{d.nombre}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[10px] font-bold tracking-wider">
+                  <span className="text-foreground text-sm font-bold">{d.nombre}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold tracking-wider">
                     {d.badge}
                   </span>
                 </div>
                 {d.descripcion && (
-                  <p className="text-gray-500 text-xs mt-0.5 truncate">{d.descripcion}</p>
+                  <p className="text-muted-foreground text-xs mt-0.5 truncate">{d.descripcion}</p>
                 )}
               </div>
 
               {/* Toggle + delete */}
               <div className="flex items-center gap-3 shrink-0">
                 <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-bold ${d.activo ? "text-lime-400" : "text-gray-600"}`}>
+                  <span className={`text-[10px] font-bold ${d.activo ? "text-primary" : "text-muted-foreground"}`}>
                     {d.activo ? "ACTIVO" : "INACTIVO"}
                   </span>
                   <button
                     onClick={() => toggleActivo(d.id)}
-                    className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${d.activo ? "bg-lime-400" : "bg-zinc-700"}`}
+                    className={`relative w-9 h-5 rounded-full transition-colors cursor-pointer ${d.activo ? "bg-primary" : "bg-muted-foreground/40"}`}
                   >
                     <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-200 ${d.activo ? "left-4" : "left-0.5"}`} />
                   </button>
@@ -326,7 +326,7 @@ function TabFinanzas() {
 
                 <button
                   onClick={() => setDeleteId(d.id)}
-                  className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-danger hover:bg-danger/10 transition-all cursor-pointer"
                 >
                   <i className="ti ti-trash text-sm" />
                 </button>
@@ -335,9 +335,9 @@ function TabFinanzas() {
           ))}
 
           {descuentos.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-14 gap-3 bg-[#171717] rounded-2xl glass-border">
-              <i className="ti ti-tag-off text-3xl text-gray-700" />
-              <p className="text-sm text-gray-600 font-medium">No hay descuentos registrados</p>
+            <div className="flex flex-col items-center justify-center py-14 gap-3 bg-card rounded-2xl glass-border">
+              <i className="ti ti-tag-off text-3xl text-muted-foreground" />
+              <p className="text-sm text-muted-foreground font-medium">No hay descuentos registrados</p>
             </div>
           )}
         </div>
@@ -345,9 +345,9 @@ function TabFinanzas() {
 
       {/* Add discount modal */}
       <Dialog open={modalOpen} onOpenChange={(o) => { if (!o) { setForm(EMPTY_DESCUENTO); setModalOpen(false); } }}>
-        <DialogContent className="max-w-md bg-neutral-900 border border-white/[0.08] text-white">
+        <DialogContent className="max-w-md bg-card border border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white text-lg font-extrabold tracking-wider">NUEVO DESCUENTO</DialogTitle>
+            <DialogTitle className="text-foreground text-lg font-extrabold tracking-wider">NUEVO DESCUENTO</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 mt-1">
@@ -367,8 +367,8 @@ function TabFinanzas() {
             {/* Percentage slider */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Porcentaje de descuento *</label>
-                <span className="text-lime-400 text-lg font-extrabold">{pct}% OFF</span>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Porcentaje de descuento *</label>
+                <span className="text-primary text-lg font-extrabold">{pct}% OFF</span>
               </div>
               <input
                 type="range"
@@ -376,9 +376,9 @@ function TabFinanzas() {
                 max={99}
                 value={pct}
                 onChange={(e) => setField("porcentaje", e.target.value)}
-                className="w-full accent-lime-400 cursor-pointer"
+                className="w-full accent-primary cursor-pointer"
               />
-              <div className="flex justify-between text-gray-600 text-[10px]">
+              <div className="flex justify-between text-muted-foreground text-[10px]">
                 <span>1%</span>
                 <span>50%</span>
                 <span>99%</span>
@@ -394,19 +394,19 @@ function TabFinanzas() {
             />
 
             {/* Active toggle */}
-            <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-800 border border-input">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-secondary border border-input">
               <div>
-                <p className="text-white text-sm font-semibold">Estado inicial</p>
-                <p className="text-gray-500 text-xs">¿El descuento estará disponible de inmediato?</p>
+                <p className="text-foreground text-sm font-semibold">Estado inicial</p>
+                <p className="text-muted-foreground text-xs">¿El descuento estará disponible de inmediato?</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold ${form.activo ? "text-lime-400" : "text-gray-600"}`}>
+                <span className={`text-[10px] font-bold ${form.activo ? "text-primary" : "text-muted-foreground"}`}>
                   {form.activo ? "ACTIVO" : "INACTIVO"}
                 </span>
                 <button
                   type="button"
                   onClick={() => setField("activo", !form.activo)}
-                  className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer ${form.activo ? "bg-lime-400" : "bg-zinc-700"}`}
+                  className={`relative w-10 h-5 rounded-full transition-colors cursor-pointer ${form.activo ? "bg-primary" : "bg-muted-foreground/40"}`}
                 >
                   <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all duration-200 ${form.activo ? "left-5" : "left-0.5"}`} />
                 </button>
@@ -415,19 +415,19 @@ function TabFinanzas() {
 
             {/* Preview */}
             {form.nombre.trim() && (
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-lime-400/5 border border-lime-400/20">
-                <div className="w-10 h-10 rounded-xl bg-lime-400/10 flex flex-col items-center justify-center shrink-0">
-                  <span className="text-lime-400 text-sm font-extrabold leading-none">{pct}%</span>
-                  <span className="text-lime-400/60 text-[8px] font-bold">OFF</span>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
+                  <span className="text-primary text-sm font-extrabold leading-none">{pct}%</span>
+                  <span className="text-primary/60 text-[8px] font-bold">OFF</span>
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-white text-sm font-bold">{form.nombre.trim()}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-lime-400/10 text-lime-400 text-[10px] font-bold">
+                    <span className="text-foreground text-sm font-bold">{form.nombre.trim()}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
                       {form.badge.trim() || `${pct}% OFF`}
                     </span>
                   </div>
-                  {form.descripcion.trim() && <p className="text-gray-500 text-xs mt-0.5">{form.descripcion.trim()}</p>}
+                  {form.descripcion.trim() && <p className="text-muted-foreground text-xs mt-0.5">{form.descripcion.trim()}</p>}
                 </div>
               </div>
             )}
@@ -436,14 +436,14 @@ function TabFinanzas() {
           <div className="flex gap-3 mt-2">
             <button
               onClick={() => { setForm(EMPTY_DESCUENTO); setModalOpen(false); }}
-              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-input text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-secondary border border-input text-foreground/80 text-sm font-semibold hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               onClick={handleAdd}
               disabled={!canSubmit}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-lime-400 text-squat-ink text-sm font-extrabold hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-extrabold hover:brightness-105 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <i className="ti ti-plus text-sm" />
               Agregar
@@ -454,26 +454,26 @@ function TabFinanzas() {
 
       {/* Delete confirm dialog */}
       <Dialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
-        <DialogContent className="max-w-sm bg-neutral-900 border border-white/[0.08] text-white">
+        <DialogContent className="max-w-sm bg-card border border-border text-foreground">
           <DialogHeader>
-            <DialogTitle className="text-white">¿Eliminar descuento?</DialogTitle>
+            <DialogTitle className="text-foreground">¿Eliminar descuento?</DialogTitle>
           </DialogHeader>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Vas a eliminar{" "}
-            <span className="text-white font-semibold">
+            <span className="text-foreground font-semibold">
               {descuentos.find((d) => d.id === deleteId)?.nombre}
             </span>. Esta acción no se puede deshacer.
           </p>
           <div className="flex gap-3 mt-4">
             <button
               onClick={() => setDeleteId(null)}
-              className="flex-1 py-2.5 rounded-xl bg-neutral-800 border border-input text-gray-300 text-sm font-semibold hover:bg-neutral-700 hover:text-white transition-colors cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-secondary border border-input text-foreground/80 text-sm font-semibold hover:bg-accent hover:text-foreground transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               onClick={() => deleteId && handleDelete(deleteId)}
-              className="flex-1 py-2.5 rounded-xl bg-red-500/80 hover:bg-red-500 text-white text-sm font-extrabold transition-colors cursor-pointer"
+              className="flex-1 py-2.5 rounded-xl bg-danger/90 hover:bg-danger text-danger-foreground text-sm font-extrabold transition-colors cursor-pointer"
             >
               Eliminar
             </button>
@@ -492,7 +492,7 @@ export default function AdminPanel() {
   return (
     <div className="px-7 pb-7 max-sm:px-4 flex flex-col gap-6">
       {/* Hero Card */}
-      <div className="bg-[#171717] rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-card glass-border">
+      <div className="bg-card rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-card glass-border">
         <div
           className="w-full md:w-[30%] min-h-[200px] flex items-center justify-center relative bg-cover bg-center"
           style={{ backgroundImage: `url(${fotoAdmin})` }}
@@ -500,14 +500,14 @@ export default function AdminPanel() {
           <div className="absolute inset-0 bg-black/40" />
         </div>
         <div className="flex-1 p-6 md:p-8 flex flex-col gap-4">
-          <h1 className="text-white text-3xl md:text-4xl font-extrabold">SEDE CENTRAL</h1>
+          <h1 className="text-foreground text-3xl md:text-4xl font-extrabold">SEDE CENTRAL</h1>
           <div className="flex items-center gap-2">
-            <i className="ti ti-map-pin text-lime-400 text-sm" />
-            <span className="text-gray-400 text-sm">Av. Principal 1234, Distrito Financiero</span>
+            <i className="ti ti-map-pin text-primary text-sm" />
+            <span className="text-muted-foreground text-sm">Av. Principal 1234, Distrito Financiero</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_6px_rgba(163,230,53,0.6)]" />
-            <span className="text-lime-400 text-xs font-bold tracking-wider">OPERATIVA</span>
+            <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_rgba(163,230,53,0.6)]" />
+            <span className="text-primary text-xs font-bold tracking-wider">OPERATIVA</span>
           </div>
         </div>
       </div>
@@ -520,8 +520,8 @@ export default function AdminPanel() {
             onClick={() => setActiveTab(tab.id)}
             className={`pb-3 text-sm font-bold tracking-wider transition-colors cursor-pointer ${
               activeTab === tab.id
-                ? "text-lime-400 border-b-2 border-lime-400"
-                : "text-gray-500 hover:text-gray-300"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground/80"
             }`}
           >
             {tab.label}

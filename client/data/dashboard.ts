@@ -26,7 +26,7 @@ export const metricsMock: DashboardMetric[] = [
     value: "1,245",
     variation: "+5%",
     icon: "ti ti-users",
-    iconColor: "text-lime-400",
+    iconColor: "text-primary",
   },
   {
     id: "m2",
@@ -34,7 +34,7 @@ export const metricsMock: DashboardMetric[] = [
     value: "18",
     variation: "+2%",
     icon: "ti ti-user-plus",
-    iconColor: "text-lime-400",
+    iconColor: "text-primary",
   },
   {
     id: "m3",
@@ -42,7 +42,7 @@ export const metricsMock: DashboardMetric[] = [
     value: "$45.2K",
     variation: "+10%",
     icon: "ti ti-credit-card",
-    iconColor: "text-lime-400",
+    iconColor: "text-primary",
   },
   {
     id: "m4",
@@ -50,7 +50,7 @@ export const metricsMock: DashboardMetric[] = [
     value: "2",
     variation: "",
     icon: "ti ti-alert-triangle",
-    iconColor: "text-red-400",
+    iconColor: "text-danger",
     warning: true,
   },
 ];
@@ -59,8 +59,8 @@ export const newsMock: NewsEvent[] = [
   {
     id: "n1",
     icon: "ti ti-activity",
-    iconBg: "bg-lime-400/10",
-    iconColor: "text-lime-400",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
     title: "Pico de Acceso Detectado",
     description: "Zona de musculación reporta alta densidad.",
     timestamp: "Hace 10 min",
@@ -68,8 +68,8 @@ export const newsMock: NewsEvent[] = [
   {
     id: "n2",
     icon: "ti ti-arrows-exchange",
-    iconBg: "bg-amber-400/10",
-    iconColor: "text-amber-400",
+    iconBg: "bg-warning/10",
+    iconColor: "text-warning",
     title: "Cambio de Turno Aprobado",
     description: "Clase de Crossfit PM reagendada al jueves.",
     timestamp: "Hace 45 min",
@@ -77,8 +77,8 @@ export const newsMock: NewsEvent[] = [
   {
     id: "n3",
     icon: "ti ti-alert-triangle",
-    iconBg: "bg-red-950/30",
-    iconColor: "text-red-400",
+    iconBg: "bg-danger/10",
+    iconColor: "text-danger",
     title: "Incidencia Reportada",
     description: "Cinta de correr #04 requiere mantenimiento.",
     timestamp: "Hace 2 horas",
