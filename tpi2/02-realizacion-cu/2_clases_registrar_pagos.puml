@@ -147,8 +147,7 @@ class Promocion <<Entity>> {
     - idPromocion: int
     - nombre: String
     - porcentajeDescuento: float
-    - fechaDesde: Date
-    - fechaHasta: Date
+    - estado: EstadoPromocion
     + verificarCondiciones(alumno: Alumno, montoTotal: float, medioPago: MedioPago): String
     + calcularDescuento(montoTotal: float): float
 }
@@ -176,6 +175,11 @@ package "Tipos enumerados" {
     enum EstadoCuota <<enumeration>> {
         PENDIENTE
         PAGADA
+    }
+
+    enum EstadoPromocion <<enumeration>> {
+        ACTIVA
+        INACTIVA
     }
 
     enum MedioPago <<enumeration>> {
@@ -219,8 +223,8 @@ Cuota -[hidden]down- EstadoCuota
 
 legend bottom
   **Referencias**
-  EstadoAlumno (activo o inactivo), EstadoCuenta (al día, por vencer, deudor o bloqueado), EstadoCuota (pendiente o pagada)
-  y MedioPago (efectivo, tarjeta de débito, transferencia o QR) son tipos enumerados.
+  EstadoAlumno (activo o inactivo), EstadoCuenta (al día, por vencer, deudor o bloqueado), EstadoCuota (pendiente o pagada),
+  EstadoPromocion (activa o inactiva) y MedioPago (efectivo, tarjeta de débito, transferencia o QR) son tipos enumerados.
   Son tipos y no clases con responsabilidades: no tienen tarjeta CRC.
   DatosPago agrupa fecha y hora, monto total y medio de pago. DatosRecibo agrupa número y fecha de emisión.
   (No son clases del dominio: se usan para setear varios datos de una vez.)

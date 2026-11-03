@@ -16,7 +16,8 @@ skinparam responseMessageBelowArrow true
 ' - Los datos del cobro en curso (alumno a, monto total y medio de pago) llegan desde
 '   Registrar Pagos; se pasan como parámetros.
 ' - Recorrido de las promociones: LL[pr]: Promocion; el loop lo hace el Sistema.
-' - Lista temporal LTV[pr]: Promocion: creada, llenada y destruida por el Sistema.
+' - Lista temporal LTV[pr]: Promocion: creada y llenada por el Sistema al mostrar las promociones; la destruye el Sistema
+'   después de que la secretaria selecciona la promoción (en aplicarPromocion).
 ' - Experto: cada promoción sabe si se cumplen sus condiciones y cuánto descuenta.
 ' - Búsqueda indexada de la promoción elegida (getPromocion(idPromocion)), sin loop.
 ' - Mensaje reflexivo para recalcular el monto total.
@@ -59,8 +60,8 @@ loop for each pr in LL
     LLPR --> Sistema: pr
     deactivate LLPR
 
-    ' Vigente: la fecha actual está dentro de la vigencia de la promoción
-    opt pr.fechaDesde <= fechaActual <= pr.fechaHasta
+    ' Solo se ofrecen las promociones que están activas (la administración las activa o desactiva)
+    opt pr.estado = ACTIVA
         ' Experto: la promoción verifica sus propias condiciones (medio de pago, antigüedad, cuotas, plan familiar)
         Sistema -> Promocion: verificarCondiciones(a, montoTotal, medioPago)
         activate Promocion
@@ -72,8 +73,6 @@ loop for each pr in LL
 end
 
 Sistema --> CTRLCU: LTV[pr]
-Sistema --> LTV: destroy()
-destroy LTV
 deactivate Sistema
 
 CTRLCU -> UI: mostrarPromocionesVigentes(LTV[pr])
@@ -100,6 +99,10 @@ deactivate Promocion
 
 Sistema -> Sistema: recalcularMontoTotal(montoTotal, descuento)
 Sistema -> Sistema: registrarPromocionAplicada(pr)
+
+' La lista de promociones vigentes ya cumplió su función: se destruye recién después de la elección
+Sistema --> LTV: destroy()
+destroy LTV
 
 Sistema --> CTRLCU: montoConDescuento
 deactivate Sistema

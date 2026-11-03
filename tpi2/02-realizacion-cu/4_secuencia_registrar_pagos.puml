@@ -17,6 +17,7 @@ skinparam responseMessageBelowArrow true
 ' - Búsqueda indexada del alumno por DNI (LL[a]: Alumno, getAlumno(dni)), sin loop.
 ' - Recorrido de las cuotas: el alumno conoce las suyas (getCuota()) y el loop lo hace el Sistema.
 ' - Listas temporales LT + letra (LTP[c]: Cuota = pendientes, LTS[c]: Cuota = seleccionadas): creadas, llenadas y destruidas por el Sistema.
+'   LTP se destruye después de que la secretaria termina de seleccionar las cuotas (en obtenerMontoTotal); LTS, al confirmar el pago.
 ' - Ingreso múltiple: la secretaria selecciona UNA cuota por vuelta (nunca una lista) y en cada vuelta
 '   responde si sigue ingresando cuotas; esa respuesta decide si el loop continúa.
 '   Como el CTRL no tiene atributos, el Sistema acumula las cuotas elegidas en
@@ -102,8 +103,6 @@ loop for each c in LL
 end
 
 Sistema --> CTRLCU: LTP[c]
-Sistema --> LTP: destroy()
-destroy LTP
 deactivate Sistema
 
 ' Lista de las cuotas del pago en curso: la completa el paso 5
@@ -142,6 +141,11 @@ end
 CTRLCU -> Sistema: obtenerMontoTotal()
 activate Sistema
 Sistema -> Sistema: calcularTotal()
+
+' Las cuotas pendientes ya cumplieron su función: la secretaria terminó de elegir, así que se destruye la lista
+Sistema --> LTP: destroy()
+destroy LTP
+
 Sistema --> CTRLCU: montoTotal
 deactivate Sistema
 

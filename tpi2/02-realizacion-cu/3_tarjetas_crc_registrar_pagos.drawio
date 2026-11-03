@@ -195,7 +195,7 @@
           <mxGeometry x="340" y="109" width="220" height="106" as="geometry" />
         </mxCell>
         <mxCell id="t10" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="2020" width="560" height="305" as="geometry" />
+          <mxGeometry x="610" y="2020" width="560" height="320" as="geometry" />
         </mxCell>
         <mxCell id="t10-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -209,14 +209,14 @@
         <mxCell id="t10-h-colab" value="Colaboración" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t10">
           <mxGeometry x="340" y="83" width="220" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="t10-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Verificar si se cumplen sus condiciones para el cobro en curso (medio de pago, antigüedad del alumno, cantidad de cuotas, plan familiar) y devolver &amp;quot;aplica&amp;quot; o el motivo por el que no corresponde (verificarCondiciones(alumno, montoTotal, medioPago)).&lt;br&gt;- Calcular el descuento sobre un monto (calcularDescuento(montoTotal)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPromocion, nombre, porcentajeDescuento.&lt;br&gt;- fechaDesde y fechaHasta (su vigencia)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
-          <mxGeometry x="0" y="109" width="340" height="196" as="geometry" />
+        <mxCell id="t10-resp" value="&lt;b&gt;Hacer:&lt;/b&gt;&lt;br&gt;- Verificar si se cumplen sus condiciones para el cobro en curso (medio de pago, antigüedad del alumno, cantidad de cuotas, plan familiar) y devolver &amp;quot;aplica&amp;quot; o el motivo por el que no corresponde (verificarCondiciones(alumno, montoTotal, medioPago)).&lt;br&gt;- Calcular el descuento sobre un monto (calcularDescuento(montoTotal)).&lt;br&gt;&lt;br&gt;&lt;b&gt;Saber:&lt;/b&gt;&lt;br&gt;- idPromocion, nombre, porcentajeDescuento.&lt;br&gt;- estado, del tipo enumerado EstadoPromocion (activa o inactiva): solo las activas se ofrecen al cobrar." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
+          <mxGeometry x="0" y="109" width="340" height="211" as="geometry" />
         </mxCell>
         <mxCell id="t10-colab" value="- &lt;b&gt;Sistema:&lt;/b&gt; quien la recorre, la busca por id y le pide las verificaciones.&lt;br&gt;- &lt;b&gt;Alumno:&lt;/b&gt; de quien evalúa las condiciones.&lt;br&gt;- &lt;b&gt;Pago:&lt;/b&gt; el pago al que se aplica (0 o 1 promoción por pago)." style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;spacingTop=4;" vertex="1" parent="t10">
-          <mxGeometry x="340" y="109" width="220" height="196" as="geometry" />
+          <mxGeometry x="340" y="109" width="220" height="211" as="geometry" />
         </mxCell>
         <mxCell id="t11" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="2375" width="560" height="335" as="geometry" />
+          <mxGeometry x="0" y="2390" width="560" height="335" as="geometry" />
         </mxCell>
         <mxCell id="t11-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t11">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -237,7 +237,7 @@
           <mxGeometry x="340" y="124" width="220" height="211" as="geometry" />
         </mxCell>
         <mxCell id="t12" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="2375" width="560" height="305" as="geometry" />
+          <mxGeometry x="610" y="2390" width="560" height="305" as="geometry" />
         </mxCell>
         <mxCell id="t12-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t12">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -258,7 +258,7 @@
           <mxGeometry x="340" y="124" width="220" height="181" as="geometry" />
         </mxCell>
         <mxCell id="t13" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="0" y="2760" width="560" height="245" as="geometry" />
+          <mxGeometry x="0" y="2775" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t13-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t13">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />
@@ -279,7 +279,7 @@
           <mxGeometry x="340" y="109" width="220" height="136" as="geometry" />
         </mxCell>
         <mxCell id="t14" value="" style="group" vertex="1" connectable="0" parent="1">
-          <mxGeometry x="610" y="2760" width="560" height="245" as="geometry" />
+          <mxGeometry x="610" y="2775" width="560" height="245" as="geometry" />
         </mxCell>
         <mxCell id="t14-titulo" value="Tarjeta CRC" style="whiteSpace=wrap;html=1;strokeColor=#000000;fontSize=11;fontColor=#000000;fillColor=#E6E6E6;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="t14">
           <mxGeometry x="0" y="0" width="560" height="26" as="geometry" />

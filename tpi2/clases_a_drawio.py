@@ -48,7 +48,7 @@ DISPOSICIONES = {
         "CTRLSesion": (300, 3), "Sistema": (760, 3), "Recibo": (1300, 3),
         "Alumno": (420, 4), "Pago": (900, 4),
         "Cuota": (230, 5), "Promocion": (660, 5), "Secretaria": (1000, 5),
-        "MedioPago": (480, 6), "EstadoCuota": (650, 6), "EstadoCuenta": (810, 6), "EstadoAlumno": (970, 6),
+        "MedioPago": (400, 6), "EstadoCuota": (560, 6), "EstadoCuenta": (720, 6), "EstadoAlumno": (880, 6), "EstadoPromocion": (1040, 6),
     },
     "2_clases_antes": {
         "Sistema": (420, 1), "Alumno": (420, 2), "Cuota": (420, 3), "EstadoCuota": (420, 4),

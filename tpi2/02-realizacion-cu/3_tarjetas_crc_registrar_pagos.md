@@ -144,7 +144,7 @@
 
 | Responsabilidades | Colaboración |
 | :--- | :--- |
-| **Hacer:**<br>- Verificar si se cumplen sus condiciones para el cobro en curso (medio de pago, antigüedad del alumno, cantidad de cuotas, plan familiar) y devolver "aplica" o el motivo por el que no corresponde (`verificarCondiciones(alumno, montoTotal, medioPago)`).<br>- Calcular el descuento sobre un monto (`calcularDescuento(montoTotal)`).<br><br>**Saber:**<br>- `idPromocion`, `nombre`, `porcentajeDescuento`.<br>- `fechaDesde` y `fechaHasta` (su vigencia). | - **Sistema:** quien la recorre, la busca por id y le pide las verificaciones.<br>- **Alumno:** de quien evalúa las condiciones.<br>- **Pago:** el pago al que se aplica (0 o 1 promoción por pago). |
+| **Hacer:**<br>- Verificar si se cumplen sus condiciones para el cobro en curso (medio de pago, antigüedad del alumno, cantidad de cuotas, plan familiar) y devolver "aplica" o el motivo por el que no corresponde (`verificarCondiciones(alumno, montoTotal, medioPago)`).<br>- Calcular el descuento sobre un monto (`calcularDescuento(montoTotal)`).<br><br>**Saber:**<br>- `idPromocion`, `nombre`, `porcentajeDescuento`.<br>- `estado`, del tipo enumerado `EstadoPromocion` (activa o inactiva): solo las activas se ofrecen al cobrar. | - **Sistema:** quien la recorre, la busca por id y le pide las verificaciones.<br>- **Alumno:** de quien evalúa las condiciones.<br>- **Pago:** el pago al que se aplica (0 o 1 promoción por pago). |
 
 ---
 
